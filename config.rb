@@ -86,3 +86,80 @@ end
 # end
 
 
+# Count contributors
+ready do
+
+  # Prepare the pages
+  pages = sitemap.resources.select{ |r|
+    r.path.match(/^docs\/.*\.html/) \
+      and not r.path.include?("README") \
+      and not r.path.match(/file\.html$/)
+  }.sort_by{ |r|
+    r.metadata[:page]["language"].downcase
+  }
+  set :docs, pages
+
+  authors = {}
+  pages.each {|p|
+    lang = p.metadata[:page]["language"]
+    contrib_list = p.metadata[:page]["contributors"]
+    if contrib_list.nil?
+      authors[lang] = [[p.metadata[:page]["author"], p.metadata[:page]["author_url"]]]
+    else
+      authors[lang] = contrib_list
+    end
+  }
+
+  set :authors, authors
+
+  # Count up the contributors with git blame
+  contributors = {}
+  pages.each{|p|
+    system("cd source/docs && git blame #{p.path.split('/')[1]}.markdown >> tmp.txt")
+    File::open('source/docs/tmp.txt'){|f|
+      names = f.readlines.map{|r|
+        name = r.split(' ')[1]
+        name[1..name.length]
+      }
+
+      lang = p.metadata[:page]["language"]
+      contributors[lang] = Set::new(names).length + authors[lang].length - 2
+    }
+    system("rm source/docs/tmp.txt")
+  }
+  set :contributors, contributors
+
+  # Prepare code files to serve
+
+  pages.each{ |p|
+    lang = p.metadata[:page]["language"]
+    filename = p.metadata[:page]["filename"]
+
+    puts filename
+
+    unless filename.nil?
+      s = nil
+      File::open("source/#{p.path}.markdown") {|f|
+        s = StringScanner.new(f.read)
+      }
+
+      puts "========================= #{p.path} ===========================\n"
+      code = ''
+      until s.eos?
+        s.skip_until(/^```.*$/)
+        out = s.scan_until(/^```/)
+        if out.nil?
+          break
+        end
+        code += out
+      end
+
+      code = code.gsub('```', '')
+
+
+      filename = p.metadata[:page]["filename"] || "scratch.php"
+      proxy "/docs/files/#{filename}", "/docs/file.html", :locals => {:rawcode => code}, :ignore => true, :layout => false
+    end
+  }
+end
+
