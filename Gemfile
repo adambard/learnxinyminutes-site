@@ -4,7 +4,7 @@ source 'http://rubygems.org'
 
 gem "middleman"
 gem "middleman-syntax"
-gem "redcarpet"
+gem "redcarpet", "2.3.0"
 gem "middleman-clementine"
 
 gem "haml"

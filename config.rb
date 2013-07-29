@@ -85,65 +85,57 @@ end
 #   end
 # end
 
+class Article
+  attr_accessor :category, :name, :contributors, :contributor_count, :filename, :rawcode, :url
+  def initialize(r)
+    begin
+      @name = r.metadata[:page].fetch("language", nil)
 
-# Count contributors
-ready do
+      @category = r.metadata[:page].fetch("category", nil)
+      if @category.nil? && @name
+        @category = "language"
+      else
+        @category = r.metadata[:page].fetch("category", "meta")
+      end
 
-  # Prepare the pages
-  pages = sitemap.resources.select{ |r|
-    r.path.match(/^docs\/.*\.html/) \
-      and not r.path.include?("README") \
-      and not r.path.match(/file\.html$/)
-  }.sort_by{ |r|
-    r.metadata[:page]["language"].downcase
-  }
-  set :docs, pages
-
-  authors = {}
-  pages.each {|p|
-    lang = p.metadata[:page]["language"]
-    contrib_list = p.metadata[:page]["contributors"]
-    if contrib_list.nil?
-      authors[lang] = [[p.metadata[:page]["author"], p.metadata[:page]["author_url"]]]
-    else
-      authors[lang] = contrib_list
+      @name = case @category
+        when "language" then r.metadata[:page]["language"]
+        when "tool" then r.metadata[:page]["tool"]
+        else ""
+      end
+    rescue
+      @name = ""
+      @category = "meta"
     end
-  }
 
-  set :authors, authors
+    # Get a list of the authors
+    @contributors = r.metadata[:page].fetch("contributors", nil)
+    if @contributors.nil?
+      @contributors = [[r.metadata[:page]["author"], r.metadata[:page]["author_url"]]]
+    end
 
-  # Count up the contributors with git blame
-  contributors = {}
-  pages.each{|p|
-    system("cd source/docs && git blame #{p.path.split('/')[1]}.markdown >> tmp.txt")
+    # Count other contributors with git blame
+    system("cd source/docs && git blame #{r.path.split('/')[1]}.markdown >> tmp.txt")
     File::open('source/docs/tmp.txt'){|f|
-      names = f.readlines.map{|r|
-        name = r.split(' ')[1]
+      names = f.readlines.map{ |line|
+        name = line.split(' ')[1]
         name[1..name.length]
       }
 
-      lang = p.metadata[:page]["language"]
-      contributors[lang] = Set::new(names).length + authors[lang].length - 2
+      @contributor_count = Set::new(names).length + @contributors.length - 2
     }
     system("rm source/docs/tmp.txt")
-  }
-  set :contributors, contributors
 
-  # Prepare code files to serve
-
-  pages.each{ |p|
-    lang = p.metadata[:page]["language"]
-    filename = p.metadata[:page]["filename"]
-
-    puts filename
-
-    unless filename.nil?
+    @filename = r.metadata[:page].fetch("filename", nil)
+    if @filename.nil?
+      @rawcode = nil
+    else
       s = nil
-      File::open("source/#{p.path}.markdown") {|f|
+      File::open("source/#{r.path}.markdown") {|f|
         s = StringScanner.new(f.read)
       }
 
-      puts "========================= #{p.path} ===========================\n"
+      puts "========================= #{r.path} ===========================\n"
       code = ''
       until s.eos?
         s.skip_until(/^```.*$/)
@@ -154,12 +146,64 @@ ready do
         code += out
       end
 
-      code = code.gsub('```', '')
+      @rawcode = code.gsub('```', '')
 
-
-      filename = p.metadata[:page]["filename"] || "scratch.php"
-      proxy "/docs/files/#{filename}", "/docs/file.html", :locals => {:rawcode => code}, :ignore => true, :layout => false
     end
+
+    @url = r.url
+  end
+
+  def to_s
+    "Article #{@category}: #{@name} (#{@contributors})"
+  end
+end
+
+class ArticleManager
+  attr_accessor :articles, :articles_by_name, :articles_by_category
+  def initialize(sitemap)
+    @articles = sitemap.resources.map{|r| Article.new(r)}
+    @articles_by_category = articles.group_by{|r| r.category}
+    @articles_by_name = articles.group_by{|r| r.name}
+  end
+
+  def get(page)
+    get_article(page)
+  end
+  def get_article(page)
+    category = page.fetch("category", "language")
+    @articles_by_name[page[category]][0]
+  end
+
+  def contributors(page)
+    get_article(page).contributors
+  end
+
+  def name(page)
+    get_article(page).name
+  end
+
+  def contributor_count(page)
+    get_article(page).contributor_count
+  end
+
+  def filename(page)
+    get_article(page).filename
+  end
+
+  def rawcode(page)
+    get_article(page).rawcode
+  end
+
+end
+
+# Count contributors
+ready do
+
+  articles = ArticleManager.new(sitemap)
+  set :articles, articles
+
+  articles.articles.select{|a| not a.filename.nil?}.each{|a|
+    proxy "/docs/files/#{a.filename}", "/docs/file.html", :locals => {:rawcode => a.rawcode}, :ignore => true, :layout => false
   }
 end
 
