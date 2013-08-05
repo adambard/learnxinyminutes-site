@@ -86,36 +86,63 @@ end
 # end
 
 class Article
-  attr_accessor :category, :name, :contributors, :contributor_count, :filename, :rawcode, :url
-  def initialize(r)
-    begin
-      @name = r.metadata[:page].fetch("language", nil)
+  attr_accessor :category, :name, :contributors, :contributor_count, :filename, :rawcode, :url, :language, :translations, :translators
 
-      @category = r.metadata[:page].fetch("category", nil)
+  def initialize(r)
+    @resource = r
+    @path = r.path
+    meta = r.metadata[:page]
+
+    set_name_and_category(meta)
+    set_contributors(meta)
+    set_contributor_count(r.path)
+    set_rawcode(r)
+
+    @language = r.metadata[:page].fetch("lang", "en")
+    @translations = []
+    @translators = r.metadata[:page].fetch("translators", [])
+
+    @url = r.url
+  end
+
+
+  def set_name_and_category(meta)
+    begin
+      @name = meta.fetch("name", nil)
+
+      if @name.nil?
+        @name = meta.fetch("language", nil)
+      end
+
+      @category = meta.fetch("category", nil)
       if @category.nil? && @name
         @category = "language"
       else
-        @category = r.metadata[:page].fetch("category", "meta")
+        @category = meta.fetch("category", "meta")
       end
 
       @name = case @category
-        when "language" then r.metadata[:page]["language"]
-        when "tool" then r.metadata[:page]["tool"]
+        when "language" then meta["language"]
+        when "tool" then meta["tool"]
         else ""
       end
     rescue
       @name = ""
       @category = "meta"
     end
+  end
 
+  def set_contributors(meta)
     # Get a list of the authors
-    @contributors = r.metadata[:page].fetch("contributors", nil)
+    @contributors = meta.fetch("contributors", nil)
     if @contributors.nil?
-      @contributors = [[r.metadata[:page]["author"], r.metadata[:page]["author_url"]]]
+      @contributors = [[meta["author"], meta["author_url"]]]
     end
+  end
 
+  def set_contributor_count(path)
     # Count other contributors with git blame
-    system("cd source/docs && git blame #{r.path.split('/')[1]}.markdown >> tmp.txt")
+    system("cd source/docs && git blame #{path.split('/')[1]}.markdown >> tmp.txt")
     File::open('source/docs/tmp.txt'){|f|
       names = f.readlines.map{ |line|
         name = line.split(' ')[1]
@@ -125,53 +152,77 @@ class Article
       @contributor_count = Set::new(names).length + @contributors.length - 2
     }
     system("rm source/docs/tmp.txt")
+  end
 
-    @filename = r.metadata[:page].fetch("filename", nil)
+  def set_rawcode(r)
+    meta = r.metadata[:page]
+
+    @filename = meta.fetch("filename", nil)
     if @filename.nil?
       @rawcode = nil
-    else
-      s = nil
-      File::open("source/#{r.path}.markdown") {|f|
-        s = StringScanner.new(f.read)
-      }
-
-      puts "========================= #{r.path} ===========================\n"
-      code = ''
-      until s.eos?
-        s.skip_until(/^```.*$/)
-        out = s.scan_until(/^```/)
-        if out.nil?
-          break
-        end
-        code += out
-      end
-
-      @rawcode = code.gsub('```', '')
-
+      return
     end
 
-    @url = r.url
+    s = nil
+    File::open("source/#{r.path}.markdown") {|f|
+      s = StringScanner.new(f.read)
+    }
+
+    code = ''
+    until s.eos?
+      s.skip_until(/^```.*$/)
+      out = s.scan_until(/^```/)
+      if out.nil?
+        break
+      end
+      code += out
+    end
+
+    @rawcode = code.gsub('```', '')
   end
 
   def to_s
-    "Article #{@category}: #{@name} (#{@contributors})"
+    "Article #{@category}: #{@name} (#{@contributors}): #{@path}"
   end
+
+  def add_translation a
+    @translations.push a
+  end
+
 end
 
 class ArticleManager
-  attr_accessor :articles, :articles_by_name, :articles_by_category
+  attr_accessor :articles, :articles_by_name, :articles_by_category_en
   def initialize(sitemap)
     @articles = sitemap.resources.map{|r| Article.new(r)}
-    @articles_by_category = articles.group_by{|r| r.category}
-    @articles_by_name = articles.group_by{|r| r.name}
+    @articles_en = @articles.select{|a|a.language == "en"}
+
+    @articles_by_category = @articles.group_by{|r| r.category}
+    @articles_by_name = @articles.group_by{|r| r.name}
+
+    @articles_by_category_en = @articles_en.group_by{|r| r.category}
+    @articles_by_name_en = @articles_en.group_by(&:name)
+
+    @articles.select{|a| a.language != "en" and not a.name.nil?}.each{|a|
+      a2 = @articles_by_name_en.fetch(a.name, nil)[0]
+      if not a2.nil? and not a2.translations.nil?
+        a2.add_translation a
+      end
+    }
   end
 
   def get(page)
     get_article(page)
   end
+
   def get_article(page)
     category = page.fetch("category", "language")
-    @articles_by_name[page[category]][0]
+    language = page.fetch("lang", "en")
+
+
+    @articles_by_name[page[category]].select{|a|
+      a.language == language
+    }[0]
   end
 
   def contributors(page)
