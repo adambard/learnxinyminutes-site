@@ -85,6 +85,10 @@ end
 #   end
 # end
 
+IGNORED = [
+  "docs/ko-kr/lua-kr.html.markdown"
+]
+
 class Article
   attr_accessor :category, :name, :contributors, :contributor_count, :filename, :rawcode, :url, :language, :translations, :translators
 
@@ -119,6 +123,7 @@ class Article
         @category = "language"
       else
         @category = meta.fetch("category", "meta")
+        puts "META FOR #{@path}: #{meta}"
       end
 
       @name = case @category
@@ -126,7 +131,8 @@ class Article
         when "tool" then meta["tool"]
         else ""
       end
-    rescue
+    rescue e
+      puts "ERROR: " + e.to_s
       @name = ""
       @category = "meta"
     end
@@ -194,7 +200,9 @@ end
 class ArticleManager
   attr_accessor :articles, :articles_by_name, :articles_by_category_en
   def initialize(sitemap)
-    @articles = sitemap.resources.map{|r| Article.new(r)}
+    @articles = sitemap.resources.select{|r|
+      not IGNORED.include?(r.path)
+    }.map{|r| Article.new(r)}
     @articles_en = @articles.select{|a|a.language == "en"}
 
     @articles_by_category = @articles.group_by{|r| r.category}
@@ -203,8 +211,9 @@ class ArticleManager
     @articles_by_category_en = @articles_en.group_by{|r| r.category}
     @articles_by_name_en = @articles_en.group_by(&:name)
 
+    @articles.each{|a| puts a.url + ": " + a.language + " (" + a.category + ")"}
     @articles.select{|a| a.language != "en" and not a.name.nil?}.each{|a|
-      a2 = @articles_by_name_en.fetch(a.name, nil)[0]
+      a2 = @articles_by_name_en.fetch(a.name, [nil])[0]
       if not a2.nil? and not a2.translations.nil?
         a2.add_translation a
       end
