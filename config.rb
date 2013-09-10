@@ -86,7 +86,7 @@ end
 # end
 
 IGNORED = [
-  "docs/ko-kr/lua-kr.html.markdown"
+  # "docs/ko-kr/lua-kr.html.markdown"
 ]
 
 class Article
