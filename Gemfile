@@ -2,7 +2,7 @@
 # the following line to use "https"
 source 'http://rubygems.org'
 
-gem "rouge", :path => "/Users/adam-home/lib/rouge"
+gem "rouge", "0.3.9"
 gem "middleman"
 gem "middleman-syntax"
 gem "redcarpet", "2.3.0"
