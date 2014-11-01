@@ -155,7 +155,8 @@ class Article
         name[1..name.length]
       }
 
-      @contributor_count = Set::new(names).length + @contributors.length - 2
+      cnt = Set::new(names).length + @contributors.length - 2
+      @contributor_count = (cnt > 0 ? cnt : 0)
     }
     system("rm source/docs/tmp.txt")
   end
