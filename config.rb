@@ -202,7 +202,9 @@ class ArticleManager
   def initialize(sitemap)
     @articles = sitemap.resources.select{|r|
       not IGNORED.include?(r.path)
-    }.map{|r| Article.new(r)}
+    }.map{|r|
+      Article.new(r)
+    }.sort{|a1, a2| a1.name.downcase <=> a2.name.downcase }
     @articles_en = @articles.select{|a|a.language == "en"}
 
     @articles_by_category = @articles.group_by{|r| r.category}
