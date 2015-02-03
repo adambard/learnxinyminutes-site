@@ -123,14 +123,16 @@ class Article
         @category = "language"
       else
         @category = meta.fetch("category", "meta")
-        puts "META FOR #{@path}: #{meta}"
       end
 
-      @name = case @category
-        when "language" then meta["language"]
-        when "tool" then meta["tool"]
-        else ""
+      @name_key = case @category
+        when "language" then "language"
+        when "tool" then "tool"
+        else "name"
       end
+
+      @name = meta.fetch(@name_key, "")
+
     rescue e
       puts "ERROR: " + e.to_s
       @name = ""
@@ -214,7 +216,7 @@ class ArticleManager
     @articles_by_category_en = @articles_en.group_by{|r| r.category}
     @articles_by_name_en = @articles_en.group_by(&:name)
 
-    @articles.each{|a| puts a.url + ": " + a.language + " (" + a.category + ")"}
+    #@articles.each{|a| puts a.url + ": " + a.language + " (" + a.category + ")"}
     @articles.select{|a| a.language != "en" and not a.name.nil?}.each{|a|
       a2 = @articles_by_name_en.fetch(a.name, [nil])[0]
       if not a2.nil? and not a2.translations.nil?
@@ -227,12 +229,22 @@ class ArticleManager
     get_article(page)
   end
 
+  def get_category_display_name(c)
+    case c
+      when "language" then "Languages"
+      when "tool" then "Tools"
+      else c
+    end
+  end
+
   def get_article(page)
-    category = page.fetch("category", "language")
+    name = page.fetch("name",
+      page.fetch("tool",
+        page.fetch("language", nil)))
+
     language = page.fetch("lang", "en")
 
-
-    @articles_by_name[page[category]].select{|a|
+    @articles_by_name.fetch(name).select{|a|
       a.language == language
     }[0]
   end
