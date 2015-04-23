@@ -271,11 +271,24 @@ class ArticleManager
 
 end
 
+class I18N
+  def initialize(articles)
+    @articles = articles
+  end
+
+  def t(data, key)
+    language = @articles.get(data.page).language.sub('-', '_')
+    translations = data.i18n[language] || data.i18n['default']
+    translations[key]
+  end
+end
+
 # Count contributors
 ready do
 
   articles = ArticleManager.new(sitemap)
   set :articles, articles
+  set :i18n, I18N.new(articles)
 
   articles.articles.select{|a| not a.filename.nil?}.each{|a|
     proxy "/docs/files/#{a.filename}", "/docs/file.html", :locals => {:rawcode => a.rawcode}, :ignore => true, :layout => false
