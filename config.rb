@@ -12,6 +12,15 @@ with_layout :doc do
   page "/docs/*"
 end
 
+helpers do
+  def twitter_share_url(url, doc)
+      full_url = "https://learnxinyminutes.com" + (url || "")
+      text = "Learn X in Y minutes, where X=" + (doc || "")
+      qs = URI.encode_www_form("url" => full_url, "text" => text)
+      "https://twitter.com/intent/tweet?#{qs}"
+  end
+end
+
 # Build-specific configuration
 configure :build do
   # For example, change the Compass output style for deployment
