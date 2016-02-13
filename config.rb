@@ -162,7 +162,7 @@ class Article
     system("cd source/docs && git blame #{path.split('/')[1]}.markdown >> tmp.txt")
     File::open('source/docs/tmp.txt'){|f|
       names = f.readlines.map{ |line|
-        name = line.split(' ')[1]
+        name = line.split(' ')[1] || ''
         name[1..name.length]
       }
 
