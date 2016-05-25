@@ -1,4 +1,5 @@
 ﻿#! /usr/bin/env python
+# coding=utf-8
 '''
 what to do:
     finding all markdown/md files in cwd, and create summary.markdown for gitbook
@@ -18,6 +19,7 @@ reuslt:
 import os
 import copy
 import re
+import codecs
 
 rootdir = os.path.abspath(os.curdir)
 
@@ -52,12 +54,13 @@ for line in files:
                 summary.append("* [" + name + "](" + local + ")\n")
 
 def write2file(content, path):
-    with open(path, "w") as f:
+    with codecs.open(path, "w", "utf-8") as f:
         for line in content:
             f.write(line)
 
 #readme = copy.deepcopy(summary)
-summary.insert(0, """learnxinyminutes-docs
+summary.insert(0, """# coding=utf-8
+learnxinyminutes-docs
 =======
 
 # SUMMARY
