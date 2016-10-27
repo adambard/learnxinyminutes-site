@@ -1,5 +1,14 @@
 activate :directory_indexes
+#activate :syntax
+require 'pygments'
+
 activate :syntax
+
+module ::Middleman::Syntax::Highlighter
+  def self.highlight(code, language=nil, opts={})
+    Pygments.highlight(code, lexer: language)
+  end
+end
 activate :clementine
 set :markdown_engine, :redcarpet
 set :markdown, :fenced_code_blocks => true, :smartypants => true
