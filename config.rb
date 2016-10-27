@@ -11,7 +11,7 @@ module ::Middleman::Syntax::Highlighter
 end
 activate :clementine
 set :markdown_engine, :redcarpet
-set :markdown, :fenced_code_blocks => true, :smartypants => true
+set :markdown, :fenced_code_blocks => true, :smartypants => true, :tables => true
 
 set :css_dir, 'css'
 set :js_dir, 'js'
