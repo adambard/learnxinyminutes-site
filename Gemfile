@@ -2,8 +2,8 @@
 # the following line to use "https"
 source 'http://rubygems.org'
 
-gem "rouge", :git => "https://github.com/adambard/rouge.git"
-gem "middleman"
+gem "rouge"
+gem "middleman", "~>3.3"
 gem "middleman-syntax"
 gem "redcarpet", "2.3.0"
 gem "middleman-clementine"
