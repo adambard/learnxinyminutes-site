@@ -1,0 +1,76 @@
+﻿#! /usr/bin/env python
+# coding=utf-8
+'''
+what to do:
+    finding all markdown/md files in cwd, and create summary.markdown for gitbook
+
+how to use:
+    # assume you already clone learnxinyminutes-docs into source/docs dir.
+    # if you generate pdf for all languages may take minutes.
+    cd source/docs/zh-cn && python ../../../scripts/summary.py
+    gitbook init && gitbook build && gitbook pdf  && mv book.pdf ../../learnxinyminutes.pdf
+
+reuslt:
+    it works, anyway.
+
+[walker.zheng](mykulou@gmail.com)
+'''
+
+import os
+import copy
+import re
+import codecs
+
+rootdir = os.path.abspath(os.curdir)
+
+lastDir = ""
+md = re.compile(r'.*\.(markdown|md)$')
+_book = re.compile(r'_book|SUMMARY')
+ext = re.compile(r'\.html\.(markdown|md)')
+files = []
+summary = []
+readme = []
+
+# get all file path
+for parent,dirnames,filenames in os.walk(rootdir):
+    for filename in filenames:
+        files.append(os.path.join(parent, filename))
+
+# create md content tree
+for line in files:
+    b = _book.search(line)
+    if not b :
+        m = md.match(line)
+        if m :
+            local = line.replace(rootdir + "/", "")
+            n = local.rfind("/")
+            name = ext.sub("", local)
+            if n > 0 :
+                if lastDir != local[:n]:
+                    lastDir = local[:n]
+                    summary.append("* [" + name + "](" + local + ")\n")
+                summary.append("\t* [" + name + "](" + local + ")\n")
+            else:
+                summary.append("* [" + name + "](" + local + ")\n")
+
+def write2file(content, path):
+    with codecs.open(path, "w", "utf-8") as f:
+        for line in content:
+            f.write(line)
+
+#readme = copy.deepcopy(summary)
+summary.insert(0, """# coding=utf-8
+learnxinyminutes-docs
+=======
+
+# SUMMARY
+""")
+write2file(summary, "SUMMARY.markdown")
+#readme.insert(0, """learnxinyminutes-docs
+#=======
+
+## Introduction
+#""")
+#write2file(readme, "README.markdown")
+
+
