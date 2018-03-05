@@ -69,16 +69,24 @@ def check_frontmatter(path):
             log("WARN: Could not read frontmatter.")
             return
 
-        if not data.get('category'):
+        # "Language" docs are the default
+        if not data.get('category') and not data.get('language'):
             log("WARN: Category is not present")
 
-        if not data.get('filename'):
+        category = data.get('category', 'language')
+
+        # "Language" docs should have a filename
+        if category == 'language' and not data.get('filename'):
             log("WARN: Filename missing")
-        elif data.get('lang') != 'en-us' and '-' not in data.get('filename'):
+
+        # "Filename" should have a suffix (e.g. python-pl.py) if present in a non-default-language doc
+        if data.get('filename') and data.get('lang', 'en-us') != 'en-us' and '-' not in data.get('filename'):
             log("ERROR: Filename lacks language code suffix")
 
-        if data.get('lang') != 'en-us' and not data.get('translators'):
-            log("WARN: Translators is empty!")
+        # "Translators" shouldn't be empty, but this one isn't such a big deal
+        # if data.get('lang', 'en-us') != 'en-us' and not data.get('translators'):
+        #    log("WARN: Translators is empty!")
+
 
 
 def main():

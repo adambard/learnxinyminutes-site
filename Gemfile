@@ -12,3 +12,7 @@ gem "haml"
 
 # For feed.xml.builder
 gem "builder", "~> 3.0.0"
+
+# Github security recommendations
+gem 'yajl-ruby', '~> 1.3.1'
+gem 'nokogiri', '~> 1.8.1'
