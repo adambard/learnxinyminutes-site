@@ -13,3 +13,5 @@
     if theme_value_storage.length
       set_theme theme_value_storage
     return
+
+do set_theme_storage
