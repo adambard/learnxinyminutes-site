@@ -233,10 +233,11 @@ class ArticleManager
 
     @articles_by_category_en = @articles_en.group_by{|r| r.category}
     @articles_by_name_en = @articles_en.group_by(&:name)
+    @articles_by_name_en.transform_keys!(&:downcase)
 
     #@articles.each{|a| puts a.url + ": " + a.language + " (" + a.category + ")"}
     @articles.select{|a| a.language != "en" and not a.name.nil?}.each{|a|
-      a2 = @articles_by_name_en.fetch(a.name, [nil])[0]
+      a2 = @articles_by_name_en.fetch(a.name.downcase, [nil])[0]
       if not a2.nil? and not a2.translations.nil?
         a2.add_translation a
       end
