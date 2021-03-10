@@ -253,7 +253,7 @@ class ArticleManager
   def get_category_display_name(c)
     case c
       when "language" then "Languages"
-      when "framework" then "Frameworks"
+      when "framework" then "Frameworks and Libraries"
       when "tool" then "Tools"
       else c
     end
