@@ -145,6 +145,7 @@ class Article
 
       @name_key = case @category
         when "language" then "language"
+        when "framework" then "framework"
         when "tool" then "tool"
         else "name"
       end
@@ -219,7 +220,7 @@ class Article
 end
 
 class ArticleManager
-  attr_accessor :articles, :articles_by_name, :articles_by_category_en
+  attr_accessor :articles, :articles_by_name, :articles_by_category_en, :categories_en
   def initialize(sitemap)
     @articles = sitemap.resources.select{|r|
       not IGNORED.include?(r.path)
@@ -233,6 +234,8 @@ class ArticleManager
 
     @articles_by_category_en = @articles_en.group_by{|r| r.category}
     @articles_by_name_en = @articles_en.group_by(&:name)
+
+    @categories_en = ["Algorithms & Data Structures", "language", "framework", "tool"] | articles_by_category_en.keys
 
     #@articles.each{|a| puts a.url + ": " + a.language + " (" + a.category + ")"}
     @articles.select{|a| a.language != "en" and not a.name.nil?}.each{|a|
@@ -250,6 +253,7 @@ class ArticleManager
   def get_category_display_name(c)
     case c
       when "language" then "Languages"
+      when "framework" then "Frameworks and Libraries"
       when "tool" then "Tools"
       else c
     end
@@ -258,7 +262,8 @@ class ArticleManager
   def get_article(page)
     name = page.fetch("name",
       page.fetch("tool",
-        page.fetch("language", nil)))
+        page.fetch("framework",
+          page.fetch("language", nil))))
 
     language = page.fetch("lang", "en")
 
