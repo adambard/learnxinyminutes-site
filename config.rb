@@ -262,7 +262,8 @@ class ArticleManager
   def get_article(page)
     name = page.fetch("name",
       page.fetch("tool",
-        page.fetch("language", nil)))
+        page.fetch("framework",
+          page.fetch("language", nil))))
 
     language = page.fetch("lang", "en")
 
