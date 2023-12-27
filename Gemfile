@@ -8,7 +8,7 @@ gem "middleman", "~>3.3"
 gem "middleman-syntax"
 gem "redcarpet", "2.3.0"
 
-gem "haml"
+gem "haml", "~> 5.0"
 
 # For feed.xml.builder
 gem "builder", "~> 3.0.0"
