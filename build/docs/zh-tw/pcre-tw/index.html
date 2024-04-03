@@ -1,0 +1,212 @@
+<!DOCTYPE html lang="zh-tw" xml:lang="zh-tw" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="zh-tw">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn PCRE in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/zh-tw/pcre-tw/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fzh-tw%2Fpcre-tw%2F&text=Y%E5%88%86%E9%90%98%E9%80%9F%E6%88%90X%2C+%E5%85%B6%E4%B8%AD+X%3DPCRE">
+        分享此页
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">選擇主題：</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">亮</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">暗</button>
+  </div>
+  <h1><a href="/">Y分鐘速成X</a></h1>
+  <h2>其中 X=PCRE</h2>
+    <p class="filelink">
+    原始碼下载：
+    <a href="/docs/files/pcre-tw.txt">pcre-tw.txt</a>
+    </p>
+  <div id="doc">
+    <p>正規表達式(regular expression，或縮寫為regex, regexp)是一種用來表示搜尋模式的特殊字串。例如，你可以用<code>/^[a-z]+:/</code>來從網址<code>http://github.com</code>中擷取出<code>http:</code>這段http協定名稱。</p>
+
+<p>相容Perl正規表達式(Perl Compatible Regular Expressions, PCRE)是一個實作正規表達式的C語言函式庫。此函式庫在1997年被開發出來，在當時面對複雜字串處理時大多會選擇使用Perl。也因為如此，PCRE大多的正規表達式語法都很酷似Perl。PCRE語法被廣泛運用在許多大專案中，包括PHP、Apache、R等。</p>
+
+<p>PCRE中的超字元(metacharacter)主要可以分為以下兩類:</p>
+
+<ul>
+<li>在中括號外會被辨識的字元</li>
+</ul>
+<div class="highlight"><pre class="highlight plaintext"><code>  \      通用跳脫字元
+  ^      字串開頭 或 行首
+  $      字串結尾 或 行尾
+  .      除了換行符號外的任何字元
+  [      字元集合定義開始
+  |      支流開始
+  (      子串模式定義開始
+  )      子串模式定義結束
+  ?      extends the meaning of (
+         同時為數量0或1配對
+         also quantifier minimizer
+  *      量詞 至少0個 至多無限個
+  +      量詞 至少1個 至多無限個
+         同時為佔有型量詞
+  {      最大/最小量詞開始
+</code></pre></div>
+<ul>
+<li>在中括號內會被辨識的超字元，在中括號外會被視為字元集合使用</li>
+</ul>
+<div class="highlight"><pre class="highlight plaintext"><code>  \      通用跳脫字元
+  ^      非字元集合的字，但只會抓到第一個符合的字元
+  -      字元範圍
+  [      POSIX字元集合(若後面接POSIX格式)
+  ]      字元集合定義結束
+</code></pre></div>
+<p>PCRE提供了一些通用的字元類型，可被當作字元集合使用</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  \d     任何數字字元
+  \D     任何非數字字元
+  \h     任何水平空白字元
+  \H     任何非水平空白字元
+  \s     任何空白字元
+  \S     任何非空白至元
+  \v     任何垂直空白字元
+  \V     任何非垂直空白字元
+  \w     任何英文字
+  \W     任何非英文字
+</code></pre></div>
+<h2>範例</h2>
+
+<p>我們以字串 <code>66.249.64.13 - - [18/Sep/2004:11:07:48 +1000] &quot;GET /robots.txt HTTP/1.0&quot; 200 468 &quot;-&quot; &quot;Googlebot/2.1&quot;</code> 作為範例，這是一個標準的Apache存取記錄。</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">正規表達式</th>
+<th style="text-align: left">結果</th>
+<th style="text-align: left">說明</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">GET</td>
+<td style="text-align: left">GET</td>
+<td style="text-align: left">GET 抓取 GET 字串 (會分別大小寫)</td>
+</tr>
+<tr>
+<td style="text-align: left">\d+.\d+.\d+.\d+</td>
+<td style="text-align: left">66.249.64.13</td>
+<td style="text-align: left"><code>\d+</code> 抓取數字字元，數量由 <code>+</code> 定義為至少一個至多無限個。 <code>\.</code> 抓取 <code>.</code> 字元</td>
+</tr>
+<tr>
+<td style="text-align: left">(\d+.){3}\d+</td>
+<td style="text-align: left">66.249.64.13</td>
+<td style="text-align: left"><code>(\d+\.){3}</code> 會試著抓取剛好三次的 (<code>\d+\.</code>)</td>
+</tr>
+<tr>
+<td style="text-align: left">[.+]</td>
+<td style="text-align: left">[18/Sep/2004:11:07:48 +1000]</td>
+<td style="text-align: left"><code>.+</code> 抓取除了換行符號以外的任何字元， <code>.</code> 表示任意字元</td>
+</tr>
+<tr>
+<td style="text-align: left">^\S+</td>
+<td style="text-align: left">66.249.64.13</td>
+<td style="text-align: left"><code>^</code> 為行首， <code>\S+</code> 抓取至少一個非空白字元</td>
+</tr>
+<tr>
+<td style="text-align: left">+[0-9]+</td>
+<td style="text-align: left">+1000</td>
+<td style="text-align: left"><code>\+</code> 抓取 <code>+</code> 字元。 <code>[0-9]</code> 字元集表示剛好一個數字字元。 可以用 <code>\+\d+</code> 達到相同效果。</td>
+</tr>
+</tbody></table>
+
+<p>以上範例皆可在 https://regex101.com/ 測試，步驟如下:</p>
+
+<ol>
+<li>複製範例字串到 <code>TEST STRING</code> 區域</li>
+<li>複製正規表達式字串到 <code>Regular Expression</code> 區域 </li>
+<li>網頁會顯示自動表達式抓取結果</li>
+</ol>
+
+<h2>更多資料</h2>
+
+    <hr>
+    <p>任何建議？或錯誤？請在 Github 上<a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">發個 issue</a>，或是送個 <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/zh-tw/pcre-tw.html.markdown">pull request</a>！
+    </p>
+    <p class="contributed">
+    原著Sachin Divekar，透過 <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/zh-tw/pcre-tw.html.markdown">0 個貢獻者</a>修改。
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://github.com/ssd532">Sachin Divekar</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://hinet60613.github.io/">Michael Yeh</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

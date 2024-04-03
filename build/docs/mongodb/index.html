@@ -1,0 +1,524 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn MongoDB in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/mongodb/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fmongodb%2F&text=Learn+X+in+Y+minutes%2C+where+X%3DMongoDB">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=MongoDB</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/mongo.js">mongo.js</a>
+    </p>
+  <div id="doc">
+    <p>MongoDB is a NoSQL document database for high volume data storage.</p>
+
+<p>MongoDB uses collections and documents for its storage. Each document consists
+of key-value pairs using JSON-like syntax, similar to a dictionary or JavaScript
+object.</p>
+
+<p>Likewise, as MongoDB is a NoSQL database, it uses its own query language, Mongo
+Query Language (MQL) which uses JSON for querying.</p>
+
+<h2>Getting Started</h2>
+
+<h3>Installation</h3>
+
+<p>MongoDB can either be installed locally following the instructions
+<a href="https://docs.mongodb.com/manual/installation/">here</a> or you can create a
+remotely-hosted free 512 MB cluster
+<a href="https://www.mongodb.com/cloud/atlas/register">here</a>. Links to videos with
+instructions on setup are at the bottom.</p>
+
+<p>This tutorial assumes that you have the MongoDB Shell from
+<a href="https://www.mongodb.com/try/download/shell">here</a>. You can also download the
+graphical tool, MongoDB Compass, down below from the same link.</p>
+
+<h3>Components</h3>
+
+<p>After installing MongoDB, you will notice there are multiple command line tools.
+The three most important of which are:</p>
+
+<ul>
+<li><code>mongod</code> - The database server which is responsible for managing data and
+handling queries</li>
+<li><code>mongos</code> - The sharding router, which is needed if data will be distributed
+across multiple machines</li>
+<li><code>mongo</code> - The database shell (using JavaScript) through which we can configure
+our database</li>
+</ul>
+
+<p>Usually we start the <code>mongod</code> process and then use a separate terminal with
+<code>mongo</code> to access and modify our collections.</p>
+
+<h3>JSON &amp; BSON</h3>
+
+<p>While queries in MongoDB are made using a JSON-like* format, MongoDB stores its
+documents internally in the Binary JSON (BSON format). BSON is not human
+readable like JSON as it&rsquo;s a binary encoding. However, this allows for end users
+to have access to more types than regular JSON, such as an integer or float
+type. Many other types, such as regular expressions, dates, or raw binary are
+supported too.</p>
+
+<p><a href="https://docs.mongodb.com/manual/reference/bson-types/">Here</a> is the full list
+of all types that are supported.</p>
+
+<ul>
+<li>We refer JSON-like to mean JSON but with these extended types. For example,
+you can make queries directly with a regular expression or timestamp in
+MongoDB and you can receive data that has those types too.</li>
+</ul>
+<div class="highlight"><pre class="highlight javascript"><code><span class="c1">/////////////////////////////////////////////////////////</span>
+<span class="c1">/////////////////// Getting Started /////////////////////</span>
+<span class="c1">/////////////////////////////////////////////////////////</span>
+
+<span class="c1">// Start up the mongo database server</span>
+<span class="c1">// NOTE - You will need to do this in a separate terminal as the process will </span>
+<span class="c1">// take over the terminal. You may want to use the --fork option</span>
+<span class="nx">mongod</span> <span class="c1">// --fork</span>
+
+<span class="c1">// Connecting to a remote Mongo server</span>
+<span class="c1">// mongo "mongodb+srv://host.ip.address/admin" --username your-username</span>
+
+<span class="c1">// Mongoshell has a proper JavaScript interpreter built in</span>
+<span class="mi">3</span> <span class="o">+</span> <span class="mi">2</span> <span class="c1">// 5</span>
+
+<span class="c1">// Show available databases</span>
+<span class="c1">// MongoDB comes with the following databases built-in: admin, config, local</span>
+<span class="nx">show</span> <span class="nx">dbs</span>
+
+<span class="c1">// Switch to a new database (pre-existing or about to exist)</span>
+<span class="c1">// NOTE: There is no "create" command for a database in MongoDB. </span>
+<span class="c1">// The database is created upon data being inserted into a collection</span>
+<span class="nx">use</span> <span class="nx">employees</span>
+
+<span class="c1">// Create a new collection</span>
+<span class="c1">// NOTE: Inserting a document will implicitly create a collection anyways,</span>
+<span class="c1">// so this is not required</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">createCollection</span><span class="p">(</span><span class="dl">'</span><span class="s1">engineers</span><span class="dl">'</span><span class="p">)</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">createCollection</span><span class="p">(</span><span class="dl">'</span><span class="s1">doctors</span><span class="dl">'</span><span class="p">)</span>
+
+<span class="c1">// See what collections exist under employees</span>
+<span class="nx">show</span> <span class="nx">collections</span>
+
+<span class="c1">/////////////////////////////////////////////////////////</span>
+<span class="c1">// Basic Create/Read/Update/Delete (CRUD) Operations: ///</span>
+<span class="c1">/////////////////////////////////////////////////////////</span>
+
+<span class="c1">/////////////// Insert (Create) /////////////////////////</span>
+
+<span class="c1">// Insert one employee into the database</span>
+<span class="c1">// Each insertion returns acknowledged true or false</span>
+<span class="c1">// Every document has a unique _id value assigned to it automatically</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">insertOne</span><span class="p">({</span> <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Jane Doe</span><span class="dl">"</span><span class="p">,</span> <span class="na">age</span><span class="p">:</span> <span class="mi">21</span><span class="p">,</span> <span class="na">gender</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Female</span><span class="dl">'</span> <span class="p">})</span>
+
+<span class="c1">// Insert a list of employees into the `engineers` collection</span>
+<span class="c1">// Can insert as an array of objects</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">insert</span><span class="p">([</span>
+  <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Foo Bar</span><span class="dl">"</span><span class="p">,</span> <span class="na">age</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="na">gender</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Male</span><span class="dl">'</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Baz Qux</span><span class="dl">"</span><span class="p">,</span> <span class="na">age</span><span class="p">:</span> <span class="mi">27</span><span class="p">,</span> <span class="na">gender</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Other</span><span class="dl">'</span> <span class="p">},</span>
+<span class="p">])</span>
+
+<span class="c1">// MongoDB does not enforce a schema or structure for objects</span>
+<span class="c1">// Insert an empty object into the `engineers` collection</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">insertOne</span><span class="p">({})</span>
+
+<span class="c1">// Fields are optional and do not have to match rest of documents</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">insertOne</span><span class="p">({</span> <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Your Name</span><span class="dl">"</span><span class="p">,</span> <span class="na">gender</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Male</span><span class="dl">"</span> <span class="p">})</span>
+
+<span class="c1">// Types can vary and are preserved on insertion</span>
+<span class="c1">// This can require additional validation in some languages to prevent problems</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">insert</span><span class="p">({</span> <span class="na">name</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">Foo</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">Bar</span><span class="dl">'</span><span class="p">],</span> <span class="na">age</span><span class="p">:</span> <span class="mf">3.14</span><span class="p">,</span> <span class="na">gender</span><span class="p">:</span> <span class="kc">true</span> <span class="p">})</span>
+
+<span class="c1">// Objects or arrays can be nested inside a document</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">insertOne</span><span class="p">({</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Your Name</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">gender</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Female</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">skilledIn</span><span class="p">:</span> <span class="p">[</span>
+    <span class="dl">"</span><span class="s2">MongoDB</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">NoSQL</span><span class="dl">"</span><span class="p">,</span>
+  <span class="p">],</span>
+  <span class="dl">"</span><span class="s2">date-of-birth</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">date</span><span class="dl">"</span><span class="p">:</span> <span class="mi">1993</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">20</span><span class="na">T09</span><span class="p">:</span><span class="mi">44</span><span class="p">:</span><span class="mf">18.674</span><span class="nx">Z</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">age</span><span class="dl">"</span><span class="p">:</span> <span class="mi">26</span>
+  <span class="p">},</span>
+<span class="p">})</span>
+
+<span class="c1">// We can override the _id field</span>
+<span class="c1">// Works fine</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">insertOne</span><span class="p">({</span>
+  <span class="na">_id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">An Engineer</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">age</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+  <span class="na">gender</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Female</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="c1">// Be careful, as _id must ALWAYS be unique for the collection otherwise </span>
+<span class="c1">// the insertion will fail</span>
+<span class="c1">// Fails with a WriteError indicating _id is a duplicate value</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">insertOne</span><span class="p">({</span>
+  <span class="na">_id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Another Engineer</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">age</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+  <span class="na">gender</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Male</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="c1">// Works fine as this is a different collection</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">doctors</span><span class="p">.</span><span class="nx">insertOne</span><span class="p">({</span>
+  <span class="na">_id</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Some Doctor</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">age</span><span class="p">:</span> <span class="mi">26</span><span class="p">,</span>
+  <span class="na">gender</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Other</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">})</span>
+
+<span class="c1">/////////////////// Find (Read) ////////////////////////</span>
+<span class="c1">// Queries are in the form of db.collectionName.find(&lt;filter&gt;)</span>
+<span class="c1">// Where &lt;filter&gt; is an object</span>
+
+<span class="c1">// Show everything in our database so far, limited to a </span>
+<span class="c1">// maximum of 20 documents at a time</span>
+<span class="c1">// Press i to iterate this cursor to the next 20 documents</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">find</span><span class="p">({})</span>
+
+<span class="c1">// We can pretty print the result of any find() query</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">find</span><span class="p">({}).</span><span class="nx">pretty</span><span class="p">()</span>
+
+<span class="c1">// MongoDB queries take in a JS object and search for documents with matching </span>
+<span class="c1">// key-value pairs</span>
+<span class="c1">// Returns the first document matching query</span>
+<span class="c1">// NOTE: Order of insertion is not preserved in the database, output can vary</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">findOne</span><span class="p">({</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Foo Bar</span><span class="dl">'</span> <span class="p">})</span>
+
+<span class="c1">// Returns all documents with the matching key-value properties as a cursor </span>
+<span class="c1">// (which can be converted to an array)</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">age</span><span class="p">:</span> <span class="mi">25</span> <span class="p">})</span>
+
+<span class="c1">// Type matters when it comes to queries</span>
+<span class="c1">// Returns nothing as all ages above are integer type</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">age</span><span class="p">:</span> <span class="dl">'</span><span class="s1">25</span><span class="dl">'</span> <span class="p">})</span>
+
+<span class="c1">// find() supports nested objects and arrays just like create()</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Your Name</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">gender</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Female</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">skilledIn</span><span class="p">:</span> <span class="p">[</span>
+    <span class="dl">"</span><span class="s2">MongoDB</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">NoSQL</span><span class="dl">"</span><span class="p">,</span>
+  <span class="p">],</span>
+  <span class="dl">"</span><span class="s2">date-of-birth</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">date</span><span class="dl">"</span><span class="p">:</span> <span class="mi">1993</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">20</span><span class="na">T09</span><span class="p">:</span><span class="mi">44</span><span class="p">:</span><span class="mf">18.674</span><span class="nx">Z</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">age</span><span class="dl">"</span><span class="p">:</span> <span class="mi">26</span>
+  <span class="p">},</span>
+<span class="p">})</span>
+
+<span class="c1">///////////////////////// Update ////////////////////////</span>
+<span class="c1">// Queries are in the form of db.collectionName.update(&lt;filter&gt;, &lt;update&gt;)</span>
+<span class="c1">// NOTE: &lt;update&gt; will always use the $set operator.</span>
+<span class="c1">// Several operators are covered later on in the tutorial.</span>
+
+<span class="c1">// We can update a single object</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">updateOne</span><span class="p">({</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Foo Bar</span><span class="dl">'</span> <span class="p">},</span> <span class="p">{</span> <span class="na">$set</span><span class="p">:</span> <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">John Doe</span><span class="dl">'</span><span class="p">,</span> <span class="na">age</span><span class="p">:</span> <span class="mi">100</span> <span class="p">}})</span>
+
+<span class="c1">// Or update many objects at the same time</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">update</span><span class="p">({</span> <span class="na">age</span><span class="p">:</span> <span class="mi">25</span> <span class="p">},</span> <span class="p">{</span> <span class="na">$set</span><span class="p">:</span> <span class="p">{</span> <span class="na">age</span><span class="p">:</span> <span class="mi">26</span> <span class="p">}})</span>
+
+<span class="c1">// We can use { upsert: true } if we would like it to insert if the document doesn't already exist,</span>
+<span class="c1">// or to update if it does</span>
+<span class="c1">// Returns matched, upserted, modified count</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">update</span><span class="p">({</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Foo Baz</span><span class="dl">'</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="na">$set</span><span class="p">:</span>
+    <span class="p">{</span>
+      <span class="na">age</span><span class="p">:</span> <span class="mi">26</span><span class="p">,</span>
+      <span class="na">gender</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Other</span><span class="dl">'</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="p">{</span> <span class="na">upsert</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1">/////////////////////// Delete /////////////////////////</span>
+<span class="c1">// Queries are in the form of db.collectionName.delete(&lt;filter&gt;)</span>
+
+<span class="c1">// Delete first document matching query, always returns deletedCount</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">deleteOne</span><span class="p">({</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Foo Baz</span><span class="dl">'</span> <span class="p">})</span>
+
+<span class="c1">// Delete many documents at once</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">deleteMany</span><span class="p">({</span> <span class="na">gender</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Male</span><span class="dl">'</span> <span class="p">})</span>
+
+<span class="c1">// NOTE: There are two methods db.collection.removeOne(&lt;filter&gt;) and </span>
+<span class="c1">// db.collection.removeMany(&lt;filter&gt;) that also delete objects but have a</span>
+<span class="c1">// slightly different return value.</span>
+<span class="c1">// They are not included here as they have been deprecated in the NodeJS driver.</span>
+
+<span class="c1">/////////////////////////////////////////////////////////</span>
+<span class="c1">//////////////////// Operators //////////////////////////</span>
+<span class="c1">/////////////////////////////////////////////////////////</span>
+
+<span class="c1">// Operators in MongoDB have a $ prefix. For this tutorial, we are only looking </span>
+<span class="c1">// at comparison and logical operators, but there are many other types of</span>
+<span class="c1">// operators</span>
+
+<span class="c1">//////////////// Comparison Operators ///////////////////</span>
+
+<span class="c1">// Find all greater than or greater than equal to some condition</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">age</span><span class="p">:</span> <span class="p">{</span> <span class="na">$gt</span><span class="p">:</span> <span class="mi">25</span> <span class="p">}})</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">age</span><span class="p">:</span> <span class="p">{</span> <span class="na">$gte</span><span class="p">:</span> <span class="mi">25</span> <span class="p">}})</span>
+
+<span class="c1">// Find all less than or less than equal to some condition</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">age</span><span class="p">:</span> <span class="p">{</span> <span class="na">$lt</span><span class="p">:</span> <span class="mi">25</span> <span class="p">}})</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">age</span><span class="p">:</span> <span class="p">{</span> <span class="na">$lte</span><span class="p">:</span> <span class="mi">25</span> <span class="p">}})</span>
+
+<span class="c1">// Find all equal or not equal to</span>
+<span class="c1">// Note: the $eq operator is added implicitly in most queries</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">age</span><span class="p">:</span> <span class="p">{</span> <span class="na">$eq</span><span class="p">:</span> <span class="mi">25</span> <span class="p">}})</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">age</span><span class="p">:</span> <span class="p">{</span> <span class="na">$ne</span><span class="p">:</span> <span class="mi">25</span> <span class="p">}})</span>
+
+<span class="c1">// Find all that match any element in the array, or not in the array</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">age</span><span class="p">:</span> <span class="p">{</span> <span class="na">$in</span><span class="p">:</span> <span class="p">[</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">25</span> <span class="p">]}})</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">age</span><span class="p">:</span> <span class="p">{</span> <span class="na">$nin</span><span class="p">:</span> <span class="p">[</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">25</span> <span class="p">]}})</span>
+
+<span class="c1">//////////////// Logical Operators ///////////////////</span>
+
+<span class="c1">// Join two query clauses together</span>
+<span class="c1">// NOTE: MongoDB does this implicitly for most queries</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">$and</span><span class="p">:</span> <span class="p">[</span>
+  <span class="na">gender</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Female</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">age</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">$gte</span><span class="p">:</span> <span class="mi">18</span>
+  <span class="p">}</span>
+<span class="p">]})</span>
+
+<span class="c1">// Match either query condition</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">$or</span><span class="p">:</span> <span class="p">[</span>
+  <span class="na">gender</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Female</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">age</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">$gte</span><span class="p">:</span> <span class="mi">18</span>
+  <span class="p">}</span>
+<span class="p">]})</span>
+
+<span class="c1">// Negates the query</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="na">$not</span><span class="p">:</span> <span class="p">{</span>
+  <span class="na">gender</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Female</span><span class="dl">'</span>
+<span class="p">}})</span>
+
+<span class="c1">// Must match none of the query conditions</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">engineers</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span> <span class="nx">$nor</span> <span class="p">[</span>
+  <span class="na">gender</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Female</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">age</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">$gte</span><span class="p">:</span> <span class="mi">18</span>
+  <span class="p">}</span>
+<span class="p">]})</span>
+
+<span class="c1">/////////////////////////////////////////////////////////</span>
+<span class="c1">//////////////// Database Operations: ///////////////////</span>
+<span class="c1">/////////////////////////////////////////////////////////</span>
+
+<span class="c1">// Delete (drop) the employees database</span>
+<span class="c1">// THIS WILL DELETE ALL DOCUMENTS IN THE DATABASE!</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">dropDatabase</span><span class="p">()</span>
+
+<span class="c1">// Create a new database with some data</span>
+<span class="nx">use</span> <span class="nx">example</span>
+<span class="nx">db</span><span class="p">.</span><span class="nx">test</span><span class="p">.</span><span class="nx">insertOne</span><span class="p">({</span> <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Testing data, please ignore!</span><span class="dl">"</span><span class="p">,</span> <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Test</span><span class="dl">"</span> <span class="p">})</span>
+
+<span class="c1">// Quit Mongo shell</span>
+<span class="nx">exit</span>
+
+<span class="c1">// Import/export database as BSON:</span>
+
+<span class="c1">// Mongodump to export data as BSON for all databases</span>
+<span class="c1">// Exported data is found in under "MongoDB Database Tools/bin/dump"</span>
+<span class="c1">// NOTE: If the command is not found, navigate to "MongoDB Database Tools/bin" </span>
+<span class="c1">// and use the executable from there mongodump</span>
+
+<span class="c1">// Mongorestore to restore data from BSON</span>
+<span class="nx">mongorestore</span> <span class="nx">dump</span>
+
+<span class="c1">// Import/export database as JSON:</span>
+<span class="c1">// Mongoexport to export data as JSON for all databases</span>
+<span class="nx">mongoexport</span> <span class="o">--</span><span class="nx">collection</span><span class="o">=</span><span class="nx">example</span>
+
+<span class="c1">// Mongoimport to export data as JSON for all databases</span>
+<span class="nx">mongoimport</span>  <span class="o">--</span><span class="nx">collection</span><span class="o">=</span><span class="nx">example</span>
+</code></pre></div>
+<h2>Further Reading</h2>
+
+<h3>Setup Videos</h3>
+
+<ul>
+<li><a href="https://www.youtube.com/watch?v=85A6m1soKww">Install MongoDB - Windows 10</a></li>
+<li><a href="https://www.youtube.com/watch?v=DX15WbKidXY">Install MongoDB - Mac</a></li>
+<li><a href="https://www.youtube.com/watch?v=wD_2pojFWoE">Install MongoDB - Linux
+(Ubuntu)</a></li>
+</ul>
+
+<h3>Input Validation</h3>
+
+<p>From the examples above, if input validation or structure is a concern, I would
+take a look at the following ORMs:</p>
+
+<ul>
+<li><a href="https://mongoosejs.com/docs/">Mongoose (Node.js)</a> - Input validation through
+schemas that support types, required values, minimum and maximum values.</li>
+<li><a href="http://mongoengine.org/">MongoEngine (Python)</a> - Similar to Mongoose, but I
+found it somewhat limited in my experience</li>
+<li><a href="https://github.com/namlook/mongokit">MongoKit (Python)</a> - Another great
+alternative to MongoEngine that I find easier to use than MongoEngine</li>
+</ul>
+
+<p>For statically strongly typed languages (e.g. Java, C++, Rust), input validation
+usually doesn&rsquo;t require a library as they define types and structure at compile
+time.</p>
+
+<h3>Resources</h3>
+
+<p>If you have the time to spare, I would strongly recommend the courses on
+<a href="https://university.mongodb.com/">MongoDB University</a>. They&rsquo;re by MongoDB
+themselves and go into much more detail while still being concise. They&rsquo;re a mix
+of videos and quiz questions and this was how I gained my knowledge of MongoDB.</p>
+
+<p>I would recommend the following video series for learning MongoDB:</p>
+
+<ul>
+<li><a href="https://www.youtube.com/watch?v=-56x56UppqQ">MongoDB Crash Course - Traversy
+Media</a></li>
+<li><a href="https://www.youtube.com/watch?v=Www6cTUymCY">MongoDB Tutorial for Beginners -
+Amigoscode</a></li>
+</ul>
+
+<p>Language-specific ones that I used before:</p>
+
+<ul>
+<li><a href="https://www.youtube.com/watch?v=fgTGADljAeg">Build A REST API With Node.js, Express, &amp; MongoDB - Web Dev
+Simplified</a></li>
+<li><a href="https://www.youtube.com/watch?v=E-1xI85Zog8">MongoDB with Python Crash Course - Tutorial for Beginners -
+FreeCodeCamp</a></li>
+<li><a href="https://www.youtube.com/watch?v=reYPUvu2Giw">How to Use MongoDB with Java - Random
+Coder</a></li>
+<li><a href="https://www.youtube.com/watch?v=qFlftfLGwPM">An Introduction to Using MongoDB with Rust -
+MongoDB</a></li>
+</ul>
+
+<p>Most of the information above was cross-referenced with the <a href="https://www.mongodb.com/">MongoDB
+docs</a>. Here are the docs for each section:</p>
+
+<ul>
+<li><a href="https://docs.mongodb.com/manual/reference/bson-types/">MongoDB Types</a> - List
+of all types that MongoDB supports natively</li>
+<li><a href="https://docs.mongodb.com/manual/reference/operator/">MongoDB Operators</a> -
+List of operators MongoDB supports natively</li>
+<li><a href="https://docs.mongodb.com/manual/reference/command/nav-crud/">MongoDB CRUD</a> -
+Commands for create, read, update, delete</li>
+</ul>
+
+<p>If you&rsquo;ve been enjoying MongoDB so far and want to explore intermediate
+features, I would look at
+<a href="https://docs.mongodb.com/manual/reference/command/nav-aggregation/">aggregation</a>,
+<a href="https://docs.mongodb.com/manual/indexes/">indexing</a>, and
+<a href="https://docs.mongodb.com/manual/sharding/">sharding</a>.</p>
+
+<ul>
+<li>Aggregation - useful for creating advanced queries to be executed by the
+database</li>
+<li>Indexing allows for caching, which allows for much faster execution of queries</li>
+<li>Sharding allows for horizontal data scaling and distribution between multiple
+machines.</li>
+</ul>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/mongodb.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Raj Piskala, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/mongodb.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="https://www.rajpiskala.ml/">Raj Piskala</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

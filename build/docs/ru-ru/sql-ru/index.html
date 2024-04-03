@@ -1,0 +1,221 @@
+<!DOCTYPE html lang="ru-ru" xml:lang="ru-ru" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="ru-ru">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn SQL in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/ru-ru/sql-ru/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fru-ru%2Fsql-ru%2F&text=%D0%98%D0%B7%D1%83%D1%87%D0%B8%D1%82%D0%B5+X+%D0%B7%D0%B0+Y+%D0%BC%D0%B8%D0%BD%D1%83%D1%82%2C+%D0%B3%D0%B4%D0%B5+X%3DSQL">
+        Поделиться страницей
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Выберите тему:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">светлая</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">тёмная</button>
+  </div>
+  <h1><a href="/">Изучите X за Y минут</a></h1>
+  <h2>Где X=SQL</h2>
+    <p class="filelink">
+    Получить исходный код:
+    <a href="/docs/files/learnsql-ru.sql">learnsql-ru.sql</a>
+    </p>
+  <div id="doc">
+    <p>Язык структурированных запросов (SQL) — это стандартный язык ISO для создания
+и работы с базами данных, хранящимися в наборе таблиц. Реализации обычно
+добавляют свои собственные расширения к языку;
+<a href="http://troels.arvin.dk/db/rdbms/">Сравнение различных реализаций SQL</a> — хороший справочник по различиям в продуктах.</p>
+
+<p>Реализации обычно предоставляют приглашение командной строки, где вы можете
+вводить команды, описанные ниже, в интерактивном режиме, также есть способ
+выполнить серию таких команд, сохранённых в файле скрипта.
+(Результат того, что вы сделали с помощью интерактивного режима, является
+хорошим примером того, что не стандартизировано, — большинство реализаций SQL
+поддерживают ключевые слова QUIT, EXIT или оба).</p>
+
+<p>Некоторые команды ниже предполагают использование
+<a href="https://dev.mysql.com/doc/employee/en/">демонстрационного образца базы данных сотрудников от MySQL</a>, доступного на <a href="https://github.com/datacharmer/test_db">Github</a>.
+Следовательно, для повторения команд в локальном окружении он должен быть загружен.
+Файлы на github — это скрипты с командами, которые схожи с командами ниже,
+которые создают и манипулируют таблицами и данными о сотрудниках вымышленной
+компании. Синтаксис для запуска этих скриптов будет зависеть от используемой
+вами реализации SQL. Обычно используется утилита, запускаемая из командной
+строки в вашей операционной системе.</p>
+<div class="highlight"><pre class="highlight sql"><code><span class="c1">-- Комментарии начинаются с двух дефисов. Завершайте каждую команду</span>
+<span class="c1">-- точкой с запятой.</span>
+
+<span class="c1">-- SQL не учитывает регистр букв для ключевых слов. Примеры команд здесь</span>
+<span class="c1">-- следуют соглашению о написании в верхнем регистре, потому что</span>
+<span class="c1">-- это позволяет легче отличить их от имён баз, таблиц и колонок.</span>
+
+<span class="c1">-- Создание и удаление базы данных. Имена базы и таблицы чувствительны</span>
+<span class="c1">-- к регистру букв.</span>
+<span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">someDatabase</span><span class="p">;</span>
+<span class="k">DROP</span> <span class="k">DATABASE</span> <span class="n">someDatabase</span><span class="p">;</span>
+
+<span class="c1">-- Список доступных баз.</span>
+<span class="k">SHOW</span> <span class="n">DATABASES</span><span class="p">;</span>
+
+<span class="c1">-- Выбор базы для работы.</span>
+<span class="n">USE</span> <span class="n">employees</span><span class="p">;</span>
+
+<span class="c1">-- Выбрать все строки и колонки из таблицы «departments» (отделы) текущей базы.</span>
+<span class="c1">-- В интерактивном режиме обыч  но результат будет выведен на экран.</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">departments</span><span class="p">;</span>
+
+<span class="c1">-- Тот же запрос, что и выше, но выбор только колонок «dept_no» и «dept_name».</span>
+<span class="c1">-- Разбиение команд на несколько строк допустимо.</span>
+<span class="k">SELECT</span> <span class="n">dept_no</span><span class="p">,</span>
+       <span class="n">dept_name</span> <span class="k">FROM</span> <span class="n">departments</span><span class="p">;</span>
+
+<span class="c1">-- В данном случае будут выбраны все колонки, но только первые 5 строк.</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">departments</span> <span class="k">LIMIT</span> <span class="mi">5</span><span class="p">;</span>
+
+<span class="c1">-- Выбор названий отделов, содержащих подстроку «en».</span>
+<span class="k">SELECT</span> <span class="n">dept_name</span> <span class="k">FROM</span> <span class="n">departments</span> <span class="k">WHERE</span> <span class="n">dept_name</span> <span class="k">LIKE</span> <span class="s1">'%en%'</span><span class="p">;</span>
+
+<span class="c1">-- Выбор всех колонок, где названия отделов начинаются на «S»,</span>
+<span class="c1">-- после которой идёт ровно четыре символа.</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">departments</span> <span class="k">WHERE</span> <span class="n">dept_name</span> <span class="k">LIKE</span> <span class="s1">'S____'</span><span class="p">;</span>
+
+<span class="c1">-- Выбор всех должностей из таблицы «titles», но без повторений.</span>
+<span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">title</span> <span class="k">FROM</span> <span class="n">titles</span><span class="p">;</span>
+
+<span class="c1">-- В дополнение к предыдущему запросу результат будет отсортирован</span>
+<span class="c1">-- в алфавитном порядке (с учётом регистра).</span>
+<span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">title</span> <span class="k">FROM</span> <span class="n">titles</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">title</span><span class="p">;</span>
+
+<span class="c1">-- Показать число строк в таблице отделов.</span>
+<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">departments</span><span class="p">;</span>
+
+<span class="c1">-- Показать число строк, где название отдела содержит подстроку «en»</span>
+<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">departments</span> <span class="k">WHERE</span> <span class="n">dept_name</span> <span class="k">LIKE</span> <span class="s1">'%en%'</span><span class="p">;</span>
+
+<span class="c1">-- Объединение информации из нескольких таблиц:</span>
+<span class="c1">-- В таблице «titles» перечислены должности, кто их занимал по номеру сотрудника,</span>
+<span class="c1">-- а также с какой даты по какую. Получим эту информацию, но используем номера</span>
+<span class="c1">-- сотрудников как ссылку на таблицу «employees», чтобы получить имя и фамилию</span>
+<span class="c1">-- каждого сотрудника. Выводим только 10 строк.</span>
+<span class="k">SELECT</span> <span class="n">employees</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span> <span class="n">employees</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span>
+       <span class="n">titles</span><span class="p">.</span><span class="n">title</span><span class="p">,</span> <span class="n">titles</span><span class="p">.</span><span class="n">from_date</span><span class="p">,</span> <span class="n">titles</span><span class="p">.</span><span class="n">to_date</span>
+<span class="k">FROM</span> <span class="n">titles</span> <span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">employees</span> <span class="k">ON</span>
+       <span class="n">employees</span><span class="p">.</span><span class="n">emp_no</span> <span class="o">=</span> <span class="n">titles</span><span class="p">.</span><span class="n">emp_no</span> <span class="k">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
+
+<span class="c1">-- Список всех таблиц во всех базах. Реализации обычно предоставляют</span>
+<span class="c1">-- собственные сокращения, чтобы показать все таблицы текущей базы.</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">INFORMATION_SCHEMA</span><span class="p">.</span><span class="n">TABLES</span>
+<span class="k">WHERE</span> <span class="n">TABLE_TYPE</span><span class="o">=</span><span class="s1">'BASE TABLE'</span><span class="p">;</span>
+
+<span class="c1">-- Создать таблицу с именем tablename1 и двумя колонками в текущей базе.</span>
+<span class="c1">-- Для колонок имеется множество параметров, таких как тип данных.</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">tablename1</span> <span class="p">(</span><span class="n">fname</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span> <span class="n">lname</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">));</span>
+
+<span class="c1">-- Вставляем строку данных в таблицу «tablename1». Предполагаем, что таблица</span>
+<span class="c1">-- настроена таким образом, чтобы принимать эти значения.</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">tablename1</span> <span class="k">VALUES</span><span class="p">(</span><span class="s1">'Richard'</span><span class="p">,</span><span class="s1">'Mutt'</span><span class="p">);</span>
+
+<span class="c1">-- В таблице «tablename1» изменить значение fname на «John»</span>
+<span class="c1">-- для каждой строки, где колонка lname равна «Mutt».</span>
+<span class="k">UPDATE</span> <span class="n">tablename1</span> <span class="k">SET</span> <span class="n">fname</span><span class="o">=</span><span class="s1">'John'</span> <span class="k">WHERE</span> <span class="n">lname</span><span class="o">=</span><span class="s1">'Mutt'</span><span class="p">;</span>
+
+<span class="c1">-- Удалить из таблицы «tablename1» строки,</span>
+<span class="c1">-- где значение колонки lname начинается с «M».</span>
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">tablename1</span> <span class="k">WHERE</span> <span class="n">lname</span> <span class="k">like</span> <span class="s1">'M%'</span><span class="p">;</span>
+
+<span class="c1">-- Удалить все строки из таблицы «tablename1». В итоге получим пустую таблицу.</span>
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">tablename1</span><span class="p">;</span>
+
+<span class="c1">-- Удалить таблицу «tablename1» полностью.</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="n">tablename1</span><span class="p">;</span>
+</code></pre></div>
+    <hr>
+    <p>Хотите предложить свой перевод? Может быть, улучшение перевода? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Откройте Issue</a> в репозитории Github или сделайте <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/ru-ru/sql-ru.html.markdown">pull request</a> сами!
+    </p>
+    <p class="contributed">
+    Первоначально предоставлено автором Bob DuCharme, и обновлено <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/ru-ru/sql-ru.html.markdown">0 автором (-ами)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://bobdc.com/">Bob DuCharme</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/shaltaev">Shaltaev</a>
+        <a href="https://github.com/Menelion">Andre Polykanine</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

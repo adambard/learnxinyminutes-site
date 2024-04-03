@@ -1,0 +1,221 @@
+<!DOCTYPE html lang="pt-br" xml:lang="pt-br" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="pt-br">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn SQL in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/pt-br/sql-pt/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fpt-br%2Fsql-pt%2F&text=Aprenda+X+em+Y+Minutos%2C+onde+X%3DSQL">
+        Compartilhe esta página
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Selecione o tema:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">claro</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">sombrio</button>
+  </div>
+  <h1><a href="/">Aprenda X em Y Minutos</a></h1>
+  <h2>Onde X=SQL</h2>
+    <p class="filelink">
+    Baixar o código:
+    <a href="/docs/files/learnsql-pt.sql">learnsql-pt.sql</a>
+    </p>
+  <div id="doc">
+    <p>A linguagem de consulta estruturada (SQL em inglês) é uma linguagem padrão ISO para criar e trabalhar com bancos de dados armazenados num conjunto de tabelas. As implementações geralmente adicionam suas próprias extensões à linguagem; <a href="http://troels.arvin.dk/db/rdbms/">Comparação entre diferentes implementações de SQL</a> é uma boa referência sobre as diferenças entre os diferentes produtos.</p>
+
+<p>As implementações normalmente fornecem uma linha de comando onde se pode digitar os comandos mostrados aqui de forma interativa, e também oferecem uma maneira de executar uma série desses comandos armazenados em um arquivo de script (mostrar que é feito com o prompt interativo é um bom exemplo de algo que não é padronizado - a maioria das implementações SQL suporta as palavras-chave QUIT, EXIT ou ambas).</p>
+
+<p>Vários desses comandos de exemplo assumem que o <a href="https://dev.mysql.com/doc/employee/en/">banco de dados de funcionários de exemplo MySQL</a> disponível em <a href="https://github.com/datacharmer/test_db">github</a> já foi carregado. Os arquivos do GitHub são scripts de comandos, semelhantes aos comandos abaixo, que criam e carregam tabelas de dados sobre os funcionários de uma empresa fictícia. A sintaxe para executar esses scripts dependerá da implementação SQL que você está usando. Um aplicativo executado a partir do prompt do sistema operacional geralmente é o normal.</p>
+<div class="highlight"><pre class="highlight sql"><code><span class="c1">-- Os comentários começam com dois hífens. Cada comando é encerrado com um</span>
+<span class="c1">-- ponto e vírgula.</span>
+
+<span class="c1">-- SQL não diferencia maiúsculas de minúsculas em palavras-chave. Os</span>
+<span class="c1">-- comandos de exemplo mostrados aqui seguem a convenção de serem escritos</span>
+<span class="c1">-- em maiúsculas porque torna mais fácil distingui-los dos nomes dos bancos</span>
+<span class="c1">-- de dados, tabelas e colunas.</span>
+
+<span class="c1">-- Em seguida, um banco de dados é criado e excluído. Os nomes do banco de</span>
+<span class="c1">-- dados e da tabela são sensíveis a maiúsculas de minúsculas.</span>
+<span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">someDatabase</span><span class="p">;</span>
+<span class="k">DROP</span> <span class="k">DATABASE</span> <span class="n">someDatabase</span><span class="p">;</span>
+
+<span class="c1">-- Mostra numa lista todos os bancos de dados disponíveis.</span>
+<span class="k">SHOW</span> <span class="n">DATABASES</span><span class="p">;</span>
+
+<span class="c1">-- Usa um determinado banco de dados existente.</span>
+<span class="n">USE</span> <span class="n">employees</span><span class="p">;</span>
+
+<span class="c1">-- Seleciona todas as filas e colunas da tabela de departamentos no banco</span>
+<span class="c1">-- de dados atual. A atividade padrão é o intérprete rolar os resultados</span>
+<span class="c1">-- na tela.</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">departments</span><span class="p">;</span>
+
+<span class="c1">-- Recupera todas as filas da tabela de departamentos, mas apenas as colunas</span>
+<span class="c1">-- dept_no e dept_name.</span>
+<span class="c1">-- A separação de comandos em várias linhas é permitida.</span>
+<span class="k">SELECT</span> <span class="n">dept_no</span><span class="p">,</span>
+       <span class="n">dept_name</span> <span class="k">FROM</span> <span class="n">departments</span><span class="p">;</span>
+
+<span class="c1">-- Obtém todas as colunas de departments, mas é limitado a 5 filas.</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">departments</span> <span class="k">LIMIT</span> <span class="mi">5</span><span class="p">;</span>
+
+<span class="c1">-- Obtém os valores da coluna dept_name da tabela de departments quando</span>
+<span class="c1">-- dept_name tem como valor a substring 'en'.</span>
+<span class="k">SELECT</span> <span class="n">dept_name</span> <span class="k">FROM</span> <span class="n">departments</span> <span class="k">WHERE</span> <span class="n">dept_name</span> <span class="k">LIKE</span> <span class="s1">'%en%'</span><span class="p">;</span>
+
+<span class="c1">-- Recupera todas as colunas da tabela de departments onde a coluna</span>
+<span class="c1">-- dept_name começa com um 'S' e tem exatamente 4 caracteres depois dele.</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">departments</span> <span class="k">WHERE</span> <span class="n">dept_name</span> <span class="k">LIKE</span> <span class="s1">'S____'</span><span class="p">;</span>
+
+<span class="c1">-- Seleciona os valores dos títulos da tabela de titles, mas não mostra</span>
+<span class="c1">-- duplicatas.</span>
+<span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">title</span> <span class="k">FROM</span> <span class="n">titles</span><span class="p">;</span>
+
+<span class="c1">-- Igual ao anterior, mas ordenado por valores de da coluna title (diferencia</span>
+<span class="c1">-- maiúsculas de minúsculas).</span>
+<span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">title</span> <span class="k">FROM</span> <span class="n">titles</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">title</span><span class="p">;</span>
+
+<span class="c1">-- Mostra o número de filas da tabela departments.</span>
+<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">departments</span><span class="p">;</span>
+
+<span class="c1">-- Mostra o número de filas da tabela departments que contém 'en' como</span>
+<span class="c1">-- substring na coluna dept_name.</span>
+<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">departments</span> <span class="k">WHERE</span> <span class="n">dept_name</span> <span class="k">LIKE</span> <span class="s1">'%en%'</span><span class="p">;</span>
+
+<span class="c1">-- Uma união (JOIN) de informações de várias tabelas: a tabela titles mostra</span>
+<span class="c1">-- quem tem quais cargos laborais, de acordo com seu número de funcionários,</span>
+<span class="c1">-- e desde que data até que data. Esta informação é obtida, mas em vez do</span>
+<span class="c1">-- número do funcionário é usada como referência cruzada a tabela employee</span>
+<span class="c1">-- para obter o nome e sobrenome de cada funcionário (e limita os resultados</span>
+<span class="c1">--  a 10 filas).</span>
+<span class="k">SELECT</span> <span class="n">employees</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span> <span class="n">employees</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span>
+       <span class="n">titles</span><span class="p">.</span><span class="n">title</span><span class="p">,</span> <span class="n">titles</span><span class="p">.</span><span class="n">from_date</span><span class="p">,</span> <span class="n">titles</span><span class="p">.</span><span class="n">to_date</span>
+<span class="k">FROM</span> <span class="n">titles</span> <span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">employees</span> <span class="k">ON</span>
+       <span class="n">employees</span><span class="p">.</span><span class="n">emp_no</span> <span class="o">=</span> <span class="n">titles</span><span class="p">.</span><span class="n">emp_no</span> <span class="k">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
+
+<span class="c1">-- São listadas todas as tabelas de todas os bancos de dados. As implementações</span>
+<span class="c1">-- normalmente fornecem seus próprios comandos para fazer isso com o banco de</span>
+<span class="c1">-- dados atualmente em uso.</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">INFORMATION_SCHEMA</span><span class="p">.</span><span class="n">TABLES</span>
+<span class="k">WHERE</span> <span class="n">TABLE_TYPE</span><span class="o">=</span><span class="s1">'BASE TABLE'</span><span class="p">;</span>
+
+<span class="c1">-- Cria uma tabela chamada tablename1, com as duas colunas mostradas, a partir</span>
+<span class="c1">-- do banco de dados em uso. Há muitas outras opções dísponiveis para a forma</span>
+<span class="c1">-- em que se especificam as colunas, por ex. seus tipos de dados.</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">tablename1</span> <span class="p">(</span><span class="n">fname</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span> <span class="n">lname</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">));</span>
+
+<span class="c1">-- Insere uma fila de dados na tabela tablename1. É assumido que a tabela foi</span>
+<span class="c1">-- definida para aceitar esses valores como adequados.</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">tablename1</span> <span class="k">VALUES</span><span class="p">(</span><span class="s1">'Richard'</span><span class="p">,</span><span class="s1">'Mutt'</span><span class="p">);</span>
+
+<span class="c1">-- Em tablename1, se altera o valor de fname para 'John' em todas as filas que</span>
+<span class="c1">-- contenham um valor em lname igual a 'Mutt'.</span>
+<span class="k">UPDATE</span> <span class="n">tablename1</span> <span class="k">SET</span> <span class="n">fname</span><span class="o">=</span><span class="s1">'John'</span> <span class="k">WHERE</span> <span class="n">lname</span><span class="o">=</span><span class="s1">'Mutt'</span><span class="p">;</span>
+
+<span class="c1">-- Se excluem as filas da tabela tablename1 em que o valor de lname começa</span>
+<span class="c1">-- com 'M'.</span>
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">tablename1</span> <span class="k">WHERE</span> <span class="n">lname</span> <span class="k">like</span> <span class="s1">'M%'</span><span class="p">;</span>
+
+<span class="c1">-- Se excluem as filas da tabela tablename1, deixando a tabla vazia.</span>
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">tablename1</span><span class="p">;</span>
+
+<span class="c1">-- A tabela tablename1, é excluída completamente.</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="n">tablename1</span><span class="p">;</span>
+</code></pre></div>
+<h1>Leitura adicional</h1>
+
+<ul>
+<li><a href="https://www.codecademy.com/learn/learn-sql">Codecademy - SQL</a> A good introduction to SQL in a “learn by doing it” format.</li>
+<li><a href="https://www.db-book.com/">Database System Concepts</a> book’s Chapter 3 - Introduction to SQL has an in depth explanation of SQL concepts.</li>
+</ul>
+
+    <hr>
+    <p>Sugestões ou correções? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Abra uma issue</a> no repositório do Github, ou faça um <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/pt-br/sql-pt.html.markdown">pull request</a> você mesmo!
+    </p>
+    <p class="contributed">
+    Originalmente contribuído por Bob DuCharme e atualizado por <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/pt-br/sql-pt.html.markdown">0 colaborador(es)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://bobdc.com/">Bob DuCharme</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/jovinoguerrero">jovinoguerrero</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

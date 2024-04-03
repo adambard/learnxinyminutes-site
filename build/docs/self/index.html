@@ -1,0 +1,245 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn self in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/self/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fself%2F&text=Learn+X+in+Y+minutes%2C+where+X%3Dself">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=self</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/learnself.self">learnself.self</a>
+    </p>
+  <div id="doc">
+    <p>Self is a fast prototype based OO language which runs in its own JIT vm. Most development is done through interacting with live objects through a visual development environment called <em>morphic</em> with integrated browsers and debugger.</p>
+
+<p>Everything in Self is an object. All computation is done by sending messages to objects. Objects in Self can be understood as sets of key-value slots.</p>
+
+<h1>Constructing objects</h1>
+
+<p>The inbuild Self parser can construct objects, including method objects.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>"This is a comment"
+
+"A string:"
+'This is a string with \'escaped\' characters.\n'
+
+"A 30 bit integer"
+23
+
+"A 30 bit float"
+3.2
+
+"-20"
+-14r16
+
+"An object which only understands one message, 'x' which returns 20"
+(|
+  x = 20.
+|)
+
+"An object which also understands 'x:' which sets the x slot"
+(|
+  x &lt;- 20.
+|)
+
+"An object which understands the method 'doubleX' which
+doubles the value of x and then returns the object"
+(|
+  x &lt;- 20.
+  doubleX = (x: x * 2. self)
+|)
+
+"An object which understands all the messages
+that 'traits point' understands". The parser
+looks up 'traits point' by sending the messages
+'traits' then 'point' to a known object called
+the 'lobby'. It looks up the 'true' object by
+also sending the message 'true' to the lobby."
+(|     parent* = traits point.
+       x = 7.
+       y &lt;- 5.
+       isNice = true.
+|)
+</code></pre></div>
+<h1>Sending messages to objects</h1>
+
+<p>Messages can either be unary, binary or keyword. Precedence is in that order. Unlike Smalltalk, the precedence of binary messages must be specified, and all keywords after the first must start with a capital letter. Messages are separated from their destination by whitespace.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>"unary message, sends 'printLine' to the object '23'
+which prints the string '23' to stdout and returns the receiving object (ie 23)"
+23 printLine
+
+"sends the message '+' with '7' to '23', then the message '*' with '8' to the result"
+(23 + 7) * 8
+
+"sends 'power:' to '2' with '8' returns 256"
+2 power: 8
+
+"sends 'keyOf:IfAbsent:' to 'hello' with arguments 'e' and '-1'.
+Returns 1, the index of 'e' in 'hello'."
+'hello' keyOf: 'e' IfAbsent: -1
+</code></pre></div>
+<h1>Blocks</h1>
+
+<p>Self defines flow control like Smalltalk and Ruby by way of blocks. Blocks are delayed computations of the form:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>[|:x. localVar| x doSomething with: localVar]
+</code></pre></div>
+<p>Examples of the use of a block:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>"returns 'HELLO'"
+'hello' copyMutable mapBy: [|:c| c capitalize]
+
+"returns 'Nah'"
+'hello' size &gt; 5 ifTrue: ['Yay'] False: ['Nah']
+
+"returns 'HaLLO'"
+'hello' copyMutable mapBy: [|:c|
+   c = 'e' ifTrue: [c capitalize]
+            False: ['a']]
+</code></pre></div>
+<p>Multiple expressions are separated by a period. ^ returns immediately.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>"returns An 'E'! How icky!"
+'hello' copyMutable mapBy: [|:c. tmp &lt;- ''|
+   tmp: c capitalize.
+   tmp = 'E' ifTrue: [^ 'An \'E\'! How icky!'].
+   c capitalize
+   ]
+</code></pre></div>
+<p>Blocks are performed by sending them the message &lsquo;value&rsquo; and inherit (delegate to) their contexts:
+<code>
+&quot;returns 0&quot;
+[|x|
+    x: 15.
+    &quot;Repeatedly sends &#39;value&#39; to the first block while the result of sending &#39;value&#39; to the
+     second block is the &#39;true&#39; object&quot;
+    [x &gt; 0] whileTrue: [x: x - 1].
+    x
+] value
+</code></p>
+
+<h1>Methods</h1>
+
+<p>Methods are like blocks but they are not within a context but instead are stored as values of slots. Unlike Smalltalk, methods by default return their final value not &lsquo;self&rsquo;.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>"Here is an object with one assignable slot 'x' and a method 'reduceXTo: y'.
+Sending the message 'reduceXTo: 10' to this object will put
+the object '10' in the 'x' slot and return the original object"
+(|
+    x &lt;- 50.
+    reduceXTo: y = (
+        [x &gt; y] whileTrue: [x: x - 1].
+        self)
+|)
+.
+</code></pre></div>
+<h1>Prototypes</h1>
+
+<p>Self has no classes. The way to get an object is to find a prototype and copy it.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>| d |
+d: dictionary copy.
+d at: 'hello' Put: 23 + 8.
+d at: 'goodbye' Put: 'No!.
+"Prints No!"
+( d at: 'goodbye' IfAbsent: 'Yes! ) printLine.
+"Prints 31"
+( d at: 'hello' IfAbsent: -1 ) printLine.
+</code></pre></div>
+<h1>Further information</h1>
+
+<p>The <a href="http://handbook.selflanguage.org">Self handbook</a> has much more information, and nothing beats hand-on experience with Self by downloading it from the <a href="http://www.selflanguage.org">homepage</a>.</p>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/self.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Russell Allen, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/self.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://github.com/russellallen">Russell Allen</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

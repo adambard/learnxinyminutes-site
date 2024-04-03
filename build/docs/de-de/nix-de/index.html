@@ -1,0 +1,457 @@
+<!DOCTYPE html lang="de-de" xml:lang="de-de" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="de-de">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn nix in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/de-de/nix-de/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fde-de%2Fnix-de%2F&text=Lerne+X+in+Y+Minuten%2C+wobei+X%3Dnix">
+        Teile diese Seite mit anderen
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Thema wählen:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">licht</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dunkles</button>
+  </div>
+  <h1><a href="/">Lerne X in Y Minuten</a></h1>
+  <h2>Wobei X=nix</h2>
+    <p class="filelink">
+    Lade den Code herunter:
+    <a href="/docs/files/learnnix-de.nix">learnnix-de.nix</a>
+    </p>
+  <div id="doc">
+    <p>Nix ist eine simple funktionale Programmiersprache, die für den
+<a href="https://nixos.org/nix/">Nix package manager</a> und
+<a href="https://nixos.org/">NixOS</a> entwickelt wurde.</p>
+
+<p>Du kannst Nix Ausdrücke evaluieren mithilfe von
+<a href="https://nixos.org/nix/manual/#sec-nix-instantiate">nix-instantiate</a>
+oder <a href="https://github.com/edolstra/nix-repl"><code>nix-repl</code></a>.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>with builtins; [
+
+  #  Kommentare
+  #=========================================
+
+  # Inline Kommentare sehen so aus.
+
+  /* Multizeilen Kommentare
+     sehen so aus. */
+
+
+  #  Booleans
+  #=========================================
+
+  (true &amp;&amp; false)               # Und
+  #=&gt; false
+
+  (true || false)               # Oder
+  #=&gt; true
+
+  (if 3 &lt; 4 then "a" else "b")  # Bedingungen
+  #=&gt; "a"
+
+
+  #  Integers
+  #=========================================
+
+  # Integers sind die einzigen numerischen Typen.
+
+  1 0 42 (-3)       # Einige integers
+
+  (4 + 6 + 12 - 2)  # Addition
+  #=&gt; 20
+
+  (7 / 2)           # Division
+  #=&gt; 3
+
+
+  #  Strings
+  #=========================================
+
+  "String Literale sind in Anführungszeichen."
+
+  "
+    String Literale können mehrere
+    Zeilen umspannen.
+  "
+
+  ''
+    Dies wird als Literal mit eingerückten String bezeichnet.
+    Es entfernt intelligent führende Leerzeichen.
+  ''
+
+  ''
+    a
+      b
+  ''
+  #=&gt; "a\n  b"
+
+  ("ab" + "cd")   # String Konkatenation
+  #=&gt; "abcd"
+
+  # Mit Antiquotation kannst du Werte in Strings einbetten.
+  ("Dein Homeverzeichnis ist ${getEnv "HOME"}")
+  #=&gt; "Dein Homeverzeichnis ist /home/alice"
+
+
+  #  Paths
+  #=========================================
+
+  # Nix besitzt einen primitiven Datentyp für Pfade
+  /tmp/tutorials/learn.nix
+
+  # Ein relativer Pfad wird beim Parsing zu einem absoluten Pfad aufgelöst,
+  # relativ zu der Datei in der es auftritt.
+  tutorials/learn.nix
+  #=&gt; /the-base-path/tutorials/learn.nix
+
+  # Ein Pfad muss mindestens einen Schrägstrich enthalten. Ein Pfad für eine
+  # Datei im selben Verzeichnis benötigt ein ./ Präfix.
+  ./learn.nix
+  #=&gt; /the-base-path/learn.nix
+
+  # Der / Operator muss von Leerraum umgeben sein wenn du dividieren möchtest.
+  7/2        # Das ist ein Pfadliteral
+  (7 / 2)    # Das ist ein Integerliteral
+
+
+  #  Importe
+  #=========================================
+
+  # Eine nix Datei besitzt einen einzelnen top-level Ausdruck mit keinen freien Variablen.
+  # Ein Import-Ausdruck wird zum Wert der Datei, die importiert wird, ausgewertet.
+  (import /tmp/foo.nix)
+
+  # Importe können ebenso mit Strings spezifiziert werden.
+  (import "/tmp/foo.nix")
+
+  # Import Pfade müssen absolut sein. Pfadliterale
+  # sind automatisch aufgelöst, das ist ein Ordnung.
+  (import ./foo.nix)
+
+  # Jedoch passiert dies nicht mit Strings.
+  (import "./foo.nix")
+  #=&gt; error: string ‘foo.nix’ doesn't represent an absolute path
+
+
+  #  Let
+  #=========================================
+
+  # `let` Blöcke erlauben es uns Werte zu Variablen zu binden.
+  (let x = "a"; in
+    x + x + x)
+  #=&gt; "aaa"
+
+  # Bindungen können auf sich gegenseitig verweisen. Die Reihenfolge spielt
+  # keine Rolle.
+  (let y = x + "b";
+       x = "a"; in
+    y + "c")
+  #=&gt; "abc"
+
+  # Innere Bindungen überschatten Äußere.
+  (let a = 1; in
+    let a = 2; in
+      a)
+  #=&gt; 2
+
+
+  #  Funktionen
+  #=========================================
+
+  (n: n + 1)      # Funktion, die 1 addiert
+
+  ((n: n + 1) 5)  # Dieselbe Funktion angewendet auf 5.
+  #=&gt; 6
+
+  # Es gibt keine spezielle Syntax für benannte Funktionen, aber sie
+  # können mit `let` Blöcken, wie jeder andere Wert auch, gebunden werden.
+  (let succ = (n: n + 1); in succ 5)
+  #=&gt; 6
+
+  # Eine Funktion hat genau ein Argument.
+  # Mehrere Argumente können erreicht werden mithilfe von Currying.
+  ((x: y: x + "-" + y) "a" "b")
+  #=&gt; "a-b"
+
+  # Benannte Funktionsargumente gibt es auch. Diese werden wir einführen, nachdem wir uns Sets
+  # angeschaut haben.
+
+  #  Listen
+  #=========================================
+
+  # Listen werden durch eckige Klammern gekennzeichnet.
+
+  (length [1 2 3 "x"])
+  #=&gt; 4
+
+  ([1 2 3] ++ [4 5])
+  #=&gt; [1 2 3 4 5]
+
+  (concatLists [[1 2] [3 4] [5]])
+  #=&gt; [1 2 3 4 5]
+
+  (head [1 2 3])
+  #=&gt; 1
+  (tail [1 2 3])
+  #=&gt; [2 3]
+
+  (elemAt ["a" "b" "c" "d"] 2)
+  #=&gt; "c"
+
+  (elem 2 [1 2 3])
+  #=&gt; true
+  (elem 5 [1 2 3])
+  #=&gt; false
+
+  (filter (n: n &lt; 3) [1 2 3 4])
+  #=&gt; [ 1 2 ]
+
+
+  #  Sets
+  #=========================================
+
+  # Ein "Set" ist eine ungeordnete Zuordnung mit Stringschlüsseln.
+  { foo = [1 2]; bar = "x"; }
+
+  # Der . Operator nimmt einen Wert aus dem Set.
+  { a = 1; b = 2; }.a
+  #=&gt; 1
+
+  # Der ? Operator testet, ob der Schlüssel in dem Set vorhanden ist.
+  ({ a = 1; b = 2; } ? a)
+  #=&gt; true
+  ({ a = 1; b = 2; } ? c)
+  #=&gt; false
+
+  # Der // Operator mergt zwei Sets.
+  ({ a = 1; } // { b = 2; })
+  #=&gt; { a = 1; b = 2; }
+
+  # Werte auf der rechten Seite überschreiben die Werte auf der linken Seite.
+  ({ a = 1; b = 2; } // { a = 3; c = 4; })
+  #=&gt; { a = 3; b = 2; c = 4; }
+
+  # Das Schlüsselwort rec bezeichenet ein "rekursives Set", in dem sich Attribute
+  # aufeinander beziehen können.
+  (let a = 1; in     { a = 2; b = a; }.b)
+  #=&gt; 1
+  (let a = 1; in rec { a = 2; b = a; }.b)
+  #=&gt; 2
+
+  # Verschachtelte Sets können stückweise definiert werden.
+  {
+    a.b   = 1;
+    a.c.d = 2;
+    a.c.e = 3;
+  }.a.c
+  #=&gt; { d = 2; e = 3; }
+
+  # Die Nachkommen eines Attributs können in diesem Feld nicht zugeordnet werden, wenn
+  # das Attribut selbst nicht zugewiesen wurde.
+  {
+    a = { b = 1; };
+    a.c = 2;
+  }
+  #=&gt; error: attribute ‘a’ already defined
+
+
+  #  With
+  #=========================================
+
+  # Der Körper eines Sets Blocks wird mit der Zuordnung eines Satzes an die Variablen gebunden.
+  (with { a = 1; b = 2; };
+    a + b)
+  # =&gt; 3
+
+  # Innere Bindungen überschatten äußere Bindungen.
+  (with { a = 1; b = 2; };
+    (with { a = 5; };
+      a + b))
+  #=&gt; 7
+
+  # Die erste Linie diese Tutorials startet mit "with builtins;",
+  # weil builtins ein Set mit allen eingebauten
+  # Funktionen (length, head, tail, filter, etc.) umfasst.
+  # Das erspart uns beispielsweise "builtins.length" zu schreiben,
+  # anstatt nur "length".
+
+
+  #  Set patterns
+  #=========================================
+
+  # Sets sind nützlich, wenn du mehrere Werte einer Funktion
+  # übergeben musst.
+  (args: args.x + "-" + args.y) { x = "a"; y = "b"; }
+  #=&gt; "a-b"
+
+  # Dies kann mit Hilfe von Set patterns deutlicher geschrieben werden.
+  ({x, y}: x + "-" + y) { x = "a"; y = "b"; }
+  #=&gt; "a-b"
+
+  # Standardmäßig schlägt das Muster bei Sets mit zusätzlichen Schlüsseln fehl.
+  ({x, y}: x + "-" + y) { x = "a"; y = "b"; z = "c"; }
+  #=&gt; error: anonymous function called with unexpected argument ‘z’
+
+  # Durch Hinzufügen von ", ..." können zusätzliche Schlüssel ignoriert werden.
+  ({x, y, ...}: x + "-" + y) { x = "a"; y = "b"; z = "c"; }
+  #=&gt; "a-b"
+
+
+  #  Errors
+  #=========================================
+
+  # `throw` bewirkt, dass die Auswertung mit einer Fehlermeldung abgebrochen wird.
+  (2 + (throw "foo"))
+  #=&gt; error: foo
+
+  # `tryEval` fängt geworfene Fehler.
+  (tryEval 42)
+  #=&gt; { success = true; value = 42; }
+  (tryEval (2 + (throw "foo")))
+  #=&gt; { success = false; value = false; }
+
+  # `abort` ist ähnlich wie throw, aber es ist fatal. Es kann nicht gefangen werden.
+  (tryEval (abort "foo"))
+  #=&gt; error: evaluation aborted with the following error message: ‘foo’
+
+  # `assert` evaluiert zu dem gegebenen Wert, wenn die Bedingung wahr ist, sonst
+  # löst es eine abfangbare Exception aus.
+  (assert 1 &lt; 2; 42)
+  #=&gt; 42
+  (assert 1 &gt; 2; 42)
+  #=&gt; error: assertion failed at (string):1:1
+  (tryEval (assert 1 &gt; 2; 42))
+  #=&gt; { success = false; value = false; }
+
+
+  #  Impurity
+  #=========================================
+
+  # Da die Wiederholbarkeit von Builds für den Nix Packetmanager entscheidend ist,
+  # werden in der Nix Sprache reine funktionale Elemente betont. Es gibt aber ein paar
+  # unreine Elemente.
+  # Du kannst auf Umgebungsvariablen verweisen.
+  (getEnv "HOME")
+  #=&gt; "/home/alice"
+
+  # Die trace Funktion wird zum Debugging verwendet. Sie gibt das erste Argument zu stderr aus
+  # und evaluiert das zweite Argument.
+  (trace 1 2)
+  #=&gt; trace: 1
+  #=&gt; 2
+
+  # Du kannst Dateien in den Nix Store schreiben. Obwohl unrein, kannst du dir relativ sicher sein,
+  # dass es sicher ist, da der Dateiname aus dem Hash des Inhalts abgeleitet wird.
+  # Du kannst Dateien von überall lesen. In diesem Beispiel schreiben wir Dateien in den Store
+  # und lesen wieder davon.
+  (let filename = toFile "foo.txt" "hello!"; in
+    [filename (builtins.readFile filename)])
+  #=&gt; [ "/nix/store/ayh05aay2anx135prqp0cy34h891247x-foo.txt" "hello!" ]
+
+  # Außerdem können wir Dateien in den Nix Store herunterladen.
+  (fetchurl "https://example.com/package-1.2.3.tgz")
+  #=&gt; "/nix/store/2drvlh8r57f19s9il42zg89rdr33m2rm-package-1.2.3.tgz"
+
+]
+</code></pre></div>
+<h3>Weitere Ressourcen</h3>
+
+<ul>
+<li><p><a href="https://nixos.org/nix/manual/#ch-expression-language">Nix Manual - Nix expression language</a></p></li>
+<li><p><a href="https://medium.com/@MrJamesFisher/nix-by-example-a0063a1a4c55">James Fisher - Nix by example - Part 1: The Nix expression language</a></p></li>
+<li><p><a href="https://ops.functionalalgebra.com/nix-by-example/">Susan Potter - Nix Cookbook - Nix By Example</a></p></li>
+<li><p><a href="https://web.archive.org/web/20210121042658/https://ebzzry.io/en/nix/#nix">Rommel Martinez - A Gentle Introduction to the Nix Family</a></p></li>
+</ul>
+
+    <hr>
+    <p>Du hast einen Verbesserungsvorschlag oder einen Fehler gefunden? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Erstelle ein Ticket</a> im offiziellen Github Repo, oder du erstellst einfach gleich einen <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/de-de/nix-de.html.markdown">pull request</a>!
+    </p>
+    <p class="contributed">
+    Originalversion von Chris Martin, mit Updates von <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/de-de/nix-de.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://chris-martin.org/">Chris Martin</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/denniskeller">Dennis Keller</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

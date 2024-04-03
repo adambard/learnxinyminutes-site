@@ -1,0 +1,337 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn montilang in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/montilang/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fmontilang%2F&text=Learn+X+in+Y+minutes%2C+where+X%3Dmontilang">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=montilang</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/montilang.ml">montilang.ml</a>
+    </p>
+  <div id="doc">
+    <p>MontiLang is a Stack-Oriented concatenative imperative programming language. Its syntax
+is roughly based off of forth with similar style for doing arithmetic in <a href="https://en.wikipedia.org/wiki/Reverse_Polish_notation">reverse polish notation.</a></p>
+
+<p>A good way to start with MontiLang is to read the documentation and examples at <a href="http://montilang.ml">montilang.ml</a>,
+then download MontiLang or build from source code with the instructions provided.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>/# Monti Reference sheet #/
+/#
+Comments are multiline
+Nested comments are not supported 
+#/
+/# Whitespace is all arbitrary, indentation is optional #/
+/# All programming in Monti is done by manipulating the parameter stack 
+arithmetic and stack operations in MontiLang are similar to FORTH
+https://en.wikipedia.org/wiki/Forth_(programming_language)
+#/
+
+/# in Monti, everything is either a string or a number. Operations treat all numbers
+similarly to floats, but anything without a remainder is treated as type int #/
+
+/# numbers and strings are added to the stack from left to right #/
+
+/# Arithmetic works by manipulating data on the stack #/
+
+5 3 + PRINT . /# 8 #/
+
+/#  5 and 3 are pushed onto the stack
+    '+' replaces top 2 items on stack with sum of top 2 items
+    'PRINT' prints out the top item on the stack
+    '.' pops the top item from the stack. 
+    #/
+
+6 7 * PRINT . /# 42 #/
+1360 23 - PRINT . /# 1337 #/
+12 12 / PRINT . /# 1 #/
+13 2 % PRINT . /# 1 #/
+
+37 NEG PRINT . /# -37 #/
+-12 ABS PRINT . /# 12 #/
+52 23 MAX PRINT . /# 52 #/
+52 23 MIN PRINT . /# 23 #/
+
+/# 'PSTACK' command prints the entire stack, 'CLEAR' clears the entire stack #/
+
+3 6 8 PSTACK CLEAR /# [3, 6, 8] #/
+
+/# Monti comes with some tools for stack manipulation #/
+
+2 DUP PSTACK CLEAR /# [2, 2] - Duplicate the top item on the stack#/
+2 6 SWAP PSTACK CLEAR /# [6, 2] - Swap top 2 items on stack #/
+1 2 3 ROT PSTACK CLEAR /# [2, 3, 1] - Rotate top 3 items on stack #/
+2 3 NIP PSTACK CLEAR /# [3] - delete second item from the top of the stack #/
+4 5 6 TRIM PSTACK CLEAR /# [5, 6] - Deletes first item on stack #/
+/# variables are assigned with the syntax 'VAR [name]'#/
+/# When assigned, the variable will take the value of the top item of the stack #/
+
+6 VAR six . /# assigns var 'six' to be equal to 6 #/
+3 6 + VAR a . /# assigns var 'a' to be equal to 9 #/
+
+/# the length of the stack can be calculated with the statement 'STKLEN' #/
+1 2 3 4 STKLEN PRINT CLEAR /# 4 #/
+
+/# strings are defined with | | #/
+
+|Hello World!| VAR world . /# sets variable 'world' equal to string 'Hello world! #/ 
+
+/# variables can be called by typing its name. when called, the value of the variable is pushed
+to the top of the stack #/
+world PRINT .
+
+/# with the OUT statement, the top item on the stack can be printed without a newline #/
+
+|world!| |Hello, | OUT SWAP PRINT CLEAR
+
+/# Data types can be converted between strings and integers with the commands 'TOINT' and 'TOSTR'#/
+|5| TOINT PSTACK . /# [5] #/
+45 TOSTR PSTACK . /# ['45'] #/
+
+/# User input is taken with INPUT and pushed to the stack. If the top item of the stack is a string, 
+the string is used as an input prompt #/
+
+|What is your name? | INPUT NIP 
+|Hello, | OUT SWAP PRINT CLEAR
+
+
+/# FOR loops have the syntax 'FOR [condition] [commands] ENDFOR' At the moment, [condition] can
+only have the value of an integer. Either by using an integer, or a variable call to an integer.
+[commands] will be interpereted the amount of time specified in [condition] #/
+/# E.G: this prints out 1 to 10 #/
+
+1 VAR a .
+FOR 10
+    a PRINT 1 + VAR a
+ENDFOR
+
+/# the syntax for while loops are similar. A number is evaluated as true if it is larger than
+0. a string is true if its length &gt; 0. Infinite loops can be used by using literals.
+#/
+10 var loop .
+WHILE loop
+    loop print 
+    1 - var loop
+ENDWHILE
+/#
+this loop would count down from 10.
+
+IF statements are pretty much the same, but only are executed once.
+#/
+IF loop
+ loop PRINT .
+ENDIF
+
+/# This would only print 'loop' if it is larger than 0 #/
+
+/# If you would want to use the top item on the stack as loop parameters, this can be done with the ':' character #/
+
+/# eg, if you wanted to print 'hello' 7 times, instead of using #/
+
+FOR 7
+    |hello| PRINT .
+ENDFOR
+
+/# this could be used #/
+7
+FOR : 
+    |hello| PRINT .
+ENDFOR
+
+/# Equality and inequality statements use the top 2 items on the stack as parameters, and replace the top two items with the output #/
+/# If it is true, the top 2 items are replaced with '1'. If false, with '0'. #/
+
+7 3 &gt; PRINT . /# 1 #/
+2 10 &gt; PRINT . /# 0 #/
+5 9 &lt;= PRINT . /# 1 #/
+5 5 == PRINT . /# 1 #/
+5 7 == PRINT . /# 0 #/
+3 8 != PRINT . /# 1 #/
+
+/# User defined commands have the syntax of 'DEF [name] [commands] ENDDEF'. #/
+/# eg, if you wanted to define a function with the name of 'printseven' to print '7' 10 times, this could be used #/
+
+DEF printseven
+    FOR 10
+       7 PRINT .
+    ENDFOR
+ENDDEF
+
+/# to run the defined statement, simply type it and it will be run by the interpereter #/
+
+printseven
+
+/# Montilang supports AND, OR and NOT statements #/
+
+1 0 AND PRINT . /# 0 #/
+1 1 AND PRINT . /# 1 #/
+1 0 OR PRINT . /# 1 #/
+0 0 OR PRINT . /# 0 #/
+1 NOT PRINT . /# 0 #/
+0 NOT PRINT . /# 1 #/
+
+/# Preprocessor statements are made inbetween '&amp;' characters #/
+/# currently, preprocessor statements can be used to make c++-style constants #/
+
+&amp;DEFINE LOOPSTR 20&amp;
+/# must have &amp; on either side with no spaces, 'DEFINE' is case sensitive. #/
+/# All statements are scanned and replaced before the program is run, regardless of where the statements are placed #/
+
+FOR LOOPSTR 7 PRINT . ENDFOR /# Prints '7' 20 times. At run, 'LOOPSTR' in source code is replaced with '20' #/ 
+
+/# Multiple files can be used with the &amp;INCLUDE &lt;filename&gt;&amp; Command that operates similar to c++, where the file specified is tokenized,
+   and the &amp;INCLUDE statement is replaced with the file #/
+
+/# E.G, you can have a program be run through several files. If you had the file 'name.mt' with the following data:
+
+[name.mt]
+|Hello, | OUT . name PRINT .
+
+a program that asks for your name and then prints it out can be defined as such: #/
+
+|What is your name? | INPUT VAR name . &amp;INCLUDE name.mt&amp;
+
+/# ARRAYS: #/
+
+/# arrays are defined with the statement 'ARR'
+When called, everything currently in the stack is put into one
+array and all items on the stack are replaced with the new array. #/
+
+2 3 4 ARR PSTACK . /# [[2, 3, 4]] #/
+
+/# the statement 'LEN' adds the length of the last item on the stack to the stack.
+This can be used on arrays, as well as strings. #/
+
+3 4 5 ARR LEN PRINT . /# 3 #/
+
+/# values can be appended to an array with the statement 'APPEND' #/
+
+1 2 3 ARR 5 APPEND . PRINT . /# [1, 2, 3, 5] #/
+
+/# an array at the top of the stack can be wiped with the statement 'WIPE' #/
+3 4 5 ARR WIPE PRINT . /# [] #/
+
+/# The last item of an array can be removed with the statement 'DROP' #/
+
+3 4 5 ARR DROP PRINT . /# [3, 4]
+/# arrays, like other datatypes can be stored in variables #/
+5 6 7 ARR VAR list .
+list PRINT . /# [5, 6, 7] #/
+
+/# Values at specific indexes can be changed with the statement 'INSERT &lt;index&gt;' #/
+4 5 6 ARR 
+97 INSERT 1 . PRINT /# 4, 97, 6 #/
+
+/# Values at specific indexes can be deleted with the statement 'DEL &lt;index&gt;' #/
+1 2 3 ARR
+DEL 1 PRINT . /# [1, 3] #/
+
+/# items at certain indexes of an array can be gotten with the statement 'GET &lt;index&gt;' #/
+
+1 2 3 ARR GET 2 PSTACK /# [[1, 2, 3], 3] #/
+</code></pre></div>
+<h2>Extra information</h2>
+
+<ul>
+<li><a href="http://montilang.ml/">MontiLang.ml</a></li>
+<li><a href="https://github.com/lduck11007/MontiLang">Github Page</a></li>
+</ul>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/montilang.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Leo Whitehead, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/montilang.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="https://github.com/lduck11007">Leo Whitehead</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>
