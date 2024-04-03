@@ -1,0 +1,213 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn SQL in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/sql/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fsql%2F&text=Learn+X+in+Y+minutes%2C+where+X%3DSQL">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=SQL</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/learnsql.sql">learnsql.sql</a>
+    </p>
+  <div id="doc">
+    <p>Structured Query Language (SQL) is an <a href="https://www.iso.org/standard/63555.html">ISO/IEC 9075</a> standard language for creating and working with databases stored in a set of tables. Implementations usually add their own extensions to the language; <a href="http://troels.arvin.dk/db/rdbms/">Comparison of different SQL implementations</a> is a good reference on product differences.</p>
+
+<p>Implementations typically provide a command line prompt where you can enter the commands shown here interactively, and they also offer a way to execute a series of these commands stored in a script file.  (Showing that you’re done with the interactive prompt is a good example of something that isn’t standardized&ndash;most SQL implementations support the keywords QUIT, EXIT, or both.)</p>
+
+<p>Several of these sample commands assume that the <a href="https://dev.mysql.com/doc/employee/en/">MySQL employee sample database</a> available on <a href="https://github.com/datacharmer/test_db">github</a> has already been loaded. The github files are scripts of commands, similar to the relevant commands below, that create and populate tables of data about a fictional company’s employees. The syntax for running these scripts will depend on the SQL implementation you are using. A utility that you run from the operating system prompt is typical.</p>
+<div class="highlight"><pre class="highlight sql"><code><span class="c1">-- Comments start with two hyphens. End each command with a semicolon.</span>
+
+<span class="c1">-- SQL is not case-sensitive about keywords. The sample commands here</span>
+<span class="c1">-- follow the convention of spelling them in upper-case because it makes</span>
+<span class="c1">-- it easier to distinguish them from database, table, and column names.</span>
+
+<span class="c1">-- Create and delete a database. Database and table names are case-sensitive.</span>
+<span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="n">someDatabase</span><span class="p">;</span>
+<span class="k">DROP</span> <span class="k">DATABASE</span> <span class="n">someDatabase</span><span class="p">;</span>
+
+<span class="c1">-- List available databases.</span>
+<span class="k">SHOW</span> <span class="n">DATABASES</span><span class="p">;</span>
+
+<span class="c1">-- Use a particular existing database.</span>
+<span class="n">USE</span> <span class="n">employees</span><span class="p">;</span>
+
+<span class="c1">-- Select all rows and columns from the current database's departments table.</span>
+<span class="c1">-- Default activity is for the interpreter to scroll the results on your screen.</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">departments</span><span class="p">;</span>
+
+<span class="c1">-- Retrieve all rows from the departments table,</span>
+<span class="c1">-- but only the dept_no and dept_name columns.</span>
+<span class="c1">-- Splitting up commands across lines is OK.</span>
+<span class="k">SELECT</span> <span class="n">dept_no</span><span class="p">,</span>
+       <span class="n">dept_name</span> <span class="k">FROM</span> <span class="n">departments</span><span class="p">;</span>
+
+<span class="c1">-- Retrieve all departments columns, but just 5 rows.</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">departments</span> <span class="k">LIMIT</span> <span class="mi">5</span><span class="p">;</span>
+
+<span class="c1">-- Retrieve dept_name column values from the departments</span>
+<span class="c1">-- table where the dept_name value has the substring 'en'.</span>
+<span class="k">SELECT</span> <span class="n">dept_name</span> <span class="k">FROM</span> <span class="n">departments</span> <span class="k">WHERE</span> <span class="n">dept_name</span> <span class="k">LIKE</span> <span class="s1">'%en%'</span><span class="p">;</span>
+
+<span class="c1">-- Retrieve all columns from the departments table where the dept_name</span>
+<span class="c1">-- column starts with an 'S' and has exactly 4 characters after it.</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">departments</span> <span class="k">WHERE</span> <span class="n">dept_name</span> <span class="k">LIKE</span> <span class="s1">'S____'</span><span class="p">;</span>
+
+<span class="c1">-- Select title values from the titles table but don't show duplicates.</span>
+<span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">title</span> <span class="k">FROM</span> <span class="n">titles</span><span class="p">;</span>
+
+<span class="c1">-- Same as above, but sorted (case-sensitive) by the title values.</span>
+<span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">title</span> <span class="k">FROM</span> <span class="n">titles</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">title</span><span class="p">;</span>
+
+<span class="c1">-- Show the number of rows in the departments table.</span>
+<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">departments</span><span class="p">;</span>
+
+<span class="c1">-- Show the number of rows in the departments table that</span>
+<span class="c1">-- have 'en' as a substring of the dept_name value.</span>
+<span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">departments</span> <span class="k">WHERE</span> <span class="n">dept_name</span> <span class="k">LIKE</span> <span class="s1">'%en%'</span><span class="p">;</span>
+
+<span class="c1">-- A JOIN of information from multiple tables: the titles table shows</span>
+<span class="c1">-- who had what job titles, by their employee numbers, from what</span>
+<span class="c1">-- date to what date. Retrieve this information, but instead of the</span>
+<span class="c1">-- employee number, use the employee number as a cross-reference to</span>
+<span class="c1">-- the employees table to get each employee's first and last name</span>
+<span class="c1">-- instead. (And only get 10 rows.)</span>
+
+<span class="k">SELECT</span> <span class="n">employees</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span> <span class="n">employees</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span>
+       <span class="n">titles</span><span class="p">.</span><span class="n">title</span><span class="p">,</span> <span class="n">titles</span><span class="p">.</span><span class="n">from_date</span><span class="p">,</span> <span class="n">titles</span><span class="p">.</span><span class="n">to_date</span>
+<span class="k">FROM</span> <span class="n">titles</span> <span class="k">INNER</span> <span class="k">JOIN</span> <span class="n">employees</span> <span class="k">ON</span>
+       <span class="n">employees</span><span class="p">.</span><span class="n">emp_no</span> <span class="o">=</span> <span class="n">titles</span><span class="p">.</span><span class="n">emp_no</span> <span class="k">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
+
+<span class="c1">-- List all the tables in all the databases. Implementations typically provide</span>
+<span class="c1">-- their own shortcut command to do this with the database currently in use.</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">INFORMATION_SCHEMA</span><span class="p">.</span><span class="n">TABLES</span>
+<span class="k">WHERE</span> <span class="n">TABLE_TYPE</span><span class="o">=</span><span class="s1">'BASE TABLE'</span><span class="p">;</span>
+
+<span class="c1">-- Create a table called tablename1, with the two columns shown, for</span>
+<span class="c1">-- the database currently in use. Lots of other options are available</span>
+<span class="c1">-- for how you specify the columns, such as their datatypes.</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">tablename1</span> <span class="p">(</span><span class="n">fname</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span> <span class="n">lname</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">));</span>
+
+<span class="c1">-- Insert a row of data into the table tablename1. This assumes that the</span>
+<span class="c1">-- table has been defined to accept these values as appropriate for it.</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">tablename1</span> <span class="k">VALUES</span><span class="p">(</span><span class="s1">'Richard'</span><span class="p">,</span><span class="s1">'Mutt'</span><span class="p">);</span>
+
+<span class="c1">-- In tablename1, change the fname value to 'John'</span>
+<span class="c1">-- for all rows that have an lname value of 'Mutt'.</span>
+<span class="k">UPDATE</span> <span class="n">tablename1</span> <span class="k">SET</span> <span class="n">fname</span><span class="o">=</span><span class="s1">'John'</span> <span class="k">WHERE</span> <span class="n">lname</span><span class="o">=</span><span class="s1">'Mutt'</span><span class="p">;</span>
+
+<span class="c1">-- Delete rows from the tablename1 table</span>
+<span class="c1">-- where the lname value begins with 'M'.</span>
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">tablename1</span> <span class="k">WHERE</span> <span class="n">lname</span> <span class="k">LIKE</span> <span class="s1">'M%'</span><span class="p">;</span>
+
+<span class="c1">-- Delete all rows from the tablename1 table, leaving the empty table.</span>
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">tablename1</span><span class="p">;</span>
+
+<span class="c1">-- Remove the entire tablename1 table.</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="n">tablename1</span><span class="p">;</span>
+</code></pre></div>
+<h2>Further Reading</h2>
+
+<ul>
+<li><a href="https://www.codecademy.com/learn/learn-sql">Codecademy - SQL</a> A good introduction to SQL in a &ldquo;learn by doing it&rdquo; format.</li>
+<li><a href="https://www.db-book.com">Database System Concepts</a> book&rsquo;s Chapter 3 - Introduction to SQL has an in depth explanation of SQL concepts.</li>
+</ul>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/sql.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Bob DuCharme, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/sql.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://bobdc.com/">Bob DuCharme</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

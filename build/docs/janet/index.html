@@ -1,0 +1,433 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn Janet in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/janet/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fjanet%2F&text=Learn+X+in+Y+minutes%2C+where+X%3DJanet">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=Janet</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/learnJanet.janet">learnJanet.janet</a>
+    </p>
+  <div id="doc">
+    <p><a href="https://janet-lang.org/">Janet</a> is a Lisp-like (Clojure-like),
+lexically-scoped, dynamically-typed, garbage-collected, C-based, high-level
+language. The entire language (core library, interpreter, compiler, assembler,
+PEG) is about 300-500 kB and should run on many constrained systems.</p>
+
+<p>I encourage you to try out the code snippets below in the Janet
+repl (either by <a href="https://janet-lang.org/docs/index.html">installing Janet</a>,
+or else by using the repl embedded in the Janet homepage).</p>
+
+<p>As we only have a scant <em>y</em> minutes, we&rsquo;ll survey the basics here and
+leave the remaining details for the manual. So please, keep your arms and
+legs inside the vehicle at all times, and on with the scenic tour!</p>
+<div class="highlight"><pre class="highlight python"><code><span class="c1"># A comment.
+</span>
+<span class="c1"># Some literal values.
+</span><span class="n">true</span>
+<span class="n">false</span>
+<span class="n">nil</span>
+
+<span class="c1"># Typical style for symbols (identifiers-for / names-of things).
+</span><span class="n">do</span><span class="o">-</span><span class="n">stuff</span>
+<span class="n">pants</span><span class="o">-</span><span class="n">on</span><span class="o">-</span><span class="n">fire</span><span class="err">!</span>
+<span class="n">foo</span><span class="o">-&gt;</span><span class="n">bar</span>        <span class="c1"># Evidently for converting foos to bars.
+</span><span class="n">fully</span><span class="o">-</span><span class="n">charged</span><span class="err">?</span>
+<span class="n">_</span>               <span class="c1"># Usually used as a dummy variable.
+</span>
+<span class="c1"># Keywords are like symbols that start with a colon, are treated like
+# constants, and are typically used as map keys or pieces of syntax in
+# macros.
+</span><span class="p">:</span><span class="n">a</span>
+<span class="p">:</span><span class="n">some</span><span class="o">-</span><span class="n">val</span>
+
+<span class="c1"># Numbers #####################################################################
+</span><span class="mi">5</span>
+<span class="mf">1e3</span>    <span class="c1"># =&gt; 1000
+</span><span class="mi">1_000</span>  <span class="c1"># =&gt; 1000
+</span><span class="mf">2e-03</span>  <span class="c1"># =&gt; 0.002
+</span><span class="mh">0xff</span>   <span class="c1"># =&gt; 255
+</span>
+<span class="c1"># You can specify a radix (base) like so:
+</span><span class="mi">16</span><span class="n">rff</span>   <span class="c1"># =&gt; 255 (same as 0xff)
+</span><span class="mi">2</span><span class="n">r1101</span>  <span class="c1"># =&gt;  13
+</span>
+<span class="c1"># Some numbers in the math library:
+</span><span class="n">math</span><span class="o">/</span><span class="n">pi</span>  <span class="c1"># =&gt; 3.14159
+</span><span class="n">math</span><span class="o">/</span><span class="n">e</span>   <span class="c1"># =&gt; 2.71828
+</span>
+<span class="c1"># Strings #####################################################################
+</span><span class="s">"hello"</span>
+<span class="s">"hey</span><span class="se">\t</span><span class="s">there"</span>  <span class="c1"># contains a tab
+</span>
+<span class="c1"># For multi-line strings, use one or more backticks. Backslash-escapes not
+# recognized in these (bytes will be parsed literally).
+</span><span class="sb">``</span><span class="n">a</span> <span class="nb">long</span>
+<span class="n">multi</span><span class="o">-</span><span class="n">line</span>
+<span class="n">string</span><span class="sb">``</span>    <span class="c1"># =&gt; "a long\nmulti-line\nstring"
+</span>
+<span class="c1"># Strings and data structures in Janet come in two varieties: mutable and
+# immutable. The literal for the mutable variety is written with a `@` in
+# front of it.
+</span>
+<span class="c1"># A mutable string (aka "buffer").
+</span><span class="o">@</span><span class="s">"this"</span>
+<span class="o">@</span><span class="err">`</span><span class="n">a</span> <span class="n">multi</span><span class="o">-</span><span class="n">line</span>
+<span class="n">one</span> <span class="n">here</span><span class="err">`</span>
+
+<span class="p">(</span><span class="n">string</span> <span class="s">"con"</span> <span class="s">"cat"</span> <span class="s">"enate"</span><span class="p">)</span>   <span class="c1"># =&gt; "concatenate"
+</span>
+<span class="c1"># To get a substring:
+</span><span class="p">(</span><span class="n">string</span><span class="o">/</span><span class="nb">slice</span> <span class="s">"abcdefgh"</span> <span class="mi">2</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># =&gt; "cde"
+# To find a substring:
+</span><span class="p">(</span><span class="n">string</span><span class="o">/</span><span class="n">find</span> <span class="s">"de"</span> <span class="s">"abcdefgh"</span><span class="p">)</span>  <span class="c1"># =&gt; 3
+</span>
+<span class="c1"># See the string library for more (splitting, replacement, etc.)
+</span>
+<span class="c1"># Data Structures #############################################################
+# Arrays and Tuples
+# Arrays are mutable, tuples are immutable.
+</span>
+<span class="c1"># Arrays (mutable)
+</span><span class="o">@</span><span class="p">(</span><span class="mi">4</span> <span class="mi">5</span> <span class="mi">6</span><span class="p">)</span>
+<span class="o">@</span><span class="p">[</span><span class="mi">4</span> <span class="mi">5</span> <span class="mi">6</span><span class="p">]</span>
+
+<span class="c1"># Tuples (immutable)
+# Note that an open paren usually indicates a function call, so if you want a
+# literal tuple with parens, you need to "quote" it (with a starting single
+# quote mark)...
+</span><span class="s">'(4 5 6)
+[4 5 6]  # ... or just use square brackets.
+
+# Tables and Structs (associative data structures)
+@{:a 1 :b 2 :c 3}  # table  (mutable)
+{:a 1 :b 2 :c 3}   # struct (immutable)
+
+# To "pretty-print" these out, use `pp` instead of `print`.
+# More about how to work with arrays/tuples and tables/structs below.
+
+# Bindings ####################################################################
+# Bind a value to a symbol.
+(def x 4.7)  # Define a constant, `x`.
+x            # =&gt; 4.7
+(quote x)    # =&gt; x (the symbol x)
+'</span><span class="n">x</span>           <span class="c1"># =&gt; x (the symbol x (shorthand))
+</span><span class="p">(</span><span class="k">print</span> <span class="n">x</span><span class="p">)</span>    <span class="c1"># prints 4.7
+</span>
+<span class="c1"># Since we used `def`, can't change to what `x` refers:
+</span><span class="p">(</span><span class="nb">set</span> <span class="n">x</span> <span class="mf">5.6</span><span class="p">)</span>  <span class="c1"># Error, `x` is a constant.
+</span>
+<span class="p">(</span><span class="n">var</span> <span class="n">y</span> <span class="mi">10</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">set</span> <span class="n">y</span> <span class="mi">12</span><span class="p">)</span>  <span class="c1"># Works, since `y` was defined using `var`.
+</span>
+<span class="c1"># Note that bindings are local to the scope they're called in. `let`
+# creates a local scope and makes some bindings all in one shot:
+</span><span class="p">(</span><span class="n">let</span> <span class="p">[</span><span class="n">a</span> <span class="mi">2</span>
+      <span class="n">b</span> <span class="mi">3</span><span class="p">]</span>
+  <span class="p">(</span><span class="k">print</span> <span class="s">"Hello from inside this local scope."</span><span class="p">)</span>
+  <span class="p">(</span><span class="o">*</span> <span class="n">a</span> <span class="n">b</span><span class="p">))</span>  <span class="c1"># =&gt; 6
+</span>
+<span class="c1"># Destructuring is supported, both for arrays/tuples ...
+</span><span class="p">(</span><span class="k">def</span> <span class="nf">a</span> <span class="p">[</span><span class="s">"foos"</span> <span class="s">"bars"</span> <span class="s">"moos"</span><span class="p">])</span>
+<span class="p">(</span><span class="n">let</span> <span class="p">[[</span><span class="n">s1</span> <span class="n">_</span> <span class="n">s2</span><span class="p">]</span> <span class="n">a</span><span class="p">]</span>
+  <span class="p">(</span><span class="k">print</span> <span class="n">s1</span> <span class="n">s2</span><span class="p">))</span>  <span class="c1"># foosmoos
+</span>
+<span class="c1"># ... and for tables/structs.
+</span><span class="p">(</span><span class="k">def</span> <span class="nf">t</span> <span class="p">{:</span><span class="n">a</span> <span class="s">"ayy"</span> <span class="p">:</span><span class="n">b</span> <span class="s">"bee"</span> <span class="p">:</span><span class="n">c</span> <span class="s">"sea"</span><span class="p">})</span>
+<span class="p">(</span><span class="n">let</span> <span class="p">[{:</span><span class="n">a</span> <span class="n">a</span> <span class="p">:</span><span class="n">b</span> <span class="n">b</span><span class="p">}</span> <span class="n">t</span><span class="p">]</span>
+  <span class="p">(</span><span class="k">print</span> <span class="n">a</span> <span class="n">b</span><span class="p">))</span>  <span class="c1"># ayybee
+</span>
+<span class="c1"># You can even destructure right in a `def`:
+</span><span class="p">(</span><span class="k">def</span> <span class="err">[</span><span class="nf">aa1</span> <span class="n">aa2</span><span class="p">]</span> <span class="n">a</span><span class="p">)</span>
+<span class="n">aa1</span>  <span class="c1"># =&gt; foos
+</span><span class="n">aa2</span>  <span class="c1"># =&gt; bars
+</span>
+<span class="p">(</span><span class="k">def</span> <span class="err">{:</span><span class="nf">c</span> <span class="n">body</span><span class="o">-</span><span class="n">of</span><span class="o">-</span><span class="n">water</span> <span class="p">:</span><span class="n">b</span> <span class="n">insect</span><span class="o">-</span><span class="n">friend</span><span class="p">}</span> <span class="n">t</span><span class="p">)</span>
+<span class="n">body</span><span class="o">-</span><span class="n">of</span><span class="o">-</span><span class="n">water</span>  <span class="c1"># =&gt; sea
+</span><span class="n">insect</span><span class="o">-</span><span class="n">friend</span>  <span class="c1"># =&gt; bee
+</span>
+<span class="c1"># Note that keywords evaluate to themselves, whereas symbols evaluate
+# to whatever value they're bound to (unless you quote them).
+</span>
+<span class="c1"># Operators ###################################################################
+# Janet supports the usual ensemble of operators.
+# +, -, *, /, and so on. Note:
+</span><span class="p">(</span><span class="o">/</span> <span class="mi">5</span> <span class="mi">3</span><span class="p">)</span>  <span class="c1"># =&gt;  1.66667
+</span><span class="p">(</span><span class="o">%</span> <span class="mi">5</span> <span class="mi">3</span><span class="p">)</span>  <span class="c1"># =&gt;  2 (remainder)
+</span><span class="p">(</span><span class="o">-</span> <span class="mi">5</span><span class="p">)</span>    <span class="c1"># =&gt; -5 (or you can just write `-5`)
+</span>
+<span class="p">(</span><span class="o">++</span> <span class="n">i</span><span class="p">)</span>    <span class="c1"># increments (modifies `i`)
+</span><span class="p">(</span><span class="o">--</span> <span class="n">i</span><span class="p">)</span>    <span class="c1"># decrements
+</span><span class="p">(</span><span class="o">+=</span> <span class="n">i</span> <span class="mi">3</span><span class="p">)</span>  <span class="c1"># add 3 to `i`
+</span><span class="p">(</span><span class="o">*=</span> <span class="n">i</span> <span class="mi">3</span><span class="p">)</span>  <span class="c1"># triple `i`
+# ... and so on for the other operations on numbers.
+</span>
+<span class="c1"># If you don't want to mutate `i`, use `(inc i)` and `(dec i)`.
+</span>
+<span class="c1"># Comparison
+# =  &lt;  &gt;  not=  &lt;=  &gt;=
+</span><span class="p">(</span><span class="o">&lt;</span> <span class="mi">2</span> <span class="mi">7</span> <span class="mi">12</span><span class="p">)</span>  <span class="c1"># =&gt; true
+</span>
+<span class="c1"># Functions ###################################################################
+# Call them:
+</span><span class="p">(</span><span class="o">-</span> <span class="mi">5</span> <span class="mi">3</span><span class="p">)</span>                   <span class="c1"># =&gt; 2 (Operators and functions work the same way.)
+</span><span class="p">(</span><span class="n">math</span><span class="o">/</span><span class="n">sin</span> <span class="p">(</span><span class="o">/</span> <span class="n">math</span><span class="o">/</span><span class="n">pi</span> <span class="mi">2</span><span class="p">))</span>  <span class="c1"># =&gt; 1
+</span><span class="p">(</span><span class="nb">range</span> <span class="mi">5</span><span class="p">)</span>                 <span class="c1"># =&gt; @[0 1 2 3 4]
+</span>
+<span class="c1"># Create them:
+</span><span class="p">(</span><span class="n">defn</span> <span class="n">mult</span><span class="o">-</span><span class="n">by</span><span class="o">-</span><span class="mi">2</span>
+  <span class="sb">``</span><span class="n">First</span> <span class="n">line</span> <span class="n">of</span> <span class="n">docstring</span><span class="p">.</span>
+
+  <span class="n">Some</span> <span class="n">more</span> <span class="n">of</span> <span class="n">the</span> <span class="n">docstring</span><span class="p">.</span><span class="sb">``</span>
+  <span class="p">[</span><span class="n">x</span><span class="p">]</span>
+  <span class="p">(</span><span class="k">print</span> <span class="s">"Hi."</span><span class="p">)</span>
+  <span class="p">(</span><span class="k">print</span> <span class="s">"Will compute using: "</span> <span class="n">x</span><span class="p">)</span>
+  <span class="p">(</span><span class="o">*</span> <span class="mi">2</span> <span class="n">x</span><span class="p">))</span>
+
+<span class="p">(</span><span class="k">print</span> <span class="p">(</span><span class="n">mult</span><span class="o">-</span><span class="n">by</span><span class="o">-</span><span class="mi">2</span> <span class="mi">6</span><span class="p">))</span>  <span class="c1"># =&gt; 12 (after printing "Hi" and so forth)
+</span>
+<span class="c1"># If you have a function named "main" in your file, `janet` will automatically
+# call it for you when you run the file.
+</span>
+<span class="c1"># Interactively read a function's docs from within the repl:
+</span><span class="p">(</span><span class="n">doc</span> <span class="n">mult</span><span class="o">-</span><span class="n">by</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># Note, functions have to be defined before they can be used in a function,
+# so if you design top-down, you'll need to write your functions from the
+# bottom of the file up.
+</span>
+<span class="c1"># You can make anonymous functions as well:
+</span><span class="p">(</span><span class="n">fn</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="p">(</span><span class="o">+</span> <span class="n">x</span> <span class="n">x</span><span class="p">))</span>
+<span class="p">(</span><span class="n">fn</span> <span class="n">my</span><span class="o">-</span><span class="n">func</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="p">(</span><span class="o">+</span> <span class="n">x</span> <span class="n">x</span><span class="p">))</span>  <span class="c1"># This one's less anonymous.
+</span>
+<span class="c1"># Use `do` to make some side-effecting calls and then evaluate to
+# the last form in the `do`:
+</span><span class="p">(</span><span class="k">def</span> <span class="nf">n</span> <span class="p">(</span><span class="n">do</span>
+         <span class="p">(</span><span class="k">print</span> <span class="s">"hi"</span><span class="p">)</span>
+         <span class="p">(</span><span class="n">do</span><span class="o">-</span><span class="n">some</span><span class="o">-</span><span class="n">side</span><span class="o">-</span><span class="n">effecting</span> <span class="mi">42</span><span class="p">)</span>
+         <span class="mi">3</span><span class="p">))</span>
+<span class="n">n</span>  <span class="c1"># =&gt; 3
+</span>
+<span class="c1"># You might say that function bodies provide an "implicit do".
+</span>
+<span class="c1"># Operations on data structures ###############################################
+# (Making all of these mutable so we can ... mutate them.)
+</span><span class="p">(</span><span class="k">def</span> <span class="nf">s</span> <span class="o">@</span><span class="s">"Hello, World!"</span><span class="p">)</span>
+<span class="p">(</span><span class="k">def</span> <span class="nf">a</span> <span class="o">@</span><span class="p">[:</span><span class="n">a</span> <span class="p">:</span><span class="n">b</span> <span class="p">:</span><span class="n">c</span> <span class="p">:</span><span class="n">d</span> <span class="p">:</span><span class="n">e</span><span class="p">])</span>
+<span class="p">(</span><span class="k">def</span> <span class="nf">t</span> <span class="o">@</span><span class="p">{:</span><span class="n">a</span> <span class="mi">1</span> <span class="p">:</span><span class="n">b</span> <span class="mi">2</span><span class="p">})</span>
+
+<span class="p">(</span><span class="n">length</span> <span class="n">s</span><span class="p">)</span>  <span class="c1"># =&gt; 13
+</span><span class="p">(</span><span class="n">length</span> <span class="n">a</span><span class="p">)</span>  <span class="c1"># =&gt;  5
+</span><span class="p">(</span><span class="n">length</span> <span class="n">t</span><span class="p">)</span>  <span class="c1"># =&gt;  2
+</span>
+<span class="c1"># Getting values:
+</span><span class="p">(</span><span class="n">s</span> <span class="mi">7</span><span class="p">)</span>       <span class="c1"># =&gt; 87 (which is the code point for "W")
+</span><span class="p">(</span><span class="n">a</span> <span class="mi">1</span><span class="p">)</span>       <span class="c1"># =&gt; :b
+</span><span class="p">(</span><span class="n">t</span> <span class="p">:</span><span class="n">a</span><span class="p">)</span>      <span class="c1"># =&gt; 1
+</span><span class="p">(</span><span class="n">keys</span> <span class="n">t</span><span class="p">)</span>    <span class="c1"># =&gt; @[:a :b]
+</span><span class="p">(</span><span class="n">values</span> <span class="n">t</span><span class="p">)</span>  <span class="c1"># =&gt; @[1 2]
+</span>
+<span class="c1"># Changing values (for mutable data structures):
+</span><span class="p">(</span><span class="n">put</span> <span class="n">s</span> <span class="mi">2</span> <span class="mi">87</span><span class="p">)</span>   <span class="c1"># @"HeWlo, World!"
+</span><span class="p">(</span><span class="n">put</span> <span class="n">a</span> <span class="mi">2</span> <span class="p">:</span><span class="n">x</span><span class="p">)</span>   <span class="c1"># @[:a :b :x :d :e]
+</span><span class="p">(</span><span class="n">put</span> <span class="n">t</span> <span class="p">:</span><span class="n">b</span> <span class="mi">42</span><span class="p">)</span>  <span class="c1"># @{:a 1 :b 42}
+</span>
+<span class="c1"># Adding and removing values (again, for mutable data structures):
+</span><span class="p">(</span><span class="nb">buffer</span><span class="o">/</span><span class="n">push</span><span class="o">-</span><span class="n">string</span> <span class="n">s</span> <span class="s">"??"</span><span class="p">)</span>  <span class="c1"># @"HeWlo, World!??"
+</span><span class="p">(</span><span class="n">array</span><span class="o">/</span><span class="n">push</span> <span class="n">a</span> <span class="p">:</span><span class="n">f</span><span class="p">)</span>  <span class="c1"># @[:a :b :x :d :e :f]
+</span><span class="p">(</span><span class="n">array</span><span class="o">/</span><span class="n">pop</span> <span class="n">a</span><span class="p">)</span>      <span class="c1"># =&gt; :f, and it's also removed from `a`.
+</span><span class="p">(</span><span class="n">put</span> <span class="n">t</span> <span class="p">:</span><span class="n">x</span> <span class="mi">88</span><span class="p">)</span>      <span class="c1"># @{:a 1 :b 42 :x 88}
+</span>
+<span class="c1"># See the manual for a wide variety of functions for working with
+# buffers/strings, arrays/tuples, and tables/structs.
+</span>
+<span class="c1"># Flow control ################################################################
+</span><span class="p">(</span><span class="k">if</span> <span class="n">some</span><span class="o">-</span><span class="n">condition</span>
+  <span class="mi">42</span>
+  <span class="mi">38</span><span class="p">)</span>
+
+<span class="c1"># Only `nil` and `false` are falsey. Everything else is truthy.
+</span>
+<span class="p">(</span><span class="k">if</span> <span class="n">got</span><span class="o">-</span><span class="n">it</span><span class="err">?</span>
+  <span class="mi">71</span><span class="p">)</span>  <span class="c1"># No false-branch value. Returns `nil` if `got-it?` is falsey.
+</span>
+<span class="p">(</span><span class="n">var</span> <span class="n">i</span> <span class="mi">10</span><span class="p">)</span>
+<span class="p">(</span><span class="k">while</span> <span class="p">(</span><span class="n">pos</span><span class="err">?</span> <span class="n">i</span><span class="p">)</span>
+  <span class="p">(</span><span class="k">print</span> <span class="s">"... "</span> <span class="n">i</span><span class="p">)</span>
+  <span class="p">(</span><span class="o">--</span> <span class="n">i</span><span class="p">))</span>
+<span class="c1"># Now `i` is 0.
+</span>
+<span class="c1"># `case` compares the dispatch value to each of the options.
+</span><span class="p">(</span><span class="n">var</span> <span class="n">x</span> <span class="mi">2</span><span class="p">)</span>
+<span class="p">(</span><span class="n">case</span> <span class="n">x</span>
+  <span class="mi">1</span> <span class="s">"won"</span>
+  <span class="mi">2</span> <span class="s">"too"</span>
+  <span class="mi">3</span> <span class="s">"tree"</span>
+  <span class="s">"unknown"</span><span class="p">)</span>  <span class="c1"># =&gt; "too"
+</span>
+<span class="c1"># `cond` evaluates conditions until it gets a `true`.
+</span><span class="p">(</span><span class="nb">set</span> <span class="n">x</span> <span class="mi">8</span><span class="p">)</span>
+<span class="p">(</span><span class="n">cond</span>
+  <span class="p">(</span><span class="o">=</span> <span class="n">x</span> <span class="mi">1</span><span class="p">)</span> <span class="s">"won"</span>
+  <span class="p">(</span><span class="o">=</span> <span class="n">x</span> <span class="mi">2</span><span class="p">)</span> <span class="s">"too"</span>
+  <span class="p">(</span><span class="o">&lt;</span> <span class="n">x</span> <span class="mi">10</span><span class="p">)</span> <span class="s">"tree"</span>
+  <span class="s">"oof!"</span><span class="p">)</span>  <span class="c1"># =&gt; "tree"
+</span>
+<span class="p">(</span><span class="n">when</span> <span class="p">(</span><span class="n">avoided</span><span class="o">-</span><span class="n">wipeout</span><span class="err">?</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">do</span><span class="o">-</span><span class="n">side</span><span class="o">-</span><span class="n">effecty</span><span class="o">-</span><span class="n">thing</span> <span class="mi">88</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">smell</span><span class="o">-</span><span class="n">the</span><span class="o">-</span><span class="n">roses</span><span class="p">)</span>
+  <span class="p">(</span><span class="n">paint</span><span class="o">-</span><span class="n">fencepost</span><span class="o">-</span><span class="n">error</span><span class="p">))</span>
+
+<span class="c1"># Pattern matching.
+# `match` is like a high-powered switch expression. If you switch on a data
+# structure, it can look inside to try and match on its contents. For example,
+# matching on a table or struct:
+</span><span class="p">(</span><span class="k">def</span> <span class="nf">t</span> <span class="p">{:</span><span class="n">a</span> <span class="mi">1</span> <span class="p">:</span><span class="n">b</span> <span class="mi">2</span> <span class="p">:</span><span class="n">c</span> <span class="mi">3</span><span class="p">})</span>
+<span class="p">(</span><span class="n">match</span> <span class="n">t</span>
+  <span class="p">{:</span><span class="n">yar</span> <span class="n">v</span><span class="p">}</span> <span class="p">(</span><span class="k">print</span> <span class="s">"matches key :yar! "</span> <span class="n">v</span><span class="p">)</span>
+  <span class="p">{:</span><span class="n">moo</span> <span class="n">v</span><span class="p">}</span> <span class="p">(</span><span class="k">print</span> <span class="s">"matches key :moo! "</span> <span class="n">v</span><span class="p">)</span>
+  <span class="p">{:</span><span class="n">c</span>   <span class="n">v</span><span class="p">}</span> <span class="p">(</span><span class="k">print</span> <span class="s">"matches key :c! "</span>   <span class="n">v</span><span class="p">)</span>
+  <span class="n">_</span>        <span class="p">(</span><span class="k">print</span> <span class="s">"no match"</span><span class="p">))</span>             <span class="c1"># =&gt; prints "matches key :c! 3"
+</span>
+<span class="c1"># Iterating ###################################################################
+# Iterate over an integer range:
+</span><span class="p">(</span><span class="k">for</span> <span class="n">i</span> <span class="mi">0</span> <span class="mi">5</span>
+  <span class="p">(</span><span class="k">print</span> <span class="n">i</span><span class="p">))</span>  <span class="c1"># prints 0, 1, 2, 3, 4
+</span>
+<span class="c1"># There's also the more general `loop`:
+</span><span class="p">(</span><span class="n">loop</span> <span class="p">[</span><span class="n">i</span> <span class="p">:</span><span class="nb">range</span> <span class="p">[</span><span class="mi">0</span> <span class="mi">10</span><span class="p">]</span> <span class="p">:</span><span class="n">when</span> <span class="p">(</span><span class="n">even</span><span class="err">?</span> <span class="n">i</span><span class="p">)]</span>
+  <span class="p">(</span><span class="k">print</span> <span class="n">i</span><span class="p">))</span>
+
+<span class="c1"># Loop over an array/tuple:
+</span><span class="p">(</span><span class="k">def</span> <span class="nf">words</span> <span class="p">[</span><span class="s">"foo"</span> <span class="s">"bar"</span> <span class="s">"baz"</span><span class="p">])</span>
+<span class="p">(</span><span class="n">each</span> <span class="n">word</span> <span class="n">words</span>
+  <span class="p">(</span><span class="k">print</span> <span class="n">word</span><span class="p">))</span>
+
+<span class="c1"># Loop over a table/struct:
+</span><span class="p">(</span><span class="k">def</span> <span class="nf">t</span> <span class="p">{:</span><span class="n">a</span> <span class="mi">1</span> <span class="p">:</span><span class="n">b</span> <span class="mi">2</span><span class="p">})</span>
+<span class="p">(</span><span class="n">eachp</span> <span class="p">[</span><span class="n">k</span> <span class="n">v</span><span class="p">]</span> <span class="n">t</span>  <span class="c1"># Loop over each pair in `t`.
+</span>  <span class="p">(</span><span class="k">print</span> <span class="n">k</span> <span class="s">" --&gt; "</span> <span class="n">v</span><span class="p">))</span>
+
+<span class="c1"># Can also use `eachk` to loop over keys in a table or struct.
+</span>
+<span class="c1"># Functional programming ######################################################
+# You'll find many familiar old friends here.
+</span><span class="p">(</span><span class="nb">filter</span> <span class="n">even</span><span class="err">?</span>
+        <span class="p">(</span><span class="nb">map</span> <span class="p">(</span><span class="n">fn</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span>
+               <span class="p">(</span><span class="o">*</span> <span class="n">x</span> <span class="n">x</span><span class="p">))</span>
+             <span class="p">(</span><span class="nb">range</span> <span class="mi">10</span><span class="p">)))</span>  <span class="c1"># =&gt; @[0 4 16 36 64]
+</span>
+<span class="p">(</span><span class="nb">reduce</span> <span class="o">+</span> <span class="mi">0</span> <span class="p">(</span><span class="nb">range</span> <span class="mi">5</span><span class="p">))</span>     <span class="c1"># =&gt; 10
+</span>
+<span class="c1"># ...and lots more (see the API docs).
+</span>
+<span class="c1"># Errata ######################################################################
+</span><span class="p">(</span><span class="nb">type</span> <span class="n">a</span><span class="p">)</span>                <span class="c1"># =&gt; the type of `a` (as a keyword)
+</span><span class="p">(</span><span class="n">describe</span> <span class="n">a</span><span class="p">)</span>            <span class="c1"># =&gt; a human-readable description of `a`
+</span><span class="p">(</span><span class="n">string</span><span class="o">/</span><span class="nb">format</span> <span class="s">"%j"</span> <span class="n">a</span><span class="p">)</span>  <span class="c1"># =&gt; Janet values, nicely-formatted
+</span></code></pre></div>
+<p>This tour didn&rsquo;t cover a number of other features such as modules, fibers,
+PEGs, macros, etc., but should give you a taste of what Janet is like. See
+the <a href="https://janet-lang.org/docs/index.html">Janet manual</a> and the <a href="https://janet-lang.org/api/index.html">Janet API
+docs</a> for more info.</p>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/janet.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by John Gabriele, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/janet.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://www.unexpected-vortices.com/">John Gabriele</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

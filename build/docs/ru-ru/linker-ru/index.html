@@ -1,0 +1,301 @@
+<!DOCTYPE html lang="ru-ru" xml:lang="ru-ru" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="ru-ru">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn X in Y Minutes: Scenic Programming Language Tours</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/ru-ru/linker-ru/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fru-ru%2Flinker-ru%2F&text=%D0%98%D0%B7%D1%83%D1%87%D0%B8%D1%82%D0%B5+X+%D0%B7%D0%B0+Y+%D0%BC%D0%B8%D0%BD%D1%83%D1%82%2C+%D0%B3%D0%B4%D0%B5+X%3Dlinker">
+        Поделиться страницей
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Выберите тему:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">светлая</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">тёмная</button>
+  </div>
+  <h1><a href="/">Изучите X за Y минут</a></h1>
+  <h2>Где X=linker</h2>
+  <div id="doc">
+    <h1>Основные понятия и определения</h1>
+
+<p><strong>Счетчик позиций</strong> - у компоновщика есть специальная переменная 
+&ldquo;.&rdquo; (точка) всегда содержит текущую позицию вывода.</p>
+
+<h1>Функции</h1>
+
+<p><strong>ADDR(section)</strong> -  возвращает абсолютный адрес указанной секции. Однако 
+данная секция должна быть определенна до использования функции ADDR.</p>
+
+<p><strong>ALIGN(exp)</strong> -  возвращает значение счетчика позиций, выравненное на границу 
+следующего за exp выражения.</p>
+
+<p><strong>SIZEOF(section)</strong> -  возвращает размер секции в байтах.</p>
+
+<p><strong>FILL(param)</strong> -  определяет образец заполнения для текущей секции. Все 
+остальные неуказанные регионы внутри секции заполняются значением указанными 
+в аргументе функции.</p>
+
+<p><strong>KEEP(param)</strong> -  используется чтобы помечать param как неустранимый.</p>
+
+<p><strong>ENTRY(func)</strong> -  определяет функцию, которая будет являться точкой входа 
+в программу.</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># Определяем точку входа в программу</span>
+ENTRY<span class="o">(</span>Reset_Handler<span class="o">)</span>
+
+<span class="c"># Определяем перемнную которая содержит адрес вершины стека</span>
+_estack <span class="o">=</span> 0x20020000<span class="p">;</span>  
+<span class="c"># Определяем перемнную которая содержит значение размера кучи  </span>
+_Min_Heap_Size <span class="o">=</span> 0x200<span class="p">;</span>
+<span class="c"># Определяем перемнную которая содержит значение размера стека</span>
+_Min_Stack_Size <span class="o">=</span> 0x400<span class="p">;</span> 
+
+<span class="c"># Описание карты памяти доступной для данного процессора</span>
+<span class="c"># MEMORY</span>
+<span class="c"># {</span>
+<span class="c"># ИМЯ_ОБЛАСТИ_ПАМЯТИ    (права доступа) : ORIGIN = АДРЕС_НАЧАЛА, LENGTH = РАЗМЕР</span>
+<span class="c"># }</span>
+<span class="c"># В нашем примере контроллер содержит три области памяти:</span>
+<span class="c"># RAM - начинается с адреса 0x20000000 и занимает 128 Кбайт;</span>
+<span class="c"># CCMRAM - начинается с адреса 0x10000000и занимает 64 Кбайт;</span>
+<span class="c"># FLASH - начинается с адреса 0x8000000 занимает 1024 Кбайт;</span>
+<span class="c"># Причем RAM память доступка для чтения, записи и исполнения.</span>
+<span class="c"># CCMRAM память доступна только на чтение и запись.</span>
+<span class="c"># FLASH память доступна на чтение и исполнение.</span>
+MEMORY
+<span class="o">{</span>
+    RAM         <span class="o">(</span>xrw<span class="o">)</span>     :     ORIGIN <span class="o">=</span> 0x20000000,    LENGTH <span class="o">=</span> 128K
+    CCMRAM      <span class="o">(</span>rw<span class="o">)</span>      :     ORIGIN <span class="o">=</span> 0x10000000,    LENGTH <span class="o">=</span> 64K
+    FLASH       <span class="o">(</span>rx<span class="o">)</span>      :     ORIGIN <span class="o">=</span> 0x8000000,     LENGTH <span class="o">=</span> 1024K
+<span class="o">}</span>
+
+<span class="c"># Описываем выходные секции</span>
+SECTIONS
+<span class="o">{</span>
+    <span class="c"># Первая секция содержит таблицу векторов прерываний</span>
+  .isr_vector :
+  <span class="o">{</span>
+    <span class="c"># Выравниваем текущую позицию на границу 4-х байт.</span>
+    <span class="nb">.</span> <span class="o">=</span> ALIGN<span class="o">(</span>4<span class="o">)</span><span class="p">;</span>
+
+    <span class="c"># Существует опция --gc-sections, которая позволяет собирать мусор из неиспользуемых </span>
+    <span class="c"># входных разделов. И если есть разделы, которые сборщик муссора не должен трогать, </span>
+    <span class="c"># то их необходимо указать в качестве аргумента функции KEEP() (аналог ключевого слова </span>
+    <span class="c"># volatile).</span>
+    <span class="c"># Запись (*(.isr_vector)) означает разделы .isr_vector во всех объектных файлах. Т.к. </span>
+    <span class="c"># обращение к разделу в общем виде выглядит так: (ИМЯ_ФАЙЛА(ИМЯ_РАЗДЕЛА))   </span>
+    KEEP<span class="o">(</span><span class="k">*</span><span class="o">(</span>.isr_vector<span class="o">))</span>    
+
+    <span class="c"># Выравниваем текущую позицию на границу 4-х байт.</span>
+    <span class="nb">.</span> <span class="o">=</span> ALIGN<span class="o">(</span>4<span class="o">)</span><span class="p">;</span>
+
+    <span class="c"># Выражение "&gt;ОБЛАСТЬ_ПАМЯТИ" указывает в какую именно область памяти будет помещенна </span>
+    <span class="c"># данная секция.    В нашем слущае секция .isr_vector будет размещена во FLASH памяти.</span>
+  <span class="o">}</span> <span class="o">&gt;</span>FLASH
+
+<span class="c"># ИТОГО: Секция .isr_vector, которая содержит таблицу векторов прерываний выравнивается </span>
+<span class="c"># по границе 4-х байт, помечается как недоступная для сборщика мусора и размещается в начале </span>
+<span class="c"># FLASH памяти микроконтроллера.</span>
+
+  <span class="c"># Вторая секция содержит код программы.</span>
+  .text :
+  <span class="o">{</span>
+    <span class="c"># Выравниваем текущую позицию на границу 4-х байт.</span>
+    <span class="nb">.</span> <span class="o">=</span> ALIGN<span class="o">(</span>4<span class="o">)</span><span class="p">;</span>
+
+    <span class="c"># Указываем, что в данной секции будут хранится области .text всех</span>
+    <span class="c"># объектных файлов   </span>
+    <span class="k">*</span><span class="o">(</span>.text<span class="o">)</span>           
+    <span class="k">*</span><span class="o">(</span>.text<span class="k">*</span><span class="o">)</span>          
+
+    <span class="c"># Защищаем от сборщика мусора секции .init и .fini</span>
+    KEEP <span class="o">(</span><span class="k">*</span><span class="o">(</span>.init<span class="o">))</span>
+    KEEP <span class="o">(</span><span class="k">*</span><span class="o">(</span>.fini<span class="o">))</span>
+
+    <span class="c"># Выравниваем текущую позицию на границу 4-х байт.</span>
+    <span class="nb">.</span> <span class="o">=</span> ALIGN<span class="o">(</span>4<span class="o">)</span><span class="p">;</span>
+
+    <span class="c"># Определяется переменная _etext, которая хранит в себе адрес конца секции .text и которая</span>
+    <span class="c"># может быть доступна в исходном тексте программы через объявление </span>
+    <span class="c"># volaile unsigned int extern _etext;</span>
+    _etext <span class="o">=</span> .<span class="p">;</span>      
+  <span class="o">}</span> <span class="o">&gt;</span>FLASH
+
+<span class="c"># ИТОГО: Секция .text, которая содержит код программы выравнивается по границе 4-х байт, </span>
+<span class="c"># включает в себя: все секции с кодом программы во всех объектных файлах и защищенные </span>
+от сборщика муссора секции .init и .fini во всех объектных файлах, распологается во FLASH 
+памяти микроконтроллера сразу за таблицей векторов. 
+Секции text, .init и .fini. располагаются в памяти в той последовательности в которой они 
+объявлены в скрипте.
+
+  <span class="c"># Третья секция содержит константные данные.</span>
+  .rodata :
+  <span class="o">{</span>
+    <span class="c"># Выравниваем текущую позицию на границу 4-х байт.</span>
+    <span class="nb">.</span> <span class="o">=</span> ALIGN<span class="o">(</span>4<span class="o">)</span><span class="p">;</span>
+
+    <span class="c"># Указываем, что в данной секции будут хранится области .rodataвсех</span>
+    <span class="c"># объектных файлов   </span>
+    <span class="k">*</span><span class="o">(</span>.rodata<span class="o">)</span>         
+    <span class="k">*</span><span class="o">(</span>.rodata<span class="k">*</span><span class="o">)</span>  
+
+    <span class="c"># Выравниваем текущую позицию на границу 4-х байт.      </span>
+    <span class="nb">.</span> <span class="o">=</span> ALIGN<span class="o">(</span>4<span class="o">)</span><span class="p">;</span>
+  <span class="o">}</span> <span class="o">&gt;</span>FLASH
+
+  <span class="c"># Сохраняем в переменной _sidata  абсолютный адрес секции .data</span>
+  _sidata <span class="o">=</span> LOADADDR<span class="o">(</span>.data<span class="o">)</span><span class="p">;</span>
+
+  <span class="c"># Четвертая секция содержит инициализированные переменные.</span>
+  .data : 
+  <span class="o">{</span>
+    <span class="c"># Выравниваем текущую позицию на границу 4-х байт.</span>
+    <span class="nb">.</span> <span class="o">=</span> ALIGN<span class="o">(</span>4<span class="o">)</span><span class="p">;</span>
+
+    <span class="c"># Сохраняем в переменной _sdata адрес текущей позиции (начала секции)</span>
+    _sdata <span class="o">=</span> .<span class="p">;</span>     
+
+    <span class="c"># Указываем, что в данной секции будут хранится области .data всех</span>
+    <span class="c"># объектных файлов     </span>
+    <span class="k">*</span><span class="o">(</span>.data<span class="o">)</span>           
+    <span class="k">*</span><span class="o">(</span>.data<span class="k">*</span><span class="o">)</span>          
+
+    <span class="c"># Выравниваем текущую позицию на границу 4-х байт.</span>
+    <span class="nb">.</span> <span class="o">=</span> ALIGN<span class="o">(</span>4<span class="o">)</span><span class="p">;</span>
+
+    <span class="c"># Сохраняем в переменной _sdata адрес текущей позиции (конец секции)</span>
+    _edata <span class="o">=</span> .<span class="p">;</span>    
+
+    <span class="c"># Функция AT указывает на то, что данный сектор хранится в одной области памяти </span>
+    <span class="c"># (в нашем случае FLASH), а исполняться будет из другой обасти памяти (в нашем случае RAM). </span>
+    <span class="c"># Есть два типа адрессов:</span>
+    <span class="c"># * VMA (Virtual memory address) - это run-time адрес по которому уомпилятор ожидает </span>
+    <span class="c">#   видеть данные.</span>
+    <span class="c"># * LMA (Load memory address) - это адрес по которому линкер хранит данные.         </span>
+
+    <span class="c">#Startup должен код скопировать секцию .data из адрессов LMA в адресса VMA.</span>
+
+  <span class="o">}</span> <span class="o">&gt;</span>RAM AT&gt; FLASH
+
+  <span class="c"># Пятая секция содержит инициализированные нулем переменные.  </span>
+  .bss :
+  <span class="o">{</span>
+    <span class="c"># Сохраняем в переменной _sbss и __bss_start__  адрес текущей позиции (начала секции)</span>
+    _sbss <span class="o">=</span> .<span class="p">;</span>        
+    __bss_start__ <span class="o">=</span> _sbss<span class="p">;</span>
+
+    <span class="c"># Указываем, что в данной секции будут хранится области .bss всех</span>
+    <span class="c"># объектных файлов </span>
+    <span class="k">*</span><span class="o">(</span>.bss<span class="o">)</span>
+    <span class="k">*</span><span class="o">(</span>.bss<span class="k">*</span><span class="o">)</span>
+
+    <span class="c"># Выравниваем текущую позицию на границу 4-х байт.</span>
+    <span class="nb">.</span> <span class="o">=</span> ALIGN<span class="o">(</span>4<span class="o">)</span><span class="p">;</span>
+
+    <span class="c"># Сохраняем в переменной _ebss и __bss_end__ адрес текущей позиции (начала секции)</span>
+    _ebss <span class="o">=</span> .<span class="p">;</span>         
+    __bss_end__ <span class="o">=</span> _ebss<span class="p">;</span>
+  <span class="o">}</span> <span class="o">&gt;</span>RAM
+
+  <span class="c"># Шестая секция содержит кучу и стек. Размещается в самом конце RAM.</span>
+  ._user_heap_stack :
+  <span class="o">{</span>
+    <span class="nb">.</span> <span class="o">=</span> ALIGN<span class="o">(</span>4<span class="o">)</span><span class="p">;</span>
+    PROVIDE <span class="o">(</span> end <span class="o">=</span> <span class="nb">.</span> <span class="o">)</span><span class="p">;</span>
+    PROVIDE <span class="o">(</span> _end <span class="o">=</span> <span class="nb">.</span> <span class="o">)</span><span class="p">;</span>
+    <span class="nb">.</span> <span class="o">=</span> <span class="nb">.</span> + _Min_Heap_Size<span class="p">;</span>
+    <span class="nb">.</span> <span class="o">=</span> <span class="nb">.</span> + _Min_Stack_Size<span class="p">;</span>
+    <span class="nb">.</span> <span class="o">=</span> ALIGN<span class="o">(</span>4<span class="o">)</span><span class="p">;</span>
+  <span class="o">}</span> <span class="o">&gt;</span>RAM
+<span class="o">}</span>
+</code></pre></div>
+    <hr>
+    <p>Хотите предложить свой перевод? Может быть, улучшение перевода? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Откройте Issue</a> в репозитории Github или сделайте <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/ru-ru/linker-ru.html.markdown">pull request</a> сами!
+    </p>
+    <p class="contributed">
+    Первоначально предоставлено автором Alexander Kovalchuk, и обновлено <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/ru-ru/linker-ru.html.markdown">0 автором (-ами)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="https://github.com/Zamuhrishka">Alexander Kovalchuk</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/Zamuhrishka">Alexander Kovalchuk</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

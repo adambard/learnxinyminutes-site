@@ -1,0 +1,477 @@
+<!DOCTYPE html lang="cs-cz" xml:lang="cs-cz" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="cs-cz">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn Elm in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/cs-cz/elm/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fcs-cz%2Felm%2F&text=Nau%C4%8D+se+X+za+Y+minut%2C+kde+X%3DElm">
+        Sdílej stránku
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Vyberte téma:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">světlé</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">tmavé</button>
+  </div>
+  <h1><a href="/">Nauč se X za Y minut</a></h1>
+  <h2>Kde X=Elm</h2>
+    <p class="filelink">
+    Získej kód:
+    <a href="/docs/files/learnelm-cz.elm">learnelm-cz.elm</a>
+    </p>
+  <div id="doc">
+    <p>Elm je funkcionální reaktivní jazyk, který se kompiluje do (klientského) JavaScriptu.
+Elm je silně typovaný, díky tomu je překladač schopen zachytit většinu chyb okamžitě a
+vypsat snadno srozumitelná chybová hlášení.
+Elm se hodí k tvorbě webových uživatelských rozhraní a her.</p>
+<div class="highlight"><pre class="highlight haskell"><code><span class="c1">-- Jednořádkové komentáře začínají dvěma pomlčkami.</span>
+<span class="cm">{- Víceřádkové komentáře mohou být takto uzavřeny do bloku.
+{- Mohou být i zanořeny. -}
+-}</span>
+
+<span class="cm">{-- Základy --}</span>
+
+<span class="c1">-- Aritmetika</span>
+<span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="c1">-- 2</span>
+<span class="mi">8</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1">-- 7</span>
+<span class="mi">10</span> <span class="o">*</span> <span class="mi">2</span> <span class="c1">-- 20</span>
+
+<span class="c1">-- Každé číslo bez desetinné tečky je typu Int nebo Float.</span>
+<span class="mi">33</span> <span class="o">/</span> <span class="mi">2</span> <span class="c1">-- 16.5 s reálným dělením</span>
+<span class="mi">33</span> <span class="o">//</span> <span class="mi">2</span> <span class="c1">-- 16 s celočíselným dělením</span>
+
+<span class="c1">-- Umocňování</span>
+<span class="mi">5</span> <span class="o">^</span> <span class="mi">2</span> <span class="c1">-- 25</span>
+
+<span class="c1">-- Pravdivostní proměnné</span>
+<span class="n">not</span> <span class="kt">True</span> <span class="c1">-- False</span>
+<span class="n">not</span> <span class="kt">False</span> <span class="c1">-- True</span>
+<span class="mi">1</span> <span class="o">==</span> <span class="mi">1</span> <span class="c1">-- True</span>
+<span class="mi">1</span> <span class="o">/=</span> <span class="mi">1</span> <span class="c1">-- False</span>
+<span class="mi">1</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="c1">-- True</span>
+
+<span class="c1">-- Řetězce a znaky</span>
+<span class="s">"Toto je textový řetězec, protože používá dvojité uvozovky."</span>
+<span class="sc">'a'</span> <span class="c1">-- znak v jednoduchých uvozovkách</span>
+
+<span class="c1">-- Řetězce lze spojovat.</span>
+<span class="s">"Ahoj "</span> <span class="o">++</span> <span class="s">"světe!"</span> <span class="c1">-- "Ahoj světe!"</span>
+
+<span class="cm">{-- Seznamy (List), n-tice (Tuple) a Záznamy (Record) --}</span>
+
+<span class="c1">-- Každá položka seznamu musí být stejného typu.</span>
+<span class="p">[</span><span class="s">"příliš"</span><span class="p">,</span> <span class="s">"žluťoučký"</span><span class="p">,</span> <span class="s">"kůň"</span><span class="p">,</span> <span class="s">"úpěl"</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="c1">-- Druhý příklad lze zapsat také pomocí dvou teček.</span>
+<span class="kt">List</span><span class="o">.</span><span class="n">range</span> <span class="mi">1</span> <span class="mi">5</span>
+
+<span class="c1">-- Spojovat seznamy lze stejně jako řetězce.</span>
+<span class="kt">List</span><span class="o">.</span><span class="n">range</span> <span class="mi">1</span> <span class="mi">5</span> <span class="o">++</span> <span class="kt">List</span><span class="o">.</span><span class="n">range</span> <span class="mi">6</span> <span class="mi">10</span> <span class="o">==</span> <span class="kt">List</span><span class="o">.</span><span class="n">range</span> <span class="mi">1</span> <span class="mi">10</span> <span class="c1">-- True</span>
+
+<span class="c1">-- K přidání položky do seznamu použijte funkci "cons".</span>
+<span class="mi">0</span> <span class="o">::</span> <span class="kt">List</span><span class="o">.</span><span class="n">range</span> <span class="mi">1</span> <span class="mi">5</span> <span class="c1">-- [0, 1, 2, 3, 4, 5]</span>
+
+<span class="c1">-- Funkce "head" pro získání první položky seznamu i funkce "tail" pro získání následujích položek</span>
+<span class="c1">-- vrací typ Maybe. Místo zjišťování, jestli nějaká položka není null,</span>
+<span class="c1">-- se s chybějcími hodnotami vypořádáme explicitně.</span>
+<span class="kt">List</span><span class="o">.</span><span class="n">head</span> <span class="p">(</span><span class="kt">List</span><span class="o">.</span><span class="n">range</span> <span class="mi">1</span> <span class="mi">5</span><span class="p">)</span> <span class="c1">-- Just 1</span>
+<span class="kt">List</span><span class="o">.</span><span class="n">tail</span> <span class="p">(</span><span class="kt">List</span><span class="o">.</span><span class="n">range</span> <span class="mi">1</span> <span class="mi">5</span><span class="p">)</span> <span class="c1">-- Just [2, 3, 4, 5]</span>
+<span class="kt">List</span><span class="o">.</span><span class="n">head</span> <span class="kt">[]</span> <span class="c1">-- Nothing</span>
+<span class="c1">-- List.nazevFunkce odkazuje na funkci, která žije v modulu List.</span>
+
+<span class="c1">-- Každý prvek v n-tici může být jiného typu, ale n-tice má pevný počet prvků.</span>
+<span class="p">(</span><span class="s">"elm"</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
+
+<span class="c1">-- K získání hodnot z dvojice použijte funkce first a second.</span>
+<span class="c1">-- (Toto je pouze zkratka. Brzy si ukážeme, jak na to "správně".)</span>
+<span class="kt">Tuple</span><span class="o">.</span><span class="n">first</span> <span class="p">(</span><span class="s">"elm"</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span> <span class="c1">-- "elm"</span>
+<span class="kt">Tuple</span><span class="o">.</span><span class="n">second</span> <span class="p">(</span><span class="s">"elm"</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span> <span class="c1">-- 42</span>
+
+<span class="c1">-- Prázná n-tice, neboli "unit", se občas používá jako zástupný symbol.</span>
+<span class="c1">-- Je to jediná hodnota svého typu, který se také nazývá "Unit".</span>
+<span class="nb">()</span>
+
+<span class="c1">-- Záznamy jsou podobné n-ticím, ale prvky jsou pojmenovány. Na pořadí nezáleží.</span>
+<span class="c1">-- Povšimněte si, že hodnoty vlastností se přiřazují rovnítky, ne dvojtečkami.</span>
+<span class="p">{</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">7</span> <span class="p">}</span>
+
+<span class="c1">-- K hodnotám se přistupuje pomocí tečky a názvu vlastnosti.</span>
+<span class="p">{</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">7</span> <span class="p">}</span><span class="o">.</span><span class="n">x</span> <span class="c1">-- 3</span>
+
+<span class="c1">-- Nebo využitím přístupové funkce, což je jen tečka a název vlastnosti.</span>
+<span class="o">.</span><span class="n">y</span> <span class="p">{</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">7</span> <span class="p">}</span> <span class="c1">-- 7</span>
+
+<span class="c1">-- Změna hodnoty vlastnosti v záznamu. (Záznam tuto vlastnost už musí mít.)</span>
+<span class="p">{</span> <span class="n">osoba</span> <span class="o">|</span>
+  <span class="n">jmeno</span> <span class="o">=</span> <span class="s">"Jiří"</span> <span class="p">}</span>
+
+<span class="c1">-- Změna více vlastností s využitím aktuálních hodnot.</span>
+<span class="p">{</span> <span class="n">hmotnyBod</span> <span class="o">|</span>
+  <span class="n">poloha</span> <span class="o">=</span> <span class="n">hmotnyBod</span><span class="o">.</span><span class="n">poloha</span> <span class="o">+</span> <span class="n">hmotnyBod</span><span class="o">.</span><span class="n">rychlost</span><span class="p">,</span>
+  <span class="n">rychlost</span> <span class="o">=</span> <span class="n">hmotnyBod</span><span class="o">.</span><span class="n">rychlost</span> <span class="o">+</span> <span class="n">hmotnyBod</span><span class="o">.</span><span class="n">zrychleni</span> <span class="p">}</span>
+
+<span class="cm">{-- Řídicí struktury --}</span>
+
+<span class="c1">-- Podmínky vždy musí mít větev "else" a obě větve musí být stejného typu.</span>
+<span class="kr">if</span> <span class="n">powerLevel</span> <span class="o">&gt;</span> <span class="mi">9000</span> <span class="kr">then</span>
+  <span class="s">"PÁNI!"</span>
+<span class="kr">else</span>
+  <span class="s">"hmm"</span>
+
+<span class="c1">-- Podmínky lze skládat za sebe.</span>
+<span class="kr">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="kr">then</span>
+  <span class="s">"n je záporné"</span>
+<span class="kr">else</span> <span class="kr">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="kr">then</span>
+  <span class="s">"n je kladné"</span>
+<span class="kr">else</span>
+  <span class="s">"n je nula"</span>
+
+<span class="c1">-- Použíjte příkaz "case" k nalezení shody vzoru a různých možností.</span>
+<span class="kr">case</span> <span class="n">seznam</span> <span class="kr">of</span>
+  <span class="kt">[]</span> <span class="o">-&gt;</span> <span class="s">"odpovídá práznému seznamu"</span>
+  <span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">-&gt;</span> <span class="s">"odpovídá seznamu o právě jedné položce, "</span> <span class="o">++</span> <span class="n">toString</span> <span class="n">x</span>
+  <span class="n">x</span><span class="o">::</span><span class="n">xs</span> <span class="o">-&gt;</span> <span class="s">"odpovídá seznamu o alespoň jedné položce, jehož prvním prvkem je "</span> <span class="o">++</span> <span class="n">toString</span> <span class="n">x</span>
+<span class="c1">-- Shody se vyhodnocují v zapsaném pořadí. Kdybychom umístili [x] poslední, nikdy by nenastala shoda,</span>
+<span class="c1">-- protože x::xs také odpovídá  (xs by byl prázdný seznam). Shody "nepropadají".</span>
+<span class="c1">-- Překladač vždy upozorní na chybějící nebo přebývající větve.</span>
+
+<span class="c1">-- Větvení typu Maybe.</span>
+<span class="kr">case</span> <span class="kt">List</span><span class="o">.</span><span class="n">head</span> <span class="n">seznam</span> <span class="kr">of</span>
+  <span class="kt">Just</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="s">"První položka je "</span> <span class="o">++</span> <span class="n">toString</span> <span class="n">x</span>
+  <span class="kt">Nothing</span> <span class="o">-&gt;</span> <span class="s">"Seznam byl prázdný."</span>
+
+<span class="cm">{-- Funkce --}</span>
+
+<span class="c1">-- Syntaxe funkcí je v Elmu velmi úsporná, založená spíše na mezerách</span>
+<span class="c1">-- než na závorkách. Neexistuje tu klíčové slovo "return".</span>
+
+<span class="c1">-- Funkci definujeme jejím jménem, parametry, rovnítkem a tělem.</span>
+<span class="n">vynasob</span> <span class="n">a</span> <span class="n">b</span> <span class="o">=</span>
+  <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
+
+<span class="c1">-- Funkci voláme předáním parametrů (bez oddělujících čárek).</span>
+<span class="n">vynasob</span> <span class="mi">7</span> <span class="mi">6</span> <span class="c1">-- 42</span>
+
+<span class="c1">-- Částečně aplikované funkci předáme pouze některé parametry.</span>
+<span class="c1">-- Poté zvolíme nové jméno.</span>
+<span class="n">zdvoj</span> <span class="o">=</span>
+  <span class="n">vynasob</span> <span class="mi">2</span>
+
+<span class="c1">-- Konstanty jsou podobné, ale nepřijímají žádné parametry.</span>
+<span class="n">odpoved</span> <span class="o">=</span>
+  <span class="mi">42</span>
+
+<span class="c1">-- Předejte funkci jako parametr jiným funkcím.</span>
+<span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="n">zdvoj</span> <span class="p">(</span><span class="kt">List</span><span class="o">.</span><span class="n">range</span> <span class="mi">1</span> <span class="mi">4</span><span class="p">)</span> <span class="c1">-- [2, 4, 6, 8]</span>
+
+<span class="c1">-- Nebo použijte anonymní funkci.</span>
+<span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">a</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="p">(</span><span class="kt">List</span><span class="o">.</span><span class="n">range</span> <span class="mi">1</span> <span class="mi">4</span><span class="p">)</span> <span class="c1">-- [2, 4, 6, 8]</span>
+
+<span class="c1">-- V definici funkce lze zapsat vzor, může-li nastat pouze jeden případ.</span>
+<span class="c1">-- Tato funkce přijímá jednu dvojici místo dvou parametrů.</span>
+<span class="n">obsah</span> <span class="p">(</span><span class="n">sirka</span><span class="p">,</span> <span class="n">delka</span><span class="p">)</span> <span class="o">=</span>
+  <span class="n">sirka</span> <span class="o">*</span> <span class="n">delka</span>
+
+<span class="n">obsah</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span> <span class="c1">-- 42</span>
+
+<span class="c1">-- Složenými závorkami vytvořte vzor pro názvy vlastností v záznamu.</span>
+<span class="c1">-- Použijte "let" k definici lokálních proměnných.</span>
+<span class="n">objem</span> <span class="p">{</span><span class="n">sirka</span><span class="p">,</span> <span class="n">delka</span><span class="p">,</span> <span class="n">hloubka</span><span class="p">}</span> <span class="o">=</span>
+  <span class="kr">let</span>
+    <span class="n">obsah</span> <span class="o">=</span> <span class="n">sirka</span> <span class="o">*</span> <span class="n">delka</span>
+  <span class="kr">in</span>
+    <span class="n">obsah</span> <span class="o">*</span> <span class="n">hloubka</span>
+
+<span class="n">objem</span> <span class="p">{</span> <span class="n">sirka</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">delka</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">hloubka</span> <span class="o">=</span> <span class="mi">7</span> <span class="p">}</span> <span class="c1">-- 42</span>
+
+<span class="c1">-- Funkce mohou být rekurzivní.</span>
+<span class="n">fib</span> <span class="n">n</span> <span class="o">=</span>
+  <span class="kr">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="kr">then</span>
+    <span class="mi">1</span>
+  <span class="kr">else</span>
+    <span class="n">fib</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="n">fib</span> <span class="p">(</span><span class="kt">List</span><span class="o">.</span><span class="n">range</span> <span class="mi">0</span> <span class="mi">8</span><span class="p">)</span> <span class="c1">-- [1, 1, 2, 3, 5, 8, 13, 21, 34]</span>
+
+<span class="c1">-- Jiná rekurzivní funkce (v praxi použijte List.length).</span>
+<span class="n">delkaSeznamu</span> <span class="n">seznam</span> <span class="o">=</span>
+  <span class="kr">case</span> <span class="n">seznam</span> <span class="kr">of</span>
+    <span class="kt">[]</span> <span class="o">-&gt;</span> <span class="mi">0</span>
+    <span class="n">x</span><span class="o">::</span><span class="n">xs</span> <span class="o">-&gt;</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">delkaSeznamu</span> <span class="n">xs</span>
+
+<span class="c1">-- Funkce se volají před jakýmkoli infixovým operátorem. Závorky určují prioritu.</span>
+<span class="n">cos</span> <span class="p">(</span><span class="n">degrees</span> <span class="mi">30</span><span class="p">)</span> <span class="o">^</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">sin</span> <span class="p">(</span><span class="n">degrees</span> <span class="mi">30</span><span class="p">)</span> <span class="o">^</span> <span class="mi">2</span> <span class="c1">-- 1</span>
+<span class="c1">-- Nejprve se aplikuje "degrees" na číslo 30, výsledek je pak předán trigonometrickým</span>
+<span class="c1">-- funkcím, které jsou následně umocněny na druhou, na závěr proběhne sčítání.</span>
+
+<span class="cm">{-- Typy a typové anotace --}</span>
+
+<span class="c1">-- Překladač odvodí typ každé hodnoty ve vašem programu.</span>
+<span class="c1">-- Typy vždy začínají velkým písmenem. Čtete x : T jako "x je typu T".</span>
+<span class="c1">-- Některé běžné typy, které můžete videt v Elmovém REPLu.</span>
+<span class="mi">5</span> <span class="o">:</span> <span class="kt">Int</span>
+<span class="mf">6.7</span> <span class="o">:</span> <span class="kt">Float</span>
+<span class="s">"ahoj"</span> <span class="o">:</span> <span class="kt">String</span>
+<span class="kt">True</span> <span class="o">:</span> <span class="kt">Bool</span>
+
+<span class="c1">-- Funkce mají také typy. Čtěte "-&gt;" jako "vrací".</span>
+<span class="c1">-- O typu na konci uvažujte jako návratovém typu, o ostatních jako typech argumentů.</span>
+<span class="n">not</span> <span class="o">:</span> <span class="kt">Bool</span> <span class="o">-&gt;</span> <span class="kt">Bool</span>
+<span class="n">round</span> <span class="o">:</span> <span class="kt">Float</span> <span class="o">-&gt;</span> <span class="kt">Int</span>
+
+<span class="c1">-- Když definujete hodnotu, je dobrým zvykem zapsat nad ni její typ.</span>
+<span class="c1">-- Anotace je formou dokumentace, která je ověřována překladačem.</span>
+<span class="n">zdvoj</span> <span class="o">:</span> <span class="kt">Int</span> <span class="o">-&gt;</span> <span class="kt">Int</span>
+<span class="n">zdvoj</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>
+
+<span class="c1">-- Funkce jako parametr je uzavřena v závorkách.</span>
+<span class="c1">-- Typy s malým počátečním písmenem jsou typové proměnné:</span>
+<span class="c1">-- mohou být libovolného typu, ale v každém volání musí být stejné.</span>
+<span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="o">:</span> <span class="p">(</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">List</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">List</span> <span class="n">b</span>
+<span class="c1">-- "List tečka map je typu a-vrací-b, vrací seznam-položek-typu-a, vrací seznam-položek-typu-b."</span>
+
+<span class="c1">-- Existují tři speciální typové proměnné:</span>
+<span class="c1">-- číslo (number), porovnatelné (comparable), and spojitelné (appendable).</span>
+<span class="c1">-- Čísla dovolují použít aritmetiku na Int a Float.</span>
+<span class="c1">-- Porovnatelné dovolují uspořádat čísla a řetězce, např. a &lt; b.</span>
+<span class="c1">-- Spojitelné lze zřetězit pomocí a ++ b.</span>
+
+<span class="cm">{-- Typové aliasy a výčtové typy --}</span>
+
+<span class="c1">-- Pro záznamy a n-tice již typy automaticky existují.</span>
+<span class="c1">-- (Povšimněte si, že typ vlatnosti záznamu přiřazujeme dvojtečkou a hodnotu rovnítkem.)</span>
+<span class="n">pocatek</span> <span class="o">:</span> <span class="p">{</span> <span class="n">x</span> <span class="o">:</span> <span class="kt">Float</span><span class="p">,</span> <span class="n">y</span> <span class="o">:</span> <span class="kt">Float</span><span class="p">,</span> <span class="n">z</span> <span class="o">:</span> <span class="kt">Float</span> <span class="p">}</span>
+<span class="n">pocatek</span> <span class="o">=</span>
+  <span class="p">{</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">}</span>
+
+<span class="c1">-- Stávajícím typům lze dávat jména využitím aliasů.</span>
+<span class="kr">type</span> <span class="n">alias</span> <span class="kt">Bod3D</span> <span class="o">=</span>
+  <span class="p">{</span> <span class="n">x</span> <span class="o">:</span> <span class="kt">Float</span><span class="p">,</span> <span class="n">y</span> <span class="o">:</span> <span class="kt">Float</span><span class="p">,</span> <span class="n">z</span> <span class="o">:</span> <span class="kt">Float</span> <span class="p">}</span>
+
+<span class="c1">-- Alias pro záznam funguje také jako jeho konstruktor.</span>
+<span class="n">jinyPocatek</span> <span class="o">:</span> <span class="kt">Bod3D</span>
+<span class="n">jinyPocatek</span> <span class="o">=</span>
+  <span class="kt">Bod3D</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span>
+
+<span class="c1">-- Jedná se stále o stejný typ, lze je tedy porovnat.</span>
+<span class="n">pocatek</span> <span class="o">==</span> <span class="n">jinyPocatek</span> <span class="c1">-- True</span>
+
+<span class="c1">-- Oproti tomu výčtový (union) typ definuje zcela nový typ.</span>
+<span class="c1">-- Výčtový typ se takto jmenuje, protože může být jedním z několika vybraných možností.</span>
+<span class="c1">-- Každá možnost je reprezentována jako "tag".</span>
+<span class="kr">type</span> <span class="kt">Smer</span> <span class="o">=</span>
+  <span class="kt">Sever</span> <span class="o">|</span> <span class="kt">Jih</span> <span class="o">|</span> <span class="kt">Vychod</span> <span class="o">|</span> <span class="kt">Zapad</span>
+
+<span class="c1">-- Tagy mohou obsahovat další hodnoty známých typů. Lze využít i rekurze.</span>
+<span class="kr">type</span> <span class="kt">IntStrom</span> <span class="o">=</span>
+  <span class="kt">Vrchol</span> <span class="o">|</span> <span class="kt">Uzel</span> <span class="kt">Int</span> <span class="kt">IntStrom</span> <span class="kt">IntStrom</span>
+<span class="c1">-- "Vrchol" i "Uzel" jsou tagy. Vše, co následuje za tagem, je typ.</span>
+
+<span class="c1">-- Tagy lze použít jako hodnoty funkcí.</span>
+<span class="n">koren</span> <span class="o">:</span> <span class="kt">IntStrom</span>
+<span class="n">koren</span> <span class="o">=</span>
+  <span class="kt">Vrchol</span> <span class="mi">7</span> <span class="kt">List</span> <span class="kt">List</span>
+
+<span class="c1">-- Výčtové typy (a typové aliasy) mohou obsahovat typové proměnné.</span>
+<span class="kr">type</span> <span class="kt">Strom</span> <span class="n">a</span> <span class="o">=</span>
+  <span class="kt">Vrchol</span> <span class="o">|</span> <span class="kt">Uzel</span> <span class="n">a</span> <span class="p">(</span><span class="kt">Strom</span> <span class="n">a</span><span class="p">)</span> <span class="p">(</span><span class="kt">Strom</span> <span class="n">a</span><span class="p">)</span>
+<span class="c1">-- "Typ strom-prvků-a je vrchol, nebo uzel obsahující a, strom-prvků-a a strom-prvků-a."</span>
+
+<span class="c1">-- Vzory se shodují s tagy. Tagy s velkým počátečním písmenem odpovídají přesně.</span>
+<span class="c1">-- Proměnné malým písmem odpovídají čemukoli. Podtržítko také odpovídá čemukoli,</span>
+<span class="c1">-- ale určuje, že tuto hodnotu dále nechceme používat.</span>
+<span class="n">nejviceVlevo</span> <span class="o">:</span> <span class="kt">Strom</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">Maybe</span> <span class="n">a</span>
+<span class="n">nejviceVlevo</span> <span class="n">strom</span> <span class="o">=</span>
+  <span class="kr">case</span> <span class="n">strom</span> <span class="kr">of</span>
+    <span class="kt">Vrchol</span> <span class="o">-&gt;</span> <span class="kt">Nothing</span>
+    <span class="kt">Uzel</span> <span class="n">x</span> <span class="kt">Vrchol</span> <span class="kr">_</span> <span class="o">-&gt;</span> <span class="kt">Just</span> <span class="n">x</span>
+    <span class="kt">Uzel</span> <span class="kr">_</span> <span class="n">podstrom</span> <span class="kr">_</span> <span class="o">-&gt;</span> <span class="n">nejviceVlevo</span> <span class="n">podstrom</span>
+
+<span class="c1">-- To je víceméně vše o jazyku samotném.</span>
+<span class="c1">-- Podívejme se nyní, jak organizovat a spouštět náš kód.</span>
+
+<span class="cm">{-- Moduly a importování --}</span>
+
+<span class="c1">-- Standardní knihovny jsou organizovány do modulů, stejně jako knihovny třetích stran,</span>
+<span class="c1">-- které můžete využívat. Ve větších projektech můžete definovat vlastní moduly.</span>
+
+<span class="c1">-- Vložte toto na začátek souboru. Pokud nic neuvedete, předpokládá se "Main".</span>
+<span class="kr">module</span> <span class="nn">Jmeno</span> <span class="kr">where</span>
+
+<span class="c1">-- Výchozím chováním je, že se exportuje vše.</span>
+<span class="c1">-- Případně můžete definovat exportované vlastnosti explicitně.</span>
+<span class="kr">module</span> <span class="nn">Jmeno</span> <span class="p">(</span><span class="kt">MujTyp</span><span class="p">,</span> <span class="nf">mojeHodnota</span><span class="p">)</span> <span class="kr">where</span>
+
+<span class="c1">-- Běžný návrhový vzor je expotovat pouze výčtový typ bez jeho tagů.</span>
+<span class="c1">-- Tento vzor je znám jako krycí typ a často se využívá v knihovnách.</span>
+
+<span class="c1">-- Z jiných modulů lze importovat kód a použít jej v aktuálním modulu.</span>
+<span class="c1">-- Nasledující umístí Dict do aktuálního scope, takže lze volat Dict.insert.</span>
+<span class="kr">import</span> <span class="nn">Dict</span>
+
+<span class="c1">-- Importuje modul Dict a typ Dict, takže v anotacích není nutné psát Dict.Dict.</span>
+<span class="c1">-- Stále lze volat Dict.insert.</span>
+<span class="kr">import</span> <span class="nn">Dict</span> <span class="n">exposing</span> <span class="p">(</span><span class="kt">Dict</span><span class="p">)</span>
+
+<span class="c1">-- Přejmenování importu.</span>
+<span class="kr">import</span> <span class="nn">Graphics.Collage</span> <span class="k">as</span> <span class="n">C</span>
+
+<span class="cm">{-- Porty --}</span>
+
+<span class="c1">-- Port oznamuje, že budete komunikovat s vnějším světem.</span>
+<span class="c1">-- Porty jsou dovoleny pouze v modulu Main.</span>
+
+<span class="c1">-- Příchozí port je jen typová anotace.</span>
+<span class="n">port</span> <span class="n">idKlienta</span> <span class="o">:</span> <span class="kt">Int</span>
+
+<span class="c1">-- Odchozí port má definici.</span>
+<span class="n">port</span> <span class="n">objednavkaKlienta</span> <span class="o">:</span> <span class="kt">List</span> <span class="kt">String</span>
+<span class="n">port</span> <span class="n">objednavkaKlienta</span> <span class="o">=</span> <span class="p">[</span><span class="s">"Knihy"</span><span class="p">,</span> <span class="s">"Potraviny"</span><span class="p">,</span> <span class="s">"Nábytek"</span><span class="p">]</span>
+
+<span class="c1">-- Nebudeme zacházet do detailů, ale v JavaScriptu se dají nastavit</span>
+<span class="c1">-- callbacky pro zasílání na příchozí porty a čtení z odchozích portů.</span>
+
+<span class="cm">{-- Nástroje pro příkazovou řádku --}</span>
+
+<span class="c1">-- Kompilace souboru.</span>
+<span class="o">$</span> <span class="n">elm</span> <span class="n">make</span> <span class="kt">MujSoubor</span><span class="o">.</span><span class="n">elm</span>
+
+<span class="c1">-- Při prvním spuštění nainstaluje Elm standardní knihovny a vytvoří soubor</span>
+<span class="c1">-- elm-package.json, kde jsou uloženy informace o vašem projektu.</span>
+
+<span class="c1">-- Elm reactor je server, který překládá a spouští vaše soubory.</span>
+<span class="c1">-- Kliknutím na klíč vedle názvu souboru spustíte debugger s cestovám v čase!</span>
+<span class="o">$</span> <span class="n">elm</span> <span class="n">reactor</span>
+
+<span class="c1">-- Zkoušejte si jednoduché příkazy v Read-Eval-Print Loop.</span>
+<span class="o">$</span> <span class="n">elm</span> <span class="n">repl</span>
+
+<span class="c1">-- Balíčky jsou určeny uživatelským jménem na GitHubu a názvem repozitáře.</span>
+<span class="c1">-- Nainstalujte nový balíček a uložte jej v souboru elm-package.json.</span>
+<span class="o">$</span> <span class="n">elm</span> <span class="n">package</span> <span class="n">install</span> <span class="n">evancz</span><span class="o">/</span><span class="n">elm</span><span class="o">-</span><span class="n">lang</span><span class="o">/</span><span class="n">html</span>
+
+<span class="c1">-- Porovnejte změny mezi verzemi jednoho balíčku.</span>
+<span class="o">$</span> <span class="n">elm</span> <span class="n">package</span> <span class="n">diff</span> <span class="n">elm</span><span class="o">-</span><span class="n">lang</span><span class="o">/</span><span class="n">html</span> <span class="mf">1.1</span><span class="o">.</span><span class="mi">0</span> <span class="mf">2.0</span><span class="o">.</span><span class="mi">0</span>
+<span class="c1">-- Správce balíčků v Elmu vyžaduje sémantické verzování,</span>
+<span class="c1">-- takže minor verze nikdy nerozbije váš build.</span>
+</code></pre></div>
+<p>Jazyk Elm je překvapivě malý. Nyní se můžete podívat do skoro jakéhokoli zdrojového kódu
+v Elmu a budete mít zběžnou představu o jeho fungování.
+Ovšem možnosti, jak psát kód, který je odolný vůči chybám a snadno se refaktoruje, jsou neomezené!</p>
+
+<p>Zde jsou některé užitečné zdroje (v angličtině).</p>
+
+<ul>
+<li><p><a href="http://elm-lang.org/">Hlavní stránka Elmu</a>. Obsahuje:</p>
+
+<ul>
+<li>Odkazy na <a href="http://elm-lang.org/install">instalátory</a></li>
+<li><a href="http://elm-lang.org/docs">Documentaci</a>, včetně <a href="http://elm-lang.org/docs/syntax">popisu syntaxe</a></li>
+<li>Spoustu nápomocných <a href="http://elm-lang.org/examples">příkladů</a></li>
+</ul></li>
+<li><p>Documentace pro <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/">standardní knihovny Elmu</a>. Povšimněte si:</p>
+
+<ul>
+<li><a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Basics">Základy</a>, které jsou automaticky importovány</li>
+<li>Typ <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Maybe">Maybe</a> a jeho bratranec typ <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Result">Result</a>, které se běžně používají pro chybějící hodnoty a ošetření chyb.</li>
+<li>Datové struktury jako <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/List">List</a>, <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Array">Array</a>, <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Dict">Dict</a> a <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Set">Set</a></li>
+<li>JSON <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Json-Encode">enkódování</a> a <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Json-Decode">dekódování</a></li>
+</ul></li>
+<li><p><a href="https://github.com/evancz/elm-architecture-tutorial#the-elm-architecture">Architektura Elmu</a>. Esej od tvůrce Elmu s příklady, jak organizovat kód do komponent.</p></li>
+<li><p><a href="https://groups.google.com/forum/#!forum/elm-discuss">Elm mailing list</a>. Všichni jsou přátelští a nápomocní.</p></li>
+<li><p><a href="https://github.com/elm-guides/elm-for-js/blob/master/Scope.md#scope-in-elm">Scope v Elmu</a> a <a href="https://github.com/elm-guides/elm-for-js/blob/master/How%20to%20Read%20a%20Type%20Annotation.md#how-to-read-a-type-annotation">Jak číst typové anotace</a>. Další komunitní návody o základech Elmu, psáno pro JavaScriptové vývojáře.</p></li>
+</ul>
+
+<p>Běžte si zkusit něco napsat v Elmu!</p>
+
+    <hr>
+    <p>Máš připomínku, nebo si našel chybu? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Otevři tiket</a> v Github repozitáři, nebo <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/cs-cz/elm.html.markdown">pošli rovnou</a> svojí úpravu!
+    </p>
+    <p class="contributed">
+    Autor původní verze je Max Goldstein a na úpravách se podílelo <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/cs-cz/elm.html.markdown">0 lidí</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://maxgoldste.in/">Max Goldstein</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="http://robinpokorny.com/">Robin Pokorný</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

@@ -1,0 +1,573 @@
+<!DOCTYPE html lang="sk-sk" xml:lang="sk-sk" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="sk-sk">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn elixir in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/sk-sk/elixir-sk/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fsk-sk%2Felixir-sk%2F&text=Learn+X+in+Y+minutes%2C+where+X%3Delixir">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=elixir</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/learnelixir-sk.ex">learnelixir-sk.ex</a>
+    </p>
+  <div id="doc">
+    <p>Elixir je moderný funkcionálny jazyk vytvorený nad Erlang VM (virtuálnym
+strojom). Je plne kompatibilný s Erlangom, ale ponúka viac štandardnú syntax
+a množstvo funkcií.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>
+# Jednoriadkový komentár začína symbolom #
+
+# Neexistuje viacriadkový komentár, avšak je možné vyskladať za sebou viac
+# jednoriadkových komentárov.
+
+# Pre spustenie Elixir shellu zadajte príkaz `iex`
+# Kompiláciu zdrojových kódov vykonáte príkazom `elixirc`
+
+# Obe príkazy by sa už mali nachádzať v path pokiaľ ste nainštalovali elixir
+# správne.
+
+## ---------------------------
+## -- Základné typy
+## ---------------------------
+
+# Čísla
+3    # integer
+0x1F # integer
+3.0  # float
+
+# Atómy, sú literály, konštanty s rovnakým menom. Začínajú s `:`.
+:ahoj # atom
+
+# Tzv. Tuples sú v pamäti uložené súvisle.
+{1,2,3} # tuple
+
+# Pristúpiť k tuple elementu vieme pomocou funkcie `elem`:
+elem({1, 2, 3}, 0) #=&gt; 1
+
+# Zoznamy sú implementované ako linkované zoznamy.
+[1,2,3] # zoznam
+
+# Vieme pristúpiť k hlavičke (head) a chvostu (tail) zoznamu:
+[head | tail] = [1,2,3]
+head #=&gt; 1
+tail #=&gt; [2,3]
+
+# V Elixire, rovnako ako v Erlangu, `=` znamená pattern matching a nie
+# klasické priradenie.
+#
+# To znamená, že ľavá strana (pattern / vzor) je postavená oproti pravej
+# strane.
+#
+# Takto funguje aj príklad vyššie s čítaním hlavičky a chvosta zoznamu.
+
+# Pattern match končí chybou ak sa obe strany nezhodujú, v tomto príklade majú
+# tuples rôznu veľkosť.
+# {a, b, c} = {1, 2} #=&gt; ** (MatchError) no match of right hand side value: {1,2}
+
+# Binárne typy
+&lt;&lt;1,2,3&gt;&gt; # binary
+
+# Reťazce a zoznamy znakov
+"ahoj" # reťazec
+'ahoj' # zoznam znakov
+
+# Viacriadkový reťazec
+"""
+Ja som viacriadkový
+reťazec.
+"""
+#=&gt; "Ja som viacriadkový\nreťazec.\n"
+
+# Reťazce sú kódované v UTF-8:
+"héllò" #=&gt; "héllò"
+
+# Reťazce sú skutočne iba binárne typy, a zoznamy znakov sú iba zoznamy.
+&lt;&lt;?a, ?b, ?c&gt;&gt; #=&gt; "abc"
+[?a, ?b, ?c]   #=&gt; 'abc'
+
+# `?a` v elixire vráti ASCII číselnú reprezentáciu pre znak `a`
+?a #=&gt; 97
+
+# Pre spájanie zoznamov sa používa `++`, pre binárne typy `&lt;&gt;`
+[1,2,3] ++ [4,5]     #=&gt; [1,2,3,4,5]
+'ahoj ' ++ 'svet'  #=&gt; 'ahoj svet'
+
+&lt;&lt;1,2,3&gt;&gt; &lt;&gt; &lt;&lt;4,5&gt;&gt; #=&gt; &lt;&lt;1,2,3,4,5&gt;&gt;
+"Ahoj " &lt;&gt; "svet"  #=&gt; "ahoj svet"
+
+# Rozsahy sú reprezentované ako `začiatok..koniec` (obe inkluzívne)
+1..10 #=&gt; 1..10
+dolna..horna = 1..10 # Na rozsahy možno použiť rovnako pattern matching
+[dolna, horna] #=&gt; [1, 10]
+
+# Mapy sú páry kľúč-hodnota
+pohlavia = %{"david" =&gt; "muž", "gillian" =&gt; "žena"}
+pohlavia["david"] #=&gt; "muž"
+
+# Mapy s kľúčmi reprezentovanými atómami môžu byť použité takto
+pohlavia = %{david: "muž", gillian: "žena"}
+pohlavia.gillian #=&gt; "žena"
+
+## ---------------------------
+## -- Operátory
+## ---------------------------
+
+# Trošku matematiky
+1 + 1  #=&gt; 2
+10 - 5 #=&gt; 5
+5 * 2  #=&gt; 10
+10 / 2 #=&gt; 5.0
+
+# V elixire operátor `/` vždy vráti float (reálne číslo).
+
+# Pre celočíselné delenie sa používa `div`
+div(10, 2) #=&gt; 5
+
+# Pre celočíselné delenie so zvyškom `rem`
+rem(10, 3) #=&gt; 1
+
+# Boolean operátory: `or`, `and` a `not`.
+# Tieto operátori očakávajú ako svoj prvý argument boolean.
+true and true #=&gt; true
+false or true #=&gt; true
+# 1 and true    #=&gt; ** (ArgumentError) argument error
+
+# Elixir tiež poskytuje `||`, `&amp;&amp;` a `!` , ktoré akceptujú argumenty
+# ľubovoľného typu.
+# Všetky hodnoty okrem `false` a `nil` budú vyhodnotené ako true.
+1 || true  #=&gt; 1
+false &amp;&amp; 1 #=&gt; false
+nil &amp;&amp; 20  #=&gt; nil
+!true #=&gt; false
+
+# Pre porovnávanie máme: `==`, `!=`, `===`, `!==`, `&lt;=`,
+`&gt;=`, `&lt;` a `&gt;`
+1 == 1 #=&gt; true
+1 != 1 #=&gt; false
+1 &lt; 2  #=&gt; true
+
+# `===` a `!==` sú viac striktné pri porovnávaní celých čísel (integer) a
+# desatinných čísel (float).
+1 == 1.0  #=&gt; true
+1 === 1.0 #=&gt; false
+
+# Vieme porovnať dokonca dva rôzne údajové typy:
+1 &lt; :ahoj #=&gt; true
+
+# Celkové poradie triedenia:
+#
+# číslo &lt; atom &lt; referencia &lt; funkcia &lt; port &lt; pid &lt; tuple &lt; zoznam &lt; bitový
+# string
+
+# Výrok Joe Armstronga: "Aktuálne poradie nie je dôležité, ale
+# dôležité je to, že celkové poradie je dobre definované."
+
+## ---------------------------
+## -- Riadenie toku
+## ---------------------------
+
+# `if` výraz
+if false do
+  "Toto nebude nikdy videné"
+else
+  "Toto bude"
+end
+
+# Existuje aj `unless`
+unless true do
+  "Toto nebude nikdy videné"
+else
+  "Toto bude"
+end
+
+# Pamätáte sa na pattern matching? Mnoho štruktúr pre riadenie toku v
+# elixire sa spoliehajú práve na pattern matching.
+
+# `case` dovolí nám porovnať hodnotu oproti mnohým vzorom:
+case {:one, :two} do
+  {:four, :five} -&gt;
+    "Toto nebude zhodné"
+  {:one, x} -&gt;
+    "Toto bude zhodné a nastaví `x` na hodnotu `:two` "
+  _ -&gt;
+    "Toto bude zhodné z ľubovoľnou hodnotou."
+end
+
+# Je zvyčajné nastaviť hodnotu do `_` ak ju nepotrebujete.
+# Napríklad, ak je pre nás potrebná iba hlavička zoznamu (head):
+[head | _] = [1,2,3]
+head #=&gt; 1
+
+# Pre lepšiu čitateľnosť môžme urobiť nasledovné:
+[head | _tail] = [:a, :b, :c]
+head #=&gt; :a
+
+# `cond` dovoľuje kontrolovať viac podmienok naraz.
+# Použite `cond` namiesto vnorovania mnohých `if` výrazov.
+cond do
+  1 + 1 == 3 -&gt;
+    "Nebudem nikdy videný"
+  2 * 5 == 12 -&gt;
+    "Ani ja"
+  1 + 2 == 3 -&gt;
+    "Ja budem"
+end
+
+# Je bežné nastaviť poslednú podmienku rovnajúcu sa `true` , ktorá bude vždy
+# zodpovedať.
+cond do
+  1 + 1 == 3 -&gt;
+    "Nebudem nikdy videný"
+  2 * 5 == 12 -&gt;
+    "Ani ja"
+  true -&gt;
+    "Ale ja budem (je to v podstate vetva else)"
+end
+
+# `try/catch` sa používa na zachytenie hodnôt, ktoré boli vyhodené, takisto
+# podporuje `after` klauzulu, ktorá je zavolaná vždy, či bola hodnota
+# zachytená alebo nie.
+try do
+  throw(:ahoj)
+catch
+  message -&gt; "Mám #{message}."
+after
+  IO.puts("Som after klauzula.")
+end
+#=&gt; Som after klauzula
+# "Mám :ahoj"
+
+## ---------------------------
+## -- Moduly a funkcie
+## ---------------------------
+
+# Anonymné funkcie (všimnite si bodku)
+stvorec = fn(x) -&gt; x * x end
+stvorec.(5) #=&gt; 25
+
+# Takisto akceptujú viax klauzúl a tzv. stráže (guards).
+# Stráže vám umožnia pattern matching ešte viac zlepšiť, tieto časti sú
+# označené kľúčovým slovom `when`:
+f = fn
+  x, y when x &gt; 0 -&gt; x + y
+  x, y -&gt; x * y
+end
+
+f.(1, 3)  #=&gt; 4
+f.(-1, 3) #=&gt; -3
+
+# Elixir tiež poskytuje množstvo vstavaných funkcií.
+# Tie sú dostupné v aktuálnom scope (viditeľnej oblasti).
+is_number(10)    #=&gt; true
+is_list("hello") #=&gt; false
+elem({1,2,3}, 0) #=&gt; 1
+
+# Možno zgrupovať viac funkcií do jedného modulu. V module použite `def`
+# na definíciu funkcie.
+defmodule Matematika do
+  def sucet(a, b) do
+    a + b
+  end
+
+  def na_druhu(x) do
+    x * x
+  end
+end
+
+Matematika.sucet(1, 2)  #=&gt; 3
+Matematika.na_druhu(3) #=&gt; 9
+
+# Na zkompilovanie našeho Matematika modulu ho uložte ako `math.ex`  a použite
+# `elixirc` v termináli: elixirc math.ex
+
+# V module môžme definovať funkcie s `def` a privátne funkcie s `defp`.
+# Funkcia definovaná s `def` je možné volať z iných modulov, privátne funkcie
+# môžu byť volané iba lokálne.
+defmodule SukromnaMatematika do
+  def sucet(a, b) do
+    rob_sucet(a, b)
+  end
+
+  defp rob_sucet(a, b) do
+    a + b
+  end
+end
+
+SukromnaMatematika.sucet(1, 2)    #=&gt; 3
+# SukromnaMatematika.rob_sucet(1, 2) #=&gt; ** (UndefinedFunctionError)
+
+# Deklarácie funkcií tiež podporujú stráže (guards) a viacnásobné klauzuly:
+
+defmodule Geometria do
+  def oblast({:obdlznik, w, h}) do
+    w * h
+  end
+
+  def oblast({:kruh, r}) when is_number(r) do
+    3.14 * r * r
+  end
+end
+
+Geometria.oblast({:obdlznik, 2, 3}) #=&gt; 6
+Geometria.oblast({:kruh, 3})       #=&gt; 28.25999999999999801048
+# Geometria.oblast({:kruh, "nie_je_cislo"})
+#=&gt; ** (FunctionClauseError) no function clause matching in Geometria.oblast/1
+
+# Vďaka nemeniteľnosti (immutability) je rekurzia významnou časťou elixiru
+defmodule Rekurzia do
+  def sumuj_zoznam([hlavicka | schvost], acc) do
+    sumuj_zoznam(chvost, acc + hlavicka)
+  end
+
+  def sumuj_zoznam([], acc) do
+    acc
+  end
+end
+
+Rekurzia.sumuj_zoznam([1,2,3], 0) #=&gt; 6
+
+# Elixir moduly podporujú atribúty, existujú vstavané atribúty a takisto
+# môžte pridávať vlastné.
+defmodule MojModul do
+  @moduledoc """
+  Toto je vstavaný atribút v príkladovom module.
+  """
+
+  @moj_udaj 100 # Toto je vlastný atribút.
+  IO.inspect(@moj_udaj) #=&gt; 100
+end
+
+# Pipe operátor (rúra) |&gt; umožnuje predať výsledok výrazu ako prvý parameter
+# do ďalšej funkcie.
+
+Range.new(1,10)
+|&gt; Enum.map(fn x -&gt; x * x end)
+|&gt; Enum.filter(fn x -&gt; rem(x, 2) == 0 end)
+#=&gt; [4, 16, 36, 64, 100]
+
+## ---------------------------
+## -- Štruktúry a výnimky
+## ---------------------------
+
+# Štruktúry sú rozšírenia postavené na mapách, ktoré prinášajú defaultné
+# hodnoty, garancie v čase kompilácie a polymorfizmus do Elixiru.
+defmodule Osoba do
+  defstruct meno: nil, vek: 0, vyska: 0
+end
+
+joe_info = %Osoba{ meno: "Joe", vek: 30, vyska: 180 }
+#=&gt; %Osoba{vek: 30, vyska: 180, meno: "Joe"}
+
+# Prístup k hodnote mena
+joe_info.meno #=&gt; "Joe"
+
+# Zmena hodnoty veku
+starsi_joe_info = %{ joe_info | vek: 31 }
+#=&gt; %Osoba{vek: 31, vyska: 180, meno: "Joe"}
+
+# `try` blok s kľúčovým slovom `rescue` sa používa na riadenie výnimiek
+try do
+  raise "nejaký error"
+rescue
+  RuntimeError -&gt; "zachytí runtime error"
+  _error -&gt; "zachytí ľubovoľný iný error"
+end
+#=&gt; "zachytí runtime error"
+
+# Každá výnimka má správu
+try do
+  raise "nejaký error"
+rescue
+  x in [RuntimeError] -&gt;
+    x.message
+end
+#=&gt; "nejaký error"
+
+## ---------------------------
+## -- Konkurencia
+## ---------------------------
+
+# Elixir sa pri konkurencii spolieha na Actor model. Všetko čo je
+# potrebné na písanie konkuretných programov v elixire sú tri primitívy:
+# spawning procesy, posielanie a prijímanie správ.
+
+# Na spustnenie nového procesu použijeme `spawn` funkciu, ktorá má ako
+# parameter funkciu.
+f = fn -&gt; 2 * 2 end #=&gt; #Function&lt;erl_eval.20.80484245&gt;
+spawn(f) #=&gt; #PID&lt;0.40.0&gt;
+
+# `spawn` vracia pid (identifikátor procesu), tento pid možno použiť na
+# posielanie správ procesu. Správu pošleme `send` operatorátorom.
+# Aby všetko fungovalo ako má, potrebujeme byť schopný správu prijať. To
+# dosiahneme s `receive` mechanizmom:
+
+# `receive do` blok sa používa na počúvanie správ a ich spracúvavanie v čase
+# prijatia. `receive do` blok spracuje iba jednu prijatú správu. Pre
+# spracovanie viacerých správ, musí funkcia s `receive do` blokom rekurzívne
+# volať samu seba, aby sa dostala opäť do `receive do` bloku.
+
+defmodule Geometria do
+  def slucka_oblasti do
+    receive do
+      {:obdlznik, w, h} -&gt;
+        IO.puts("Oblast = #{w * h}")
+        slucka_oblasti()
+      {:kruh, r} -&gt;
+        IO.puts("Oblast = #{3.14 * r * r}")
+        slucka_oblasti()
+    end
+  end
+end
+
+# Kompiluj modul a vytvor proces, ktorý vyhodnotí `slucka_oblasti` v shelli
+
+pid = spawn(fn -&gt; Geometria.slucka_oblasti() end) #=&gt; #PID&lt;0.40.0&gt;
+# Alternatívne
+pid = spawn(Geometria, :slucka_oblasti, [])
+
+# Pošli správu ku `pid`, ktorá bude v zhode so vzorom v receive časti
+send pid, {:obdlznik, 2, 3}
+#=&gt; Oblast = 6
+#   {:obdlznik,2,3}
+
+send pid, {:kruh, 2}
+#=&gt; Oblast = 12.56000000000000049738
+#   {:kruh,2}
+
+# Shell je takisto proces, môžete použiť `self` pre zistenie aktuálneho pid-u
+self() #=&gt; #PID&lt;0.27.0&gt;
+
+## ---------------------------
+## -- Agenti
+## ---------------------------
+
+# Agent je proces, ktorý udržuje informácie o meniacej sa hodnote
+
+# Vytvor agenta s `Agent.start_link` parametrom, ktorého je funkcia
+# Iniciálny stav agenta bude čokoľvek, čo daná funkcia vráti
+{ok, moj_agent} = Agent.start_link(fn -&gt; ["cervena, zelena"] end)
+
+# `Agent.get` vezme meno agenta a `fn` , ktorej je odovzdaný aktuálny stav
+# Čokoľvek čo `fn` vráti je to, čo dostanete späť
+Agent.get(moj_agent, fn farby -&gt; farby end) #=&gt; ["cervena, "zelena"]
+
+# Zmena stavu agenta rovnakým spôsobom
+Agent.update(moj_agent, fn farby -&gt; ["modra" | farby] end)
+</code></pre></div>
+<h2>Referencie</h2>
+
+<ul>
+<li><a href="http://elixir-lang.org/getting-started/introduction.html">Začíname</a> z
+<a href="http://elixir-lang.org">Elixir stránky</a></li>
+<li><a href="http://elixir-lang.org/docs/master/">Elixir dokumentácia</a></li>
+<li><a href="https://pragprog.com/book/elixir/programming-elixir">Elixir programovanie</a>
+od Dave Thomasa</li>
+<li><a href="http://media.pragprog.com/titles/elixir/ElixirCheat.pdf">Elixir ťahák</a></li>
+<li><a href="http://learnyousomeerlang.com/">Nauč sa kúsok Erlangu pre veľké dobro!</a> od
+Freda Heberta</li>
+<li><a href="https://pragprog
+.com/book/jaerlang2/programming-erlang">Erlang programovanie: Softvér pre konkurentný svet</a> od Joe Armstronga</li>
+</ul>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/sk-sk/elixir-sk.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Joao Marques, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/sk-sk/elixir-sk.html.markdown">2 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://github.com/mrshankly">Joao Marques</a>,
+        <a href="https://github.com/dskecse">Dzianis Dashkevich</a>,
+        <a href="https://github.com/ryanplant-au">Ryan Plant</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/peterszatmary">Peter Szatmary</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

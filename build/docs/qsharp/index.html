@@ -1,0 +1,302 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn Q# in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/qsharp/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fqsharp%2F&text=Learn+X+in+Y+minutes%2C+where+X%3DQ%23">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=Q#</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/LearnQSharp.qs">LearnQSharp.qs</a>
+    </p>
+  <div id="doc">
+    <p>Q# is a high-level domain-specific language which enables developers to write quantum algorithms. Q# programs can be executed on a quantum simulator running on a classical computer and (in future) on quantum computers.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>// Single-line comments start with //
+
+
+/////////////////////////////////////
+// 1. Quantum data types and operators
+
+// The most important part of quantum programs is qubits. 
+// In Q# type Qubit represents the qubits which can be used.
+// This will allocate an array of two new qubits as the variable qs.
+using (qs = Qubit[2]) {
+
+    // The qubits have internal state that you cannot access to read or modify directly.
+    // You can inspect the current state of your quantum program 
+    // if you're running it on a classical simulator.
+    // Note that this will not work on actual quantum hardware!
+    DumpMachine();
+
+    // If you want to change the state of a qubit
+    // you have to do this by applying quantum gates to the qubit.
+    H(qs[0]);    // This changes the state of the first qubit 
+                // from |0⟩ (the initial state of allocated qubits) 
+                // to (|0⟩ + |1⟩) / sqrt(2).
+    // qs[1] = |1⟩; - this does NOT work, you have to manipulate a qubit by using gates.
+
+    // You can apply multi-qubit gates to several qubits.
+    CNOT(qs[0], qs[1]);
+
+    // You can also apply a controlled version of a gate: 
+    // a gate that is applied if all control qubits are in |1⟩ state.
+    // The first argument is an array of control qubits, 
+    // the second argument is the target qubit.
+    Controlled Y([qs[0]], qs[1]); 
+
+    // If you want to apply an anti-controlled gate 
+    // (a gate that is applied if all control qubits are in |0⟩ state), 
+    // you can use a library function.
+    ApplyControlledOnInt(0, X, [qs[0]], qs[1]);
+
+    // To read the information from the quantum system, you use measurements.
+    // Measurements return a value of Result data type: Zero or One.
+    // You can print measurement results as a classical value.
+    Message($"Measured {M(qs[0])}, {M(qs[1])}");
+}
+
+
+/////////////////////////////////////
+// 2. Classical data types and operators
+
+// Numbers in Q# can be stored in Int, BigInt or Double.
+let i = 1;            // This defines an Int variable i equal to 1
+let bi = 1L;          // This defines a BigInt variable bi equal to 1
+let d = 1.0;          // This defines a Double variable d equal to 1
+
+// Arithmetic is done as expected, as long as the types are the same
+let n = 2 * 10;                // = 20
+// Q# does not have implicit type cast, 
+// so to perform arithmetic on values of different types, 
+// you need to cast type explicitly
+let nd = IntAsDouble(2) * 1.0; // = 20.0
+
+// Boolean type is called Bool
+let trueBool = true;
+let falseBool = false;
+
+// Logic operators work as expected
+let andBool = true and false;
+let orBool = true or false;
+let notBool = not false;
+
+// Strings
+let str = "Hello World!";
+
+// Equality is ==
+let x = 10 == 15; // is false
+
+// Range is a sequence of integers and can be defined like: start..step..stop
+let xi = 1..2..7; // Gives the sequence 1,3,5,7
+
+// Assigning new value to a variable:
+// by default all Q# variables are immutable;
+// if the variable was defined using let, you cannot reassign its value.
+
+// When you want to make a variable mutable, you have to declare it as such, 
+// and use the set word to update value
+mutable xii = true;
+set xii = false;
+
+// You can create an array for any data type like this
+let xiii = new Double[10];
+
+// Getting an element from an array 
+let xiv = xiii[8];
+
+// Assigning a new value to an array element
+mutable xv = new Double[10];
+set xv w/= 5 &lt;- 1;
+
+
+/////////////////////////////////////
+// 3. Control flow
+
+// If structures work a little different than most languages
+if (a == 1) {
+    // ...
+} elif (a == 2) {
+    // ... 
+} else {
+    // ...
+}
+
+// Foreach loops can be used to iterate over an array
+for (qubit in qubits) {
+    X(qubit);
+}
+
+// Regular for loops can be used to iterate over a range of numbers
+for (index in 0 .. Length(qubits) - 1) {
+    X(qubits[index]);
+}
+
+// While loops are restricted for use in classical context only
+mutable index = 0;
+while (index &lt; 10) {
+    set index += 1;
+}
+
+// Quantum equivalent of a while loop is a repeat-until-success loop.
+// Because of the probabilistic nature of quantum computing sometimes
+// you want to repeat a certain sequence of operations 
+// until a specific condition is achieved; you can use this loop to express this.
+repeat {
+    // Your operation here
+}
+until (success criteria) // This could be a measurement to check if the state is reached
+fixup {
+    // Resetting to the initial conditions, if required
+}
+
+
+/////////////////////////////////////
+// 4. Putting it all together
+
+// Q# code is written in operations and functions
+operation ApplyXGate(source : Qubit) : Unit {
+    X(source);
+}
+
+// If the operation implements a unitary transformation, you can define 
+// adjoint and controlled variants of it. 
+// The easiest way to do that is to add "is Adj + Ctl" after Unit. 
+// This will tell the compiler to generate the variants automatically.
+operation ApplyXGateCA (source : Qubit) : Unit is Adj + Ctl {
+    X(source);
+}
+
+// Now you can call Adjoint ApplyXGateCA and Controlled ApplyXGateCA.
+
+
+// To run Q# code, you can put @EntryPoint() before the operation you want to run first
+@EntryPoint()
+operation XGateDemo() : Unit {
+    using (q = Qubit()) {
+        ApplyXGate(q);
+    }
+}
+
+// Here is a simple example: a quantum random number generator. 
+// We will generate a classical array of random bits using quantum code.
+@EntryPoint()
+operation QRNGDemo() : Unit {
+    mutable bits = new Int[5];                // Array we'll use to store bits
+    using (q = Qubit()) {                     // Allocate a qubit
+        for (i in 0 .. 4) {                   // Generate each bit independently
+            H(q);                             // Hadamard gate sets equal superposition
+            let result = M(q);                // Measure qubit gets 0|1 with 50/50 prob
+            let bit = result == Zero ? 0 | 1; // Convert measurement result to integer
+            set bits w/= i &lt;- bit;            // Write generated bit to an array
+        }
+    }
+    Message($"{bits}");                       // Print the result
+}
+</code></pre></div>
+<h2>Further Reading</h2>
+
+<p>The <a href="https://github.com/microsoft/QuantumKatas">Quantum Katas</a> offer great self-paced tutorials and programming exercises to learn quantum computing and Q#. </p>
+
+<p><a href="https://docs.microsoft.com/quantum/">Q# Documentation</a> is official Q# documentation, including language reference and user guides.</p>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/qsharp.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Vincent van Wingerden, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/qsharp.html.markdown">2 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="https://github.com/vivanwin">Vincent van Wingerden</a>,
+        <a href="https://github.com/tcNickolas">Mariia Mykhailova</a>,
+        <a href="https://github.com/AndrewDavis1191">Andrew Ryan Davis</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

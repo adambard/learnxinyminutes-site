@@ -1,0 +1,754 @@
+<!DOCTYPE html lang="pt-br" xml:lang="pt-br" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="pt-br">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn C in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/pt-br/c-pt/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fpt-br%2Fc-pt%2F&text=Aprenda+X+em+Y+Minutos%2C+onde+X%3DC">
+        Compartilhe esta página
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Selecione o tema:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">claro</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">sombrio</button>
+  </div>
+  <h1><a href="/">Aprenda X em Y Minutos</a></h1>
+  <h2>Onde X=C</h2>
+    <p class="filelink">
+    Baixar o código:
+    <a href="/docs/files/learnc-pt.c">learnc-pt.c</a>
+    </p>
+  <div id="doc">
+    <p>Ah, C. Ainda é <strong>a</strong> linguagem de computação de alta performance.</p>
+
+<p>C é a linguagem de mais baixo nível que a maioria dos programadores
+utilizarão, e isso dá a ela uma grande velocidade bruta. Apenas fique
+atento se este manual de gerenciamento de memória e C vai te levar
+tão longe quanto precisa.</p>
+<div class="highlight"><pre class="highlight c"><code><span class="c1">// Comentários de uma linha iniciam-se com // - apenas disponível a partir do C99</span>
+
+<span class="cm">/*
+Comentários de múltiplas linhas se parecem com este.
+Funcionam no C89 também.
+*/</span>
+
+<span class="c1">// Constantes: #define &lt;palavra-chave&gt;</span>
+<span class="cp">#define DAY_IN_YEAR 365
+</span>
+<span class="c1">//enumerações também são modos de definir constantes.</span>
+<span class="k">enum</span> <span class="n">day</span> <span class="p">{</span><span class="n">DOM</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">SEG</span><span class="p">,</span> <span class="n">TER</span><span class="p">,</span> <span class="n">QUA</span><span class="p">,</span> <span class="n">QUI</span><span class="p">,</span> <span class="n">SEX</span><span class="p">,</span> <span class="n">SAB</span><span class="p">};</span>
+<span class="c1">// SEG recebe 2 automaticamente, TER recebe 3, etc.</span>
+
+<span class="c1">// Cabeçalhos são inclusos com #include</span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span>
+<span class="c1">// (Nomes dos arquivos entre &lt;colchetes&gt; são cabeçalhos para bibliotecas padrão de C.)</span>
+<span class="c1">// Para cabeçalhos próprios, use aspas ao invés de colchetes:</span>
+<span class="cp">#include</span> <span class="cpf">"minha_biblioteca.h"</span><span class="cp">
+</span>
+<span class="c1">// Declare assinaturas das funções no início do arquivo .h ou no topo</span>
+<span class="c1">// do seu arquivo .c.</span>
+<span class="kt">void</span> <span class="nf">funcao_1</span><span class="p">(</span><span class="kt">char</span> <span class="n">c</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">funcao_2</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="c1">// Deve-se declarar um 'protótipo de função' antes do main() quando as ocorrências</span>
+<span class="c1">// dessas funções estão após sua função main()</span>
+<span class="kt">int</span> <span class="nf">soma_dois_ints</span><span class="p">(</span><span class="kt">int</span> <span class="n">x1</span><span class="p">,</span> <span class="kt">int</span> <span class="n">x2</span><span class="p">);</span> <span class="c1">// protótipo de função</span>
+
+<span class="c1">// O ponto de entrada do teu programa é uma função</span>
+<span class="c1">// chamada main, com tipo de retorno inteiro</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// Usa-se printf para escrever na tela,</span>
+    <span class="c1">// para "saída formatada"</span>
+    <span class="c1">// %d é um inteiro, \n é uma nova linha</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">// =&gt; Imprime 0</span>
+    <span class="c1">// Todos as declarações devem acabar com</span>
+    <span class="c1">// ponto e vírgula</span>
+
+    <span class="c1">///////////////////////////////////////</span>
+    <span class="c1">// Tipos</span>
+    <span class="c1">///////////////////////////////////////</span>
+
+    <span class="c1">// ints normalmente tem 4 bytes</span>
+    <span class="kt">int</span> <span class="n">x_int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="c1">// shorts normalmente tem 2 bytes</span>
+    <span class="kt">short</span> <span class="n">x_short</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="c1">// chars sempre tem um byte</span>
+    <span class="kt">char</span> <span class="n">x_char</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">y_char</span> <span class="o">=</span> <span class="sc">'y'</span><span class="p">;</span> <span class="c1">// Literais de caracter são cercados por '</span>
+
+    <span class="c1">// longs tem entre 4 e 8 bytes; longs long tem garantia</span>
+    <span class="c1">// de ter pelo menos 64 bits</span>
+    <span class="kt">long</span> <span class="n">x_long</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="kt">long</span> <span class="kt">long</span> <span class="n">x_long_long</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="c1">// floats são normalmente números de ponto flutuante</span>
+    <span class="c1">// com 32 bits</span>
+    <span class="kt">float</span> <span class="n">x_float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+
+    <span class="c1">// doubles são normalmente números de ponto flutuante</span>
+    <span class="c1">// com 64 bits</span>
+    <span class="kt">double</span> <span class="n">x_double</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+
+    <span class="c1">// Tipos inteiros podem ser sem sinal.</span>
+    <span class="kt">unsigned</span> <span class="kt">short</span> <span class="n">ux_short</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">ux_int</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">ux_long_long</span><span class="p">;</span>
+
+    <span class="c1">// caracteres dentro de aspas simples são inteiros</span>
+    <span class="c1">// no conjunto de caracteres da máquina.</span>
+    <span class="sc">'0'</span> <span class="c1">// =&gt; 48 na tabela ASCII.</span>
+    <span class="sc">'A'</span> <span class="c1">// =&gt; 65 na tabela ASCII.</span>
+
+    <span class="c1">// sizeof(T) devolve o tamanho de uma variável do tipo T em bytes</span>
+    <span class="c1">// sizeof(obj) devolve o tamanho de uma expressão (variável, literal, etc.).</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%zu</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span> <span class="c1">// =&gt; 4 (na maioria das máquinas com palavras de 4 bytes)</span>
+
+    <span class="c1">// Se o argumento do operador `sizeof` é uma expressão, então seus argumentos</span>
+    <span class="c1">// não são avaliados (exceto em VLAs (veja abaixo)).</span>
+    <span class="c1">// O valor devolve, neste caso, é uma constante de tempo de compilação.</span>
+    <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="c1">// size_t é um inteiro sem sinal com pelo menos 2 bytes que representa</span>
+    <span class="c1">// o tamanho de um objeto.</span>
+    <span class="kt">size_t</span> <span class="n">size</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">a</span><span class="o">++</span><span class="p">);</span> <span class="c1">// a++ não é avaliada.</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"sizeof(a++) = %zu where a = %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+    <span class="c1">// imprime "sizeof(a++) = 4 onde a = 1" (quando em uma arquitetura de 32 bits)</span>
+
+    <span class="c1">// Arrays precisam ser inicializados com um tamanho concreto</span>
+    <span class="kt">char</span> <span class="n">meu_char_array</span><span class="p">[</span><span class="mi">20</span><span class="p">];</span> <span class="c1">// Este array ocupa 1 * 20 = 20 bytes</span>
+    <span class="kt">int</span> <span class="n">meu_int_array</span><span class="p">[</span><span class="mi">20</span><span class="p">];</span> <span class="c1">// Este array ocupa 4 * 20 = 80 bytes</span>
+                           <span class="c1">// (assumindo palavras de 4 bytes)</span>
+
+    <span class="c1">// Você pode inicializar um array com 0 desta forma:</span>
+    <span class="kt">char</span> <span class="n">meu_array</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+
+    <span class="c1">// Indexar um array é semelhante a outras linguagens</span>
+    <span class="c1">// Melhor dizendo, outras linguagens são semelhantes a C</span>
+    <span class="n">meu_array</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span> <span class="c1">// =&gt; 0</span>
+
+    <span class="c1">// Array são mutáveis; são apenas memória!</span>
+    <span class="n">meu_array</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">meu_array</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span> <span class="c1">// =&gt; 2</span>
+
+    <span class="c1">// No C99 (e como uma features opcional em C11), arrays de tamanho variável</span>
+    <span class="c1">// VLA (do inglês), podem ser declarados também. O tamanho destes arrays</span>
+    <span class="c1">// não precisam ser uma constante de tempo de compilação:</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"Entre o tamanho do array: "</span><span class="p">);</span> <span class="c1">// Pergunta ao usuário pelo tamanho</span>
+    <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="mh">0x100</span><span class="p">];</span>
+    <span class="n">fgets</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="k">sizeof</span> <span class="n">buf</span><span class="p">,</span> <span class="n">stdin</span><span class="p">);</span>
+
+    <span class="c1">// strtoul transforma a string em um inteiro sem sinal</span>
+    <span class="kt">size_t</span> <span class="n">size</span> <span class="o">=</span> <span class="n">strtoul</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="n">var_length_array</span><span class="p">[</span><span class="n">size</span><span class="p">];</span> <span class="c1">// declara o VLA</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"sizeof array = %zu</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="k">sizeof</span> <span class="n">var_length_array</span><span class="p">);</span>
+
+    <span class="c1">// Uma possível saída para esse programa seria:</span>
+    <span class="c1">// &gt; Entre o tamanho do array: 10</span>
+    <span class="c1">// &gt; sizeof array = 40</span>
+
+    <span class="c1">// String são apenas arrays de caracteres terminados por um</span>
+    <span class="c1">// byte nulo (0x00), representado em string pelo caracter especial '\0'.</span>
+    <span class="c1">// (Não precisamos incluir o byte nulo em literais de string; o compilador</span>
+    <span class="c1">// o insere ao final do array para nós.)</span>
+    <span class="kt">char</span> <span class="n">uma_string</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span> <span class="o">=</span> <span class="s">"Isto é uma string"</span><span class="p">;</span>
+    <span class="c1">// Observe que 'é' não está na tabela ASCII</span>
+    <span class="c1">// A string vai ser salva, mas a saída vai ser estranha</span>
+    <span class="c1">// Porém, comentários podem conter acentos</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">uma_string</span><span class="p">);</span> <span class="c1">// %s formata a string</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">uma_string</span><span class="p">[</span><span class="mi">17</span><span class="p">]);</span> <span class="c1">// =&gt; 0</span>
+    <span class="c1">// i.e., byte #18 é 0 (assim como o 19°, 20°, 21°...)</span>
+
+    <span class="c1">// Se temos caracteres entre aspas simples, temos um caracter literal.</span>
+    <span class="c1">// Seu tipo é `int`, *não* `char` (por razões históricas).</span>
+    <span class="kt">int</span> <span class="n">cha</span> <span class="o">=</span> <span class="sc">'a'</span><span class="p">;</span> <span class="c1">// ok</span>
+    <span class="kt">char</span> <span class="n">chb</span> <span class="o">=</span> <span class="sc">'a'</span><span class="p">;</span> <span class="c1">// ok também (conversão implícita de int para char)</span>
+
+    <span class="c1">// Arrays multi-dimensionais:</span>
+    <span class="kt">int</span> <span class="n">multi_array</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">},</span>
+        <span class="p">{</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">0</span><span class="p">}</span>
+    <span class="p">};</span>
+    <span class="c1">// Acesso a elementos:</span>
+    <span class="kt">int</span> <span class="n">array_int</span> <span class="o">=</span> <span class="n">multi_array</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">];</span> <span class="c1">// =&gt; 3</span>
+
+    <span class="c1">///////////////////////////////////////</span>
+    <span class="c1">// Operadores</span>
+    <span class="c1">///////////////////////////////////////</span>
+
+    <span class="c1">// Atalho para multiplas declarações:</span>
+    <span class="kt">int</span> <span class="n">i1</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i2</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">f1</span> <span class="o">=</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="n">f2</span> <span class="o">=</span> <span class="mi">2</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+
+    <span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">;</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">b</span> <span class="o">=</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="c1">// Aritmética é óbvia</span>
+    <span class="n">i1</span> <span class="o">+</span> <span class="n">i2</span><span class="p">;</span> <span class="c1">// =&gt; 3</span>
+    <span class="n">i2</span> <span class="o">-</span> <span class="n">i1</span><span class="p">;</span> <span class="c1">// =&gt; 1</span>
+    <span class="n">i2</span> <span class="o">*</span> <span class="n">i1</span><span class="p">;</span> <span class="c1">// =&gt; 2</span>
+    <span class="n">i1</span> <span class="o">/</span> <span class="n">i2</span><span class="p">;</span> <span class="c1">// =&gt; 0 (0.5, porém, é truncado para 0)</span>
+
+    <span class="n">f1</span> <span class="o">/</span> <span class="n">f2</span><span class="p">;</span> <span class="c1">// =&gt; 0.5, mais ou menos epsilon</span>
+    <span class="c1">// Números e cálculos de ponto flutuante não são exatos</span>
+
+    <span class="c1">// Módulo também existe</span>
+    <span class="mi">11</span> <span class="o">%</span> <span class="mi">3</span><span class="p">;</span> <span class="c1">// =&gt; 2</span>
+
+    <span class="c1">// Operadores de comparação provavelmente são familiares,</span>
+    <span class="c1">// porém não há tipo booleano em C. Usa-se ints no lugar.</span>
+    <span class="c1">// (Ou _Bool or bool em C99.)</span>
+    <span class="c1">// 0 é falso e qualquer outra coisa é verdadeiro</span>
+    <span class="c1">// (Os operadores de comparação devolvem 0 ou 1.)</span>
+    <span class="c1">// Comparison operators are probably familiar, but</span>
+    <span class="mi">3</span> <span class="o">==</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// =&gt; 0 (falso)</span>
+    <span class="mi">3</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// =&gt; 1 (verdadeiro)</span>
+    <span class="mi">3</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// =&gt; 1</span>
+    <span class="mi">3</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// =&gt; 0</span>
+    <span class="mi">2</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// =&gt; 1</span>
+    <span class="mi">2</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// =&gt; 1</span>
+
+    <span class="c1">// C não é Python - comparações não se encadeiam.</span>
+    <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="c1">// Errado:</span>
+    <span class="kt">int</span> <span class="n">entre_0_e_2</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span>
+    <span class="c1">// Correto:</span>
+    <span class="kt">int</span> <span class="n">entre_0_e_2</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">a</span> <span class="o">&amp;&amp;</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span>
+
+    <span class="c1">// Lógica funciona sobre ints</span>
+    <span class="o">!</span><span class="mi">3</span><span class="p">;</span> <span class="c1">// =&gt; 0 (Não lógico)</span>
+    <span class="o">!</span><span class="mi">0</span><span class="p">;</span> <span class="c1">// =&gt; 1</span>
+    <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// =&gt; 1 (E lógico)</span>
+    <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// =&gt; 0</span>
+    <span class="mi">0</span> <span class="o">||</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// =&gt; 1 (Ou lógico)</span>
+    <span class="mi">0</span> <span class="o">||</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// =&gt; 0</span>
+
+    <span class="c1">//Expressão condicional ternária ( ? : )</span>
+    <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">z</span><span class="p">;</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="o">?</span> <span class="n">a</span> <span class="o">:</span> <span class="n">b</span><span class="p">;</span> <span class="c1">// =&gt; 10 "se a &gt; b retorne a, senão retorne b."</span>
+
+    <span class="c1">//Operadores de incremento e decremento:</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="s">"iLoveC"</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">s</span><span class="p">[</span><span class="n">j</span><span class="o">++</span><span class="p">];</span> <span class="c1">// =&gt; "i". Retorna o j-ésimo item de s E DEPOIS incrementa o valor de j.</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">s</span><span class="p">[</span><span class="o">++</span><span class="n">j</span><span class="p">];</span> <span class="c1">// =&gt; "L". Incrementa o valor de j. E DEPOIS retorna o j-ésimo item de s.</span>
+    <span class="c1">// o mesmo com j-- e --j</span>
+
+    <span class="c1">// Operadores bit a bit!</span>
+    <span class="o">~</span><span class="mh">0x0F</span><span class="p">;</span> <span class="c1">// =&gt; 0xF0 (negação bit a bit, "complemento de 1")</span>
+    <span class="mh">0x0F</span> <span class="o">&amp;</span> <span class="mh">0xF0</span><span class="p">;</span> <span class="c1">// =&gt; 0x00 (bit a bit E)</span>
+    <span class="mh">0x0F</span> <span class="o">|</span> <span class="mh">0xF0</span><span class="p">;</span> <span class="c1">// =&gt; 0xFF (bit a bit OU)</span>
+    <span class="mh">0x04</span> <span class="o">^</span> <span class="mh">0x0F</span><span class="p">;</span> <span class="c1">// =&gt; 0x0B (bit a bit OU EXCLUSIVO)</span>
+    <span class="mh">0x01</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// =&gt; 0x02 (bit a bit shift para esquerda (por 1))</span>
+    <span class="mh">0x02</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// =&gt; 0x01 (bit a bit shift para direita (por 1))</span>
+
+    <span class="c1">// Cuidado quando fizer shift em inteiro com sinal - o seguinte é indefinido:</span>
+    <span class="c1">// - Fazer shift sobre um bit de sinal de um inteiro com sinal (int a = 1 &lt;&lt; 32)</span>
+    <span class="c1">// - Fazer shift a esquerda sobre um número negativo (int a = -1 &lt;&lt; 2)</span>
+    <span class="c1">// - Fazer shift maior que a largura do tipo de LHS:</span>
+    <span class="c1">//   int a = 1 &lt;&lt; 32; // Indefinido se int é de tamanho 32 bits</span>
+
+    <span class="c1">///////////////////////////////////////</span>
+    <span class="c1">// Estruturas de Controle</span>
+    <span class="c1">///////////////////////////////////////</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">"Nunca rodará</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">"Também nunca rodará</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">printf</span><span class="p">(</span><span class="s">"Eu serei impresso</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Loops while existem</span>
+    <span class="kt">int</span> <span class="n">ii</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">ii</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//QUALQUER valor diferente de 0 é verdadeiro</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"%d, "</span><span class="p">,</span> <span class="n">ii</span><span class="o">++</span><span class="p">);</span> <span class="c1">// ii++ incrementa o valor de ii APÓS usá-lo</span>
+    <span class="p">}</span> <span class="c1">// =&gt; imprime "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+
+    <span class="kt">int</span> <span class="n">kk</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">do</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"%d, "</span><span class="p">,</span> <span class="n">kk</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="o">++</span><span class="n">kk</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">);</span> <span class="c1">// ++kk incrementa o valor de kk ANTES de usá-lo</span>
+    <span class="c1">// =&gt; imprime "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+
+    <span class="c1">// Loops for também</span>
+    <span class="kt">int</span> <span class="n">jj</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">jj</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">jj</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="n">jj</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"%d, "</span><span class="p">,</span> <span class="n">jj</span><span class="p">);</span>
+    <span class="p">}</span> <span class="c1">// =&gt; imprime "0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "</span>
+
+    <span class="n">printf</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+
+    <span class="c1">// *****NOTAS*****:</span>
+    <span class="c1">// Loops e Funções PRECISAM ter um corpo. Se nenhum corpo é necessário:</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">;</span> <span class="c1">// Use ponto e vírgula para agir como um corpo (declaração nula)</span>
+    <span class="p">}</span>
+    <span class="c1">// Ou</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">);</span>
+
+    <span class="c1">// Criando branchs com escolhas múltiplas: switch()</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="n">alguma_expressao_integral</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="mi">0</span><span class="p">:</span> <span class="c1">// labels precisam ser expressões integrais **constantes**</span>
+        <span class="n">faca_algo</span><span class="p">();</span>
+        <span class="k">break</span><span class="p">;</span> <span class="c1">// Sem break, o controle continua após a label</span>
+    <span class="k">case</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">faca_outra_coisa</span><span class="p">();</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="nl">default:</span>
+        <span class="c1">// Se `alguma_expressao_integral` não coincidir com nenhuma label</span>
+        <span class="n">fputs</span><span class="p">(</span><span class="s">"erro!</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">stderr</span><span class="p">);</span>
+        <span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+
+
+    <span class="c1">///////////////////////////////////////</span>
+    <span class="c1">// Cast de tipos</span>
+    <span class="c1">///////////////////////////////////////</span>
+
+    <span class="c1">// Todo valor em C tem um tipo, mas você pode fazer um cast de um valor em outro tipo</span>
+    <span class="c1">// se você quiser (com algumas restrições).</span>
+
+    <span class="kt">int</span> <span class="n">x_hex</span> <span class="o">=</span> <span class="mh">0x01</span><span class="p">;</span> <span class="c1">// Você pode colocar valores hexadecimais em variáveis</span>
+
+    <span class="c1">// Cast entre tipos tentará preservar seus valores numéricos</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">x_hex</span><span class="p">);</span> <span class="c1">// =&gt; Imprime 1</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="p">(</span><span class="kt">short</span><span class="p">)</span> <span class="n">x_hex</span><span class="p">);</span> <span class="c1">// =&gt; Imprime 1</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="p">(</span><span class="kt">char</span><span class="p">)</span> <span class="n">x_hex</span><span class="p">);</span> <span class="c1">// =&gt; Imprime 1</span>
+
+    <span class="c1">// Tipos irão ter overflow sem aviso</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span><span class="p">)</span> <span class="mi">257</span><span class="p">);</span> <span class="c1">// =&gt; 1 (Max char = 255 se char tem 8 bits)</span>
+
+    <span class="c1">// Para determinar o valor máximo de um `char`, de um `signed char` e de</span>
+    <span class="c1">// um `unisigned char`, respectivamente, use as macros CHAR_MAX, SCHAR_MAX</span>
+    <span class="c1">// e UCHAR_MAX de &lt;limits.h&gt;</span>
+
+    <span class="c1">// Tipos inteiros podem sofrer cast para pontos-flutuantes e vice-versa.</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%f</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="mi">100</span><span class="p">);</span> <span class="c1">// %f formata um float</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%lf</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="mi">100</span><span class="p">);</span> <span class="c1">// %lf formata um double</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="p">(</span><span class="kt">char</span><span class="p">)</span><span class="mi">100</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+
+    <span class="c1">///////////////////////////////////////</span>
+    <span class="c1">// Ponteiros</span>
+    <span class="c1">///////////////////////////////////////</span>
+
+    <span class="c1">// Um ponteiro é uma variável declarada para armazenar um endereço de memória.</span>
+    <span class="c1">// Sua declaração irá também dizer o tipo de dados para o qual ela aponta. Você</span>
+    <span class="c1">// Pode usar o endereço de memória de suas variáveis, então, brincar com eles.</span>
+
+    <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">x</span><span class="p">);</span> <span class="c1">// Use &amp; para usar o endereço de uma variável</span>
+    <span class="c1">// (%p formata um objeto ponteiro do tipo void *)</span>
+    <span class="c1">// =&gt; Imprime algum endereço de memória;</span>
+
+    <span class="c1">// Ponteiros começam com * na sua declaração</span>
+    <span class="kt">int</span> <span class="o">*</span><span class="n">px</span><span class="p">,</span> <span class="n">nao_eh_um_ponteiro</span><span class="p">;</span> <span class="c1">// px é um ponteiro para um int</span>
+    <span class="n">px</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">x</span><span class="p">;</span> <span class="c1">// armazena o endereço de x em px</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%p</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="n">px</span><span class="p">);</span> <span class="c1">// =&gt; Imprime algum endereço de memória</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%zu, %zu</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">px</span><span class="p">),</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">nao_eh_um_ponteiro</span><span class="p">));</span>
+    <span class="c1">// =&gt; Imprime "8, 4" em um sistema típico de 64 bits</span>
+
+    <span class="c1">// Para pegar um valor no endereço apontado por um ponteiro,</span>
+    <span class="c1">// coloque * na frente para de-referenciá-lo.</span>
+    <span class="c1">// Nota: sim, é confuso usar '*' _tanto_ para declaração de ponteiro</span>
+    <span class="c1">// como para de-referenciá-lo.</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">*</span><span class="n">px</span><span class="p">);</span> <span class="c1">// =&gt; Imprime 0, o valor de x</span>
+
+    <span class="c1">// Você também pode mudar o valor que o ponteiro está apontando.</span>
+    <span class="c1">// Temos que cercar a de-referência entre parênteses, pois</span>
+    <span class="c1">// ++ tem uma precedência maior que *.</span>
+    <span class="p">(</span><span class="o">*</span><span class="n">px</span><span class="p">)</span><span class="o">++</span><span class="p">;</span> <span class="c1">// Incrementa o valor que px está apontando por 1</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">*</span><span class="n">px</span><span class="p">);</span> <span class="c1">// =&gt; Imprime 1</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">x</span><span class="p">);</span> <span class="c1">// =&gt; Imprime 1</span>
+
+    <span class="c1">// Arrays são uma boa maneira de alocar um bloco contínuo de memória</span>
+    <span class="kt">int</span> <span class="n">x_array</span><span class="p">[</span><span class="mi">20</span><span class="p">];</span> <span class="c1">// Declara um array de tamanho 20 (não pode-se mudar o tamanho</span>
+    <span class="kt">int</span> <span class="n">xx</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">xx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">xx</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="p">;</span> <span class="n">xx</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">x_array</span><span class="p">[</span><span class="n">xx</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">-</span> <span class="n">xx</span><span class="p">;</span>
+    <span class="p">}</span> <span class="c1">//Inicializa x_array com 20, 19, 18,... 2, 1</span>
+
+    <span class="c1">// Declara um ponteiro do tipo int e inicialize ele para apontar para x_array</span>
+    <span class="kt">int</span><span class="o">*</span> <span class="n">x_ptr</span> <span class="o">=</span> <span class="n">x_array</span><span class="p">;</span>
+    <span class="c1">// x_ptr agora aponta para o primeiro elemento do array (o inteiro 20).</span>
+    <span class="c1">// Isto funciona porque arrays são apenas ponteiros para seus primeiros elementos.</span>
+    <span class="c1">// Por exemplo, quando um array é passado para uma função ou é atribuído a um</span>
+    <span class="c1">// ponteiro, ele transforma-se (convertido implicitamente) em um ponteiro.</span>
+    <span class="c1">// Exceções: quando o array é o argumento de um operador `&amp;` (endereço-de):</span>
+    <span class="kt">int</span> <span class="n">arr</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">ptr_to_arr</span><span class="p">)[</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">arr</span><span class="p">;</span> <span class="c1">// &amp;arr não é do tipo `int *`!</span>
+                                  <span class="c1">// É do tipo "ponteiro para array" (de `int`s).</span>
+    <span class="c1">// ou quando o array é uma string literal usada para inicializar um array de char:</span>
+    <span class="kt">char</span> <span class="n">arr</span><span class="p">[]</span> <span class="o">=</span> <span class="s">"foobarbazquirk"</span><span class="p">;</span>
+    <span class="c1">// ou quando é um argumento dos operadores `sizeof` ou `alignof`:</span>
+    <span class="kt">int</span> <span class="n">arr</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+    <span class="kt">int</span> <span class="o">*</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">arr</span><span class="p">;</span> <span class="c1">// equivalente a int *ptr = &amp;arr[0];</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%zu, %zu</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="k">sizeof</span> <span class="n">arr</span><span class="p">,</span> <span class="k">sizeof</span> <span class="n">ptr</span><span class="p">);</span> <span class="c1">// provavelmente imprime "40, 4" ou "40, 8"</span>
+
+    <span class="c1">// Ponteiros podem ser incrementados ou decrementados baseado no seu tipo</span>
+    <span class="c1">// (isto é chamado aritmética de ponteiros</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">x_ptr</span> <span class="o">+</span> <span class="mi">1</span><span class="p">));</span> <span class="c1">// =&gt; Imprime 19</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">x_array</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span> <span class="c1">// =&gt; Imprime 19</span>
+
+    <span class="c1">// Você também pode alocar dinamicamente blocos de memória com a função</span>
+    <span class="c1">// da biblioteca padrão malloc, a qual recebe um argumento do tipo size_t</span>
+    <span class="c1">// representando o número de bytes a ser alocado (geralmente da heap, apesar de</span>
+    <span class="c1">// isto poder não ser verdadeiro em, e.g., sistemas embarcados - o C padrão diz</span>
+    <span class="c1">// nada sobre isso).</span>
+    <span class="kt">int</span> <span class="o">*</span><span class="n">my_ptr</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">my_ptr</span><span class="p">)</span> <span class="o">*</span> <span class="mi">20</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">xx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">xx</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="p">;</span> <span class="n">xx</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="o">*</span><span class="p">(</span><span class="n">my_ptr</span> <span class="o">+</span> <span class="n">xx</span><span class="p">)</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">-</span> <span class="n">xx</span><span class="p">;</span> <span class="c1">// my_ptr[xx] = 20-xx</span>
+    <span class="p">}</span> <span class="c1">//Inicializa a memória com 20, 19, 18, 17... 2, 1 (como ints)</span>
+
+    <span class="c1">// Dereferenciar memória que você não alocou cria</span>
+    <span class="c1">// "resultados imprevisíveis" - o programa é dito ter um "comportamento indefinido"</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">my_ptr</span> <span class="o">+</span> <span class="mi">21</span><span class="p">));</span> <span class="c1">// =&gt; Imprime quem-sabe-o-que? Talvez até quebre o programa.</span>
+
+    <span class="c1">// Quando se termina de usar um bloco de memória alocado, você pode liberá-lo,</span>
+    <span class="c1">// ou ninguém mais será capaz de usá-lo até o fim da execução</span>
+    <span class="c1">// (Isto chama-se "memory leak"):</span>
+    <span class="n">free</span><span class="p">(</span><span class="n">my_ptr</span><span class="p">);</span>
+
+    <span class="c1">// Strings são arrays de char, mas elas geralmente são representadas</span>
+    <span class="c1">// como um ponteiro para char (com o apontador para o primeiro elemento do array).</span>
+    <span class="c1">// É boa prática usar `const char *' quando de-referenciando uma literal string,</span>
+    <span class="c1">// dado que elas não deverão ser modificadas (i.e. "foo"[0] = 'a' é ILEGAL.)</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">my_str</span> <span class="o">=</span> <span class="s">"Esta é a minha literal string"</span><span class="p">;</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"%c</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">*</span><span class="n">my_str</span><span class="p">);</span> <span class="c1">// =&gt; 'T'</span>
+
+    <span class="c1">// Este não é o caso se a string for um array</span>
+    <span class="c1">// (potencialmente inicializado com um literal string)</span>
+    <span class="c1">// que reside em uma memória de escrita, como em:</span>
+    <span class="kt">char</span> <span class="n">foo</span><span class="p">[]</span> <span class="o">=</span> <span class="s">"foo"</span><span class="p">;</span>
+    <span class="n">foo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="sc">'a'</span><span class="p">;</span> <span class="c1">// Isto é legal, foo agora contém "aoo"</span>
+
+    <span class="n">funcao_1</span><span class="p">();</span>
+<span class="p">}</span> <span class="c1">// fim da função main</span>
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Funções</span>
+<span class="c1">///////////////////////////////////////</span>
+
+<span class="c1">//Sintaxe de declaração de funções:</span>
+<span class="c1">// &lt;tipo de retorno&gt; &lt;nome da função&gt;(&lt;argumentos&gt;)</span>
+
+<span class="kt">int</span> <span class="nf">soma_dois_int</span><span class="p">(</span><span class="kt">int</span> <span class="n">x1</span><span class="p">,</span> <span class="kt">int</span> <span class="n">x2</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">x1</span> <span class="o">+</span> <span class="n">x2</span><span class="p">;</span> <span class="c1">// Use return para retornar um valor</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+Funções são chamadas por valor. Quando uma função é chamada, os argumentos passados
+para a função são cópias dos argumento originais (a não ser arrays). Qualquer coisa
+que você faz nos argumentos de uma função não alteram o valor do argumento original
+onde a função foi chamada.
+
+Use ponteiros se você precisa alterar os valores dos argumentos originais
+
+Exemplo: reversão de string in-place
+*/</span>
+
+<span class="c1">// Uma função void não retorna valor algum</span>
+<span class="kt">void</span> <span class="nf">str_reverse</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">str_in</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">char</span> <span class="n">tmp</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">ii</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="kt">size_t</span> <span class="n">len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">str_in</span><span class="p">);</span> <span class="c1">// `strlen()` é parte da biblioteca padrão C</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">ii</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">ii</span> <span class="o">&lt;</span> <span class="n">len</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span> <span class="n">ii</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">str_in</span><span class="p">[</span><span class="n">ii</span><span class="p">];</span>
+        <span class="n">str_in</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="n">str_in</span><span class="p">[</span><span class="n">len</span> <span class="o">-</span> <span class="n">ii</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span> <span class="c1">// iiº char do final</span>
+        <span class="n">str_in</span><span class="p">[</span><span class="n">len</span> <span class="o">-</span> <span class="n">ii</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+char c[] = "Isto é um teste.";
+str_reverse(c);
+printf("%s\n", c); // =&gt; ".etset mu é otsI"
+*/</span>
+
+<span class="c1">// Se estiver referenciando variáveis externas à função, use a palavra-chave extern.</span>
+<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kt">void</span> <span class="nf">testFunc</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">extern</span> <span class="kt">int</span> <span class="n">i</span><span class="p">;</span> <span class="c1">//i aqui agora está usando a variável externa</span>
+<span class="p">}</span>
+
+<span class="c1">// Faça variáveis externas privadas para o código-fonte com static:</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">// Outros arquivos usando testFunc() não podem acessar a variável i</span>
+<span class="kt">void</span> <span class="nf">testFunc</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">extern</span> <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1">//**Você pode declarar funções como static para torná-las privadas**</span>
+
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Tipos definidos pelo usuário e structs</span>
+<span class="c1">///////////////////////////////////////</span>
+
+<span class="c1">// Typedefs podem ser usadas para criar apelidos para tipos</span>
+<span class="k">typedef</span> <span class="kt">int</span> <span class="n">meu_tipo</span><span class="p">;</span>
+<span class="n">meu_tipo</span> <span class="n">var_meu_tipo</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="c1">// Structs são apenas coleções de dados, os membros são alocados sequencialmente,</span>
+<span class="c1">// na ordem que são escritos:</span>
+<span class="k">struct</span> <span class="n">retangulo</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">altura</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">largura</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// Geralmente não é verdade que</span>
+<span class="c1">// sizeof(struct retangulo) == sizeof(int) + sizeof(int)</span>
+<span class="c1">// devido ao potencial de preenchimento entre os membros da estrutura</span>
+<span class="c1">// (isto é por razões de alinhamento). [1]</span>
+
+<span class="kt">void</span> <span class="nf">funcao_1</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">retangulo</span> <span class="n">meu_retan</span><span class="p">;</span>
+
+    <span class="c1">// Acesse os membros da estrutura com .</span>
+    <span class="n">meu_retan</span><span class="p">.</span><span class="n">altura</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+    <span class="n">meu_retan</span><span class="p">.</span><span class="n">largura</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span>
+
+    <span class="c1">// Você pode declarar ponteiros para structs</span>
+    <span class="k">struct</span> <span class="n">retangulo</span> <span class="o">*</span><span class="n">meu_retan_ptr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">meu_retan</span><span class="p">;</span>
+
+    <span class="c1">// Use de-referenciamento para setar os membros da</span>
+    <span class="c1">// struct apontada...</span>
+    <span class="p">(</span><span class="o">*</span><span class="n">meu_retan_ptr</span><span class="p">).</span><span class="n">altura</span> <span class="o">=</span> <span class="mi">30</span><span class="p">;</span>
+
+    <span class="c1">// ... ou ainda melhor: prefira usar o atalho -&gt; para melhorar legibilidade</span>
+    <span class="n">meu_retan_ptr</span><span class="o">-&gt;</span><span class="n">largura</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span> <span class="c1">// O mesmo que (*meu_retan_ptr).largura = 10;</span>
+<span class="p">}</span>
+
+<span class="c1">//Você pode aplicar um typedef para uma struct por conveniência</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">retangulo</span> <span class="n">retan</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">area</span><span class="p">(</span><span class="n">retan</span> <span class="n">r</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">r</span><span class="p">.</span><span class="n">largura</span> <span class="o">*</span> <span class="n">r</span><span class="p">.</span><span class="n">altura</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Se você tiver structs grandes, você pode passá-las "por ponteiro"</span>
+<span class="c1">// para evitar cópia de toda a struct:</span>
+<span class="kt">int</span> <span class="nf">area</span><span class="p">(</span><span class="k">const</span> <span class="n">retan</span> <span class="o">*</span><span class="n">r</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">r</span><span class="o">-&gt;</span><span class="n">largura</span> <span class="o">*</span> <span class="n">r</span><span class="o">-&gt;</span><span class="n">altura</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Ponteiros para funções</span>
+<span class="c1">///////////////////////////////////////</span>
+<span class="cm">/*
+Em tempo de execução, funções são localizadas em endereços de memória
+conhecidos. Ponteiros para funções são como qualquer outro ponteiro
+(apenas guardam endereços de memória), mas podem ser usados para invocar funções
+diretamente e passá-las para por toda parte.
+Entretanto, a sintaxe de definição por ser um pouco confusa.
+
+Exemplo: use str_reverso através de um ponteiro
+*/</span>
+<span class="kt">void</span> <span class="n">str_reverso_atrav</span><span class="err">é</span><span class="n">s_ponteiro</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">str_entrada</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Define uma variável de ponteiro para função, nomeada f.</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">f</span><span class="p">)(</span><span class="kt">char</span> <span class="o">*</span><span class="p">);</span> <span class="c1">//Assinatura deve ser exatamente igual à função alvo.</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">str_reverso</span><span class="p">;</span> <span class="c1">//Atribue o endereço da função em si (determinado em tempo de execução.</span>
+    <span class="c1">// f = str_reverso; Também funciona - função tornam-se ponteiros, assim como arrays</span>
+    <span class="p">(</span><span class="o">*</span><span class="n">f</span><span class="p">)(</span><span class="n">str_entrada</span><span class="p">);</span> <span class="c1">// Chamando a função através do ponteiro</span>
+    <span class="c1">// f(str_entrada); // Esta é uma sintaxe alternativa, mas equivalente.</span>
+<span class="p">}</span>
+
+<span class="cm">/*
+Desde que as assinaturas das funções sejam compatíveis, você pode atribuir qualquer
+função ao mesmo ponteiro. Ponteiros para funções são geralmente um typedef por
+simplicidade e legibilidade, como segue:
+*/</span>
+
+<span class="k">typedef</span> <span class="nf">void</span> <span class="p">(</span><span class="o">*</span><span class="n">minha_fun</span><span class="err">çã</span><span class="n">o_type</span><span class="p">)(</span><span class="kt">char</span> <span class="o">*</span><span class="p">);</span>
+
+<span class="c1">// Declarando o ponteiro:</span>
+<span class="c1">// ...</span>
+<span class="c1">// minha_função_type f;</span>
+
+<span class="c1">//Caracteres especiais:</span>
+<span class="sc">'\a'</span> <span class="c1">// Alerta (sino)</span>
+<span class="sc">'\n'</span> <span class="c1">// Nova linha</span>
+<span class="sc">'\t'</span> <span class="c1">// Tab (justifica texto a esquerda)</span>
+<span class="sc">'\v'</span> <span class="c1">// Tab vertical</span>
+<span class="sc">'\f'</span> <span class="c1">// Nova linha (formfeed)</span>
+<span class="sc">'\r'</span> <span class="c1">// Retorno de carroça</span>
+<span class="sc">'\b'</span> <span class="c1">// Backspace</span>
+<span class="sc">'\0'</span> <span class="c1">// Caracter nulo. Geralmente colocado ao final de string em C.</span>
+     <span class="c1">//   oi\n\0. \0 é usado por convenção para marcar o fim da string.</span>
+<span class="sc">'\\'</span> <span class="c1">// Barra invertida</span>
+<span class="sc">'\?'</span> <span class="c1">// Interrogação</span>
+<span class="sc">'\''</span> <span class="c1">// Aspas simples</span>
+<span class="sc">'\"'</span> <span class="c1">// Aspas duplas</span>
+<span class="err">'\</span><span class="n">xhh</span><span class="err">'</span> <span class="c1">// Número hexadecimal. Exemplo: '\xb' = tab vertical</span>
+<span class="err">'\</span><span class="n">ooo</span><span class="err">'</span> <span class="c1">// Número octal. Exemplo: '\013' = tab vertical</span>
+
+<span class="c1">// formatando impressão:</span>
+<span class="s">"%d"</span>    <span class="c1">// inteiro</span>
+<span class="s">"%3d"</span>   <span class="c1">// inteiro com pelo menos 3 dígitos (justifica texto a direita)</span>
+<span class="s">"%s"</span>    <span class="c1">// string</span>
+<span class="s">"%f"</span>    <span class="c1">// ponto-flutuante</span>
+<span class="s">"%ld"</span>   <span class="c1">// long</span>
+<span class="s">"%3.2f"</span> <span class="c1">// ponto-flutuante com pelo menos 3 dígitos a esquerda e 2 a direita</span>
+<span class="s">"%7.4s"</span> <span class="c1">// (também pode-se fazer com strings)</span>
+<span class="s">"%c"</span>    <span class="c1">// char</span>
+<span class="s">"%p"</span>    <span class="c1">// ponteiro</span>
+<span class="s">"%x"</span>    <span class="c1">// hexadecimal</span>
+<span class="s">"%o"</span>    <span class="c1">// octal</span>
+<span class="s">"%%"</span>    <span class="c1">// imprime %</span>
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Ordem de avaliação</span>
+<span class="c1">///////////////////////////////////////</span>
+
+<span class="c1">//-----------------------------------------------------------//</span>
+<span class="c1">//        Operadores                       | Associatividade //</span>
+<span class="c1">//-----------------------------------------------------------//</span>
+<span class="c1">// () [] -&gt; .                        | esquerda para direita //</span>
+<span class="c1">// ! ~ ++ -- + = *(type)sizeof       | direita para esqureda //</span>
+<span class="c1">// * / %                             | esquerda para direita //</span>
+<span class="c1">// + -                               | esquerda para direita //</span>
+<span class="c1">// &lt;&lt; &gt;&gt;                             | esquerda para direita //</span>
+<span class="c1">// &lt; &lt;= &gt; &gt;=                         | esquerda para direita //</span>
+<span class="c1">// == !=                             | esquerda para direita //</span>
+<span class="c1">// &amp;                                 | esquerda para direita //</span>
+<span class="c1">// ^                                 | esquerda para direita //</span>
+<span class="c1">// |                                 | esquerda para direita //</span>
+<span class="c1">// &amp;&amp;                                | esquerda para direita //</span>
+<span class="c1">// ||                                | esquerda para direita //</span>
+<span class="c1">// ?:                                | direita para esqureda //</span>
+<span class="c1">// = += -= *= /= %= &amp;= ^= |= &lt;&lt;= &gt;&gt;= | direita para esqureda //</span>
+<span class="c1">// ,                                 | esquerda para direita //</span>
+<span class="c1">//-----------------------------------------------------------//</span>
+
+</code></pre></div>
+<h2>Leitura adicional</h2>
+
+<p>É recomendado ter uma cópia de <a href="https://en.wikipedia.org/wiki/The_C_Programming_Language">K&amp;R, aka &ldquo;The C Programming Language&rdquo;</a>.
+Este é <em>o</em> livro sobre C, escrito pelos criadores da linguagem. Mas cuidado - ele é antigo e contém alguns erros (bem,
+ideias que não são mais consideradas boas) ou práticas ultrapassadas.</p>
+
+<p>Outra boa referência é <a href="http://learncodethehardway.org/c/">Learn C the hard way</a>.</p>
+
+<p>Se você tem uma pergunta, leia <a href="http://c-faq.com">compl.lang.c Frequently Asked Questions</a>.</p>
+
+<p>É importante usar espaços e indentação adequadamente e ser consistente com seu estilo de código em geral.
+Código legível é melhor que código &lsquo;esperto&rsquo; e rápido. Para adotar um estilo de código bom e sensato, veja
+<a href="https://www.kernel.org/doc/Documentation/CodingStyle">Linux kernel coding style</a>.</p>
+
+<p>Além disso, Google é teu amigo.</p>
+
+<p>[1] http://stackoverflow.com/questions/119123/why-isnt-sizeof-for-a-struct-equal-to-the-sum-of-sizeof-of-each-member</p>
+
+    <hr>
+    <p>Sugestões ou correções? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Abra uma issue</a> no repositório do Github, ou faça um <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/pt-br/c-pt.html.markdown">pull request</a> você mesmo!
+    </p>
+    <p class="contributed">
+    Originalmente contribuído por Adam Bard e atualizado por <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/pt-br/c-pt.html.markdown">1 colaborador(es)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://adambard.com/">Adam Bard</a>,
+        <a href="http://twitter.com/H2CO3_iOS">Árpád Goretity</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/JoaoGFarias">João Farias</a>
+        <a href="https://github.com/eltonvs">Elton Viana</a>
+        <a href="https://github.com/cassiobsilva">Cássio Böck</a>
+        <a href="https://github.com/heitorPB/">Heitor P. de Bittencourt</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

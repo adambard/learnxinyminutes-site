@@ -1,0 +1,476 @@
+<!DOCTYPE html lang="es-es" xml:lang="es-es" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="es-es">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn erlang in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/es-es/erlang-es/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fes-es%2Ferlang-es%2F&text=Aprende+X+en+Y+minutos%2C+donde+X%3Derlang">
+        Comparte esta página
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Seleccione el tema:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">ligero</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">oscuro</button>
+  </div>
+  <h1><a href="/">Aprende X en Y minutos</a></h1>
+  <h2>Donde X=erlang</h2>
+    <p class="filelink">
+    Descarga el código:
+    <a href="/docs/files/learnerlang-es.erl">learnerlang-es.erl</a>
+    </p>
+  <div id="doc">
+    <h1>Erlang</h1>
+
+<p>%  Signo de porcentaje inicia un comentario de una línea.</p>
+
+<p>%% Se usarán dos por ciento de caracteres para comentar funciones.</p>
+
+<p>%%% Se usarán tres por ciento de caracteres para comentar los módulos.</p>
+
+<h3>Utilizamos tres tipos de puntuación en Erlang.</h3>
+
+<ul>
+<li><p><strong>Comas (<code>,</code>)</strong>  argumentos separados en llamadas a funciones, constructores de
+datos y patrones.</p></li>
+<li><p><strong>Periodos (<code>.</code>)</strong> (seguido de espacios en blanco) separa funciones completas y
+expresiones en el shell.</p></li>
+<li><p><strong>Semicolons (<code>;</code>)</strong> cláusulas separadas. Encontramos cláusulas en varios contextos: de definiciones de funciones y en <strong><code>case</code></strong>,<strong><code>if</code></strong>, <strong><code>try..catch</code></strong>, y <strong><code>receive</code></strong> de expresiones.</p></li>
+</ul>
+
+<p>## 1.-Variables y coincidencia de patrones.</p>
+
+<ul>
+<li><p>En Erlang, las nuevas variables están vinculadas con una instrucción <strong><code>=</code></strong>.</p>
+
+<blockquote>
+<p><strong>Num = 42.</strong></p>
+</blockquote></li>
+<li><p>Todos los nombres de variables deben comenzar con una letra mayúscula.</p></li>
+<li><p>Erlang tiene variables de asignación única; si intentas asignar un diferente de valor a la variable <strong><code>Num</code></strong>, obtendrá un error.
+Num = 43. <strong>error de excepción</strong>: no coincide con el valor del lado derecho 43</p></li>
+<li><p>En la mayoría de los idiomas, <strong><code>=</code></strong> denota una declaración de asignación. En Erlang, sin embargo,<strong><code>=</code></strong> denota una operación de coincidencia de patrones.</p></li>
+<li><p>Cuando se usa una variable vacía en el del lado izquierdo del operador <code>=</code> to está vinculado (asignado), pero cuando está atado variable se usa en el lado izquierdo, se observa el siguiente comportamiento.</p>
+
+<blockquote>
+<p><strong><code>Lhs = Rhs</code></strong> realmente significa esto: evaluar el lado derecho (<strong><code>Rhs</code></strong>),  y luego coincide con el resultado contra el patrón en el lado izquierdo (<strong><code>Lhs</code></strong>).
+<strong>Num = 7 * 6.</strong></p>
+</blockquote></li>
+<li><p>Número de punto flotante.
+Pi = 3.14159.</p></li>
+<li><p>Los átomos se usan para representar diferentes valores constantes no numéricos.</p></li>
+<li><p>Átomos comienza con letras minúsculas, seguido de una secuencia de caracteres</p></li>
+<li><p>alfanuméricos de caracteres o el signo de subrayado (<strong><code>_</code></strong>) o en (<strong><code>@</code></strong>).</p>
+
+<blockquote>
+<p><strong>Hola = hola.</strong>
+<strong>OtherNode = ejemplo @ nodo.</strong></p>
+</blockquote></li>
+<li><p>Los átomos con valores no alfanuméricos se pueden escribir al encerrar los átomos con apóstrofes.</p>
+
+<blockquote>
+<p><strong>AtomWithSpace = &lsquo;algún átomo con espacio&rsquo;.</strong></p>
+</blockquote></li>
+<li><p>Tuples son similares a las estructuras en C.</p>
+
+<blockquote>
+<p><strong>Point = {point, 10, 45}.</strong></p>
+</blockquote></li>
+<li><p>Si queremos extraer algunos valores de una tupla, usamos el patrón de coincidencia
+operador <strong><code>=</code></strong>.</p>
+
+<blockquote>
+<p><strong>{punto, X, Y} = Punto. % X = 10, Y = 45</strong></p>
+</blockquote></li>
+<li><p>Podemos usar <strong><code>_</code></strong> como marcador de posición para variables que no nos interesan.</p></li>
+<li><p>El símbolo <strong><code>_</code></strong> se llama una variable anónima. A diferencia de las variables  regulares,varias apariciones de <code>_</code> en el mismo patrón no tienen que vincularse a mismo valor.</p>
+
+<blockquote>
+<p><strong>Person = {person, {name, {first, joe}, {last, armstrong}}, {footsize, 42}}.</strong>
+<strong>{<em>, {</em>, {_, who }, _}, _} = Persona. % Who = joe</strong></p>
+</blockquote></li>
+<li><p>Creamos una lista al encerrar los elementos de la lista entre corchetes y separándolos con comas.</p></li>
+<li><p>Los elementos individuales de una lista pueden ser de cualquier tipo.</p></li>
+<li><p>El primer elemento de una lista es el encabezado de la lista. Si te imaginas eliminar del encabezado de la lista, lo que queda se llama cola de la lista.</p>
+
+<blockquote>
+<p><strong>ThingsToBuy = [{manzanas, 10}, {peras, 6}, {leche, 3}].</strong></p>
+</blockquote></li>
+<li><p>Si <code>T</code> es una lista, entonces <strong><code>[H | T]</code></strong> también es una lista, con la cabeza <strong><code>H</code></strong> y la cola <strong><code>T</code></strong>.</p></li>
+<li><p>La barra vertical (<strong><code>|</code></strong>) separa el encabezado de una lista de su cola.
+<strong><code>[]</code></strong> es la lista vacía.</p></li>
+<li><p>Podemos extraer elementos de una lista con una operación de coincidencia de
+patrones. Si nosotros tiene una lista no vacía <strong><code>L</code></strong>, luego la expresión <strong><code>[X | Y] = L</code></strong>, donde <strong><code>X</code></strong> y <strong><code>Y</code></strong> son variables independientes, extraerán el encabezado de la lista en <strong><code>X</code></strong> y la cola de la lista en <strong><code>Y</code></strong>.</p>
+
+<blockquote>
+<p><strong>[FirstThing | OtherThingsToBuy] = ThingsToBuy.</strong>
+<strong>FirstThing = {manzanas, 10}</strong>
+<strong>OtherThingsToBuy = [{peras, 6}, {leche, 3}]</strong></p>
+</blockquote></li>
+<li><p>No hay cadenas en Erlang. Las cadenas son realmente solo listas de enteros.</p></li>
+<li><p>Las cadenas están entre comillas dobles (<strong><code>&quot;</code></strong>).</p>
+
+<blockquote>
+<p><strong>Nombre = &ldquo;Hola&rdquo;.
+[72, 101, 108, 108, 111] = &ldquo;Hola&rdquo;.</strong></p>
+</blockquote></li>
+</ul>
+
+<h2>2. Programación secuencial.</h2>
+
+<ul>
+<li><p>Los módulos son la unidad básica de código en Erlang. Todas las funciones que escribimos son almacenado en módulos.</p></li>
+<li><p>Los módulos se almacenan en archivos con extensiones <strong><code>.erl</code></strong>.</p></li>
+<li><p>Los módulos deben compilarse antes de poder ejecutar el código. Un módulo compilado tiene el extensión <strong><code>.beam</code></strong>.</p>
+
+<blockquote>
+<p><strong>-módulo (geometría).
+-export ([area / 1]).  de la lista de funciones exportadas desde el módulo.</strong></p>
+</blockquote></li>
+<li><p>La función <strong><code>área</code></strong> consta de dos cláusulas. Las cláusulas están separadas por un punto y coma, y ​​la cláusula final termina con punto-espacio en blanco. Cada cláusula tiene una cabeza y un cuerpo; la cabeza consiste en un nombre de función seguido de un patrón (entre paréntesis), y el cuerpo consiste en una secuencia de expresiones, que se evalúan si el patrón en la cabeza es exitoso coincide con los argumentos de llamada. Los patrones se combinan en el orden aparecen en la definición de la función.</p>
+
+<blockquote>
+<p><strong>área ({rectángulo, ancho, Ht}) -&gt; ancho * Ht;
+área ({círculo, R}) -&gt; 3.14159 * R * R</strong> .</p>
+</blockquote></li>
+</ul>
+
+<p>### Compila el código en el archivo geometry.erl.
+c (geometría).  {ok, geometría}</p>
+
+<ul>
+<li><p>Necesitamos incluir el nombre del módulo junto con el nombre de la función para identifica exactamente qué función queremos llamar.</p>
+
+<blockquote>
+<p><strong>geometría: área ({rectángulo, 10, 5}). % 50</strong>
+<strong>geometría: área ({círculo, 1.4}). % 6.15752</strong></p>
+</blockquote></li>
+<li><p>En Erlang, dos funciones con el mismo nombre y arity diferente (número de argumentos) en el mismo módulo representan funciones completamente diferentes.</p>
+
+<blockquote>
+<p>-<strong>module (lib_misc)</strong>.
+-<strong>export ([sum / 1])</strong>.  </p>
+</blockquote></li>
+<li><p>función de exportación <strong><code>suma</code></strong> de arity 1  acepta un argumento:</p>
+
+<blockquote>
+<p><strong>lista de enteros.
+suma (L) -&gt; suma (L, 0).
+suma ([], N) -&gt; N;
+suma ([H | T], N) -&gt; suma (T, H + N).</strong></p>
+</blockquote></li>
+<li><p>Funs son funciones <strong>&ldquo;anónimas&rdquo;</strong>. Se llaman así porque tienen sin nombre. Sin embargo, pueden asignarse a variables.
+Doble = diversión (X) -&gt; 2 * X final.  <strong><code>Doble</code></strong> apunta a una función anónima con el controlador: <strong>#Fun <erl_eval.6.17052888>
+Doble (2). % 4</strong></p></li>
+<li><p>Functions acepta funs como sus argumentos y puede devolver funs.</p>
+
+<blockquote>
+<p><strong>Mult = diversión (Times) -&gt; (fun (X) -&gt; X * Times end) end.
+Triple = Mult (3).
+Triple (5). % 15</strong></p>
+</blockquote></li>
+<li><p>Las listas de comprensión son expresiones que crean listas sin tener que usar
+funs, mapas o filtros.</p>
+
+<ul>
+<li>La notación <strong><code>[F (X) || X &lt;- L]</code></strong> significa&quot; la lista de <strong><code>F (X)</code></strong> donde se toma <strong><code>X</code></strong>% de la lista <strong><code>L</code>.&ldquo;</strong>
+&gt;<strong>L = [1,2,3,4,5].
+[2 * X || X &lt;- L]. % [2,4,6,8,10]</strong></li>
+</ul></li>
+<li><p>Una lista de comprensión puede tener generadores y filtros, que seleccionan un subconjunto de los valores generados</p>
+
+<blockquote>
+<p><strong>EvenNumbers = [N || N &lt;- [1, 2, 3, 4], N rem 2 == 0]. % [2, 4]</strong></p>
+</blockquote></li>
+<li><p>Los protectores son construcciones que podemos usar para aumentar el poder del patrón coincidencia. Usando guardias, podemos realizar pruebas simples y comparaciones en el de variables en un patrón.
+Puede usar guardias en la cabeza de las definiciones de funciones donde están introducido por la palabra clave <strong><code>when</code></strong>, o puede usarlos en cualquier lugar del lenguaje donde se permite una expresión.</p>
+
+<blockquote>
+<p><strong>max (X, Y) cuando X&gt; Y -&gt; X;
+max (X, Y) -&gt; Y.</strong></p>
+</blockquote></li>
+<li><p>Un guardia es una serie de expresiones de guardia, separadas por comas (<strong><code>,</code></strong>).</p></li>
+<li><p>La guardia <strong><code>GuardExpr1, GuardExpr2, ..., GuardExprN</code></strong> es verdadera si todos los guardias expresiones <strong><code>GuardExpr1</code>,<code>GuardExpr2</code>, &hellip;, <code>GuardExprN</code></strong> evalúan <strong><code>true</code></strong>.</p>
+
+<blockquote>
+<p><strong>is<em>cat (A) cuando is</em>atom (A), A =: = cat -&gt; true;
+is<em>cat (A) -&gt; false.
+is</em>dog (A) cuando is<em>atom (A), A =: = dog -&gt; true;
+is</em>dog (A) -&gt; false.</strong></p>
+</blockquote></li>
+</ul>
+
+<p>No nos detendremos en el operador <strong><code>=: =</code></strong> aquí; Solo tenga en cuenta que está acostumbrado a comprueba si dos expresiones de Erlang tienen el mismo valor * y * del mismo tipo. Contrasta este comportamiento con el del operador <strong><code>==</code></strong>:</p>
+
+<blockquote>
+<p><strong>1 + 2 =: = 3.% true
+1 + 2 =: = 3.0. % false
+1 + 2 == 3.0. % true</strong></p>
+</blockquote>
+
+<p>Una secuencia de guardia es una guardia individual o una serie de guardias, separadas por punto y coma (<strong><code>;</code></strong>). La secuencia de guardia <strong><code>G1; G2; ...; Gn</code></strong> es verdadero si en menos uno de los guardias <strong><code>G1</code>,<code>G2</code>, &hellip;, <code>Gn</code></strong> se evalúa como <strong><code>true</code></strong>.</p>
+
+<blockquote>
+<p><strong>is<em>pet (A) cuando is</em>atom (A), (A =: = dog); (A =: = cat) -&gt; true;
+is_pet (A) -&gt; false.</strong></p>
+</blockquote>
+
+<ul>
+<li><p><strong>Advertencia</strong>: no todas las expresiones de Erlang válidas se pueden usar como expresiones de guarda; en particular, nuestras funciones <strong><code>is_cat</code></strong> y <strong><code>is_dog</code></strong> no se pueden usar dentro del secuencia de protección en la definición de <strong><code>is_pet</code></strong>. Para una descripción de expresiones permitidas en secuencias de guarda, consulte la sección específica en el manual de referencia de Erlang:</p>
+
+<h3>http://erlang.org/doc/reference_manual/expressions.html#guards</h3></li>
+<li><p>Los registros proporcionan un método para asociar un nombre con un elemento particular en un de tupla De las definiciones de registros se pueden incluir en los archivos de código fuente de Erlang o poner en archivos con la extensión <strong><code>.hrl</code></strong>, que luego están incluidos en el código fuente de Erlang de archivos.</p></li>
+</ul>
+
+<blockquote>
+<p><strong>-record (todo, {
+  status = recordatorio,% valor predeterminado
+  quien = joe,
+  texto
+}).</strong></p>
+</blockquote>
+
+<ul>
+<li>Tenemos que leer las definiciones de registro en el shell antes de que podamos definir un
+de registro. Usamos la función shell <strong><code>rr</code></strong> (abreviatura de los registros de lectura) para hacer esto.</li>
+</ul>
+
+<blockquote>
+<p><strong>rr (&quot;records.hrl&rdquo;).</strong> % [que hacer]</p>
+</blockquote>
+
+<ul>
+<li><strong>Creando y actualizando registros:</strong>
+&gt;<strong>X = #todo {}.
+% #todo {status = recordatorio, who = joe, text = undefined}
+X1 = #todo {estado = urgente, texto = &ldquo;Corregir errata en el libro&rdquo;}.
+% #todo {status = urgent, who = joe, text = &ldquo;Corregir errata en el libro&rdquo;}
+X2 = X1 # todo {estado = hecho}.
+% #todo {status = done, who = joe, text = &ldquo;Corregir errata en el libro&rdquo;}
+expresiones <code>case</code></strong>.</li>
+</ul>
+
+<p><strong><code>filter</code></strong> devuelve una lista de todos los elementos <strong><code>X</code></strong> en una lista <strong><code>L</code></strong> para la cual <strong><code>P (X)</code></strong> es true.</p>
+
+<blockquote>
+<p><strong>filter(P, [H|T]) -&gt;
+  case P(H) of
+    true -&gt; [H|filter(P, T)];
+    false -&gt; filter(P, T)
+  end;
+filter(P, []) -&gt; [].
+filter(fun(X) -&gt; X rem 2 == 0 end, [1, 2, 3, 4]). % [2, 4]</strong></p>
+</blockquote>
+
+<p>expresiones <strong><code>if</code></strong>.</p>
+
+<blockquote>
+<p><strong>max(X, Y) -&gt;
+  if
+    X &gt; Y -&gt; X;
+    X &lt; Y -&gt; Y;
+    true -&gt; nil
+  end.</strong></p>
+</blockquote>
+
+<p><strong>Advertencia:</strong> al menos uno de los guardias en la expresión <strong><code>if</code></strong> debe evaluar a <strong><code>true</code></strong>; de lo contrario, se generará una excepción.</p>
+
+<h2>3. Excepciones.</h2>
+
+<ul>
+<li><p>El sistema genera excepciones cuando se encuentran errores internos o explícitamente en el código llamando <strong><code>throw (Exception)</code></strong>, <strong><code>exit (Exception)</code></strong>, o <strong><code>erlang: error (Exception)</code></strong>.</p>
+
+<blockquote>
+<p><strong>generate<em>exception (1) -&gt; a;
+generate</em>exception (2) -&gt; throw (a);
+generate<em>exception (3) -&gt; exit (a);
+generate</em>exception (4) -&gt; {&lsquo;EXIT&rsquo;, a};
+generate_exception (5) -&gt; erlang: error (a).</strong></p>
+</blockquote></li>
+<li><p>Erlang tiene dos métodos para atrapar una excepción. Una es encerrar la llamada a de la función que genera la excepción dentro de una expresión <strong><code>try ... catch</code></strong>.</p>
+
+<blockquote>
+<p><strong>receptor (N) -&gt;
+prueba generar_excepción (N) de
+Val -&gt; {N, normal, Val}
+captura
+throw: X -&gt; {N, atrapado, arrojado, X};
+exit: X -&gt; {N, atrapado, salido, X};
+error: X -&gt; {N, atrapado, error, X}
+end.</strong></p>
+</blockquote></li>
+<li><p>El otro es encerrar la llamada en una expresión <strong><code>catch</code></strong>. Cuando atrapas un de excepción, se convierte en una tupla que describe el error.</p>
+
+<blockquote>
+<p><strong>catcher (N) -&gt; catch generate_exception (N).</strong></p>
+</blockquote></li>
+</ul>
+
+<h2>4. Concurrencia</h2>
+
+<ul>
+<li><p>Erlang se basa en el modelo de actor para concurrencia. Todo lo que necesitamos para escribir de programas simultáneos en Erlang son tres primitivos: procesos de desove, de envío de mensajes y recepción de mensajes.</p></li>
+<li><p>Para comenzar un nuevo proceso, usamos la función <strong><code>spawn</code></strong>, que toma una función como argumento.</p></li>
+</ul>
+
+<blockquote>
+<p><strong>F = diversión () -&gt; 2 + 2 final. % #Fun <erl_eval.20.67289768>
+spawn (F). % <0.44.0></strong></p>
+</blockquote>
+
+<ul>
+<li><p><strong><code>spawn</code></strong> devuelve un pid (identificador de proceso); puedes usar este pid para enviar de mensajes al proceso. Para pasar mensajes, usamos el operador <strong><code>!</code></strong>.</p></li>
+<li><p>Para que todo esto sea útil, debemos poder recibir mensajes. Esto es logrado con el mecanismo <strong><code>receive</code></strong>:</p></li>
+</ul>
+
+<blockquote>
+<p><strong>-module (calcular Geometría).
+-compile (export_all).
+calculateArea () -&gt;
+    recibir
+      {rectángulo, W, H} -&gt;
+        W * H;
+      {circle, R} -&gt;
+        3.14 * R * R;
+      _ -&gt;
+        io: format (&ldquo;Solo podemos calcular el área de rectángulos o círculos&rdquo;)
+    end.</strong></p>
+</blockquote>
+
+<ul>
+<li><p>Compile el módulo y cree un proceso que evalúe <strong><code>calculateArea</code></strong> en cáscara.</p>
+
+<blockquote>
+<p><strong>c (calcular Geometría).
+CalculateArea = spawn (calcular Geometría, calcular Área, []).
+CalculateArea! {círculo, 2}. % 12.56000000000000049738</strong></p>
+</blockquote></li>
+<li><p>El shell también es un proceso; puedes usar <strong><code>self</code></strong> para obtener el pid actual.
+<strong>self(). % <0.41.0></strong></p></li>
+</ul>
+
+<h2>5. Prueba con EUnit</h2>
+
+<ul>
+<li>Las pruebas unitarias se pueden escribir utilizando los generadores de prueba de EUnits y afirmar macros
+&gt;<strong>-módulo (fib).
+-export ([fib / 1]).
+-include_lib (&ldquo;eunit / include / eunit.hrl&rdquo;).</strong></li>
+</ul>
+
+<blockquote>
+<p><strong>fib (0) -&gt; 1;
+fib (1) -&gt; 1;
+fib (N) when N&gt; 1 -&gt; fib (N-1) + fib (N-2).</strong></p>
+
+<p><strong>fib<em>test</em> () -&gt;
+    [? <em>assert (fib (0) =: = 1),
+     ? _assert (fib (1) =: = 1),
+     ? _assert (fib (2) =: = 2),
+     ? _assert (fib (3) =: = 3),
+     ? _assert (fib (4) =: = 5),
+     ? _assert (fib (5) =: = 8),
+     ? _assertException (error, function</em>clause, fib (-1)),
+     ? _assert (fib (31) =: = 2178309)
+    ]</strong></p>
+</blockquote>
+
+<ul>
+<li><p>EUnit exportará automáticamente a una función de prueba () para permitir la ejecución de las pruebas en el shell Erlang
+fib: test ()</p></li>
+<li><p>La popular barra de herramientas de construcción de Erlang también es compatible con EUnit
+<strong><code>` de la unidad de barras de refuerzo
+</code></strong></p></li>
+</ul>
+
+    <hr>
+    <p>¿Tienes una sugerencia o rectificación? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Abre un issue</a> en el repositorio de Github, o haz un <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/es-es/erlang-es.html.markdown">pull request</a> tu mismo
+    </p>
+    <p class="contributed">
+    Originalmente contribuido por Giovanni Cappellotto, y actualizado por <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/es-es/erlang-es.html.markdown">0 colaborador(es)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://www.focustheweb.com/">Giovanni Cappellotto</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="http://github.com/ErnestoPelayo">Ernesto Pelayo</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn X in Y Minutes: Scenic Programming Language Tours</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/amd/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Famd%2F&text=Learn+X+in+Y+minutes%2C+where+X%3Damd">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=amd</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/learnamd.js">learnamd.js</a>
+    </p>
+  <div id="doc">
+    <h2>Getting Started with AMD</h2>
+
+<p>The <strong>Asynchronous Module Definition</strong> API specifies a mechanism for defining
+JavaScript modules such that the module and its dependencies can be asynchronously
+loaded. This is particularly well suited for the browser environment where
+synchronous loading of modules incurs performance, usability, debugging, and
+cross-domain access problems.</p>
+
+<h3>Basic concept</h3>
+<div class="highlight"><pre class="highlight javascript"><code><span class="c1">// The basic AMD API consists of nothing but two methods: `define` and `require`</span>
+<span class="c1">// and is all about module definition and consumption:</span>
+<span class="c1">// `define(id?, dependencies?, factory)` defines a module</span>
+<span class="c1">// `require(dependencies, callback)` imports a set of dependencies and</span>
+<span class="c1">// consumes them in the passed callback</span>
+
+<span class="c1">// Let's start by using define to define a new named module</span>
+<span class="c1">// that has no dependencies. We'll do so by passing a name</span>
+<span class="c1">// and a factory function to define:</span>
+<span class="nx">define</span><span class="p">(</span><span class="dl">'</span><span class="s1">awesomeAMD</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+  <span class="kd">var</span> <span class="nx">isAMDAwesome</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="p">};</span>
+  <span class="c1">// The return value of a module's factory function is</span>
+  <span class="c1">// what other modules or require calls will receive when</span>
+  <span class="c1">// requiring our `awesomeAMD` module.</span>
+  <span class="c1">// The exported value can be anything, (constructor) functions,</span>
+  <span class="c1">// objects, primitives, even undefined (although that won't help too much).</span>
+  <span class="k">return</span> <span class="nx">isAMDAwesome</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="c1">// Now, let's define another module that depends upon our `awesomeAMD` module.</span>
+<span class="c1">// Notice that there's an additional argument defining our</span>
+<span class="c1">// module's dependencies now:</span>
+<span class="nx">define</span><span class="p">(</span><span class="dl">'</span><span class="s1">loudmouth</span><span class="dl">'</span><span class="p">,</span> <span class="p">[</span><span class="dl">'</span><span class="s1">awesomeAMD</span><span class="dl">'</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">awesomeAMD</span><span class="p">){</span>
+  <span class="c1">// dependencies will be passed to the factory's arguments</span>
+  <span class="c1">// in the order they are specified</span>
+  <span class="kd">var</span> <span class="nx">tellEveryone</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">awesomeAMD</span><span class="p">()){</span>
+      <span class="nx">alert</span><span class="p">(</span><span class="dl">'</span><span class="s1">This is sOoOo rad!</span><span class="dl">'</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">alert</span><span class="p">(</span><span class="dl">'</span><span class="s1">Pretty dull, isn</span><span class="se">\'</span><span class="s1">t it?</span><span class="dl">'</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+  <span class="k">return</span> <span class="nx">tellEveryone</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="c1">// As we do know how to use define now, let's use `require` to</span>
+<span class="c1">// kick off our program. `require`'s signature is `(arrayOfDependencies, callback)`.</span>
+<span class="nx">require</span><span class="p">([</span><span class="dl">'</span><span class="s1">loudmouth</span><span class="dl">'</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">loudmouth</span><span class="p">){</span>
+  <span class="nx">loudmouth</span><span class="p">();</span>
+<span class="p">});</span>
+
+<span class="c1">// To make this tutorial run code, let's implement a very basic</span>
+<span class="c1">// (non-asynchronous) version of AMD right here on the spot:</span>
+<span class="kd">function</span> <span class="nx">define</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">deps</span><span class="p">,</span> <span class="nx">factory</span><span class="p">){</span>
+  <span class="c1">// notice how modules without dependencies are handled</span>
+  <span class="nx">define</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="nx">factory</span> <span class="p">?</span> <span class="nx">deps</span> <span class="p">:</span> <span class="p">[],</span> <span class="nx">factory</span> <span class="o">||</span> <span class="nx">deps</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">require</span><span class="p">(</span><span class="nx">deps</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="c1">// first let's retrieve all the dependencies needed</span>
+  <span class="c1">// by the require call</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">){</span>
+    <span class="nx">args</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">define</span><span class="p">[</span><span class="nx">deps</span><span class="p">[</span><span class="nx">i</span><span class="p">]];</span>
+  <span class="p">}</span>
+  <span class="c1">// satisfy all the callback's dependencies</span>
+  <span class="k">return</span> <span class="nx">callback</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">// you can see this code in action here: http://jsfiddle.net/qap949pd/</span>
+</code></pre></div>
+<h3>Real-world usage with require.js</h3>
+
+<p>In contrast to the introductory example, <code>require.js</code> (the most popular AMD library) actually implements the <strong>A</strong> in <strong>AMD</strong>, enabling you to load modules and their dependencies asynchronously via XHR:</p>
+<div class="highlight"><pre class="highlight javascript"><code><span class="cm">/* file: app/main.js */</span>
+<span class="nx">require</span><span class="p">([</span><span class="dl">'</span><span class="s1">modules/someClass</span><span class="dl">'</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">SomeClass</span><span class="p">){</span>
+  <span class="c1">// the callback is deferred until the dependency is loaded</span>
+  <span class="kd">var</span> <span class="nx">thing</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">SomeClass</span><span class="p">();</span>
+<span class="p">});</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">So here we are, waiting!</span><span class="dl">'</span><span class="p">);</span> <span class="c1">// this will run first</span>
+</code></pre></div>
+<p>By convention, you usually store one module in one file. <code>require.js</code> can resolve module names based on file paths, so you don&rsquo;t have to name your modules, but can simply reference them using their location. In the example <code>someClass</code> is assumed to be in the <code>modules</code> folder, relative to your configuration&rsquo;s <code>baseUrl</code>:</p>
+
+<ul>
+<li>app/
+
+<ul>
+<li>main.js</li>
+<li>modules/</li>
+<li>someClass.js</li>
+<li>someHelpers.js</li>
+<li>&hellip;</li>
+<li>daos/</li>
+<li>things.js</li>
+<li>&hellip;</li>
+</ul></li>
+</ul>
+
+<p>This means we can define <code>someClass</code> without specifying a module id:</p>
+<div class="highlight"><pre class="highlight javascript"><code><span class="cm">/* file: app/modules/someClass.js */</span>
+<span class="nx">define</span><span class="p">([</span><span class="dl">'</span><span class="s1">daos/things</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">modules/someHelpers</span><span class="dl">'</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">thingsDao</span><span class="p">,</span> <span class="nx">helpers</span><span class="p">){</span>
+  <span class="c1">// module definition, of course, will also happen asynchronously</span>
+  <span class="kd">function</span> <span class="nx">SomeClass</span><span class="p">(){</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">method</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span><span class="cm">/**/</span><span class="p">};</span>
+    <span class="c1">// ...</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">SomeClass</span><span class="p">;</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>To alter the default path mapping behavior use <code>requirejs.config(configObj)</code> in your <code>main.js</code>:</p>
+<div class="highlight"><pre class="highlight javascript"><code><span class="cm">/* file: main.js */</span>
+<span class="nx">requirejs</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
+  <span class="na">baseUrl</span> <span class="p">:</span> <span class="dl">'</span><span class="s1">app</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">paths</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="c1">// you can also load modules from other locations</span>
+    <span class="na">jquery</span> <span class="p">:</span> <span class="dl">'</span><span class="s1">//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">coolLibFromBower</span> <span class="p">:</span> <span class="dl">'</span><span class="s1">../bower_components/cool-lib/coollib</span><span class="dl">'</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+<span class="nx">require</span><span class="p">([</span><span class="dl">'</span><span class="s1">jquery</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">coolLibFromBower</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">modules/someHelpers</span><span class="dl">'</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$</span><span class="p">,</span> <span class="nx">coolLib</span><span class="p">,</span> <span class="nx">helpers</span><span class="p">){</span>
+  <span class="c1">// a `main` file needs to call require at least once,</span>
+  <span class="c1">// otherwise no code will ever run</span>
+  <span class="nx">coolLib</span><span class="p">.</span><span class="nx">doFancyStuffWith</span><span class="p">(</span><span class="nx">helpers</span><span class="p">.</span><span class="nx">transform</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="dl">'</span><span class="s1">#foo</span><span class="dl">'</span><span class="p">)));</span>
+<span class="p">});</span>
+</code></pre></div>
+<p><code>require.js</code>-based apps will usually have a single entry point (<code>main.js</code>) that is passed to the <code>require.js</code> script tag as a data-attribute. It will be automatically loaded and executed on pageload:</p>
+<div class="highlight"><pre class="highlight html"><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+  <span class="nt">&lt;title&gt;</span>A hundred script tags? Never again!<span class="nt">&lt;/title&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+  <span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"require.js"</span> <span class="na">data-main=</span><span class="s">"app/main"</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div>
+<h3>Optimizing a whole project using r.js</h3>
+
+<p>Many people prefer using AMD for sane code organization during development, but still want to ship a single script file in production instead of performing hundreds of XHRs on page load.</p>
+
+<p><code>require.js</code> comes with a script called <code>r.js</code> (that you will probably run in node.js, although Rhino is supported too) that can analyse your project&rsquo;s dependency graph, and build a single file containing all your modules (properly named), minified and ready for consumption.</p>
+
+<p>Install it using <code>npm</code>:
+<code>shell
+$ npm install requirejs -g
+</code></p>
+
+<p>Now you can feed it with a configuration file:
+<code>shell
+$ r.js -o app.build.js
+</code></p>
+
+<p>For our above example the configuration might look like:
+<code>javascript
+/* file : app.build.js */
+({
+  name : &#39;main&#39;, // name of the entry point
+  out : &#39;main-built.js&#39;, // name of the file to write the output to
+  baseUrl : &#39;app&#39;,
+  paths : {
+    // `empty:` tells r.js that this should still be loaded from the CDN, using
+    // the location specified in `main.js`
+    jquery : &#39;empty:&#39;,
+    coolLibFromBower : &#39;../bower_components/cool-lib/coollib&#39;
+  }
+})
+</code></p>
+
+<p>To use the built file in production, simply swap <code>data-main</code>:
+<code>html
+&lt;script src=&quot;require.js&quot; data-main=&quot;app/main-built&quot;&gt;&lt;/script&gt;
+</code></p>
+
+<p>An incredibly detailed <a href="https://github.com/jrburke/r.js/blob/master/build/example.build.js">overview of build options</a> is available in the GitHub repo.</p>
+
+<h3>Topics not covered in this tutorial</h3>
+
+<ul>
+<li><a href="http://requirejs.org/docs/plugins.html">Loader plugins / transforms</a></li>
+<li><a href="http://requirejs.org/docs/commonjs.html">CommonJS style loading and exporting</a></li>
+<li><a href="http://requirejs.org/docs/api.html#config">Advanced configuration</a></li>
+<li><a href="http://requirejs.org/docs/api.html#config-shim">Shim configuration (loading non-AMD modules)</a></li>
+<li><a href="http://requirejs.org/docs/optimization.html#onecss">CSS loading and optimizing with require.js</a></li>
+<li><a href="https://github.com/jrburke/almond">Using almond.js for builds</a></li>
+</ul>
+
+<h3>Further reading:</h3>
+
+<ul>
+<li><a href="https://github.com/amdjs/amdjs-api/wiki/AMD">Official Spec</a></li>
+<li><a href="http://requirejs.org/docs/whyamd.html">Why AMD?</a></li>
+<li><a href="https://github.com/umdjs/umd">Universal Module Definition</a></li>
+</ul>
+
+<h3>Implementations:</h3>
+
+<ul>
+<li><a href="http://requirejs.org">require.js</a></li>
+<li><a href="http://dojotoolkit.org/documentation/tutorials/1.9/modules/">dojo toolkit</a></li>
+<li><a href="http://cujojs.com/">cujo.js</a></li>
+<li><a href="https://github.com/cujojs/curl">curl.js</a></li>
+<li><a href="https://github.com/zazl/lsjs">lsjs</a></li>
+<li><a href="https://github.com/alexlawrence/mmd">mmd</a></li>
+</ul>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/amd.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Frederik Ring, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/amd.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="https://github.com/m90">Frederik Ring</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

@@ -1,0 +1,468 @@
+<!DOCTYPE html lang="ru-ru" xml:lang="ru-ru" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="ru-ru">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn X in Y Minutes: Scenic Programming Language Tours</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/ru-ru/zfs-ru/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fru-ru%2Fzfs-ru%2F&text=%D0%98%D0%B7%D1%83%D1%87%D0%B8%D1%82%D0%B5+X+%D0%B7%D0%B0+Y+%D0%BC%D0%B8%D0%BD%D1%83%D1%82%2C+%D0%B3%D0%B4%D0%B5+X%3Dzfs">
+        Поделиться страницей
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Выберите тему:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">светлая</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">тёмная</button>
+  </div>
+  <h1><a href="/">Изучите X за Y минут</a></h1>
+  <h2>Где X=zfs</h2>
+    <p class="filelink">
+    Получить исходный код:
+    <a href="/docs/files/LearnZfs-ru.txt">LearnZfs-ru.txt</a>
+    </p>
+  <div id="doc">
+    <p><a href="http://open-zfs.org/wiki/Main_Page">ZFS</a>
+представляет собой переосмысление системы хранения данных, комбинирующее в едином инструменте
+традиционные файловые системы и системы управления томами. ZFS обладает некоторой специфичной
+терминологией, которая отличает её от более традиционных систем хранения данных, однако имеет
+отличный набор возможностей, акцентированных на удобстве использования системными администраторами.</p>
+
+<h2>Концепции ZFS</h2>
+
+<h3>Виртуальные устройства</h3>
+
+<p>Виртуальное устройство (VDEV) подобно устройству RAID, представляемого RAID-контроллером.
+Есть несколько типов виртуальных устройств (VDEV), которые предлагают различные преимущества,
+включая отказоустойчивость и скорость доступа. В основном виртуальные устройства (VDEV)
+предоставляют лучшую отказоустойчивость и безопасность, нежели RAID-контроллеры. Не рекомендуется
+использовать установку RAID с ZFS, поскольку ZFS рассчитывает непосредственно управлять дисками.</p>
+
+<p>Типы виртуальных устройств (VDEV)</p>
+
+<ul>
+<li>mirror (поддерживается n-кратное зеркалирование)</li>
+<li>raidz
+
+<ul>
+<li>raidz1 (1-диск четности, аналог RAID 5)</li>
+<li>raidz2 (2-диска четности, аналог RAID 6)</li>
+<li>raidz3 (3-диска четности, нет имеет аналогичного RAID-массива)</li>
+</ul></li>
+<li>disk</li>
+<li>file (не рекомендовано для промышленного применения из-за добавления нежелательного промежуточного слоя иной файловой системы)</li>
+</ul>
+
+<p>Ваши данные распределяются среди всех виртуальных устройств (VDEV), представленных в пуле хранения,
+так что увеличив число виртуальных устройств (VDEV), вы увеличите количество IOPS.</p>
+
+<h3>Пулы хранения</h3>
+
+<p>ZFS использует пулы хранения как абстракцию над нижним уровнем провайдера хранения (VDEV), позволяя вам отделить видимые пользователю
+файловые системы от физического их размещения.</p>
+
+<h3>ZFS датасеты</h3>
+
+<p>ZFS датасеты подобны традиционным файловым системам, но имеют гораздо больше возможностей, обеспечивающих обилие преимуществ ZFS.
+Датасеты поддерживают <a href="https://ru.wikipedia.org/wiki/%D0%9A%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5_%D0%BF%D1%80%D0%B8_%D0%B7%D0%B0%D0%BF%D0%B8%D1%81%D0%B8">Copy on Write</a>, снапшоты, квоты, сжатие и дедубликацию.</p>
+
+<h3>Ограничения</h3>
+
+<p>Один каталог может содержать до 2^48 файлов, каждый до 16 эксабайт. Один пул хранения может содержать до 256 зеттабайт (2^78) данных
+и может быть распределён по 2^64 устройствам. А один хост может иметь 2^64 пула хранения. Лимиты огромны.</p>
+
+<h2>Команды</h2>
+
+<h3>Пулы хранения</h3>
+
+<p>Действия:</p>
+
+<ul>
+<li>Просмотр</li>
+<li>Статус</li>
+<li>Удаление</li>
+<li>Получение/установка свойств</li>
+</ul>
+
+<p>Просмотр пулов</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># Создание пула типа raidz</span>
+<span class="nv">$ </span>zpool create zroot raidz1 gpt/zfs0 gpt/zfs1 gpt/zfs2
+
+<span class="c"># Просмотр пулов</span>
+<span class="nv">$ </span>zpool list
+NAME    SIZE  ALLOC   FREE  EXPANDSZ   FRAG    CAP  DEDUP  HEALTH  ALTROOT
+zroot   141G   106G  35.2G         -    43%    75%  1.00x  ONLINE  -
+
+<span class="c"># Просмотр детализованной информации о конкретном пуле</span>
+<span class="nv">$ </span>zpool list <span class="nt">-v</span> zroot
+NAME                                     SIZE  ALLOC   FREE  EXPANDSZ   FRAG    CAP  DEDUP HEALTH  ALTROOT
+zroot                                    141G   106G  35.2G         -    43%    75%  1.00x ONLINE  -
+  gptid/c92a5ccf-a5bb-11e4-a77d-001b2172c655   141G   106G  35.2G         -    43%    75%
+</code></pre></div>
+<p>Статус пулов</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># Получение информации о статусе пулов</span>
+<span class="nv">$ </span>zpool status
+  pool: zroot
+ state: ONLINE
+  scan: scrub repaired 0 <span class="k">in </span>2h51m with 0 errors on Thu Oct  1 07:08:31 2015
+config:
+
+        NAME                                          STATE     READ WRITE CKSUM
+        zroot                                         ONLINE       0     0     0
+          gptid/c92a5ccf-a5bb-11e4-a77d-001b2172c655  ONLINE       0     0     0
+
+errors: No known data errors
+
+<span class="c"># Скрабинг пула для исправления любых ошибок</span>
+<span class="nv">$ </span>zpool scrub zroot
+<span class="nv">$ </span>zpool status <span class="nt">-v</span> zroot
+  pool: zroot
+ state: ONLINE
+  scan: scrub <span class="k">in </span>progress since Thu Oct 15 16:59:14 2015
+        39.1M scanned out of 106G at 1.45M/s, 20h47m to go
+        0 repaired, 0.04% <span class="k">done
+</span>config:
+
+        NAME                                          STATE     READ WRITE CKSUM
+        zroot                                         ONLINE       0     0     0
+          gptid/c92a5ccf-a5bb-11e4-a77d-001b2172c655  ONLINE       0     0     0
+
+errors: No known data errors
+</code></pre></div>
+<p>Свойства пулов</p>
+<div class="highlight"><pre class="highlight shell"><code>
+<span class="c"># Получение свойств пула, свойства могут быть заданы пользователем или системой.</span>
+<span class="nv">$ </span>zpool get all zroot
+NAME   PROPERTY                       VALUE                          SOURCE
+zroot  size                           141G                           -
+zroot  capacity                       75%                            -
+zroot  altroot                        -                              default
+zroot  health                         ONLINE                         -
+...
+
+<span class="c"># Установка значения свойства пула</span>
+<span class="nv">$ </span>zpool <span class="nb">set </span><span class="nv">comment</span><span class="o">=</span><span class="s2">"Storage of mah stuff"</span> zroot
+<span class="nv">$ </span>zpool get comment
+NAME   PROPERTY  VALUE                 SOURCE
+tank   comment   -                     default
+zroot  comment   Storage of mah stuff  <span class="nb">local</span>
+</code></pre></div>
+<p>Удаление пула</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>zpool destroy <span class="nb">test</span>
+</code></pre></div>
+<h3>Датасеты</h3>
+
+<p>Действия:</p>
+
+<ul>
+<li>Создание</li>
+<li>Просмотр</li>
+<li>Переименование</li>
+<li>Удаление</li>
+<li>Получение/установка свойств</li>
+</ul>
+
+<p>Создание датасетов</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># Создание датасета</span>
+<span class="nv">$ </span>zfs create zroot/root/data
+<span class="nv">$ </span>mount | <span class="nb">grep </span>data
+zroot/root/data on /data <span class="o">(</span>zfs, <span class="nb">local</span>, nfsv4acls<span class="o">)</span>
+
+<span class="c"># Создание дочернего датасета</span>
+<span class="nv">$ </span>zfs create zroot/root/data/stuff
+<span class="nv">$ </span>mount | <span class="nb">grep </span>data
+zroot/root/data on /data <span class="o">(</span>zfs, <span class="nb">local</span>, nfsv4acls<span class="o">)</span>
+zroot/root/data/stuff on /data/stuff <span class="o">(</span>zfs, <span class="nb">local</span>, nfsv4acls<span class="o">)</span>
+
+
+<span class="c"># Создание тома</span>
+<span class="nv">$ </span>zfs create <span class="nt">-V</span> zroot/win_vm
+<span class="nv">$ </span>zfs list zroot/win_vm
+NAME                 USED  AVAIL  REFER  MOUNTPOINT
+zroot/win_vm         4.13G  17.9G    64K  -
+</code></pre></div>
+<p>Просмотр датасетов</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># Просмотр всех датасетов</span>
+<span class="nv">$ </span>zfs list
+NAME                                                                       USED  AVAIL  REFER  MOUNTPOINT
+zroot                                                                      106G  30.8G   144K  none
+zroot/ROOT                                                                18.5G  30.8G   144K  none
+zroot/ROOT/10.1                                                              8K  30.8G  9.63G  /
+zroot/ROOT/default                                                        18.5G  30.8G  11.2G  /
+zroot/backup                                                              5.23G  30.8G   144K  none
+zroot/home                                                                 288K  30.8G   144K  none
+...
+
+<span class="c"># Просмотр конкретного датасета</span>
+<span class="nv">$ </span>zfs list zroot/home
+NAME         USED  AVAIL  REFER  MOUNTPOINT
+zroot/home   288K  30.8G   144K  none
+
+<span class="c"># Просмотр снапшотов</span>
+<span class="nv">$ </span>zfs list <span class="nt">-t</span> snapshot
+zroot@daily-2015-10-15                                                                  0      -   144K  -
+zroot/ROOT@daily-2015-10-15                                                             0      -   144K  -
+zroot/ROOT/default@daily-2015-10-15                                                     0      -  24.2G  -
+zroot/tmp@daily-2015-10-15                                                           124K      -   708M  -
+zroot/usr@daily-2015-10-15                                                              0      -   144K  -
+zroot/home@daily-2015-10-15                                                             0      -  11.9G  -
+zroot/var@daily-2015-10-15                                                           704K      -  1.42G  -
+zroot/var/log@daily-2015-10-15                                                       192K      -   828K  -
+zroot/var/tmp@daily-2015-10-15                                                          0      -   152K  -
+</code></pre></div>
+<p>Переименование датасетов</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>zfs rename zroot/root/home zroot/root/old_home
+<span class="nv">$ </span>zfs rename zroot/root/new_home zroot/root/home
+</code></pre></div>
+<p>Удаление датасета</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># Датасеты не могут быть удалены, если у них имеются какие-то снапшоты</span>
+<span class="nv">$ </span>zfs destroy zroot/root/home
+</code></pre></div>
+<p>Получение / установка свойств датасета</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># Получение всех свойств</span>
+<span class="nv">$ </span>zfs get all zroot/usr/home
+NAME            PROPERTY              VALUE                  SOURCE
+zroot/home      <span class="nb">type                  </span>filesystem             -
+zroot/home      creation              Mon Oct 20 14:44 2014  -
+zroot/home      used                  11.9G                  -
+zroot/home      available             94.1G                  -
+zroot/home      referenced            11.9G                  -
+zroot/home      mounted               <span class="nb">yes</span>                    -
+...
+
+<span class="c"># Получения свойства для датасета</span>
+<span class="nv">$ </span>zfs get compression zroot/usr/home
+NAME            PROPERTY     VALUE     SOURCE
+zroot/home      compression  off       default
+
+<span class="c"># Установка значения свойства на датасете</span>
+<span class="nv">$ </span>zfs <span class="nb">set </span><span class="nv">compression</span><span class="o">=</span>lz4 zroot/lamb
+
+<span class="c"># Получение значений выбранных свойств всех датасетов</span>
+<span class="nv">$ </span>zfs list <span class="nt">-o</span> name,quota,reservation
+NAME                                                               QUOTA  RESERV
+zroot                                                               none    none
+zroot/ROOT                                                          none    none
+zroot/ROOT/default                                                  none    none
+zroot/tmp                                                           none    none
+zroot/usr                                                           none    none
+zroot/home                                                          none    none
+zroot/var                                                           none    none
+...
+</code></pre></div>
+<h3>Снапшоты</h3>
+
+<p>ZFS снапшоты &ndash; одна из очень важных особенностей zfs</p>
+
+<ul>
+<li>Место, которое они занимают, равно разнице данных между файловой системой и её снапшотом</li>
+<li>Время создания занимает считанные секунды</li>
+<li>Восстановление настолько быстро, насколько позволяет вам запись данных</li>
+<li>Они очень просты в автоматизации</li>
+</ul>
+
+<p>Действия:</p>
+
+<ul>
+<li>Создание</li>
+<li>Удаление</li>
+<li>Переименование</li>
+<li>Получение доступа к снапшотам</li>
+<li>Отправка / Получение</li>
+<li>Клонирование</li>
+</ul>
+
+<p>Создание снапшотов</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># Создание снапшота единственного датасета</span>
+zfs snapshot zroot/home/sarlalian@now
+
+<span class="c"># Создание снапшота для родительского и дочерних датасетов</span>
+<span class="nv">$ </span>zfs snapshot <span class="nt">-r</span> zroot/home@now
+<span class="nv">$ </span>zfs list <span class="nt">-t</span> snapshot
+NAME                       USED  AVAIL  REFER  MOUNTPOINT
+zroot/home@now                 0      -    26K  -
+zroot/home/sarlalian@now       0      -   259M  -
+zroot/home/alice@now           0      -   156M  -
+zroot/home/bob@now             0      -   156M  -
+...
+</code></pre></div>
+<p>Удаление снапшотов</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># Как удалить снапшот</span>
+<span class="nv">$ </span>zfs destroy zroot/home/sarlalian@now
+
+<span class="c"># Удаление снапшота в родительском и дочерних датасетах</span>
+<span class="nv">$ </span>zfs destroy <span class="nt">-r</span> zroot/home/sarlalian@now
+
+</code></pre></div>
+<p>Переименование снапшотов</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># Переименование снапшота</span>
+<span class="nv">$ </span>zfs rename zroot/home/sarlalian@now zroot/home/sarlalian@today
+<span class="nv">$ </span>zfs rename zroot/home/sarlalian@now today
+
+<span class="nv">$ </span>zfs rename <span class="nt">-r</span> zroot/home@now @yesterday
+</code></pre></div>
+<p>Получение доступа к спапшотам</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># CD в каталог снапшота</span>
+<span class="nv">$ </span><span class="nb">cd</span> /home/.zfs/snapshot/
+</code></pre></div>
+<p>Отправка и получение</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># Сохранение снапшота в файл</span>
+<span class="nv">$ </span>zfs send zroot/home/sarlalian@now | <span class="nb">gzip</span> <span class="o">&gt;</span> backup_file.gz
+
+<span class="c"># Отправка снапшота в другой датасет</span>
+<span class="nv">$ </span>zfs send zroot/home/sarlalian@now | zfs recv backups/home/sarlalian
+
+<span class="c"># Отправка снапшота на удаленный хост</span>
+<span class="nv">$ </span>zfs send zroot/home/sarlalian@now | ssh root@backup_server <span class="s1">'zfs recv zroot/home/sarlalian'</span>
+
+<span class="c"># Отправка полного датасета со снапшотами на новый хост</span>
+<span class="nv">$ </span>zfs send <span class="nt">-v</span> <span class="nt">-R</span> zroot/home@now | ssh root@backup_server <span class="s1">'zfs recv zroot/home'</span>
+</code></pre></div>
+<p>Клонирование снапшотов</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># Клонирование снапшота</span>
+<span class="nv">$ </span>zfs clone zroot/home/sarlalian@now zroot/home/sarlalian_new
+
+<span class="c"># Повышение клона, чтобы он больше не зависел от снапшота</span>
+<span class="nv">$ </span>zfs promote zroot/home/sarlalian_new
+</code></pre></div>
+<h3>Собираем всё вместе</h3>
+
+<p>Нижеследующий скрипт использует FreeBSD, jails и ZFS для автоматизации
+подготовки чистой копии стейджинговой базы mysql с живой реплики слейв-ноды.</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c">#!/bin/sh</span>
+
+<span class="nb">echo</span> <span class="s2">"==== Остановка стейджингового сервера баз данных ===="</span>
+jail <span class="nt">-r</span> staging
+
+<span class="nb">echo</span> <span class="s2">"==== Очистка существующих стейджингового сервера и снапшота ===="</span>
+zfs destroy <span class="nt">-r</span> zroot/jails/staging
+zfs destroy zroot/jails/slave@staging
+
+<span class="nb">echo</span> <span class="s2">"==== Фиксация базы на слейве ===="</span>
+<span class="nb">echo</span> <span class="s2">"FLUSH TABLES WITH READ LOCK;"</span> | /usr/local/bin/mysql <span class="nt">-u</span> root <span class="nt">-pmyrootpassword</span> <span class="nt">-h</span> slave
+
+<span class="nb">echo</span> <span class="s2">"==== Сохранение снапшота файлов базы слейва как zroot/jails/slave@staging ===="</span>
+zfs snapshot zroot/jails/slave@staging
+
+<span class="nb">echo</span> <span class="s2">"==== Запуск слейв-ноды сервера баз данных ===="</span>
+jail <span class="nt">-c</span> slave
+
+<span class="nb">echo</span> <span class="s2">"==== Клонирование снапшота слейва на стейджинговый сервер ===="</span>
+zfs clone zroot/jails/slave@staging zroot/jails/staging
+
+<span class="nb">echo</span> <span class="s2">"==== Установка конфига стейджингово mysql ===="</span>
+<span class="nb">mv</span> /jails/staging/usr/local/etc/my.cnf /jails/staging/usr/local/etc/my.cnf.slave
+<span class="nb">cp</span> /jails/staging/usr/local/etc/my.cnf.staging /jails/staging/usr/local/etc/my.cnf
+
+<span class="nb">echo</span> <span class="s2">"==== Настройка стейджингового файла rc.conf ===="</span>
+<span class="nb">mv</span> /jails/staging/etc/rc.conf.local /jails/staging/etc/rc.conf.slave
+<span class="nb">mv</span> /jails/staging/etc/rc.conf.staging /jails/staging/etc/rc.conf.local
+
+<span class="nb">echo</span> <span class="s2">"==== Запуск стейджингово сервера баз данных ===="</span>
+jail <span class="nt">-c</span> staging
+
+<span class="nb">echo</span> <span class="s2">"==== Отключение синхронизации стейджинговой базы с мастером ===="</span>
+<span class="nb">echo</span> <span class="s2">"STOP SLAVE;"</span> | /usr/local/bin/mysql <span class="nt">-u</span> root <span class="nt">-pmyrootpassword</span> <span class="nt">-h</span> staging
+<span class="nb">echo</span> <span class="s2">"RESET SLAVE;"</span> | /usr/local/bin/mysql <span class="nt">-u</span> root <span class="nt">-pmyrootpassword</span> <span class="nt">-h</span> staging
+</code></pre></div>
+<h3>Почитать дополнительно</h3>
+
+<ul>
+<li><a href="http://www.bsdnow.tv/tutorials/zfs">BSDNow&rsquo;s Crash Course on ZFS</a></li>
+<li><a href="https://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/zfs.html">FreeBSD Handbook on ZFS</a></li>
+<li><a href="http://www.bsdnow.tv/tutorials/zfs">BSDNow&rsquo;s Crash Course on ZFS</a></li>
+<li><a href="http://www.oracle.com/technetwork/articles/servers-storage-admin/sto-recommended-zfs-settings-1951715.html">Oracle&rsquo;s Tuning Guide</a></li>
+<li><a href="http://open-zfs.org/wiki/Performance_tuning">OpenZFS Tuning Guide</a></li>
+<li><a href="https://wiki.freebsd.org/ZFSTuningGuide">FreeBSD ZFS Tuning Guide</a></li>
+</ul>
+
+    <hr>
+    <p>Хотите предложить свой перевод? Может быть, улучшение перевода? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Откройте Issue</a> в репозитории Github или сделайте <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/ru-ru/zfs-ru.html.markdown">pull request</a> сами!
+    </p>
+    <p class="contributed">
+    Первоначально предоставлено автором sarlalian, и обновлено <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/ru-ru/zfs-ru.html.markdown">1 автором (-ами)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://github.com/sarlalian">sarlalian</a>,
+        <a href="https://github.com/A1EF">A1EF</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/A1EF">A1EF</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

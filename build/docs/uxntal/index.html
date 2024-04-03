@@ -1,0 +1,278 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn uxntal in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/uxntal/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fuxntal%2F&text=Learn+X+in+Y+minutes%2C+where+X%3Duxntal">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=uxntal</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/learnuxn.tal">learnuxn.tal</a>
+    </p>
+  <div id="doc">
+    <p>Uxntal is a stack-machine assembly language targeting the <a href="https://wiki.xxiivv.com/site/uxn.html">Uxn virtual machine</a>.</p>
+
+<p>Stack machine programming might look at bit odd, as it uses a postfix notation, 
+which means that operators are always found at the end of an operation. For 
+instance, one would write 3 4 + instead of 3 + 4. </p>
+
+<p>The expression written (5 + 10) * 3 in conventional notation would be 
+written 10 5 + 3 * in reverse Polish notation.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>( This is a comment )
+
+( All programming in Unxtal is done by manipulating the stack )
+
+#12 ( push a byte )
+#3456 ( push a short )
+
+( Uxn has 32 opcodes, each opcode has 3 possible modes )
+
+POP ( pop a byte )
+POP2 ( pop a short )
+
+( The modes are:
+    [2] The short mode consumes two bytes from the stack.
+    [k] The keep mode does not consume items from the stack.
+    [r] The return mode makes the operator operate on the return-stack. )
+
+#12 #34 ADD ( 46 )
+#12 #34 ADDk ( 12  34  46 )
+
+( The modes can be combined )
+
+#1234 #5678 ADD2k ( 12  34  56  78  68  ac )
+
+( The arithmetic/bitwise opcodes are:
+    ADD SUB MUL DIV
+    AND ORA EOR SFT )
+
+( New opcodes can be created using macros )
+
+%MOD2 { DIV2k MUL2 SUB2 }
+
+#1234 #0421 MOD2 ( 01  b0 )
+
+( ---------------------------------------------------------------------------- )
+
+( A short is simply two bytes, each byte can be manipulated )
+
+#1234 SWP ( 34  12 )
+#1234 #5678 SWP2 ( 56  78  12  34 )
+#1234 #5678 SWP ( 12  34  78  56 )
+
+( Individual bytes of a short can be removed from the stack )
+
+#1234 POP ( 12 )
+#1234 NIP ( 34 )
+
+( The stack opcodes are:
+    POP DUP NIP SWP OVR ROT )
+
+( ---------------------------------------------------------------------------- )
+
+( To compare values on the stack with each other )
+
+#12 #34 EQU ( 00 )
+#12 #12 EQU ( 01 )
+
+( Logic opcodes will put a flag with a value of either 00 or 01 )
+
+#12 #34 LTH 
+#78 #56 GTH 
+    #0101 EQU2 ( 01 )
+
+( The logic opcodes are:
+    EQU NEQ GTH LTH )
+
+( ---------------------------------------------------------------------------- )
+
+( Uxn's accessible memory is as follows: 
+    256 bytes of working stack 
+    256 bytes of return stack
+    65536 bytes of memory
+    256 bytes of IO memory )
+
+( The addressable memory is between 0000-ffff )
+
+#12 #0200 STA ( stored 12 at 0200 in memory )
+#3456 #0201 STA2 ( stored 3456 at 0201 in memory )
+#0200 LDA2 ( 12  34 )
+
+( The zero-page can be addressed with a single byte )
+
+#1234 #80 STZ2 ( stored 12 at 0080, and 34 at 0081 )
+#80 LDZ2 ( 12  34 )
+
+( Devices are ways for Uxn to communicate with the outside world
+    There is a maximum of 16 devices connected to Uxn at once
+    Device bytes are called ports, the Console device uses the 10-1f ports
+    The console's port 18 is called /write )
+
+%EMIT { #18 DEO }
+
+#31 EMIT ( print "1" to console )
+
+( A label is equal to a position in the program )
+@parent ( defines a label "parent" )
+    &amp;child ( defines a sublabel "parent/child" )
+
+( Label positions can be pushed on stack )
+;parent ( push the absolute position, 2 bytes )
+,parent ( push the relative position, 1 byte )
+.parent ( push the zero-page position, 1 byte )
+
+( The memory opcodes are:
+    LDZ STZ LDR STR
+    LDA STA DEI DEO )
+
+( ---------------------------------------------------------------------------- )
+
+( Logic allows to create conditionals )
+
+#12 #34 NEQ ,skip JCN
+    #31 EMIT
+    @skip
+
+( Logic also allows to create for-loops )
+
+#3a #30
+@loop
+    DUP EMIT ( print "123456789" to console )
+    INC GTHk ,loop JCN
+POP2
+
+( Logic also allows to create while-loops )
+
+;word
+@while
+    LDAk EMIT
+    INC2 LDAk ,while JCN
+POP2
+BRK
+
+@word "vermillion $1
+
+( Subroutines can be jumped to with JSR, and returned from with JMP2r )
+
+;word ,print-word JSR
+BRK
+
+@print-word ( word* -- )
+    @while
+        LDAk EMIT
+        INC2 LDAk ,while JCN
+    POP2
+JMP2r
+
+@word "cerulean
+
+( The jump opcodes are: 
+    JMP JCN JSR )
+</code></pre></div>
+<h2>Ready For More?</h2>
+
+<ul>
+<li><a href="https://compudanzas.net/uxn_tutorial.html">Uxntal Lessons</a></li>
+<li><a href="https://wiki.xxiivv.com/site/uxntal.html">Uxntal Assembly</a></li>
+<li><a href="https://github.com/hundredrabbits/awesome-uxn">Uxntal Resources</a></li>
+</ul>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/uxntal.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Devine Lu Linvega, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/uxntal.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="https://wiki.xxiivv.com">Devine Lu Linvega</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

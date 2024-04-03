@@ -1,0 +1,360 @@
+<!DOCTYPE html lang="ru-ru" xml:lang="ru-ru" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="ru-ru">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn erlang in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/ru-ru/erlang-ru/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fru-ru%2Ferlang-ru%2F&text=%D0%98%D0%B7%D1%83%D1%87%D0%B8%D1%82%D0%B5+X+%D0%B7%D0%B0+Y+%D0%BC%D0%B8%D0%BD%D1%83%D1%82%2C+%D0%B3%D0%B4%D0%B5+X%3Derlang">
+        Поделиться страницей
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Выберите тему:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">светлая</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">тёмная</button>
+  </div>
+  <h1><a href="/">Изучите X за Y минут</a></h1>
+  <h2>Где X=erlang</h2>
+    <p class="filelink">
+    Получить исходный код:
+    <a href="/docs/files/learnerlang-ru.erl">learnerlang-ru.erl</a>
+    </p>
+  <div id="doc">
+    <div class="highlight"><pre class="highlight erlang"><code><span class="c">% Символ процента предваряет однострочный комментарий.
+</span>
+<span class="c">%% Два символа процента обычно используются для комментариев к функциям.
+</span>
+<span class="c">%%% Три символа процента используются для комментариев к модулям.
+</span>
+<span class="c">% Пунктуационные знаки, используемые в Erlang:
+% Запятая (`,`) разделяет аргументы в вызовах функций, структурах данных и
+% образцах.
+% Точка (`.`) (с пробелом после неё) разделяет функции и выражения в
+% оболочке.
+% Точка с запятой (`;`) разделяет выражения в следующих контекстах:
+% формулы функций, выражения `case`, `if`, `try..catch` и `receive`.
+</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 1. Переменные и сопоставление с образцом.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</span>
+<span class="nv">Num</span> <span class="o">=</span> <span class="mi">42</span><span class="p">.</span>  <span class="c">% Все названия переменных начинаются с большой буквы.
+</span>
+<span class="c">% Erlang использует единичное присваивание переменным. Если вы попытаетесь
+% присвоить другое значение переменной `Num`, вы получите ошибку.
+</span><span class="nv">Num</span> <span class="o">=</span> <span class="mi">43</span><span class="p">.</span> <span class="c">% ** exception error: no match of right hand side value 43
+</span>
+<span class="c">% В большинстве языков `=` обозначает операцию присвоения. В отличие от них, в
+% Erlang `=` — операция сопоставления с образцом. `Lhs = Rhs` на самом
+% деле подразумевает «вычисли правую часть выражения (Rhs) и затем сопоставь
+% результат с образцом слева (Lhs)».
+</span><span class="nv">Num</span> <span class="o">=</span> <span class="mi">7</span> <span class="o">*</span> <span class="mi">6</span><span class="p">.</span>
+
+<span class="c">% Числа с плавающей точкой.
+</span><span class="nv">Pi</span> <span class="o">=</span> <span class="mi">3</span><span class="p">.</span><span class="mi">14159</span><span class="p">.</span>
+
+<span class="c">% Атомы используются для представления различных нечисловых констант. Названия
+% атомов начинаются с буквы в нижнем регистре, за которой могут следовать другие
+% буквы английского алфавита, цифры, символ подчёркивания (`_`) или «собака»
+% (`@`).
+</span><span class="nv">Hello</span> <span class="o">=</span> <span class="n">hello</span><span class="p">.</span>
+<span class="nv">OtherNode</span> <span class="o">=</span> <span class="n">example</span><span class="p">@</span><span class="nb">node</span><span class="p">.</span>
+
+<span class="c">% Если в имени атома нужно использовать другие символы, кроме допустимых,
+% имя атома необходимо взять в одинарные кавычки (`'`).
+</span><span class="nv">AtomWithSpace</span> <span class="o">=</span> <span class="n">'some atom with space'</span><span class="p">.</span>
+
+<span class="c">% Кортежы подобны структурам в языке C.
+</span><span class="nv">Point</span> <span class="o">=</span> <span class="p">{</span><span class="n">point</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">45</span><span class="p">}.</span>
+
+<span class="c">% Если нужно извлечь определённые данные из кортежа, используется оператор
+% сопоставления с образцом — `=`.
+</span><span class="p">{</span><span class="n">point</span><span class="p">,</span> <span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">}</span> <span class="o">=</span> <span class="nv">Point</span><span class="p">.</span>  <span class="c">% X = 10, Y = 45
+</span>
+<span class="c">% Символ `_` может использоваться как «заполнитель» для переменных, значения
+% которых в текущем выражении нас не интересуют. Он называется анонимной
+% переменной. В отличие от остальных переменных, множественные использования
+% `_` в одном образце не требуют, чтобы все значения, присваевыемые этой
+% переменной, были идентичными.
+</span><span class="nv">Person</span> <span class="o">=</span> <span class="p">{</span><span class="n">person</span><span class="p">,</span> <span class="p">{</span><span class="n">name</span><span class="p">,</span> <span class="p">{</span><span class="n">first</span><span class="p">,</span> <span class="n">joe</span><span class="p">},</span> <span class="p">{</span><span class="n">last</span><span class="p">,</span> <span class="n">armstrong</span><span class="p">}},</span> <span class="p">{</span><span class="n">footsize</span><span class="p">,</span> <span class="mi">42</span><span class="p">}}.</span>
+<span class="p">{_,</span> <span class="p">{_,</span> <span class="p">{_,</span> <span class="nv">Who</span><span class="p">},</span> <span class="p">_},</span> <span class="p">_}</span> <span class="o">=</span> <span class="nv">Person</span><span class="p">.</span>  <span class="c">% Who = joe
+</span>
+<span class="c">% Список создаётся путём заключения его элементов в квадратные скобки и
+% разделения их запятыми. Отдельные элементы списка могут быть любого типа.
+% Первый элемент списка называется головой списка. Список, получающийся в
+% результате отделения головы, называется хвостом списка.
+</span><span class="nv">ThingsToBuy</span> <span class="o">=</span> <span class="p">[{</span><span class="n">apples</span><span class="p">,</span> <span class="mi">10</span><span class="p">},</span> <span class="p">{</span><span class="n">pears</span><span class="p">,</span> <span class="mi">6</span><span class="p">},</span> <span class="p">{</span><span class="n">milk</span><span class="p">,</span> <span class="mi">3</span><span class="p">}].</span>
+
+<span class="c">% Если `T` — список, то `[H|T]` — тоже список, где `H` является головой, а `T` —
+% хвостом. Вертикальная черта (`|`) разделяет голову и хвост списка.
+% `[]` — пустой список.
+% Мы можем извлекать элементы из списка с помощью сопоставления с образцом.
+% Если у нас есть непустой список `L`, тогда выражение `[X|Y] = L`, где `X` и
+% `Y` — свободные (не связанные с другими значениям) переменные, извлечёт голову
+% списка в `X` и его хвост в `Y`.
+</span><span class="p">[</span><span class="nv">FirstThing</span><span class="p">|</span><span class="nv">OtherThingsToBuy</span><span class="p">]</span> <span class="o">=</span> <span class="nv">ThingsToBuy</span><span class="p">.</span>
+<span class="c">% FirstThing = {apples, 10}
+% OtherThingsToBuy = {pears, 6}, {milk, 3}
+</span>
+<span class="c">% В Erlang нет строк как отдельного типа. Все используемые в программах строки
+% являются обычным списком целых чисел. Строковые значения всегда должны быть в
+% двойных кавычках (`"`).
+</span><span class="nv">Name</span> <span class="o">=</span> <span class="s">"Hello"</span><span class="p">.</span>
+<span class="p">[</span><span class="mi">72</span><span class="p">,</span> <span class="mi">101</span><span class="p">,</span> <span class="mi">108</span><span class="p">,</span> <span class="mi">108</span><span class="p">,</span> <span class="mi">111</span><span class="p">]</span> <span class="o">=</span> <span class="s">"Hello"</span><span class="p">.</span>
+
+
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 2. Последовательное программирование.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</span>
+<span class="c">% Модуль — основная единица кода в Erlang. В них пишутся и сохраняются все
+% функции. Модули хранятся в файлах с расширением `.erl`.
+% Модули должны быть скомпилированы перед тем, как использовать код из них.
+% Скомпилированный файл модуля имеет разрешение `.beam`.
+</span><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">geometry</span><span class="p">).</span>
+<span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">area</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span> <span class="c">% список функций, экспортируемых из модуля.
+</span>
+<span class="c">% Функция `area` состоит из двух формул (clauses). Формулы отделяются друг от
+% друга точкой с запятой, после последнего определения должна стоять точка с
+% пробелом после неё.
+% Каждое определение имеет заголовок и тело. Заголовок состоит из названия
+% функции и образца (в скобках); тело состоит из последовательных выражений,
+% вычисляемых, когда аргументы функции совпадают с образцом в заголовке.
+% Сопоставление с образцами в заголовках происходит в том порядке, в котором
+% они перечислены в определении функции.
+</span><span class="nf">area</span><span class="p">({</span><span class="n">rectangle</span><span class="p">,</span> <span class="nv">Width</span><span class="p">,</span> <span class="nv">Ht</span><span class="p">})</span> <span class="o">-&gt;</span> <span class="nv">Width</span> <span class="o">*</span> <span class="nv">Ht</span><span class="p">;</span>
+<span class="nf">area</span><span class="p">({</span><span class="n">circle</span><span class="p">,</span> <span class="nv">R</span><span class="p">})</span>            <span class="o">-&gt;</span> <span class="mi">3</span><span class="p">.</span><span class="mi">14159</span> <span class="o">*</span> <span class="nv">R</span> <span class="o">*</span> <span class="nv">R</span><span class="p">.</span>
+
+<span class="c">% Компиляция файла с исходным кодом geometry.erl.
+</span><span class="nf">c</span><span class="p">(</span><span class="n">geometry</span><span class="p">).</span>  <span class="c">% {ok,geometry}
+</span>
+<span class="c">% Необходимо указывать имя модуля вместе с именем функции для определения, какую
+% именно фукнцию мы хотим вызвать.
+</span><span class="nn">geometry</span><span class="p">:</span><span class="nf">area</span><span class="p">({</span><span class="n">rectangle</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">}).</span>  <span class="c">% 50
+</span><span class="nn">geometry</span><span class="p">:</span><span class="nf">area</span><span class="p">({</span><span class="n">circle</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">4</span><span class="p">}).</span>  <span class="c">% 6.15752
+</span>
+<span class="c">% В Erlang две функции с разной арностью (числом аргументов) в пределах одного
+% модуля представляются как две разные функции.
+</span><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">lib_misc</span><span class="p">).</span>
+<span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">sum</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span> <span class="c">% экспорт функции `sum` с арностью 1, принимающую один аргумент.
+</span><span class="nf">sum</span><span class="p">(</span><span class="nv">L</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nf">sum</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span> <span class="mi">0</span><span class="p">).</span>
+<span class="nf">sum</span><span class="p">([],</span> <span class="nv">N</span><span class="p">)</span>    <span class="o">-&gt;</span> <span class="nv">N</span><span class="p">;</span>
+<span class="nf">sum</span><span class="p">([</span><span class="nv">H</span><span class="p">|</span><span class="nv">T</span><span class="p">],</span> <span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nf">sum</span><span class="p">(</span><span class="nv">T</span><span class="p">,</span> <span class="nv">H</span><span class="o">+</span><span class="nv">N</span><span class="p">).</span>
+
+<span class="c">% Fun'ы — анонимные функции, называемые так по причине отсутствия имени. Зато
+% их можно присваивать переменным.
+</span><span class="nv">Double</span> <span class="o">=</span> <span class="k">fun</span><span class="p">(</span><span class="nv">X</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="mi">2</span><span class="o">*</span><span class="nv">X</span> <span class="k">end</span><span class="p">.</span> <span class="c">% `Double` указывает на анонимную функцию с идентификатором: #Fun&lt;erl_eval.6.17052888&gt;
+</span><span class="nv">Double</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span>  <span class="c">% 4
+</span>
+<span class="c">% Функции могут принимать fun'ы как параметры и возвращать их в качестве
+% результата вычислений.
+</span><span class="nv">Mult</span> <span class="o">=</span> <span class="k">fun</span><span class="p">(</span><span class="nv">Times</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span> <span class="k">fun</span><span class="p">(</span><span class="nv">X</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">X</span> <span class="o">*</span> <span class="nv">Times</span> <span class="k">end</span> <span class="p">)</span> <span class="k">end</span><span class="p">.</span>
+<span class="nv">Triple</span> <span class="o">=</span> <span class="nv">Mult</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span>
+<span class="nv">Triple</span><span class="p">(</span><span class="mi">5</span><span class="p">).</span>  <span class="c">% 15
+</span>
+<span class="c">% Выделения списоков (list comprehensions) — выражения, создающие списки без
+% применения анонимных функций, фильтров или map'ов.
+% Запись `[F(X) || X &lt;- L]` значит «список `F(X)`, где `X` последовательно
+% выбирается из списка `L`».
+</span><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">].</span>
+<span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="nv">X</span> <span class="p">||</span> <span class="nv">X</span> <span class="o">&lt;-</span> <span class="nv">L</span><span class="p">].</span>  <span class="c">% [2,4,6,8,10]
+% В выделениях списков могут быть генераторы и фильтры для отделения подмножеств
+% генерируемых значений.
+</span><span class="nv">EvenNumbers</span> <span class="o">=</span> <span class="p">[</span><span class="nv">N</span> <span class="p">||</span> <span class="nv">N</span> <span class="o">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="nv">N</span> <span class="ow">rem</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">].</span> <span class="c">% [2, 4]
+</span>
+<span class="c">% Охранные выражения используются для простых проверок переменных в образцах,
+% что значительно расширяет возможности сопоставления. Они могут использоваться
+% в заголовках определений функций, предварённые ключевым словом `when`, а также
+% в условных конструкциях.
+</span><span class="nf">max</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">)</span> <span class="k">when</span> <span class="nv">X</span> <span class="o">&gt;</span> <span class="nv">Y</span> <span class="o">-&gt;</span> <span class="nv">X</span><span class="p">;</span>
+<span class="nf">max</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">Y</span><span class="p">.</span>
+
+<span class="c">% Охранные выражения можно группировать, разделяя запятой.
+% Последовательность `GuardExpr1, GuardExpr2, ..., GuardExprN` является истинной
+% только в том случае, когда все выражения, которые она содержат, являются
+% истинными.
+</span><span class="nf">is_cat</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="k">when</span> <span class="nb">is_atom</span><span class="p">(</span><span class="nv">A</span><span class="p">),</span> <span class="nv">A</span> <span class="o">=:=</span> <span class="n">cat</span> <span class="o">-&gt;</span> <span class="n">true</span><span class="p">;</span>
+<span class="nf">is_cat</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">false</span><span class="p">.</span>
+<span class="nf">is_dog</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="k">when</span> <span class="nb">is_atom</span><span class="p">(</span><span class="nv">A</span><span class="p">),</span> <span class="nv">A</span> <span class="o">=:=</span> <span class="n">dog</span> <span class="o">-&gt;</span> <span class="n">true</span><span class="p">;</span>
+<span class="nf">is_dog</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">false</span><span class="p">.</span>
+
+<span class="c">% Последовательность охранных выражений, разделённых точками с запятой, является
+% истинной в том случае, если хотя бы одно выражение из списка `G1; G2; ...; Gn`
+% является истинным.
+</span><span class="nf">is_pet</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="k">when</span> <span class="nf">is_dog</span><span class="p">(</span><span class="nv">A</span><span class="p">);</span> <span class="nf">is_cat</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">true</span><span class="p">;</span>
+<span class="nf">is_pet</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">false</span><span class="p">.</span>
+
+<span class="c">% Записи предоставляют возможность именования определённых элементов в кортежах.
+% Определения записей могут быть включены в исходный код модулей Erlang или же
+% в заголовочные файлы с расширением `.hrl`.
+</span><span class="p">-</span><span class="ni">record</span><span class="p">(</span><span class="nl">todo</span><span class="p">,</span> <span class="p">{</span>
+  <span class="n">status</span> <span class="o">=</span> <span class="n">reminder</span><span class="p">,</span>  <span class="c">% Значение по умолчанию.
+</span>  <span class="n">who</span> <span class="o">=</span> <span class="n">joe</span><span class="p">,</span>
+  <span class="n">text</span>
+<span class="p">}).</span>
+
+<span class="c">% Для чтения определений записей из файлов в оболочке можно использовать команду
+% `rr`.
+</span><span class="nf">rr</span><span class="p">(</span><span class="s">"records.hrl"</span><span class="p">).</span>  <span class="c">% [todo]
+</span>
+<span class="c">% Создание и изменение записей.
+</span><span class="nv">X</span> <span class="o">=</span> <span class="nl">#todo</span><span class="p">{}.</span>
+<span class="c">% #todo{status = reminder, who = joe, text = undefined}
+</span><span class="nv">X1</span> <span class="o">=</span> <span class="nl">#todo</span><span class="p">{</span><span class="n">status</span> <span class="o">=</span> <span class="n">urgent</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="s">"Fix errata in book"</span><span class="p">}.</span>
+<span class="c">% #todo{status = urgent, who = joe, text = "Fix errata in book"}
+</span><span class="nv">X2</span> <span class="o">=</span> <span class="nv">X1</span><span class="nl">#todo</span><span class="p">{</span><span class="n">status</span> <span class="o">=</span> <span class="n">done</span><span class="p">}.</span>
+<span class="c">% #todo{status = done,who = joe,text = "Fix errata in book"}
+</span>
+<span class="c">% Условное выражение `case`.
+% Функция `filter` возвращет список всех элементов `X` из списка `L`, для
+% которых выражение `P(X)` является истинным.
+</span><span class="nf">filter</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="p">[</span><span class="nv">H</span><span class="p">|</span><span class="nv">T</span><span class="p">])</span> <span class="o">-&gt;</span>
+  <span class="k">case</span> <span class="nv">P</span><span class="p">(</span><span class="nv">H</span><span class="p">)</span> <span class="k">of</span>
+    <span class="n">true</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="nv">H</span><span class="p">|</span><span class="nf">filter</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="nv">T</span><span class="p">)];</span>
+    <span class="n">false</span> <span class="o">-&gt;</span> <span class="nf">filter</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="nv">T</span><span class="p">)</span>
+  <span class="k">end</span><span class="p">;</span>
+<span class="nf">filter</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="p">[])</span> <span class="o">-&gt;</span> <span class="p">[].</span>
+<span class="nf">filter</span><span class="p">(</span><span class="k">fun</span><span class="p">(</span><span class="nv">X</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">X</span> <span class="ow">rem</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">end</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]).</span> <span class="c">% [2, 4]
+</span>
+<span class="c">% Условное выражение `if`.
+</span><span class="nf">max</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="k">if</span>
+    <span class="nv">X</span> <span class="o">&gt;</span> <span class="nv">Y</span> <span class="o">-&gt;</span> <span class="nv">X</span><span class="p">;</span>
+    <span class="nv">X</span> <span class="o">&lt;</span> <span class="nv">Y</span> <span class="o">-&gt;</span> <span class="nv">Y</span><span class="p">;</span>
+    <span class="n">true</span> <span class="o">-&gt;</span> <span class="n">nil</span><span class="p">;</span>
+  <span class="k">end</span><span class="p">.</span>
+
+<span class="c">% Внимание: в выражении `if` должно быть как минимум одно охранное выраженние,
+% вычисляющееся в true, иначе возникнет исключение.
+</span>
+
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 3. Обработка исключений.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</span>
+<span class="c">% Исключения возникают в случае внутренних ошибок системы или вызываются
+% непосредственно из кода программы с помощью вызовов `throw(Exception)`,
+% `exit(Exception)` или `erlang:error(Exception)`.
+</span><span class="nf">generate_exception</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">a</span><span class="p">;</span>
+<span class="nf">generate_exception</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nf">throw</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+<span class="nf">generate_exception</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">exit</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+<span class="nf">generate_exception</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="n">'EXIT'</span><span class="p">,</span> <span class="n">a</span><span class="p">};</span>
+<span class="nf">generate_exception</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nn">erlang</span><span class="p">:</span><span class="nf">error</span><span class="p">(</span><span class="n">a</span><span class="p">).</span>
+
+<span class="c">% В Erlang есть два способа обработки исключений. Первый заключается в
+% использовании выражения `try..catch` в функции, в которой возможен выброс
+% исключения.
+</span><span class="nf">catcher</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="k">try</span> <span class="nf">generate_exception</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="k">of</span>
+    <span class="nv">Val</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="nv">N</span><span class="p">,</span> <span class="n">normal</span><span class="p">,</span> <span class="nv">Val</span><span class="p">}</span>
+  <span class="k">catch</span>
+    <span class="nn">throw</span><span class="p">:</span><span class="nv">X</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="nv">N</span><span class="p">,</span> <span class="n">caught</span><span class="p">,</span> <span class="n">thrown</span><span class="p">,</span> <span class="nv">X</span><span class="p">};</span>
+    <span class="nb">exit</span><span class="p">:</span><span class="nv">X</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="nv">N</span><span class="p">,</span> <span class="n">caught</span><span class="p">,</span> <span class="n">exited</span><span class="p">,</span> <span class="nv">X</span><span class="p">};</span>
+    <span class="nn">error</span><span class="p">:</span><span class="nv">X</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="nv">N</span><span class="p">,</span> <span class="n">caught</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="nv">X</span><span class="p">}</span>
+  <span class="k">end</span><span class="p">.</span>
+
+<span class="c">% Второй способ заключается в использовании `catch`. Во время поимки исключения
+% оно преобразуется в кортеж с информацией об ошибке.
+</span><span class="nf">catcher</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">catch</span> <span class="nf">generate_exception</span><span class="p">(</span><span class="nv">N</span><span class="p">).</span>
+
+</code></pre></div>
+<h2>Ссылки:</h2>
+
+<ul>
+<li><a href="http://learnyousomeerlang.com/">&ldquo;Learn You Some Erlang for great good!&rdquo;</a></li>
+<li><a href="http://pragprog.com/book/jaerlang/programming-erlang">&ldquo;Programming Erlang: Software for a Concurrent World&rdquo; by Joe Armstrong</a></li>
+<li><a href="http://www.erlang.org/doc/">Erlang/OTP Reference Documentation</a></li>
+<li><a href="http://www.erlang.se/doc/programming_rules.shtml">Erlang - Programming Rules and Conventions</a></li>
+</ul>
+
+    <hr>
+    <p>Хотите предложить свой перевод? Может быть, улучшение перевода? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Откройте Issue</a> в репозитории Github или сделайте <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/ru-ru/erlang-ru.html.markdown">pull request</a> сами!
+    </p>
+    <p class="contributed">
+    Первоначально предоставлено автором Giovanni Cappellotto, и обновлено <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/ru-ru/erlang-ru.html.markdown">0 автором (-ами)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://www.focustheweb.com/">Giovanni Cappellotto</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://root.yuuzukiyo.net/">Nikita Kalashnikov</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

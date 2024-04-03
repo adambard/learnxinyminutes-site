@@ -1,0 +1,562 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn Logtalk in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/logtalk/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Flogtalk%2F&text=Learn+X+in+Y+minutes%2C+where+X%3DLogtalk">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=Logtalk</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/learnlogtalk.lgt">learnlogtalk.lgt</a>
+    </p>
+  <div id="doc">
+    <p>Logtalk is an object-oriented logic programming language that extends and leverages Prolog with modern code encapsulation and code reuse mechanisms without compromising its declarative programming features. Logtalk is implemented in highly portable code and can use most modern and standards compliant Prolog implementations as a back-end compiler.</p>
+
+<p>To keep its size reasonable, this tutorial necessarily assumes that the reader have a working knowledge of Prolog and is biased towards describing Logtalk object-oriented features.</p>
+
+<h1>Syntax</h1>
+
+<p>Logtalk uses standard Prolog syntax with the addition of a few operators and directives for a smooth learning curve and wide portability. One important consequence is that Prolog code can be easily encapsulated in objects with little or no changes. Moreover, Logtalk can transparently interpret most Prolog modules as Logtalk objects.</p>
+
+<p>The main operators are:</p>
+
+<ul>
+<li><code>::/2</code> - sending a message to an object</li>
+<li><code>::/1</code> - sending a message to <em>self</em> (i.e. to the object that received the message being processed)</li>
+<li><code>^^/1</code> - <em>super</em> call (of an inherited or imported predicate)</li>
+</ul>
+
+<p>Some of the most important entity and predicate directives will be introduced in the next sections.</p>
+
+<h1>Entities and roles</h1>
+
+<p>Logtalk provides <em>objects</em>, <em>protocols</em>, and <em>categories</em> as first-class entities. Relations between entities define <em>patterns of code reuse</em> and the <em>roles</em> played by the entities. For example, when an object <em>instantiates</em> another object, the first object plays the role of an instance and the second object plays the role of a class. An <em>extends</em> relation between two objects implies that both objects play the role of prototypes, with one of them extending the other, its parent prototype.</p>
+
+<h1>Defining an object</h1>
+
+<p>An object encapsulates predicate declarations and definitions. Objects can be created dynamically but are usually static and defined in source files. A single source file can contain any number of entity definitions. A simple object, defining a list member public predicate:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>:- object(list).
+
+    :- public(member/2).
+    member(Head, [Head| _]).
+    member(Head, [_| Tail]) :-
+        member(Head, Tail).
+
+:- end_object.
+</code></pre></div>
+<h1>Compiling and loading source files</h1>
+
+<p>Assuming that the code above for the <code>list</code> object is saved in a <code>list.lgt</code> file, it can be compiled and loaded using the <code>logtalk_load/1</code> built-in predicate or its abbreviation, <code>{}/1</code>, with the file path as argument (the extension can be omitted):</p>
+<div class="highlight"><pre class="highlight plaintext"><code>?- {list}.
+yes
+</code></pre></div>
+<p>In general, entities may have dependencies on entities defined in other source files (e.g. library entities). To load a file and all its dependencies, the advised solution is to define a 
+<em>loader</em> file that loads all the necessary files for an application. A loader file is simply a source file, typically named <code>loader.lgt</code>, that makes calls to the <code>logtalk_load/1-2</code>
+built-in predicates, usually from an <code>initialization/1</code> directive for portability and
+standards compliance. Loader files are provided for all libraries, tools, and examples.</p>
+
+<h1>Sending a message to an object</h1>
+
+<p>The <code>::/2</code> infix operator is used to send a message to an object. As in Prolog, we can backtrack for alternative solutions:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>?- list::member(X, [1,2,3]).
+X = 1 ;
+X = 2 ;
+X = 3
+yes
+</code></pre></div>
+<p>Encapsulation is enforced. A predicate can be declared <em>public</em>, <em>protected</em>, or <em>private</em>. It can also be <em>local</em> when there is no scope directive for it. For example:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>:- object(scopes).
+
+    :- private(bar/0).
+    bar.
+
+    local.
+
+:- end_object.
+</code></pre></div>
+<p>Assuming the object is saved in a <code>scopes.lgt</code> file:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>?- {scopes}.
+yes
+
+?- catch(scopes::bar, Error, true).
+Error = error(
+    permission_error(access, private_predicate, bar/0),
+    logtalk(scopes::bar, user)
+)
+yes
+
+?- catch(scopes::local, Error, true).
+Error = error(
+    existence_error(predicate_declaration, local/0),
+    logtalk(scopes::local, user)
+)
+yes
+</code></pre></div>
+<p>When the predicate in a message is unknown for the object (the role it plays determines the lookup procedures), we also get an error. For example:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>?- catch(scopes::unknown, Error, true).
+Error = error(
+    existence_error(predicate_declaration, unknown/0),
+    logtalk(scopes::unknown, user)
+)
+yes
+</code></pre></div>
+<p>A subtle point is that predicate scope directives specify predicate <em>calling</em> semantics, not <em>definition</em> semantics. For example, if an object playing the role of a class declares a predicate private, the predicate can be defined in subclasses and instances <em>but</em> can only be called in its instances <em>from</em> the class.</p>
+
+<h1>Defining and implementing a protocol</h1>
+
+<p>Protocols contain predicate declarations that can be implemented by any number of objects and categories:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>:- protocol(listp).
+
+    :- public(member/2).
+
+:- end_protocol.
+
+:- object(list,
+    implements(listp)).
+
+    member(Head, [Head| _]).
+    member(Head, [_| Tail]) :-
+        member(Head, Tail).
+
+:- end_object.
+</code></pre></div>
+<p>The scope of the protocol predicates can be restricted using protected or private implementation. For example:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>:- object(stack,
+    implements(private::listp)).
+
+:- end_object.
+</code></pre></div>
+<p>In fact, all entity relations (in an entity opening directive) can be qualified as public (the default), protected, or private.</p>
+
+<h1>Prototypes</h1>
+
+<p>An object without an <em>instantiation</em> or <em>specialization</em> relation with another object plays the role of a prototype. A prototype can <em>extend</em> another object, its parent prototype.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>% clyde, our prototypical elephant
+:- object(clyde).
+
+    :- public(color/1).
+    color(grey).
+
+    :- public(number_of_legs/1).
+    number_of_legs(4).
+
+:- end_object.
+
+% fred, another elephant, is like clyde, except that he's white
+:- object(fred,
+    extends(clyde)).
+
+    color(white).
+
+:- end_object.
+</code></pre></div>
+<p>When answering a message sent to an object playing the role of a prototype, we validate the message and look for an answer first in the prototype itself and, if not found, we delegate to the prototype parents if any:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>?- fred::number_of_legs(N).
+N = 4
+yes
+
+?- fred::color(C).
+C = white
+yes
+</code></pre></div>
+<p>A message is valid if the corresponding predicate is declared (and the sender is within scope) but it will fail, rather then throwing an error, if the predicate is not defined. This is called the <em>closed-world assumption</em>. For example, consider the following object, saved in a <code>foo.lgt</code> file:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>:- object(foo).
+
+    :- public(bar/0).
+
+:- end_object.
+</code></pre></div>
+<p>Loading the file and trying to call the <code>bar/0</code> predicate fails as expected. Note that this is different from calling an <em>unknown</em> predicate, which results in an error:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>?- {foo}.
+yes
+
+?- foo::bar.
+no
+
+?- catch(foo::baz, Error, true).
+Error = error(
+    existence_error(predicate_declaration, baz/0),
+    logtalk(foo::baz, user)
+)
+yes
+</code></pre></div>
+<h1>Classes and instances</h1>
+
+<p>In order to define objects playing the role of classes and/or instances, an object must have at least an instantiation or a specialization relation with another object. Objects playing the role of meta-classes can be used when we need to see a class also as an instance. We use the following example to also illustrate how to dynamically create new objects at runtime:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>% a simple, generic, metaclass defining a new/2 predicate for its instances
+:- object(metaclass,
+    instantiates(metaclass)).
+
+    :- public(new/2).
+    new(Instance, Clauses) :-
+        self(Class),
+        create_object(Instance, [instantiates(Class)], [], Clauses).
+
+:- end_object.
+
+% a simple class defining age/1 and name/1 predicate for its instances
+:- object(person,
+    instantiates(metaclass)).
+
+    :- public([
+        age/1, name/1
+    ]).
+
+    % a default value for age/1
+    age(42).
+
+:- end_object.
+
+% a static instance of the class person
+:- object(john,
+    instantiates(person)).
+
+    name(john).
+    age(12).
+
+:- end_object.
+</code></pre></div>
+<p>When answering a message sent to an object playing the role of an instance, we validate the message by starting in its class and going up to its class superclasses if necessary. Assuming that the message is valid, then we look for an answer starting in the instance itself:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>?- person::new(Instance, [name(paulo)]).
+Instance = o1
+yes
+
+?- o1::name(Name).
+Name = paulo
+yes
+
+?- o1::age(Age).
+Age = 42
+yes
+
+?- john::age(Age).
+Age = 12
+yes
+</code></pre></div>
+<h1>Categories</h1>
+
+<p>A category is a fine grained unit of code reuse, used to encapsulate a <em>cohesive</em> set of predicate declarations and definitions, implementing a <em>single</em> functionality, that can be imported into any object. A category can thus be seen as the dual concept of a protocol. In the following example, we define categories representing car engines and then import them into car objects:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>% a protocol describing engine characteristics
+:- protocol(carenginep).
+
+    :- public([
+        reference/1,
+        capacity/1,
+        cylinders/1,
+        horsepower_rpm/2,
+        bore_stroke/2,
+        fuel/1
+    ]).
+
+:- end_protocol.
+
+% a typical engine defined as a category
+:- category(classic,
+    implements(carenginep)).
+
+    reference('M180.940').
+    capacity(2195).
+    cylinders(6).
+    horsepower_rpm(94, 4800).
+    bore_stroke(80, 72.8).
+    fuel(gasoline).
+
+:- end_category.
+
+% a souped up version of the previous engine
+:- category(sport,
+    extends(classic)).
+
+    reference('M180.941').
+    horsepower_rpm(HP, RPM) :-
+        ^^horsepower_rpm(ClassicHP, ClassicRPM),    % "super" call
+        HP is truncate(ClassicHP*1.23),
+        RPM is truncate(ClassicRPM*0.762).
+
+:- end_category.
+
+% with engines (and other components), we may start "assembling" some cars
+:- object(sedan,
+    imports(classic)).
+
+:- end_object.
+
+:- object(coupe,
+    imports(sport)).
+
+:- end_object.
+</code></pre></div>
+<p>Categories are independently compiled and thus allow importing objects to be updated by simple updating the imported categories without requiring object recompilation. Categories also provide <em>runtime transparency</em>. I.e. the category protocol adds to the protocol of the objects importing the category:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>?- sedan::current_predicate(Predicate).
+Predicate = reference/1 ;
+Predicate = capacity/1 ;
+Predicate = cylinders/1 ;
+Predicate = horsepower_rpm/2 ;
+Predicate = bore_stroke/2 ;
+Predicate = fuel/1
+yes
+</code></pre></div>
+<h1>Hot patching</h1>
+
+<p>Categories can be also be used for hot-patching objects. A category can add new predicates to an object and/or replace object predicate definitions. For example, consider the following object:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>:- object(buggy).
+
+    :- public(p/0).
+    p :- write(foo).
+
+:- end_object.
+</code></pre></div>
+<p>Assume that the object prints the wrong string when sent the message <code>p/0</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>?- {buggy}.
+yes
+
+?- buggy::p.
+foo
+yes
+</code></pre></div>
+<p>If the object source code is not available and we need to fix an application running the object code, we can simply define a category that fixes the buggy predicate:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>:- category(patch,
+    complements(buggy)).
+
+    % fixed p/0 def
+    p :- write(bar).
+
+:- end_category.
+</code></pre></div>
+<p>After compiling and loading the category into the running application we will now get:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>?- {patch}.
+yes
+
+?- buggy::p.
+bar
+yes
+</code></pre></div>
+<p>As hot-patching forcefully breaks encapsulation, there is a <code>complements</code> compiler flag that can be set (globally or on a per-object basis) to allow, restrict, or prevent it.</p>
+
+<h1>Parametric objects and categories</h1>
+
+<p>Objects and categories can be parameterized by using as identifier a compound term instead of an atom. Object and category parameters are <em>logical variables</em> shared with all encapsulated predicates. An example with geometric circles:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>:- object(circle(_Radius, _Color)).
+
+    :- public([
+        area/1, perimeter/1
+    ]).
+
+    area(Area) :-
+        parameter(1, Radius),
+        Area is pi*Radius*Radius.
+
+    perimeter(Perimeter) :-
+        parameter(1, Radius),
+        Perimeter is 2*pi*Radius.
+
+:- end_object.
+</code></pre></div>
+<p>Parametric objects are used just as any other object, usually providing values for the parameters when sending a message:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>?- circle(1.23, blue)::area(Area).
+Area = 4.75291
+yes
+</code></pre></div>
+<p>Parametric objects also provide a simple way of associating a set of predicates with a plain Prolog predicate. Prolog facts can be interpreted as <em>parametric object proxies</em> when they have the same functor and arity as the identifiers of parametric objects. Handy syntax is provided to for working with proxies. For example, assuming the following clauses for a <code>circle/2</code> predicate:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>circle(1.23, blue).
+circle(3.71, yellow).
+circle(0.39, green).
+circle(5.74, black).
+circle(8.32, cyan).
+</code></pre></div>
+<p>With these clauses loaded, we can easily compute for example a list with the areas of all the circles:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>?- findall(Area, {circle(_, _)}::area(Area), Areas).
+Areas = [4.75291, 43.2412, 0.477836, 103.508, 217.468]
+yes
+</code></pre></div>
+<p>The <code>{Goal}::Message</code> construct proves <code>Goal</code>, possibly instantiating any variables in it, and sends <code>Message</code> to the resulting term.</p>
+
+<h1>Events and monitors</h1>
+
+<p>Logtalk supports <em>event-driven programming</em> by allowing defining events and monitors for those events. An event is simply the sending of a message to an object. Interpreting message sending as an atomic activity, a <em>before</em> event and an <em>after</em> event are recognized. Event monitors define event handler predicates, <code>before/3</code> and <code>after/3</code>, and can query, register, and delete a system-wide event registry that associates events with monitors. For example, a simple tracer for any message being sent using the <code>::/2</code> control construct can be defined as:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>:- object(tracer,
+    implements(monitoring)).    % built-in protocol for event handlers
+
+    :- initialization(define_events(_, _, _, _, tracer)).
+
+    before(Object, Message, Sender) :-
+        write('call: '), writeq(Object), write(' &lt;-- '), writeq(Message),
+        write(' from '), writeq(Sender), nl.
+
+    after(Object, Message, Sender) :-
+        write('exit: '), writeq(Object), write(' &lt;-- '), writeq(Message),
+        write(' from '), writeq(Sender), nl.
+
+:- end_object.
+</code></pre></div>
+<p>Assuming that the <code>tracer</code> object and the <code>list</code> object defined earlier are compiled and loaded, we can observe the event handlers in action by sending a message:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>?- list::member(X, [1,2,3]).
+
+call: list &lt;-- member(X, [1,2,3]) from user
+exit: list &lt;-- member(1, [1,2,3]) from user
+X = 1 ;
+exit: list &lt;-- member(2, [1,2,3]) from user
+X = 2 ;
+exit: list &lt;-- member(3, [1,2,3]) from user
+X = 3
+yes
+</code></pre></div>
+<p>Events can be set and deleted dynamically at runtime by calling the <code>define_events/5</code> and <code>abolish_events/5</code> built-in predicates.</p>
+
+<p>Event-driven programming can be seen as a form of <em>computational reflection</em>. But note that events are only generated when using the <code>::/2</code> message-sending control construct.</p>
+
+<h1>Lambda expressions</h1>
+
+<p>Logtalk supports lambda expressions. Lambda parameters are represented using a list with the <code>(&gt;&gt;)/2</code> infix operator connecting them to the lambda. Some simple examples using library meta-predicates:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>?- {library(metapredicates_loader)}.
+yes
+
+?- meta::map([X,Y]&gt;&gt;(Y is 2*X), [1,2,3], Ys).
+Ys = [2,4,6]
+yes
+</code></pre></div>
+<p>Currying is also supported:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>?- meta::map([X]&gt;&gt;([Y]&gt;&gt;(Y is 2*X)), [1,2,3], Ys).
+Ys = [2,4,6]
+yes
+</code></pre></div>
+<p>Lambda free variables can be expressed using the extended syntax <code>{Free1, ...}/[Parameter1, ...]&gt;&gt;Lambda</code>.</p>
+
+<h1>Macros</h1>
+
+<p>Terms and goals in source files can be <em>expanded</em> at compile time by specifying a <em>hook object</em> that defines term-expansion and goal-expansion rules. For example, consider the following simple object, saved in a <code>source.lgt</code> file:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>:- object(source).
+
+    :- public(bar/1).
+    bar(X) :- foo(X).
+
+    foo(a). foo(b). foo(c).
+
+:- end_object.
+</code></pre></div>
+<p>Assume the following hook object, saved in a <code>my_macros.lgt</code> file, that expands clauses and calls to the <code>foo/1</code> local predicate:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>:- object(my_macros,
+    implements(expanding)).    % built-in protocol for expanding predicates
+
+    term_expansion(foo(Char), baz(Code)) :-
+        char_code(Char, Code). % standard built-in predicate
+
+    goal_expansion(foo(X), baz(X)).
+
+:- end_object.
+</code></pre></div>
+<p>After loading the macros file, we can then expand our source file with it using the <code>hook</code> compiler flag:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>?- logtalk_load(my_macros), logtalk_load(source, [hook(my_macros)]).
+yes
+
+?- source::bar(X).
+X = 97 ;
+X = 98 ;
+X = 99
+true
+</code></pre></div>
+<p>The Logtalk library provides support for combining hook objects using different workflows (for example, defining a pipeline of expansions).</p>
+
+<h1>Further information</h1>
+
+<p>Visit the <a href="http://logtalk.org">Logtalk website</a> for more information.</p>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/logtalk.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Paulo Moura, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/logtalk.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://github.com/pmoura">Paulo Moura</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

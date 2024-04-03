@@ -1,0 +1,488 @@
+<!DOCTYPE html lang="pt-br" xml:lang="pt-br" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="pt-br">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn Elm in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/pt-br/elm-pt/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fpt-br%2Felm-pt%2F&text=Aprenda+X+em+Y+Minutos%2C+onde+X%3DElm">
+        Compartilhe esta página
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Selecione o tema:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">claro</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">sombrio</button>
+  </div>
+  <h1><a href="/">Aprenda X em Y Minutos</a></h1>
+  <h2>Onde X=Elm</h2>
+    <p class="filelink">
+    Baixar o código:
+    <a href="/docs/files/learnelm-pt.elm">learnelm-pt.elm</a>
+    </p>
+  <div id="doc">
+    <p>Elm é uma linguagem de programação funcional reativa que compila para (client-side)
+JavaScript. Elm é estaticamente tipada, significando que o compilador captura a
+maioria dos erros imediatamente e fornece uma mensagem de erro limpa e compreensível.
+Elm é excelente para projetar interfaces de usuário e jogos para a web.</p>
+<div class="highlight"><pre class="highlight haskell"><code><span class="c1">-- Comentários de uma linha começam com dois traços.</span>
+<span class="cm">{- Comentários de múltiplas linhas podem ser delimitados em um bloco como este.
+{- Eles podem ser aninhados. -}
+-}</span>
+
+<span class="cm">{-- O Básico --}</span>
+
+<span class="c1">-- Operações Aritméticas</span>
+<span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="c1">-- 2</span>
+<span class="mi">8</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1">-- 7</span>
+<span class="mi">10</span> <span class="o">*</span> <span class="mi">2</span> <span class="c1">-- 20</span>
+
+<span class="c1">-- Cada número literal sem um ponto decimal pode ser um Int ou um Float.</span>
+<span class="mi">33</span> <span class="o">/</span> <span class="mi">2</span> <span class="c1">-- 16.5 com divisão de ponto flutuante</span>
+<span class="mi">33</span> <span class="o">//</span> <span class="mi">2</span> <span class="c1">-- 16 com divisão inteira</span>
+
+<span class="c1">-- Exponenciação</span>
+<span class="mi">5</span> <span class="o">^</span> <span class="mi">2</span> <span class="c1">-- 25</span>
+
+<span class="c1">-- Booleanos</span>
+<span class="n">not</span> <span class="kt">True</span> <span class="c1">-- False</span>
+<span class="n">not</span> <span class="kt">False</span> <span class="c1">-- True</span>
+<span class="mi">1</span> <span class="o">==</span> <span class="mi">1</span> <span class="c1">-- True</span>
+<span class="mi">1</span> <span class="o">/=</span> <span class="mi">1</span> <span class="c1">-- False</span>
+<span class="mi">1</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="c1">-- True</span>
+
+<span class="c1">-- Strings e caracteres</span>
+<span class="s">"Esta é uma string porque ela utiliza aspas duplas."</span>
+<span class="sc">'a'</span> <span class="c1">-- caracteres entre aspas simples</span>
+
+<span class="c1">-- Strings podem ser anexadas.</span>
+<span class="s">"Olá "</span> <span class="o">++</span> <span class="s">"mundo!"</span> <span class="c1">-- "Olá mundo!"</span>
+
+<span class="cm">{-- Listas, Tuplas e Registros --}</span>
+
+<span class="c1">-- Cada elemento em uma lista deve ter o mesmo tipo.</span>
+<span class="p">[</span><span class="s">"the"</span><span class="p">,</span> <span class="s">"quick"</span><span class="p">,</span> <span class="s">"brown"</span><span class="p">,</span> <span class="s">"fox"</span><span class="p">]</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="c1">-- O segundo exemplo também pode ser escrito com dois pontos.</span>
+<span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span>
+
+<span class="c1">-- Junte listas da mesma forma que strings.</span>
+<span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span> <span class="o">++</span> <span class="p">[</span><span class="mi">6</span><span class="o">..</span><span class="mi">10</span><span class="p">]</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">10</span><span class="p">]</span> <span class="c1">-- True</span>
+
+<span class="c1">-- Para adicionar um item utilize "cons".</span>
+<span class="mi">0</span> <span class="o">::</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span> <span class="c1">-- [0, 1, 2, 3, 4, 5]</span>
+
+<span class="c1">-- A cabeça e a cauda de uma lista são retornadas como uma Maybe. Em vez de</span>
+<span class="c1">-- verificar cada valor para ver se ele é nulo, você lida com os valores</span>
+<span class="c1">-- faltantes explicitamente.</span>
+<span class="kt">List</span><span class="o">.</span><span class="n">head</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span> <span class="c1">-- Just 1</span>
+<span class="kt">List</span><span class="o">.</span><span class="n">tail</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span> <span class="c1">-- Just [2, 3, 4, 5]</span>
+<span class="kt">List</span><span class="o">.</span><span class="n">head</span> <span class="kt">[]</span> <span class="c1">-- Nothing</span>
+<span class="c1">-- List.functionName siginifica que a função faz parte do módulo List.</span>
+
+<span class="c1">-- Cada elemento em uma tupla pode ser de um tipo diferente, mas uma tupla</span>
+<span class="c1">-- tem um comprimento fixo.</span>
+<span class="p">(</span><span class="s">"elm"</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
+
+<span class="c1">-- Acesse os elementos de um par com as funções first e second.</span>
+<span class="c1">-- (Este é um atalho; nós iremos para o "caminho real" em breve.)</span>
+<span class="kt">Tuple</span><span class="o">.</span><span class="n">first</span> <span class="p">(</span><span class="s">"elm"</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span> <span class="c1">-- "elm"</span>
+<span class="kt">Tuple</span><span class="o">.</span><span class="n">second</span> <span class="p">(</span><span class="s">"elm"</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span> <span class="c1">-- 42</span>
+
+<span class="c1">-- Uma tupla vazia ou "unidade" às vezes é utilizada como um placeholder.</span>
+<span class="c1">-- É o único valor de seu tipo, também chamado de "Unit".</span>
+<span class="nb">()</span>
+
+<span class="c1">-- Registros são como tuplas mas os campos possuem nomes. A ordem dos campos</span>
+<span class="c1">-- não importa. Observe que os valores dos registros utilizam sinais de igual,</span>
+<span class="c1">-- e não dois-pontos.</span>
+<span class="p">{</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">7</span> <span class="p">}</span>
+
+<span class="c1">-- Acesse um campo com um ponto e o nome do campo.</span>
+<span class="p">{</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">7</span> <span class="p">}</span><span class="o">.</span><span class="n">x</span> <span class="c1">-- 3</span>
+
+<span class="c1">-- Ou com uma função acessora, que é um ponto e o nome do próprio campo.</span>
+<span class="o">.</span><span class="n">y</span> <span class="p">{</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">7</span> <span class="p">}</span> <span class="c1">-- 7</span>
+
+<span class="c1">-- Atualiza os campos de um registro. (Ele já deve ter os campos.)</span>
+<span class="p">{</span> <span class="n">person</span> <span class="o">|</span>
+  <span class="n">name</span> <span class="o">=</span> <span class="s">"George"</span> <span class="p">}</span>
+
+<span class="c1">-- Atualiza vários campos de uma só vez utilizando os valores atuais.</span>
+<span class="p">{</span> <span class="n">particle</span> <span class="o">|</span>
+  <span class="n">position</span> <span class="o">=</span> <span class="n">particle</span><span class="o">.</span><span class="n">position</span> <span class="o">+</span> <span class="n">particle</span><span class="o">.</span><span class="n">velocity</span><span class="p">,</span>
+  <span class="n">velocity</span> <span class="o">=</span> <span class="n">particle</span><span class="o">.</span><span class="n">velocity</span> <span class="o">+</span> <span class="n">particle</span><span class="o">.</span><span class="n">acceleration</span> <span class="p">}</span>
+
+<span class="cm">{-- Fluxo de Controle --}</span>
+
+<span class="c1">-- Declarações if sempre devem ter um else e os valores devem ser do mesmo tipo.</span>
+<span class="kr">if</span> <span class="n">powerLevel</span> <span class="o">&gt;</span> <span class="mi">9000</span> <span class="kr">then</span>
+  <span class="s">"WHOA!"</span>
+<span class="kr">else</span>
+  <span class="s">"meh"</span>
+
+<span class="c1">-- Declarações if podem ser encadeadas.</span>
+<span class="kr">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="kr">then</span>
+  <span class="s">"n é negativo"</span>
+<span class="kr">else</span> <span class="kr">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="kr">then</span>
+  <span class="s">"n é positivo"</span>
+<span class="kr">else</span>
+  <span class="s">"n é zero"</span>
+
+<span class="c1">-- Utilize declarações case para casar padrões entre diferentes possibilidades.</span>
+<span class="kr">case</span> <span class="n">aList</span> <span class="kr">of</span>
+  <span class="kt">[]</span> <span class="o">-&gt;</span> <span class="s">"casa com uma lista vazia"</span>
+  <span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">-&gt;</span> <span class="s">"casa com uma lista de exatamente um item, "</span> <span class="o">++</span> <span class="n">toString</span> <span class="n">x</span>
+  <span class="n">x</span><span class="o">::</span><span class="n">xs</span> <span class="o">-&gt;</span> <span class="s">"casa com uma lista de pelo menos um item cuja cabeça é "</span> <span class="o">++</span> <span class="n">toString</span> <span class="n">x</span>
+<span class="c1">-- O casamento do padrão acontece na ordem. Se colocarmos [x] por último, ele</span>
+<span class="c1">-- nunca iria casar porque x::xs também casa (xs seria a lista vazia). Os</span>
+<span class="c1">-- casamentos não "falham".</span>
+<span class="c1">-- O compilador irá alertá-lo sobre casos faltantes ou extras.</span>
+
+<span class="c1">-- Casa padrão com um Maybe.</span>
+<span class="kr">case</span> <span class="kt">List</span><span class="o">.</span><span class="n">head</span> <span class="n">aList</span> <span class="kr">of</span>
+  <span class="kt">Just</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="s">"A cabeça é "</span> <span class="o">++</span> <span class="n">toString</span> <span class="n">x</span>
+  <span class="kt">Nothing</span> <span class="o">-&gt;</span> <span class="s">"A lista estava vazia."</span>
+
+<span class="cm">{-- Funções --}</span>
+
+<span class="c1">-- A sintaxe do Elm é muito mínima, baseando-se principalmente em espaços em</span>
+<span class="c1">-- branco em vez de parênteses e chaves. Não existe a palavra-chave "return".</span>
+
+<span class="c1">-- Define uma função com seu nome, argumentos, um sinal de igual e o corpo.</span>
+<span class="n">multiply</span> <span class="n">a</span> <span class="n">b</span> <span class="o">=</span>
+  <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
+
+<span class="c1">-- Aplica (chama) uma função passando seus argumentos (vírgulas não necessárias).</span>
+<span class="n">multiply</span> <span class="mi">7</span> <span class="mi">6</span> <span class="c1">-- 42</span>
+
+<span class="c1">-- Aplica parcialmente uma função passando somente alguns de seus argumentos.</span>
+<span class="c1">-- Dando, em seguida, um novo nome a função.</span>
+<span class="n">double</span> <span class="o">=</span>
+  <span class="n">multiply</span> <span class="mi">2</span>
+
+<span class="c1">-- Constantes são semelhantes, exceto que não há argumentos.</span>
+<span class="n">answer</span> <span class="o">=</span>
+  <span class="mi">42</span>
+
+<span class="c1">-- Passa funções como argumentos para outras funções.</span>
+<span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="n">double</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">4</span><span class="p">]</span> <span class="c1">-- [2, 4, 6, 8]</span>
+
+<span class="c1">-- Ou escreva uma função anônima.</span>
+<span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">a</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">4</span><span class="p">]</span> <span class="c1">-- [2, 4, 6, 8]</span>
+
+<span class="c1">-- Você pode casar um padrão na definição de funções quando há somente um caso.</span>
+<span class="c1">-- Esta função recebe uma tupla em vez de dois argumentos.</span>
+<span class="c1">-- Esta é a maneira que você normalmente vai desempacotar/extrair valores de tuplas.</span>
+<span class="n">area</span> <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span> <span class="o">=</span>
+  <span class="n">width</span> <span class="o">*</span> <span class="n">height</span>
+
+<span class="n">area</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span> <span class="c1">-- 42</span>
+
+<span class="c1">-- Utilize chaves para casar o padrão de nomes de campos de um registro.</span>
+<span class="c1">-- Utilize let para definir valores intermediários.</span>
+<span class="n">volume</span> <span class="p">{</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">depth</span><span class="p">}</span> <span class="o">=</span>
+  <span class="kr">let</span>
+    <span class="n">area</span> <span class="o">=</span> <span class="n">width</span> <span class="o">*</span> <span class="n">height</span>
+  <span class="kr">in</span>
+    <span class="n">area</span> <span class="o">*</span> <span class="n">depth</span>
+
+<span class="n">volume</span> <span class="p">{</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">depth</span> <span class="o">=</span> <span class="mi">7</span> <span class="p">}</span> <span class="c1">-- 42</span>
+
+<span class="c1">-- Funções podem ser recursivas.</span>
+<span class="n">fib</span> <span class="n">n</span> <span class="o">=</span>
+  <span class="kr">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="kr">then</span>
+    <span class="mi">1</span>
+  <span class="kr">else</span>
+    <span class="n">fib</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="n">fib</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">8</span><span class="p">]</span> <span class="c1">-- [1, 1, 2, 3, 5, 8, 13, 21, 34]</span>
+
+<span class="c1">-- Outra função recursiva (utilize List.length em um código de verdade).</span>
+<span class="n">listLength</span> <span class="n">aList</span> <span class="o">=</span>
+  <span class="kr">case</span> <span class="n">aList</span> <span class="kr">of</span>
+    <span class="kt">[]</span> <span class="o">-&gt;</span> <span class="mi">0</span>
+    <span class="n">x</span><span class="o">::</span><span class="n">xs</span> <span class="o">-&gt;</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">listLength</span> <span class="n">xs</span>
+
+<span class="c1">-- Chamadas de funções acontecem antes de qualquer operador infixo.</span>
+<span class="c1">-- Os parênteses indicam a precendência.</span>
+<span class="n">cos</span> <span class="p">(</span><span class="n">degrees</span> <span class="mi">30</span><span class="p">)</span> <span class="o">^</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">sin</span> <span class="p">(</span><span class="n">degrees</span> <span class="mi">30</span><span class="p">)</span> <span class="o">^</span> <span class="mi">2</span> <span class="c1">-- 1</span>
+<span class="c1">-- Primeiro degrees é aplicada em 30, então o resultado é passado para as</span>
+<span class="c1">-- funções de trigonometria, que então é elevado ao quadrado e, por fim, a</span>
+<span class="c1">-- adição acontece.</span>
+
+<span class="cm">{-- Tipos e Anotações de Tipos --}</span>
+
+<span class="c1">-- O compilador irá inferir o tipo de cada valor em seu programa.</span>
+<span class="c1">-- Tipos iniciam com letra maiúscula. Leia x : T como "x é do tipo T".</span>
+<span class="c1">-- Alguns tipos comuns que você pode ver no REPL do Elm.</span>
+<span class="mi">5</span> <span class="o">:</span> <span class="kt">Int</span>
+<span class="mf">6.7</span> <span class="o">:</span> <span class="kt">Float</span>
+<span class="s">"hello"</span> <span class="o">:</span> <span class="kt">String</span>
+<span class="kt">True</span> <span class="o">:</span> <span class="kt">Bool</span>
+
+<span class="c1">-- Funções têm tipos também. Leia -&gt; como "vai para". Pense no tipo mais à</span>
+<span class="c1">-- direita como o tipo do valor de retorno e os outros como argumentos.</span>
+<span class="n">not</span> <span class="o">:</span> <span class="kt">Bool</span> <span class="o">-&gt;</span> <span class="kt">Bool</span>
+<span class="n">round</span> <span class="o">:</span> <span class="kt">Float</span> <span class="o">-&gt;</span> <span class="kt">Int</span>
+
+<span class="c1">-- Quando você define um valor, é uma boa prática escrever seu tipo acima dele.</span>
+<span class="c1">-- A anotação é uma forma de documentação, que é verifica pelo compilador.</span>
+<span class="n">double</span> <span class="o">:</span> <span class="kt">Int</span> <span class="o">-&gt;</span> <span class="kt">Int</span>
+<span class="n">double</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>
+
+<span class="c1">-- Argumentos de uma função são passados entre parênteses.</span>
+<span class="c1">-- Tipos com letra minúscula são tipos variáveis: eles podem ser de qualquer</span>
+<span class="c1">-- tipo, desde que cada chamada seja consistente.</span>
+<span class="kt">List</span><span class="o">.</span><span class="n">map</span> <span class="o">:</span> <span class="p">(</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">List</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">List</span> <span class="n">b</span>
+<span class="c1">-- "List.map é do tipo a-vai-para-b, vai para lista de a e vai para lista de b."</span>
+
+<span class="c1">-- Existem três tipos especiais com minúsculas: number, comparable e appendable.</span>
+<span class="c1">-- Numbers permite que você utilize aritmética em Ints e Floats.</span>
+<span class="c1">-- Comparable permite você ordenar números e strings, como a &lt; b.</span>
+<span class="c1">-- Appendable permite que coisas possam ser combinadas com a ++ b.</span>
+
+<span class="cm">{-- Type Aliases e Union Types --}</span>
+
+<span class="c1">-- Quando você escreve um registro ou uma tupla, seu tipo já existe.</span>
+<span class="c1">-- (Observe que os tipos de um registro utilizam dois-pontos e os valores de um</span>
+<span class="c1">-- registro utilizam igual.)</span>
+<span class="n">origin</span> <span class="o">:</span> <span class="p">{</span> <span class="n">x</span> <span class="o">:</span> <span class="kt">Float</span><span class="p">,</span> <span class="n">y</span> <span class="o">:</span> <span class="kt">Float</span><span class="p">,</span> <span class="n">z</span> <span class="o">:</span> <span class="kt">Float</span> <span class="p">}</span>
+<span class="n">origin</span> <span class="o">=</span>
+  <span class="p">{</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">}</span>
+
+<span class="c1">-- Você pode dar um bom nome para tipos existentes com um type alias.</span>
+<span class="kr">type</span> <span class="n">alias</span> <span class="kt">Point3D</span> <span class="o">=</span>
+  <span class="p">{</span> <span class="n">x</span> <span class="o">:</span> <span class="kt">Float</span><span class="p">,</span> <span class="n">y</span> <span class="o">:</span> <span class="kt">Float</span><span class="p">,</span> <span class="n">z</span> <span class="o">:</span> <span class="kt">Float</span> <span class="p">}</span>
+
+<span class="c1">-- Se você cria um alias para um registro, você pode usar o nome como uma</span>
+<span class="c1">-- função construtora.</span>
+<span class="n">otherOrigin</span> <span class="o">:</span> <span class="kt">Point3D</span>
+<span class="n">otherOrigin</span> <span class="o">=</span>
+  <span class="kt">Point3D</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span>
+
+<span class="c1">-- Mas ele ainda é do mesmo tipo, então você pode compará-los.</span>
+<span class="n">origin</span> <span class="o">==</span> <span class="n">otherOrigin</span> <span class="c1">-- True</span>
+
+<span class="c1">-- Por outro lado, a definição de um union type cria um tipo que não existia</span>
+<span class="c1">-- antes. Um union type é chamado assim porque ele pode ser uma de muitas</span>
+<span class="c1">-- possibilidades. Cada uma das possibilidades é representada como uma "tag".</span>
+<span class="kr">type</span> <span class="kt">Direction</span> <span class="o">=</span>
+  <span class="kt">North</span> <span class="o">|</span> <span class="kt">South</span> <span class="o">|</span> <span class="kt">East</span> <span class="o">|</span> <span class="kt">West</span>
+
+<span class="c1">-- As tags podem levar outros valores de tipos conhecidos. Isso pode trabalhar</span>
+<span class="c1">-- recursivamente.</span>
+<span class="kr">type</span> <span class="kt">IntTree</span> <span class="o">=</span>
+  <span class="kt">Leaf</span> <span class="o">|</span> <span class="kt">Node</span> <span class="kt">Int</span> <span class="kt">IntTree</span> <span class="kt">IntTree</span>
+<span class="c1">-- "Leaf" e "Node" são as tags. Tudo após uma tag é um tipo.</span>
+
+<span class="c1">-- As tags podem ser usadas como valores ou funções.</span>
+<span class="n">root</span> <span class="o">:</span> <span class="kt">IntTree</span>
+<span class="n">root</span> <span class="o">=</span>
+  <span class="kt">Node</span> <span class="mi">7</span> <span class="kt">Leaf</span> <span class="kt">Leaf</span>
+
+<span class="c1">-- Union types (e type aliases) podem utilizar tipos variáveis.</span>
+<span class="kr">type</span> <span class="kt">Tree</span> <span class="n">a</span> <span class="o">=</span>
+  <span class="kt">Leaf</span> <span class="o">|</span> <span class="kt">Node</span> <span class="n">a</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span> <span class="p">(</span><span class="kt">Tree</span> <span class="n">a</span><span class="p">)</span>
+<span class="c1">-- "O tipo árvore-de-a é uma folha ou um nó de a, árvore-de-a e árvore-de-a."</span>
+
+<span class="c1">-- Casa padrão com union tags. As tags maiúsculas serão casadas de maneira exa-</span>
+<span class="c1">-- ta. As variáveis minúsculas irão casar com qualquer coisa. Sublinhado também</span>
+<span class="c1">-- casa com qualquer coisa, mas siginifica que você não o está utilizando.</span>
+<span class="n">leftmostElement</span> <span class="o">:</span> <span class="kt">Tree</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">Maybe</span> <span class="n">a</span>
+<span class="n">leftmostElement</span> <span class="n">tree</span> <span class="o">=</span>
+  <span class="kr">case</span> <span class="n">tree</span> <span class="kr">of</span>
+    <span class="kt">Leaf</span> <span class="o">-&gt;</span> <span class="kt">Nothing</span>
+    <span class="kt">Node</span> <span class="n">x</span> <span class="kt">Leaf</span> <span class="kr">_</span> <span class="o">-&gt;</span> <span class="kt">Just</span> <span class="n">x</span>
+    <span class="kt">Node</span> <span class="kr">_</span> <span class="n">subtree</span> <span class="kr">_</span> <span class="o">-&gt;</span> <span class="n">leftmostElement</span> <span class="n">subtree</span>
+
+<span class="c1">-- Isso é praticamente a própria linguagem. Agora vamos ver como organizar e</span>
+<span class="c1">-- executar seu código.</span>
+
+<span class="cm">{-- Módulos e Imports --}</span>
+
+<span class="c1">-- As bibliotecas internas são organizadas em módulos, assim como quaisquer</span>
+<span class="c1">-- bibliotecas de terceiros que você possa utilizar. Para grandes projetos,</span>
+<span class="c1">-- você pode definir seus próprios módulos.</span>
+
+<span class="c1">-- Coloque isso no topo do arquivo. Se for omitido, você está no Main.</span>
+<span class="kr">module</span> <span class="nn">Name</span> <span class="kr">where</span>
+
+<span class="c1">-- Por padrão, tudo é exportado. Você pode especificar as exportações de forma</span>
+<span class="c1">-- explícita.</span>
+<span class="kr">module</span> <span class="nn">Name</span> <span class="p">(</span><span class="kt">MyType</span><span class="p">,</span> <span class="nf">myValue</span><span class="p">)</span> <span class="kr">where</span>
+
+<span class="c1">-- Um padrão comum é exportar um union type mas não suas tags. Isto é conhecido</span>
+<span class="c1">-- como "tipo opaco" e é frequentemente utilizado em bibliotecas.</span>
+
+<span class="c1">-- Importe código de outros módulos para utilizá-lo no seu código.</span>
+<span class="c1">-- Coloque Dict no escopo para você poder chamar Dict.insert.</span>
+<span class="kr">import</span> <span class="nn">Dict</span>
+
+<span class="c1">-- Importe o módulo Dict e o tipo Dict para que suas anotações não tenham que</span>
+<span class="c1">-- dizer Dict.Dict. Você ainda pode utilizar Dict.insert.</span>
+<span class="kr">import</span> <span class="nn">Dict</span> <span class="n">exposing</span> <span class="p">(</span><span class="kt">Dict</span><span class="p">)</span>
+
+<span class="c1">-- Renomeie um import.</span>
+<span class="kr">import</span> <span class="nn">Graphics.Collage</span> <span class="k">as</span> <span class="n">C</span>
+
+<span class="cm">{-- Portas --}</span>
+
+<span class="c1">-- Uma porta indica que você estará se comunicando com o mundo exterior.</span>
+<span class="c1">-- Portas são permitidas somente no módulo Main.</span>
+
+<span class="c1">-- Uma porta de entrada é apenas uma assinatura de tipo.</span>
+<span class="n">port</span> <span class="n">clientID</span> <span class="o">:</span> <span class="kt">Int</span>
+
+<span class="c1">-- Uma porta de saída tem uma definição.</span>
+<span class="n">port</span> <span class="n">clientOrders</span> <span class="o">:</span> <span class="kt">List</span> <span class="kt">String</span>
+<span class="n">port</span> <span class="n">clientOrders</span> <span class="o">=</span> <span class="p">[</span><span class="s">"Books"</span><span class="p">,</span> <span class="s">"Groceries"</span><span class="p">,</span> <span class="s">"Furniture"</span><span class="p">]</span>
+
+<span class="c1">-- Não vamos entrar em detalhes, mas você configura callbacks no JavaScript</span>
+<span class="c1">-- para enviar nas portas de entrada e receber nas portas de saída.</span>
+
+<span class="cm">{-- Ferramentas de Linha de Comando --}</span>
+
+<span class="c1">-- Compila um arquivo.</span>
+<span class="o">$</span> <span class="n">elm</span> <span class="n">make</span> <span class="kt">MyFile</span><span class="o">.</span><span class="n">elm</span>
+
+<span class="c1">-- A primeira vez que você fizer isso, o Elm instalará as bibliotecas internas</span>
+<span class="c1">-- e criará o elm-package.json, onde a informação sobre seu projeto é mantida.</span>
+
+<span class="c1">-- O reactor é um servidor que compila e roda seus arquivos.</span>
+<span class="c1">-- Clique na chave ao lado dos nomes de arquivo para entrar no depurador de</span>
+<span class="c1">-- viagem no tempo.</span>
+<span class="o">$</span> <span class="n">elm</span> <span class="n">reactor</span>
+
+<span class="c1">-- Teste expressões simples no Read-Eval-Print Loop.</span>
+<span class="o">$</span> <span class="n">elm</span> <span class="n">repl</span>
+
+<span class="c1">-- Pacotes são identificados pelo usuário e nome do repositório no GitHub.</span>
+<span class="c1">-- Instale um novo pacote e registre-o no elm-package.json.</span>
+<span class="o">$</span> <span class="n">elm</span> <span class="n">package</span> <span class="n">install</span> <span class="n">evancz</span><span class="o">/</span><span class="n">elm</span><span class="o">-</span><span class="n">html</span>
+
+<span class="c1">-- Veja o que mudou entre as versões de um pacote.</span>
+<span class="o">$</span> <span class="n">elm</span> <span class="n">package</span> <span class="n">diff</span> <span class="n">evancz</span><span class="o">/</span><span class="n">elm</span><span class="o">-</span><span class="n">html</span> <span class="mf">3.0</span><span class="o">.</span><span class="mi">0</span> <span class="mf">4.0</span><span class="o">.</span><span class="mi">2</span>
+<span class="c1">-- O gerenciador de pacotes do Elm obriga o versionamento semântico, logo</span>
+<span class="c1">-- mudanças de versões no minor nunca quebrará o seu build!</span>
+</code></pre></div>
+<p>A linguagem Elm é supreendentemente pequena. Agora você pode olhar para quase
+qualquer código-fonte em Elm e ter uma ideia aproximada do que está acontecendo.
+No entanto, as possibilidades para código resistente a erros e de fácil
+refatoração são infinitas!</p>
+
+<p>Aqui estão algumas referências utéis.</p>
+
+<ul>
+<li><p>O <a href="http://elm-lang.org/">site do Elm</a>. Ele inclui:</p>
+
+<ul>
+<li>Links para os <a href="http://elm-lang.org/install">instaladores</a></li>
+<li><a href="http://elm-lang.org/docs">Documentação</a>, incluindo <a href="http://elm-lang.org/docs/syntax">a referência de sintaxe</a></li>
+<li>Muitos <a href="http://elm-lang.org/examples">exemplos</a> úteis</li>
+</ul></li>
+<li><p>Documentação para as <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/">bibliotecas internas do Elm</a>. Tome nota de:</p>
+
+<ul>
+<li><a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Basics">Basics</a>, que é importada por padrão</li>
+<li><a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Maybe">Maybe</a> e seu primo <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Result">Result</a>, comumente utilizados para valores faltantes e manipulação de erros</li>
+<li>Estruturas de dados como <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/List">List</a>, <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Array">Array</a>, <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Dict">Dict</a> e <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Set">Set</a></li>
+<li><a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Json-Encode">Codificação</a> e <a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Json-Decode">decodificação</a> JSON</li>
+</ul></li>
+<li><p><a href="https://github.com/evancz/elm-architecture-tutorial#the-elm-architecture">A Arquitetura Elm</a>. Uma dissertação pelo criador do Elm com exemplos sobre como organizar código em componentes.</p></li>
+<li><p>A <a href="https://groups.google.com/forum/#!forum/elm-discuss">lista de e-mail do Elm</a>. Todos são amigáveis e solícitos.</p></li>
+<li><p><a href="https://github.com/elm-guides/elm-for-js/blob/master/Scope.md#scope-in-elm">Escopo em Elm</a> e <a href="https://github.com/elm-guides/elm-for-js/blob/master/How%20to%20Read%20a%20Type%20Annotation.md#how-to-read-a-type-annotation">Como Ler uma Anotação de Tipo</a>. Mais sobre guias da comunidade sobre o básico de Elm escrito por desenvolvedores JavaScript.</p></li>
+</ul>
+
+<p>Saia e escreva algum código Elm!</p>
+
+    <hr>
+    <p>Sugestões ou correções? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Abra uma issue</a> no repositório do Github, ou faça um <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/pt-br/elm-pt.html.markdown">pull request</a> você mesmo!
+    </p>
+    <p class="contributed">
+    Originalmente contribuído por Max Goldstein e atualizado por <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/pt-br/elm-pt.html.markdown">0 colaborador(es)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://maxgoldste.in/">Max Goldstein</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://twitter.com/marcelgsantos">Marcel dos Santos</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

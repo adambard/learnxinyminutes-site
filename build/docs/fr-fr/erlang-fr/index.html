@@ -1,0 +1,431 @@
+<!DOCTYPE html lang="fr-fr" xml:lang="fr-fr" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="fr-fr">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn erlang in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/fr-fr/erlang-fr/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Ffr-fr%2Ferlang-fr%2F&text=Apprendre+X+en+Y+minutes%2C+o%C3%B9+X%3Derlang">
+        Partager cette page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Sélectionner un thème :</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">clair</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">sombre</button>
+  </div>
+  <h1><a href="/">Apprendre X en Y minutes</a></h1>
+  <h2>Où X=erlang</h2>
+    <p class="filelink">
+    Récupérer le code :
+    <a href="/docs/files/learnerlang-fr.erl">learnerlang-fr.erl</a>
+    </p>
+  <div id="doc">
+    <div class="highlight"><pre class="highlight erlang"><code><span class="c">% Un signe pour cent marque le début d'un commentaire de fin de ligne.
+</span>
+<span class="c">%% Deux signes pour cent sont utilisés pour commenter les fonctions.
+</span>
+<span class="c">%%% Trois signes pour cent sont utilisés pour commenter les modules.
+</span>
+<span class="c">% Trois symboles de ponctuation sont utilisés en Erlang.
+% Les virgules (`,`) servent à séparer les paramètres dans les appels de
+% fonctions, les contructeurs, et les motifs.
+% Les points (`.`) (suivis par des blancs) servent à séparer les fonctions et
+% les expressions dans l'interpréteur.
+% Les points-virgules (`;`) servent à séparer les clauses. Ces dernières
+% apparaissent dans différent cas de figure : définitions de fonctions et
+% expressions `case`, `if`, `try..catch`, `receive`.
+</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 1. Variables et filtrage par motif
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</span>
+<span class="p">(</span><span class="nv">L</span><span class="err">'é</span><span class="n">quivalent</span> <span class="n">anglais</span> <span class="n">de</span> <span class="o">*</span><span class="n">filtrage</span> <span class="n">par</span> <span class="n">motif</span><span class="o">*</span> <span class="n">est</span> <span class="o">*</span><span class="n">pattern</span> <span class="n">matching</span><span class="o">*</span><span class="p">.)</span>
+
+<span class="nv">Nb</span> <span class="o">=</span> <span class="mi">42</span><span class="p">.</span>  <span class="c">% Chaque nom de variable doit commencer par une lettre majuscule.
+</span>
+<span class="c">% Les variables Erlang ne peuvent être affectées qu'une seule fois ; si vous
+% essayez d'affecter une autre valeur à la variable `Nb`, vous obtiendrez
+% une erreur.
+</span><span class="nv">Nb</span> <span class="o">=</span> <span class="mi">43</span><span class="p">.</span> <span class="c">% ** exception error: no match of right hand side value 43
+</span>
+<span class="c">% Dans la plupart des languages, `=` indique une affectation. En Erlang,
+% cependant, `=` indique un filtrage par motif. En fait, `Gauche = Droit`
+% signifie ce qui suit : évalue le côté droit (`Droit`), et ensuite filtre le
+% résultat à l'aide du motif du côté gauche (`Gauche`).
+</span><span class="nv">Nb</span> <span class="o">=</span> <span class="mi">7</span> <span class="o">*</span> <span class="mi">6</span><span class="p">.</span>
+
+<span class="c">% Nombre en virgule flottante.
+</span><span class="nv">Pi</span> <span class="o">=</span> <span class="mi">3</span><span class="p">.</span><span class="mi">14159</span><span class="p">.</span>
+
+<span class="c">% Les atomes représentent des valeurs constantes non-numériques. Un atome
+% commence par une lettre minuscule, suivie d'une séquence composée de
+% caractères alphanumériques, de tirets bas (`_`), ou d'arobases (`@`).
+</span><span class="nv">Bonjour</span> <span class="o">=</span> <span class="n">bonjour</span><span class="p">.</span>
+<span class="nv">AutreNoeud</span> <span class="o">=</span> <span class="n">exemple</span><span class="p">@</span><span class="n">noeud</span><span class="p">.</span>
+
+<span class="c">% Les atomes de valeur autre qu'alphanumérique peuvent être délimités par
+% des guillemets droits simples.
+</span><span class="nv">AtomeAvecEspace</span> <span class="o">=</span> <span class="n">'un atome contenant des espaces'</span><span class="p">.</span>
+
+<span class="c">% Les tuples sont similaires aux enregistrements du language C.
+</span><span class="nv">Point</span> <span class="o">=</span> <span class="p">{</span><span class="n">point</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">45</span><span class="p">}.</span>
+
+<span class="c">% Pour extraire des valeurs d'un tuple, on filtre par motif avec
+% l'opérateur `=`.
+</span><span class="p">{</span><span class="n">point</span><span class="p">,</span> <span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">}</span> <span class="o">=</span> <span class="nv">Point</span><span class="p">.</span>  <span class="c">% X = 10, Y = 45
+</span>
+<span class="c">% On peut utiliser `_` comme caractère joker pour les variables qui ne nous
+% intéressent pas. Le symbole `_` est appelé variable muette. Contrairement
+% aux variables normales, de multiples apparitions de `_` dans un même motif
+% ne lient pas nécessairement à la même valeur.
+</span><span class="nv">Personne</span> <span class="o">=</span> <span class="p">{</span><span class="n">personne</span><span class="p">,</span> <span class="p">{</span><span class="n">nom</span><span class="p">,</span> <span class="p">{</span><span class="n">prenom</span><span class="p">,</span> <span class="n">joe</span><span class="p">},</span> <span class="p">{</span><span class="n">famille</span><span class="p">,</span> <span class="n">armstrong</span><span class="p">}},</span>
+                      <span class="p">{</span><span class="n">pointure</span><span class="p">,</span> <span class="mi">42</span><span class="p">}}.</span>
+<span class="p">{_,</span> <span class="p">{_,</span> <span class="p">{_,</span> <span class="nv">Qui</span><span class="p">},</span> <span class="p">_},</span> <span class="p">_}</span> <span class="o">=</span> <span class="nv">Personne</span><span class="p">.</span>  <span class="c">% Qui = joe
+</span>
+<span class="c">% Pour créer une liste, on écrit les éléments de la liste entre crochets, en
+% les séparant par des virgules.
+% Les éléments d'une liste peuvent avoir n'importe quel type.
+% Le premier élément d'une liste est appelé la tête de la liste. Si on retire
+% la tête d'une liste, ce qui reste est appelée la queue de la liste.
+</span><span class="nv">Articles</span> <span class="o">=</span> <span class="p">[{</span><span class="n">pommes</span><span class="p">,</span> <span class="mi">10</span><span class="p">},</span> <span class="p">{</span><span class="n">poires</span><span class="p">,</span> <span class="mi">6</span><span class="p">},</span> <span class="p">{</span><span class="n">lait</span><span class="p">,</span> <span class="mi">3</span><span class="p">}].</span>
+
+<span class="c">% Si `Q` est une liste, alors `[T|Q]` est aussi une liste dont la tête est `T`
+% et dont la queue est `Q`. La barre verticale (`|`) sépare la tête d'une
+% liste de sa queue.
+% `[]` est la liste vide.
+% On peut extraire des éléments d'une liste par filtrage de motif. Si `L` est
+% une liste non vide, alors l'expression `[X|Y] = L`, où `X` et `Y` sont des
+% variables non affectées, va extraire la tête de la liste dans `X` et la
+% queue de la liste dans `Y`.
+</span><span class="p">[</span><span class="nv">PremierArticle</span><span class="p">|</span><span class="nv">AutresArticles</span><span class="p">]</span> <span class="o">=</span> <span class="nv">Articles</span><span class="p">.</span>
+<span class="c">% PremierArticle = {pommmes, 10}
+% AutresArticles = [{poires, 6}, {lait, 3}]
+</span>
+<span class="c">% Il n'y a pas de chaînes de caractères en Erlang. Les chaînes de caractères
+% ne sont rien de plus que des listes d'entiers.
+% Les chaînes de caractères sont délimitées par des guillemets droits doubles
+% (`"`).
+</span><span class="nv">Nom</span> <span class="o">=</span> <span class="s">"Bonjour"</span><span class="p">.</span>
+<span class="p">[</span><span class="mi">66</span><span class="p">,</span> <span class="mi">111</span><span class="p">,</span> <span class="mi">110</span><span class="p">,</span> <span class="mi">106</span><span class="p">,</span> <span class="mi">111</span><span class="p">,</span> <span class="mi">117</span><span class="p">,</span> <span class="mi">114</span><span class="p">]</span> <span class="o">=</span> <span class="s">"Bonjour"</span><span class="p">.</span>
+
+
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 2. Programmation séquentielle.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</span>
+<span class="c">% Les modules constituent l'unité de base d'un programme Erlang. Toutes les
+% fonctions que l'on écrit sont enregistrées dans des modules. Les modules sont
+% enregistrés dans des fichiers avec une extension `.erl`.
+% Les modules doivent être compilés afin d'éxecuter le programme.
+% Un module compilé a une extension `.beam`.
+</span><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">geometrie</span><span class="p">).</span>
+<span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">aire</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span> <span class="c">% la liste des fonctions exportées par le module.
+</span>
+<span class="c">% La fonction `aire` est composée de deux clauses. Les clauses sont séparées
+% par un point-virgule, et la dernière clause est suivie d'un point et un
+% espace blanc. Chaque clause a une en-tête et un corps ; l'en-tête consiste
+% en un nom de fonction suivi d'un motif (entre parenthèses), et le corps
+% consiste en une séquence d'expressions, qui sont évaluées si le motif de
+% l'en-tête est cohérent par rapport à la valeur des paramètres d'appel.
+% L'expression est filtrée séquentiellement par les différents motifs, dans
+% l'ordre dans lequel ils apparaissent dans la définition de la fonction.
+</span><span class="nf">aire</span><span class="p">({</span><span class="n">rectangle</span><span class="p">,</span> <span class="nv">Largeur</span><span class="p">,</span> <span class="nv">Hauteur</span><span class="p">})</span> <span class="o">-&gt;</span> <span class="nv">Largeur</span> <span class="o">*</span> <span class="nv">Hauteur</span><span class="p">;</span>
+<span class="nf">aire</span><span class="p">({</span><span class="n">cercle</span><span class="p">,</span> <span class="nv">R</span><span class="p">})</span>                   <span class="o">-&gt;</span> <span class="mi">3</span><span class="p">.</span><span class="mi">14159</span> <span class="o">*</span> <span class="nv">R</span> <span class="o">*</span> <span class="nv">R</span><span class="p">.</span>
+
+<span class="c">% Compilation du code du fichier geometrie.erl.
+</span><span class="nf">c</span><span class="p">(</span><span class="n">geometrie</span><span class="p">).</span>  <span class="c">% {ok,geometrie}
+</span>
+<span class="c">% Le nom du module doit être inclus avec le nom de la fonction afin
+% d'identifier précisément quelle fonction on souhaite appeler.
+</span><span class="nn">geometrie</span><span class="p">:</span><span class="nf">aire</span><span class="p">({</span><span class="n">rectangle</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">}).</span>  <span class="c">% 50
+</span><span class="nn">geometrie</span><span class="p">:</span><span class="nf">area</span><span class="p">({</span><span class="n">cercle</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">4</span><span class="p">}).</span>  <span class="c">% 6.15752
+</span>
+<span class="c">% En Erlang, deux fonctions portant le même nom mais ayant des arités
+% différentes (c'est à dire ne prenant pas le même nombre de paramètres)
+% au sein d'un même module représentent des fonctions complètement
+% différentes.
+</span><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">lib_divers</span><span class="p">).</span>
+<span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">somme</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span> <span class="c">% exporte la fonction `somme` d'arité 1
+</span>                    <span class="c">% acceptant un paramètre : une liste d'entiers.
+</span><span class="nf">somme</span><span class="p">(</span><span class="nv">L</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nf">somme</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span> <span class="mi">0</span><span class="p">).</span>
+<span class="nf">somme</span><span class="p">([],</span> <span class="nv">N</span><span class="p">)</span>    <span class="o">-&gt;</span> <span class="nv">N</span><span class="p">;</span>
+<span class="nf">somme</span><span class="p">([</span><span class="nv">T</span><span class="p">|</span><span class="nv">Q</span><span class="p">],</span> <span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nf">somme</span><span class="p">(</span><span class="nv">Q</span><span class="p">,</span> <span class="nv">T</span><span class="o">+</span><span class="nv">N</span><span class="p">).</span>
+
+<span class="c">% Les `fun`s sont des fonctions "anonymes" ; elles sont appelées ainsi parce
+% qu'elles n'ont pas de nom. Cependant, elles peuvent être affectées à des
+% variables.
+</span><span class="nv">Doubler</span> <span class="o">=</span> <span class="k">fun</span><span class="p">(</span><span class="nv">X</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="nv">X</span> <span class="k">end</span><span class="p">.</span> <span class="c">% `Doubler` pointe vers une fonction anonyme
+</span>                               <span class="c">% dont le handle est : #Fun&lt;erl_eval.6.17052888&gt;
+</span><span class="nv">Doubler</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span>  <span class="c">% 4
+</span>
+<span class="c">% Les fonctions peuvent prendre des `fun`s comme paramètres et peuvent renvoyer
+% des `fun`s.
+</span><span class="nv">Mult</span> <span class="o">=</span> <span class="k">fun</span><span class="p">(</span><span class="nv">Fois</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span> <span class="k">fun</span><span class="p">(</span><span class="nv">X</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">X</span> <span class="o">*</span> <span class="nv">Fois</span> <span class="k">end</span> <span class="p">)</span> <span class="k">end</span><span class="p">.</span>
+<span class="nv">Tripler</span> <span class="o">=</span> <span class="nv">Mult</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span>
+<span class="nv">Tripler</span><span class="p">(</span><span class="mi">5</span><span class="p">).</span>  <span class="c">% 15
+</span>
+<span class="c">% Les listes en compréhension sont des expressions qui créent des listes sans
+% requérir ni `fun`s, ni maps, ni filters.
+% La notation `[F(X) || X &lt;- L]` signifie "la liste des `F(X)` où `X` est
+% extrait de la liste `L`."
+</span><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">].</span>
+<span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="nv">X</span> <span class="p">||</span> <span class="nv">X</span> <span class="o">&lt;-</span> <span class="nv">L</span><span class="p">].</span>  <span class="c">% [2,4,6,8,10]
+% Une liste en compréhension peut être constituée de générateurs, ainsi que de
+% gardes, qui sélectionnent un sous-ensemble des valeurs générées.
+</span><span class="nv">NombresPairs</span> <span class="o">=</span> <span class="p">[</span><span class="nv">N</span> <span class="p">||</span> <span class="nv">N</span> <span class="o">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="nv">N</span> <span class="ow">rem</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">].</span> <span class="c">% [2, 4]
+</span>
+<span class="c">% La garde est un élément syntaxique qui rend le filtrage par motif encore
+% plus puissant. Les gardes permettent de d'effectuer de simple tests et
+% comparaisons sur les variables d'un motif. Les gardes peuvent être
+% utilisées dans les en-têtes de fonctions, au sein desquelles elles sont
+% introduites par le mot-clé `when`, ou encore à n'importe quel endroit où
+% une expression est autorisée.
+</span><span class="nf">max</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">)</span> <span class="k">when</span> <span class="nv">X</span> <span class="o">&gt;</span> <span class="nv">Y</span> <span class="o">-&gt;</span> <span class="nv">X</span><span class="p">;</span>
+<span class="nf">max</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">Y</span><span class="p">.</span>
+
+<span class="c">% Une garde est une série d'expressions gardes, séparées par des virgules (`,`).
+% La garde `ExprGarde1, ExprGarde2, ..., ExprGardeN` est vraie si toutes les
+% expressions gardes `ExprGarde1`, `ExprGarde2, ..., `ExprGardeN` ont pour
+% valeur `true`.
+</span><span class="nf">est_chat</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="k">when</span> <span class="nb">is_atom</span><span class="p">(</span><span class="nv">A</span><span class="p">),</span> <span class="nv">A</span> <span class="o">=:=</span> <span class="n">chat</span> <span class="o">-&gt;</span> <span class="n">true</span><span class="p">;</span>
+<span class="nf">est_chat</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">false</span><span class="p">.</span>
+<span class="nf">est_chien</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="k">when</span> <span class="nb">is_atom</span><span class="p">(</span><span class="nv">A</span><span class="p">),</span> <span class="nv">A</span> <span class="o">=:=</span> <span class="n">chien</span> <span class="o">-&gt;</span> <span class="n">true</span><span class="p">;</span>
+<span class="nf">est_chien</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">false</span><span class="p">.</span>
+
+<span class="c">% Une séquence de gardes est composée soit d'une seule garde ou bien d'une
+% série de gardes, séparées par des points-virgules (`;`). La séquence de
+% gardes `G1; G2; ...; Gn` est vraie si au moins l'une des gardes `G1`, `G2`,
+% ..., `Gn` a pour valeur `true`.
+</span><span class="nf">est_animal</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="k">when</span> <span class="nb">is_atom</span><span class="p">(</span><span class="nv">A</span><span class="p">),</span> <span class="p">(</span><span class="nv">A</span> <span class="o">=:=</span> <span class="n">chien</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nv">A</span> <span class="o">=:=</span> <span class="n">chat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">true</span><span class="p">;</span>
+<span class="nf">est_animal</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span>                                                <span class="o">-&gt;</span> <span class="n">false</span><span class="p">.</span>
+
+<span class="c">% Attention : toutes les expressions Erlang valides ne peuvent pas être
+% utilisées comme expressions gardes ; en particulier, nos fonctions
+% `est_chat` et `est_chien` ne sont pas autorisées au sein de la séquence de
+% gardes dans la définition de `est_animal`. Pour plus de détails sur les
+% expressions autorisées ands les séquences de gardes, voir cette
+% [section](http://erlang.org/doc/reference_manual/expressions.html#id81912)
+% du manuel Erlang.
+</span>
+<span class="c">% Les enregistrements permettent d'associer un nom à un certain élément dans
+% un tuple.
+% Les enregistrements peuvent être définis dans des fichiers sources Erlang
+% ou bien dans des fichiers avec une extension `.hrl`, qui sont ensuite inclus
+% dans des fichiers sources Erlang.
+</span><span class="p">-</span><span class="ni">record</span><span class="p">(</span><span class="nl">afaire</span><span class="p">,</span> <span class="p">{</span>
+  <span class="n">statut</span> <span class="o">=</span> <span class="n">rappel</span><span class="p">,</span>  <span class="c">% Valeur par défaut
+</span>  <span class="n">qui</span> <span class="o">=</span> <span class="n">joe</span><span class="p">,</span>
+  <span class="n">texte</span>
+<span class="p">}).</span>
+
+<span class="c">% Les définitions d'enregistrements doivent être lues dans l'interpreteur
+% pour qu'on puisse définir un enregistrement. On utilise la fonction `rr`
+% (abbréviation de *read records* en anglais, ou *lire enregistrements* en
+% français) pour ça.
+</span><span class="nf">rr</span><span class="p">(</span><span class="s">"enregistrements.hrl"</span><span class="p">).</span>  <span class="c">% [afaire]
+</span>
+<span class="c">% Création et mise à jour d'enregistrements :
+</span><span class="nv">X</span> <span class="o">=</span> <span class="nl">#afaire</span><span class="p">{}.</span>
+<span class="c">% #afaire{statut = rappel, qui = joe, texte = undefined}
+</span><span class="nv">X1</span> <span class="o">=</span> <span class="nl">#afaire</span><span class="p">{</span><span class="n">statut</span> <span class="o">=</span> <span class="n">urgent</span><span class="p">,</span> <span class="n">texte</span> <span class="o">=</span> <span class="s">"Corriger erreurs dans livre"</span><span class="p">}.</span>
+<span class="c">% #afaire{statut = urgent, qui = joe, texte = "Corriger erreurs dans livre"}
+</span><span class="nv">X2</span> <span class="o">=</span> <span class="nv">X1</span><span class="nl">#afaire</span><span class="p">{</span><span class="n">statut</span> <span class="o">=</span> <span class="n">fini</span><span class="p">}.</span>
+<span class="c">% #afaire{statut = fini, qui = joe, texte = "Corriger erreurs dans livre"}
+</span>
+<span class="c">% Expressions `case`.
+% `filter` renvoie une liste de tous les éléments `X` d'une liste `L` pour
+% lesquels `P(X)` est vrai.
+</span><span class="nf">filter</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="p">[</span><span class="nv">H</span><span class="p">|</span><span class="nv">T</span><span class="p">])</span> <span class="o">-&gt;</span>
+  <span class="k">case</span> <span class="nv">P</span><span class="p">(</span><span class="nv">H</span><span class="p">)</span> <span class="k">of</span>
+    <span class="n">true</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="nv">H</span><span class="p">|</span><span class="nf">filter</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="nv">T</span><span class="p">)];</span>
+    <span class="n">false</span> <span class="o">-&gt;</span> <span class="nf">filter</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="nv">T</span><span class="p">)</span>
+  <span class="k">end</span><span class="p">;</span>
+<span class="nf">filter</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="p">[])</span> <span class="o">-&gt;</span> <span class="p">[].</span>
+<span class="nf">filter</span><span class="p">(</span><span class="k">fun</span><span class="p">(</span><span class="nv">X</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">X</span> <span class="ow">rem</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">end</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]).</span> <span class="c">% [2, 4]
+</span>
+<span class="c">% Expressions `if`.
+</span><span class="nf">max</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="k">if</span>
+    <span class="nv">X</span> <span class="o">&gt;</span> <span class="nv">Y</span> <span class="o">-&gt;</span> <span class="nv">X</span><span class="p">;</span>
+    <span class="nv">X</span> <span class="o">&lt;</span> <span class="nv">Y</span> <span class="o">-&gt;</span> <span class="nv">Y</span><span class="p">;</span>
+    <span class="n">true</span> <span class="o">-&gt;</span> <span class="n">nil</span>
+  <span class="k">end</span><span class="p">.</span>
+
+<span class="c">% Attention : au moins l'une des gardes dans l'expression `if` doit avoir pour
+% valeur `true` ; autrement, une exception sera lancée.
+</span>
+
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 3. Exceptions.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</span>
+<span class="c">% Des exceptions sont lancées par le système quand des erreurs internes
+% surviennent, ou de manière explicite dans le programme en appelant
+% `throw(Exception)`, `exit(Exception)`, ou `erlang:error(Exception)`.
+</span><span class="nf">generer_exception</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">a</span><span class="p">;</span>
+<span class="nf">generer_exception</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nf">throw</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+<span class="nf">generer_exception</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">exit</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+<span class="nf">generer_exception</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="n">'EXIT'</span><span class="p">,</span> <span class="n">a</span><span class="p">};</span>
+<span class="nf">generer_exception</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nn">erlang</span><span class="p">:</span><span class="nf">error</span><span class="p">(</span><span class="n">a</span><span class="p">).</span>
+
+<span class="c">% Erlang dispose de deux méthodes pour capturer une exception. La première
+% consiste à inclure l'appel de de la fonction qui lance l'exception dans une
+% expression `try...catch`.
+</span><span class="nf">catcher</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span>
+  <span class="k">try</span> <span class="nf">generer_exception</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="k">of</span>
+    <span class="nv">Val</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="nv">N</span><span class="p">,</span> <span class="n">normal</span><span class="p">,</span> <span class="nv">Val</span><span class="p">}</span>
+  <span class="k">catch</span>
+    <span class="nn">throw</span><span class="p">:</span><span class="nv">X</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="nv">N</span><span class="p">,</span> <span class="n">caught</span><span class="p">,</span> <span class="n">thrown</span><span class="p">,</span> <span class="nv">X</span><span class="p">};</span>
+    <span class="nb">exit</span><span class="p">:</span><span class="nv">X</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="nv">N</span><span class="p">,</span> <span class="n">caught</span><span class="p">,</span> <span class="n">exited</span><span class="p">,</span> <span class="nv">X</span><span class="p">};</span>
+    <span class="nn">error</span><span class="p">:</span><span class="nv">X</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="nv">N</span><span class="p">,</span> <span class="n">caught</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="nv">X</span><span class="p">}</span>
+  <span class="k">end</span><span class="p">.</span>
+
+<span class="c">% L'autre méthode consiste à inclure l'appel dans une expression `catch`.
+% Quand une exception est capturée, elle est convertie en un tuple qui décrit
+% l'erreur.
+</span><span class="nf">catcher</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">catch</span> <span class="nf">generer_exception</span><span class="p">(</span><span class="nv">N</span><span class="p">).</span>
+
+
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 4. Concurrence
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+</span>
+<span class="c">% Erlang est basé sur le modèle d'acteur pour la concurrence. Seulement trois
+% opérations sont requises pour écrire des programmes concurrents en Erlang :
+% la création de processus, l'envoi de messages, et la réception de messages.
+</span>
+<span class="c">% Pour démarrer un nouveau processus, on utilise la fonction `spawn`, qui
+% prend une fonction comme paramètre.
+</span>
+<span class="nv">F</span> <span class="o">=</span> <span class="k">fun</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span> <span class="k">end</span><span class="p">.</span> <span class="c">% #Fun&lt;erl_eval.20.67289768&gt;
+</span><span class="nb">spawn</span><span class="p">(</span><span class="nv">F</span><span class="p">).</span> <span class="c">% &lt;0.44.0&gt;
+</span>
+<span class="c">% `spawn` renvoie un pid (*process identifier* en anglais, ou *identifiant de
+% processus* en français), qui peut être utilisé pour envoyer des messages au
+% processus en question. Pour passer des messages, on utilise l'opérateur `!`.
+% Pour que cela soit utile, on doit aussi être en mesure de recevoir des
+% messages, ce qui est accompli grâce à une clause `receive` :
+</span>
+<span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">calculerGeometrie</span><span class="p">).</span>
+<span class="p">-</span><span class="ni">compile</span><span class="p">(</span><span class="n">export_all</span><span class="p">).</span>
+<span class="nf">calculerAire</span><span class="p">()</span> <span class="o">-&gt;</span>
+    <span class="k">receive</span>
+      <span class="p">{</span><span class="n">rectangle</span><span class="p">,</span> <span class="nv">W</span><span class="p">,</span> <span class="nv">H</span><span class="p">}</span> <span class="o">-&gt;</span>
+        <span class="nv">W</span> <span class="o">*</span> <span class="nv">H</span><span class="p">;</span>
+      <span class="p">{</span><span class="n">cercle</span><span class="p">,</span> <span class="nv">R</span><span class="p">}</span> <span class="o">-&gt;</span>
+        <span class="mi">3</span><span class="p">.</span><span class="mi">14</span> <span class="o">*</span> <span class="nv">R</span> <span class="o">*</span> <span class="nv">R</span><span class="p">;</span>
+      <span class="p">_</span> <span class="o">-&gt;</span>
+        <span class="nn">io</span><span class="p">:</span><span class="nf">format</span><span class="p">(</span><span class="s">"Seule l'aire d'un rectangle / cercle peut etre calculee."</span><span class="p">)</span>
+    <span class="k">end</span><span class="p">.</span>
+
+<span class="c">% Compilation du module and création d'un processus qui évalue `calculerAire`
+% dans l'interpréteur.
+</span><span class="nf">c</span><span class="p">(</span><span class="n">calculerGeometrie</span><span class="p">).</span>
+<span class="nv">CalculerAire</span> <span class="o">=</span> <span class="nb">spawn</span><span class="p">(</span><span class="n">calculerGeometrie</span><span class="p">,</span> <span class="n">calculerAire</span><span class="p">,</span> <span class="p">[]).</span>
+<span class="nv">CalculerAire</span> <span class="o">!</span> <span class="p">{</span><span class="n">cercle</span><span class="p">,</span> <span class="mi">2</span><span class="p">}.</span> <span class="c">% 12.56000000000000049738
+</span>
+<span class="c">% L'interpréteur est lui-même un processus ; on peut utiliser `self` pour
+% obtenir le pid actuel.
+</span><span class="nf">self</span><span class="p">().</span> <span class="c">% &lt;0.41.0&gt;
+</span>
+</code></pre></div>
+<h2>Ressources (en anglais)</h2>
+
+<ul>
+<li><a href="http://learnyousomeerlang.com/">&ldquo;Learn You Some Erlang for great good!&rdquo;</a></li>
+<li><a href="http://pragprog.com/book/jaerlang/programming-erlang">&ldquo;Programming Erlang: Software for a Concurrent World&rdquo; by Joe Armstrong</a></li>
+<li><a href="http://www.erlang.org/doc/">Erlang/OTP Reference Documentation</a></li>
+<li><a href="http://www.erlang.se/doc/programming_rules.shtml">Erlang - Programming Rules and Conventions</a></li>
+</ul>
+
+    <hr>
+    <p>Vous avez une suggestion ? Peut-être une correction ? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Ouvrez un ticket</a> sur Github, ou faites vous-même une <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/fr-fr/erlang-fr.html.markdown">pull request</a> !
+    </p>
+    <p class="contributed">
+    Version originale par Giovanni Cappellotto, mis à jour par <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/fr-fr/erlang-fr.html.markdown">0 contributeur(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://www.focustheweb.com/">Giovanni Cappellotto</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/Jubobs">Julien Cretel</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn X in Y Minutes: Scenic Programming Language Tours</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/messagepack/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fmessagepack%2F&text=Learn+X+in+Y+minutes%2C+where+X%3Dmessagepack">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=messagepack</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/learnmessagepack.mpac">learnmessagepack.mpac</a>
+    </p>
+  <div id="doc">
+    <p>MessagePack is an efficient binary serialization format. It lets you exchange data among multiple languages like JSON. The benefits over other formats is that it&rsquo;s faster and smaller. </p>
+
+<p>In MessagePack, small integers are encoded into a single byte, and typical short strings require only one extra byte in addition to the strings themselves. This makes MessagePack useful for efficient transmission over wire.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>
+# 0. Understanding The Structure ====
+
+JSON, 40 Bytes UTF-8
+
+----------------------------------------------
+| {"name":"John Doe","age":12}               |
+----------------------------------------------
+|  {"         | 7B 22                        |
+|    name     | 6E 61 6D 65                  |
+|  ":"        | 22 3A 22                     |
+|    John Doe | 4A 6F 68 6E 20 44 6F 65      |
+|  ","        | 22 2C 22                     |
+|    age      | 61 67 65                     |
+|  ":         | 22 3A 20                     |
+|    12       | 31 32                        |
+|  }          | 7D                           |
+----------------------------------------------
+
+
+MessagePack, 27 Bytes UTF-8
+
+----------------------------------------------
+| ‚¤name¨John Doe£age.12                     |
+----------------------------------------------
+|  ‚¤         | 82 84                        |
+|    name     | 6E 61 6D 65                  |
+|  ¨          | A8                           |
+|    John Doe | 4A 6F 68 6E 20 44 6F 65      |
+|  £          | A3                           |
+|    age      | 61 67 65                     |
+|  .          | 0C                           |
+|    12       | 31 32                        |
+----------------------------------------------
+
+# 1. JAVA ====
+
+""" Installing with Maven
+"""
+
+&lt;dependencies&gt;
+  ...
+  &lt;dependency&gt;
+    &lt;groupId&gt;org.msgpack&lt;/groupId&gt;
+    &lt;artifactId&gt;msgpack&lt;/artifactId&gt;
+    &lt;version&gt;${msgpack.version}&lt;/version&gt;
+  &lt;/dependency&gt;
+  ...
+&lt;/dependencies&gt;
+
+
+""" Simple Serialization/Deserialization
+"""
+
+// Create serialize objects.
+List&lt;String&gt; src = new ArrayList&lt;String&gt;();
+src.add("msgpack");
+src.add("kumofs");
+
+MessagePack msgpack = new MessagePack();
+// Serialize
+byte[] raw = msgpack.write(src);
+
+// Deserialize directly using a template
+List&lt;String&gt; dst1 = msgpack.read(raw, Templates.tList(Templates.TString));
+System.out.println(dst1.get(0));
+System.out.println(dst1.get(1));
+
+// Or, Deserialze to Value then convert type.
+Value dynamic = msgpack.read(raw);
+List&lt;String&gt; dst2 = new Converter(dynamic)
+    .read(Templates.tList(Templates.TString));
+System.out.println(dst2.get(0));
+System.out.println(dst2.get(1));
+
+
+# 2. RUBY ====
+
+""" Installing the Gem
+"""
+
+gem install msgpack
+
+""" Streaming API
+"""
+
+# serialize a 2-element array [e1, e2]
+pk = MessagePack::Packer.new(io)
+pk.write_array_header(2).write(e1).write(e2).flush
+
+# deserialize objects from an IO
+u = MessagePack::Unpacker.new(io)
+u.each { |obj| ... }
+
+# event-driven deserialization
+def on_read(data)
+  @u ||= MessagePack::Unpacker.new
+  @u.feed_each(data) { |obj| ... }
+end
+
+# 3. NODE.JS ====
+
+""" Installing with NPM
+"""
+
+npm install msgpack5 --save
+
+""" Using in Node
+"""
+
+var msgpack = require('msgpack5')() // namespace our extensions
+  , a       = new MyType(2, 'a')
+  , encode  = msgpack.encode
+  , decode  = msgpack.decode
+
+msgpack.register(0x42, MyType, mytipeEncode, mytipeDecode)
+
+console.log(encode({ 'hello': 'world' }).toString('hex'))
+// 81a568656c6c6fa5776f726c64
+console.log(decode(encode({ 'hello': 'world' })))
+// { hello: 'world' }
+console.log(encode(a).toString('hex'))
+// d5426161
+console.log(decode(encode(a)) instanceof MyType)
+// true
+console.log(decode(encode(a)))
+// { value: 'a', size: 2 }
+
+function MyType(size, value) {
+  this.value = value
+  this.size  = size
+}
+
+function mytipeEncode(obj) {
+  var buf = new Buffer(obj.size)
+  buf.fill(obj.value)
+  return buf
+}
+
+function mytipeDecode(data) {
+  var result = new MyType(data.length, data.toString('utf8', 0, 1))
+    , i
+
+  for (i = 0; i &lt; data.length; i++) {
+    if (data.readUInt8(0) != data.readUInt8(i)) {
+      throw new Error('should all be the same')
+    }
+  }
+
+  return result
+}
+
+</code></pre></div>
+<h1>References</h1>
+
+<ul>
+<li><a href="http://msgpack.org/index.html">MessagePack</a></li>
+<li><a href="http://indiegamr.com/cut-your-data-exchange-traffic-by-up-to-50-with-one-line-of-code-msgpack-vs-json/">MsgPack vs. JSON: Cut your client-server exchange traffic by 50% with one line of code</a></li>
+</ul>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/messagepack.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Gabriel Chuan, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/messagepack.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="https://github.com/gczh">Gabriel Chuan</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

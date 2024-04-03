@@ -1,0 +1,725 @@
+<!DOCTYPE html lang="pt-br" xml:lang="pt-br" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="pt-br">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn Haskell in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/pt-br/haskell-pt/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fpt-br%2Fhaskell-pt%2F&text=Aprenda+X+em+Y+Minutos%2C+onde+X%3DHaskell">
+        Compartilhe esta página
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Selecione o tema:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">claro</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">sombrio</button>
+  </div>
+  <h1><a href="/">Aprenda X em Y Minutos</a></h1>
+  <h2>Onde X=Haskell</h2>
+    <p class="filelink">
+    Baixar o código:
+    <a href="/docs/files/learnhaskell-pt.hs">learnhaskell-pt.hs</a>
+    </p>
+  <div id="doc">
+    <p>As linguagens funcionais são linguagens de programação com base em avaliação
+de funções matemáticas (expressões), evitando-se o conceito de mudança de
+estado com alteração de dados. Neste aspecto, este paradigma é oposto ao
+paradigma imperativo que se baseia em alterações de estados.</p>
+
+<p>A programação funcional começou no cálculo lambda, que foi base teórica para
+o desenvolvimento deste paradigma de programação.</p>
+<div class="highlight"><pre class="highlight haskell"><code><span class="c1">-- Para comentar a linha basta dois traços seguidos.</span>
+
+<span class="cm">{- Abre chaves traço e traço fecha chaves cria um campo
+   para comentário em múltiplas linhas.
+-}</span>
+
+<span class="c1">----------------------------------------------------</span>
+<span class="c1">-- 1. Tipos Primitivos de Dados e Operadores</span>
+<span class="c1">----------------------------------------------------</span>
+
+<span class="c1">-- Numerais</span>
+
+<span class="mi">0</span> <span class="c1">-- 3</span>
+<span class="mi">1</span> <span class="c1">-- 1</span>
+<span class="mi">2</span> <span class="c1">-- 2 ...</span>
+
+<span class="c1">-- Alguns Operadores Fundamentais</span>
+
+<span class="mi">7</span> <span class="o">+</span> <span class="mi">7</span> <span class="c1">-- 7 mais 7</span>
+<span class="mi">7</span> <span class="o">-</span> <span class="mi">7</span> <span class="c1">-- 7 menos 7</span>
+<span class="mi">7</span> <span class="o">*</span> <span class="mi">7</span> <span class="c1">-- 7 vezes 7</span>
+<span class="mi">7</span> <span class="o">/</span> <span class="mi">7</span> <span class="c1">-- 7 dividido por 7</span>
+
+<span class="c1">-- Divisões não são inteiras, são fracionadas por padrão da linguagem</span>
+<span class="mi">28736</span> <span class="o">/</span> <span class="mi">82374</span> <span class="c1">-- 0.3488479374559934</span>
+
+
+<span class="c1">-- Divisão inteira</span>
+<span class="mi">82374</span> <span class="p">`</span><span class="n">div</span><span class="p">`</span> <span class="mi">28736</span> <span class="c1">-- 2</span>
+
+<span class="c1">-- Divisão modular</span>
+<span class="mi">82374</span> <span class="p">`</span><span class="n">mod</span><span class="p">`</span> <span class="mi">28736</span> <span class="c1">-- 24902</span>
+
+<span class="c1">-- Booleanos como tipo primitivo de dado</span>
+<span class="kt">True</span> <span class="c1">-- Verdadeiro</span>
+<span class="kt">False</span> <span class="c1">-- Falso</span>
+
+<span class="c1">-- Operadores unitário</span>
+<span class="n">not</span> <span class="kt">True</span> <span class="c1">-- Nega uma verdade</span>
+<span class="n">not</span> <span class="kt">False</span> <span class="c1">-- Nega uma falácia</span>
+
+
+<span class="c1">-- Operadores binários</span>
+<span class="mi">7</span> <span class="o">==</span> <span class="mi">7</span> <span class="c1">-- 7 é igual a 7 ?</span>
+<span class="mi">7</span> <span class="o">/=</span> <span class="mi">7</span> <span class="c1">-- 7 é diferente de 7 ?</span>
+<span class="mi">7</span> <span class="o">&lt;</span> <span class="mi">7</span> <span class="c1">-- 7 é menor que 7 ?</span>
+<span class="mi">7</span> <span class="o">&gt;</span> <span class="mi">7</span> <span class="c1">-- 7 é maior que 7 ?</span>
+
+
+<span class="cm">{- Haskell é uma linguagem que tem uma sintaxe bastante familiar na
+   matemática, por exemplo em chamadas de funções você tem:
+
+   NomeFunção ArgumentoA ArgumentoB ArgumentoC ...
+-}</span>
+
+<span class="c1">-- Strings e Caractéres</span>
+<span class="s">"Texto entre abre áspas e fecha áspas define uma string"</span>
+<span class="sc">'a'</span> <span class="c1">-- Caractere</span>
+<span class="sc">'A'</span> <span class="c1">-- Caractere</span>
+
+<span class="kt">'Strings</span> <span class="n">entre</span> <span class="n">aspas</span> <span class="n">simples</span> <span class="n">sobe</span> <span class="n">um</span> <span class="n">erro'</span> <span class="c1">-- Erro léxico!</span>
+
+<span class="c1">-- Concatenação de Strings</span>
+<span class="s">"StringA"</span> <span class="o">++</span> <span class="s">"StringB"</span> <span class="c1">-- "StringAStringB"</span>
+
+<span class="c1">-- Concatenação de Caracteres</span>
+<span class="s">"haskell"</span> <span class="o">==</span> <span class="p">[</span><span class="sc">'h'</span><span class="p">,</span><span class="sc">'a'</span><span class="p">,</span><span class="sc">'s'</span><span class="p">,</span><span class="sc">'k'</span><span class="p">,</span><span class="sc">'e'</span><span class="p">,</span><span class="sc">'l'</span><span class="p">,</span><span class="sc">'l'</span><span class="p">]</span> <span class="c1">-- True</span>
+<span class="s">"haskell"</span> <span class="o">==</span> <span class="sc">'h'</span><span class="o">:</span><span class="sc">'a'</span><span class="o">:</span><span class="sc">'s'</span><span class="o">:</span><span class="sc">'k'</span><span class="o">:</span><span class="sc">'e'</span><span class="o">:</span><span class="sc">'l'</span><span class="o">:</span><span class="sc">'l'</span><span class="o">:</span><span class="kt">[]</span> <span class="c1">-- True</span>
+
+<span class="c1">-- Você pode listar uma string pelos seus caractéres</span>
+<span class="s">"AbBbbcAbbcbBbcbcb"</span> <span class="o">!!</span> <span class="mi">0</span> <span class="c1">-- 'A'</span>
+<span class="s">"AbBbbcAbbcbBbcbcb"</span> <span class="o">!!</span> <span class="mi">1</span> <span class="c1">-- 'b'</span>
+<span class="s">"AbBbbcAbbcbBbcbcb"</span> <span class="o">!!</span> <span class="mi">2</span> <span class="c1">-- 'B'</span>
+
+<span class="c1">----------------------------------------------------</span>
+<span class="c1">-- 2. Listas e Túplas</span>
+<span class="c1">----------------------------------------------------</span>
+
+<span class="c1">-- A construção de uma lista precisa ser de elementos homogêneos</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span> <span class="c1">-- Homogênea</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="c1">-- Heterogênea (Erro)</span>
+
+<span class="c1">-- Haskell permite que você crie sequências</span>
+<span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span>
+
+<span class="cm">{- Haskell usa avaliação preguiçosa o que
+   permite você ter listas "infinitas".
+-}</span>
+
+<span class="c1">-- Uma lista "infinita" cuja razão é 1</span>
+<span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">]</span>
+
+<span class="c1">-- O 777º elemento de uma lista de razão 1</span>
+<span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="p">]</span> <span class="o">!!</span> <span class="mi">777</span> <span class="c1">-- 778</span>
+
+<span class="c1">-- União de listas [lista_0] ++ [lista_1] ++ [lista_i]</span>
+<span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span> <span class="o">++</span> <span class="p">[</span><span class="mi">6</span><span class="o">..</span><span class="mi">10</span><span class="p">]</span> <span class="o">++</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">4</span><span class="p">]</span> <span class="c1">-- [1,2,3,4,5,6,7,8,9,10,1,2,3,4]</span>
+
+<span class="c1">-- Adiciona um cabeçalho a sua lista e desloca a cauda</span>
+<span class="mi">0</span><span class="o">:</span><span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">10</span><span class="p">]</span> <span class="c1">-- [0, 1, 2, 3, 4, 5]</span>
+<span class="sc">'a'</span><span class="o">:</span><span class="p">[</span><span class="sc">'a'</span><span class="o">..</span><span class="sc">'e'</span><span class="p">]</span> <span class="c1">-- "aabcde"</span>
+
+<span class="c1">-- Indexação em uma lista</span>
+<span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="p">]</span> <span class="o">!!</span> <span class="mi">5</span> <span class="c1">-- 5</span>
+
+<span class="c1">-- Operadores de Listas usuais</span>
+<span class="n">head</span> <span class="p">[</span><span class="sc">'a'</span><span class="o">..</span><span class="sc">'e'</span><span class="p">]</span> <span class="c1">-- Qual o cabeçalho da lista ?</span>
+<span class="n">tail</span> <span class="p">[</span><span class="sc">'a'</span><span class="o">..</span><span class="sc">'e'</span><span class="p">]</span> <span class="c1">-- Qual a cauda da lista ?</span>
+<span class="n">init</span> <span class="p">[</span><span class="sc">'a'</span><span class="o">..</span><span class="sc">'e'</span><span class="p">]</span> <span class="c1">-- Qual a lista menos o último elemento ?</span>
+<span class="n">last</span> <span class="p">[</span><span class="sc">'a'</span><span class="o">..</span><span class="sc">'e'</span><span class="p">]</span> <span class="c1">-- Qual o último elemento ?</span>
+
+<span class="c1">-- Compreensão de Lista (List Comprehension)</span>
+
+<span class="cm">{- Uma lista pode ser especificada
+   pela definição de eus elementos.
+   A compreensão de listas é feita
+   com um construtor de listas que
+   utiliza conceitos  e notações
+   da teoria dos conjuntos.
+
+   Exemplo:
+
+   A = { x**2 | X pertence aos Naturais &amp;&amp; x é par}
+-}</span>
+
+<span class="kr">let</span> <span class="n">par</span> <span class="n">x</span> <span class="o">=</span> <span class="n">mod</span> <span class="n">x</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="kr">let</span> <span class="n">constroi_lista</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="o">|</span> <span class="n">x</span> <span class="o">&lt;-</span> <span class="p">[</span><span class="mi">9</span> <span class="o">..</span><span class="mi">39</span><span class="p">],</span> <span class="n">par</span> <span class="n">x</span><span class="p">]</span>
+<span class="c1">-- [100,144,196,256,324,400,484,576,676,784,900,1024,1156,1296,1444]</span>
+
+<span class="n">par</span> <span class="mi">4</span> <span class="c1">-- True</span>
+<span class="n">par</span> <span class="mi">3</span> <span class="c1">-- False</span>
+
+
+<span class="c1">-- Listas com regras</span>
+<span class="cm">{- Para todo x se x é elemento da lista
+   faça 2 vezes x mas componha a lista
+   com apenas aqueles elementos cujo
+   2*x é maior que 4
+-}</span>
+<span class="p">[</span><span class="n">x</span><span class="o">*</span><span class="mi">2</span> <span class="o">|</span> <span class="n">x</span> <span class="o">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">],</span> <span class="n">x</span><span class="o">*</span><span class="mi">2</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">]</span> <span class="c1">-- [6, 8, 10]</span>
+
+<span class="c1">-- Tuplas</span>
+<span class="p">(</span><span class="s">"Q"</span><span class="p">,</span> <span class="s">"Gamma"</span><span class="p">,</span> <span class="s">"b"</span><span class="p">,</span> <span class="s">"Sigma"</span><span class="p">,</span> <span class="s">"delta"</span><span class="p">,</span> <span class="s">"q0"</span><span class="p">,</span> <span class="s">"F"</span><span class="p">)</span> <span class="c1">-- 7-Tuple Turing Machine</span>
+
+<span class="c1">-- Retirando da tupla</span>
+
+<span class="cm">{- Com as funções fst (primeiro) e snd (segundo)
+   você só pode enviar por parâmetro uma tupla
+   bi-dimensional ou seja, 2 dimensões == (x,y)
+-}</span>
+
+<span class="n">fst</span> <span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span> <span class="c1">-- (2,3)</span>
+<span class="n">snd</span> <span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span> <span class="c1">-- [4,3]</span>
+
+
+<span class="c1">----------------------------------------------------</span>
+<span class="c1">-- 3. Funções em Haskell</span>
+<span class="c1">----------------------------------------------------</span>
+
+<span class="c1">-- Uma função simples que toma duas variáveis</span>
+<span class="cm">{- Haskell trabalha em cima de recursão
+   Portanto certifique-se que você
+   Entende como recurssão funciona.
+-}</span>
+
+<span class="n">soma</span> <span class="n">a</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="c1">-- Função que vai em um programa.hs</span>
+
+<span class="cm">{- Dentro do GHCi (Interpretador Haskell)
+   Você terá que fazer da seguinte maneira-- Podemos criar nos
+
+   Prelude&gt; let soma a b = a + b
+   Prelude&gt; soma 7 7 -- 14
+-}</span>
+
+<span class="kr">let</span> <span class="n">constroi_lista</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="o">|</span> <span class="n">x</span> <span class="o">&lt;-</span> <span class="p">[</span><span class="mi">9</span> <span class="o">..</span><span class="mi">39</span><span class="p">],</span> <span class="n">par</span> <span class="n">x</span><span class="p">]</span>
+
+<span class="cm">{- Você pode usar crases para chamar
+   Funcões de maneira diferente
+-}</span>
+
+<span class="mi">7</span> <span class="p">`</span><span class="n">soma</span><span class="p">`</span> <span class="mi">7</span> <span class="c1">-- 14</span>
+
+<span class="cm">{- Haskell permite que você crie os
+   seus próprios operadores baseados
+   nos já existendes
+-}</span>
+
+<span class="kr">let</span> <span class="p">(</span><span class="o">~/\</span><span class="p">)</span> <span class="n">a</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="p">`</span><span class="n">mod</span><span class="p">`</span> <span class="n">b</span>
+<span class="mi">15</span><span class="o">^</span><span class="mi">13</span> <span class="o">~/\</span> <span class="mi">432</span> <span class="c1">-- 759375</span>
+
+<span class="c1">-- Casamento de Padrões em Tuplas</span>
+<span class="n">coordenadas</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">13</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="mi">31</span><span class="p">)</span>
+
+<span class="cm">{- Haskell trabalha com casamento de padrões onde dada
+   um conjunto de funções definidas de diferentes maneiras
+   Haskell vai procurar por aquela que trabalha o seu tipo
+   de entrada.
+-}</span>
+
+<span class="c1">-- Guardas "|" É um jeito simples de representar funções recursivas</span>
+
+<span class="kr">let</span> <span class="n">fatorial</span> <span class="n">n</span> <span class="o">|</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">|</span> <span class="n">otherwise</span> <span class="o">=</span> <span class="n">fatorial</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span> <span class="c1">-- Teste: fatorial 5</span>
+
+<span class="c1">-- Ainda podemos fazer:</span>
+
+<span class="kr">let</span> <span class="n">fatorial</span> <span class="mi">0</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="kr">let</span> <span class="n">fatorial</span> <span class="n">n</span> <span class="o">=</span> <span class="n">fatorial</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n</span>
+
+<span class="cm">{- Podemos criar nossos próprios Mapeadores
+   Onde `primeiro` é o primeiro elemento de
+   uma lista é `resto`  é o resto da lista.
+-}</span>
+
+<span class="n">mapa</span> <span class="n">mapeador</span> <span class="kr">_</span> <span class="kt">[]</span> <span class="o">=</span> <span class="kt">[]</span>
+<span class="n">mapa</span> <span class="n">mapeador</span> <span class="p">(</span><span class="n">primeiro</span> <span class="o">:</span> <span class="n">resto</span><span class="p">)</span> <span class="o">=</span> <span class="n">mapeador</span> <span class="n">primeiro</span> <span class="o">:</span> <span class="p">(</span><span class="n">mapa</span> <span class="n">mapeador</span> <span class="n">resto</span><span class="p">)</span>
+
+<span class="cm">{- Uma função anônima é uma função sem um nome.
+   É uma abstração do cálculo lambda:
+
+   \x -&gt; x + 1
+   λ.x (x + 1)
+
+   Em Haskell Barra Invertida é um jeito para
+   se escrever Lambda (λ). Uma ótima pedida
+   Para entender Haskell e outras linguagens como Lisp
+   É estudar Cálculo Lambda, é um entendimento matemático
+   mais apurado. E do ponto de vista computacional é
+   bastante interessante. Em EXTRAS você encontrará
+   Links para aprender Cálculo Lambda.
+-}</span>
+
+<span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="mi">4</span> <span class="c1">-- 5</span>
+
+
+<span class="cm">{- Algumas vezes é mais conveniente usar expressões lambda
+   do que definir um nome para uma função. Na matemática
+   Nomes são muito simbólicos. Isso acontece bastante
+   quando você estiver trabalhando `map` ou `foldl` / `foldr`
+-}</span>
+
+<span class="c1">-- Sem usar expressões anônimas !</span>
+<span class="n">listaSomaUm</span> <span class="n">lst</span> <span class="o">=</span> <span class="n">map</span> <span class="n">somaUm'</span> <span class="n">lst</span> <span class="kr">where</span> <span class="n">somaUm'</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="c1">-- Usando expressões anônimas !</span>
+<span class="n">listaSomaUm'</span> <span class="n">lst</span> <span class="o">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="n">lst</span>
+
+<span class="c1">----------------------------------------------------</span>
+<span class="c1">-- 4. Mais Funções</span>
+<span class="c1">----------------------------------------------------</span>
+
+<span class="cm">{- Currying: Se você não passar todos os argumentos
+   para uma função, ela irá ser "currificada". O que
+   significa que irá retornar a função que pega o resto
+   dos elementos.
+-}</span>
+
+<span class="n">soma</span> <span class="n">a</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+<span class="n">foo</span> <span class="o">=</span> <span class="n">soma</span> <span class="mi">10</span> <span class="c1">-- foo ganha a propriedade "currying"</span>
+<span class="n">foo</span> <span class="mi">5</span> <span class="c1">-- 15</span>
+
+<span class="c1">-- Outra maneira</span>
+<span class="n">foo</span> <span class="o">=</span> <span class="p">(</span><span class="o">+</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">foo</span> <span class="mi">5</span> <span class="c1">-- 15</span>
+
+<span class="cm">{- Composição de Funções
+   O (.) encadeia funções! Por exemplo,
+   aqui foo é uma função que recebe um valor.
+   Ela soma 10 a ela, multiplica o resultado por 5
+   e então retorna o resultado final.
+-}</span>
+<span class="n">foo</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="mi">5</span><span class="p">)</span> <span class="o">.</span> <span class="p">(</span><span class="o">+</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1">-- (5 + 10) * 5 = 75</span>
+<span class="n">foo</span> <span class="mi">5</span> <span class="c1">-- 75</span>
+
+<span class="cm">{- Concertando precedência:
+   Haskell tem outra função chamada `$`. Isso altera a precedência
+   de computação. Ou seja Haskell computa o que está sendo sinalizado com $
+   da esquerda para a direita . Você pode usar `.` e `$` para se livrar
+   de parentízação desnecessária.
+-}</span>
+
+<span class="p">(</span><span class="n">even</span> <span class="p">(</span><span class="n">fatorial</span> <span class="mi">3</span><span class="p">))</span> <span class="c1">-- true</span>
+
+<span class="c1">-- Usando `.` e `$`</span>
+<span class="n">even</span> <span class="o">.</span> <span class="n">fatorial</span> <span class="o">$</span> <span class="mi">3</span> <span class="c1">-- true</span>
+
+<span class="c1">----------------------------------------------------</span>
+<span class="c1">-- 5. Tipos</span>
+<span class="c1">----------------------------------------------------</span>
+
+<span class="c1">-- Haskell é fortemente tipado e tudo tem uma assinatura típica.</span>
+
+<span class="c1">-- Tipos Básicos:</span>
+<span class="mi">460</span> <span class="o">::</span> <span class="kt">Integer</span>
+<span class="s">"music"</span> <span class="o">::</span> <span class="kt">String</span>
+<span class="kt">True</span> <span class="o">::</span> <span class="kt">Bool</span>
+
+<span class="cm">{- Funções também tem tipos.
+   `not` recebe um booleano e retorna um booleano:
+   not :: Bool -&gt; Bool
+-}</span>
+
+<span class="cm">{- Aqui temos uma função que recebe dois argumentos
+   soma :: Integer -&gt; Integer -&gt; Integer
+-}</span>
+
+<span class="cm">{- Quando você define um valor em Haskell
+   uma boa prática de programação é escrever
+   o TIPO acima dessa mesma. Como segue:
+-}</span>
+
+<span class="n">double</span> <span class="o">::</span> <span class="kt">Integer</span> <span class="o">-&gt;</span> <span class="kt">Integer</span>
+<span class="n">double</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span>
+
+<span class="c1">----------------------------------------------------</span>
+<span class="c1">-- 6. Controle de Fluxo e IF-THEN-ELSE</span>
+<span class="c1">----------------------------------------------------</span>
+
+<span class="c1">-- Blocos IF-THEN-ELSE</span>
+<span class="kr">let</span> <span class="n">valor_alternado</span> <span class="o">=</span> <span class="kr">if</span> <span class="mi">144</span> <span class="p">`</span><span class="n">mod</span><span class="p">`</span> <span class="mi">6</span> <span class="o">==</span> <span class="mi">4</span> <span class="kr">then</span> <span class="s">"acertou"</span> <span class="kr">else</span> <span class="s">"errou"</span> <span class="c1">-- errou</span>
+
+<span class="c1">-- É legal identar quando você tem múltiplos branchs para acontecer</span>
+
+<span class="kr">let</span> <span class="n">valor_alternado</span> <span class="o">=</span> <span class="kr">if</span> <span class="mi">144</span> <span class="p">`</span><span class="n">mod</span><span class="p">`</span> <span class="mi">6</span> <span class="o">==</span> <span class="mi">4</span>
+                      <span class="kr">then</span> <span class="s">"acertou"</span>
+                      <span class="kr">else</span> <span class="s">"errou"</span>
+
+<span class="c1">-- Blocos CASE</span>
+
+<span class="cm">{- caso &lt;argumento&gt; seja :
+        &lt;ajuda&gt;  -&gt; mostra_ajuda
+        &lt;inicia&gt; -&gt; inicia_programa
+        &lt;_&gt;      -&gt; putStrLn "ExArgumentoInvalido"
+
+    Onde `_` Significa Qualquer Outra Coisa.
+-}</span>
+
+
+<span class="kr">case</span> <span class="n">args</span> <span class="kr">of</span>
+     <span class="s">"ajuda"</span>  <span class="o">-&gt;</span> <span class="n">mostra_ajuda</span>
+     <span class="s">"inicia"</span> <span class="o">-&gt;</span> <span class="n">inicia_programa</span>
+     <span class="kr">_</span>        <span class="o">-&gt;</span> <span class="n">putStrLn</span> <span class="s">"ExArgumentoInvalido"</span>
+
+<span class="cm">{- Haskell não funciona na base de loops pois ele é
+   fortemente baseado em funcões recursivas e cálculo lambda
+
+   Use `map` uma função build-in do interpretador
+   para, por exemplo, mapear uma lista:
+-}</span>
+<span class="n">map</span> <span class="p">(</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span> <span class="p">[</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span> <span class="c1">-- [2, 4, 6, 8, 10]</span>
+
+<span class="c1">-- Você pode criar um FOR-LOOP usando map</span>
+<span class="kr">let</span> <span class="n">for</span> <span class="n">array</span> <span class="n">funcao</span> <span class="o">=</span> <span class="n">map</span> <span class="n">funcao</span> <span class="n">array</span>
+<span class="n">for</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span> <span class="o">$</span> <span class="nf">\</span><span class="n">i</span> <span class="o">-&gt;</span> <span class="n">show</span> <span class="n">i</span>
+
+<span class="c1">-- Ou ainda (Pesquise sobre show em Haskell):</span>
+<span class="n">for</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="mi">5</span><span class="p">]</span> <span class="n">show</span>
+
+
+<span class="cm">{- foldl computação é feita esquerda para direita
+   foldr computação é feita  direita para esquerda
+
+   Você pode usar foldl or foldr a fim de reduzir uma lista
+   fold(l||r) &lt;funcao&gt; &lt;valor inicial&gt; &lt;lista&gt;
+-}</span>
+
+<span class="c1">-- Fold Left</span>
+<span class="n">foldl</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="n">y</span> <span class="o">-&gt;</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span> <span class="mi">4</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="c1">-- 43</span>
+
+<span class="c1">-- Pensando Recursivamente Esquerda-Direita</span>
+<span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span> <span class="c1">-- 43</span>
+
+<span class="c1">-- Fold Right</span>
+<span class="n">foldr</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="n">y</span> <span class="o">-&gt;</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span> <span class="mi">4</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="c1">-- 16</span>
+
+<span class="c1">-- Pensando Recursivamente Direita-Esquerda</span>
+<span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)))</span>
+
+<span class="c1">----------------------------------------------------</span>
+<span class="c1">-- 7. Declaração de Dados</span>
+<span class="c1">----------------------------------------------------</span>
+
+<span class="cm">{- Vamos começar definindo um tipo de
+   dado que é uma cor rgb então ela
+   tem valores para vermelho azul e verde
+   ela é composta desses 3 comprimentos
+   Vamos usar `data` e `say` que são built-in:
+
+   Haskell pede que você user letra
+   maiuscula para tipos (types) ou classes (Class)
+
+   Por favor, visite: http://www.haskell.org/haskellwiki/Type
+   E de uma olhada na fórmula genérica de declaração de dados.
+-}</span>
+
+<span class="kr">data</span> <span class="kt">Cor</span> <span class="o">=</span> <span class="kt">Vermelho</span> <span class="o">|</span> <span class="kt">Azul</span> <span class="o">|</span> <span class="kt">Verde</span>
+
+<span class="c1">-- say :: Color -&gt; String</span>
+
+<span class="kr">let</span> <span class="n">say</span> <span class="kt">Vermelho</span> <span class="o">=</span> <span class="s">"Vermelho"</span>
+<span class="kr">let</span> <span class="n">say</span> <span class="kt">Azul</span> <span class="o">=</span> <span class="s">"Azul"</span>
+<span class="kr">let</span> <span class="n">say</span> <span class="kt">Verde</span> <span class="o">=</span> <span class="s">"Verde"</span>
+
+<span class="cm">{- O seu tipo de dados por receber parâmetros também
+   vamos com um exemplo usando `data` e a Classe `Maybe`.
+-}</span>
+
+<span class="kr">data</span> <span class="kt">Maybe</span> <span class="n">a</span> <span class="o">=</span> <span class="kt">Nothing</span> <span class="o">|</span> <span class="kt">Just</span> <span class="n">a</span>
+
+<span class="c1">-- Just e Nothing são todos derivadas de Maybe</span>
+<span class="kt">Just</span> <span class="s">"hello"</span> <span class="c1">-- tipo `Maybe String`</span>
+<span class="kt">Just</span> <span class="mi">1</span>       <span class="c1">-- tipo `Maybe Int`</span>
+<span class="kt">Nothing</span>      <span class="c1">-- tipo `Maybe a` para algum `a`</span>
+
+
+<span class="c1">----------------------------------------------------</span>
+<span class="c1">-- 8. Mônadas</span>
+<span class="c1">----------------------------------------------------</span>
+
+<span class="cm">{- As mônadas permitem que o programador construa computações
+   sando os blocos de comando sequenciais, os quais, por sua vez,
+   podem ter outras sequencias de computações. Para entender melhor
+   a classe Monads você precisa ler um pouco mais sobre Classes em
+   Haskell e o polímofirmo ad hoc do Haskell.
+
+   A Classe Mônada padrão em Haskell é a seguinte:
+-}</span>
+
+<span class="kr">class</span> <span class="kt">Monad</span> <span class="n">m</span> <span class="kr">where</span>
+  <span class="p">(</span><span class="o">&gt;&gt;=</span><span class="p">)</span>  <span class="o">::</span> <span class="n">m</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">m</span> <span class="n">b</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">m</span> <span class="n">b</span>
+  <span class="p">(</span><span class="o">&gt;&gt;</span><span class="p">)</span>   <span class="o">::</span> <span class="n">m</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="n">m</span> <span class="n">b</span> <span class="o">-&gt;</span> <span class="n">m</span> <span class="n">b</span>
+  <span class="n">return</span> <span class="o">::</span> <span class="n">m</span> <span class="o">-&gt;</span> <span class="n">m</span> <span class="n">a</span>
+  <span class="n">fail</span>   <span class="o">::</span> <span class="kt">String</span> <span class="o">-&gt;</span> <span class="n">m</span> <span class="n">a</span>
+
+  <span class="c1">-- Definição completa mínima:</span>
+  <span class="c1">-- (&gt;&gt;=), return</span>
+
+  <span class="n">m</span> <span class="o">&gt;&gt;</span> <span class="n">k</span> <span class="o">=</span> <span class="n">m</span> <span class="o">&gt;&gt;=</span> <span class="nf">\</span><span class="kr">_</span> <span class="o">-&gt;</span> <span class="n">k</span>
+  <span class="n">fail</span> <span class="n">s</span> <span class="o">=</span> <span class="n">error</span> <span class="n">s</span>
+
+<span class="cm">{- Como exemplo, a função le_imprime opera com a função "&gt;=" da
+   classe mônada, a qual repassa o retorno obtido com a função
+   getLine para uma função lambda \e qualquer.
+
+   GHC-BASICS
+   Cria um arquivo chamado le_imprime.hs
+   compile: ghc --make -c -O Programa_Haskell_Principal.hs
+   execute: ./Programa_Haskell_Principal
+-}</span>
+
+<span class="n">le_imprime</span> <span class="o">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+<span class="n">le_imprime</span> <span class="o">=</span> <span class="n">getLine</span> <span class="o">&gt;&gt;=</span> <span class="nf">\</span><span class="n">e</span> <span class="o">-&gt;</span> <span class="n">putStrLn</span> <span class="n">e</span> <span class="c1">-- le_imprime = getLine &gt;&gt;= putStrLn</span>
+
+<span class="cm">{- Mônadas abrem a possibilidade de criar computações
+   no estilo imperativo dentro de um grande programa funcional
+
+   Leis das Mônadas:
+
+   1. return a &gt;&gt;= k  =  k a
+   2. m &gt;&gt;= return  =  m
+   3. m &gt;&gt;= (\x -&gt; k x &gt;&gt;= h)  =  (m &gt;&gt;= k) &gt;&gt;= h
+-}</span>
+
+<span class="c1">-- O operador &gt;&gt; é chamada então (p -&gt; q, p então q)</span>
+<span class="kr">let</span> <span class="n">m</span> <span class="o">&gt;&gt;</span> <span class="n">n</span> <span class="o">=</span> <span class="n">m</span> <span class="o">&gt;&gt;=</span> <span class="nf">\</span><span class="kr">_</span> <span class="o">-&gt;</span> <span class="n">n</span>
+
+
+<span class="c1">----------------------------------------------------</span>
+<span class="c1">-- 9. Haskell Entrada/Saída</span>
+<span class="c1">----------------------------------------------------</span>
+
+<span class="cm">{- Quando um programa Haskell é executado a função `main` é
+   chamada. E ela precisa retornar um valor do tipo IO().
+-}</span>
+
+<span class="kr">module</span> <span class="nn">Main</span> <span class="kr">where</span>
+  <span class="n">main</span> <span class="o">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+  <span class="n">main</span> <span class="o">=</span> <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">"Oi Glasgow!"</span>
+
+<span class="c1">-- Ou simplesmente:</span>
+
+<span class="n">main</span> <span class="o">=</span> <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">"Oi Glasgow!"</span>
+
+<span class="cm">{- putStrLn é do tipo String -&gt; IO()
+
+   É o jeito mais fácil de conseguir E/S se você implementar
+   o seu programa como uma função de String para String.
+
+   A função:
+      interact :: (String -&gt; String) -&gt; IO ()
+   Joga texto, roda a função nela mesma, e imprime a saída
+-}</span>
+
+<span class="kr">module</span> <span class="nn">Main</span> <span class="kr">where</span>
+  <span class="n">contadorLinhas</span> <span class="o">=</span> <span class="n">show</span> <span class="o">.</span> <span class="n">length</span> <span class="o">.</span> <span class="n">lines</span>
+  <span class="n">main</span> <span class="o">=</span> <span class="n">interact</span> <span class="n">contadorLinhas</span>
+
+<span class="c1">-- Use a notação `do` para encadear ações. Por exemplo:</span>
+
+<span class="n">diga_oi</span> <span class="o">::</span> <span class="kt">IO</span> <span class="nb">()</span>
+
+<span class="n">diga_oi</span> <span class="o">=</span> <span class="kr">do</span>
+
+  <span class="n">putStrLn</span> <span class="s">"Qual eh o seu nome?"</span>
+  <span class="n">name</span> <span class="o">&lt;-</span> <span class="n">getLine</span>
+  <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">"Oi, "</span> <span class="o">++</span> <span class="n">name</span>
+
+<span class="n">main</span> <span class="o">=</span> <span class="n">diga_oi</span>
+
+<span class="cm">{- Exercício! Escreva sua própria versão
+   onde irá ler apenas uma linhas de input.
+
+   Vamos entender melhor como `getLine` funciona?
+      getLine :: IO String
+   Pense que o valor do tipo `IO a` representando um
+   programa de computador que irá gerar um valor do tipo `a`
+   quando for ele executado.
+
+   Nós podemos guardar e reusar isso apenas apontando `&lt;-`.
+   Nós podemos também cria nossas próprias ações do tipo `IO String`
+-}</span>
+
+<span class="n">nova_acao</span> <span class="o">::</span> <span class="kt">IO</span> <span class="kt">String</span>
+
+<span class="n">nova_acao</span> <span class="o">=</span> <span class="kr">do</span>
+  <span class="n">putStrLn</span> <span class="s">"Uma string curta o bastante."</span>
+  <span class="n">entra1</span> <span class="o">&lt;-</span> <span class="n">getLine</span>
+  <span class="n">entra2</span> <span class="o">&lt;-</span> <span class="n">getLine</span>
+  <span class="c1">-- return :: String -&gt; IO String</span>
+  <span class="n">return</span> <span class="p">(</span><span class="n">entra1</span> <span class="o">++</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span> <span class="o">++</span> <span class="n">entra2</span><span class="p">)</span>
+
+<span class="cm">{- Nós podemos usar da seguinte maneira
+   como acabamos de usar `getLine`, exemplo:
+-}</span>
+
+<span class="n">main''</span> <span class="o">=</span> <span class="kr">do</span>
+  <span class="n">putStrLn</span> <span class="s">"String A"</span>
+  <span class="n">result</span> <span class="o">&lt;-</span> <span class="n">action</span>
+  <span class="n">putStrLn</span> <span class="n">result</span>
+  <span class="n">putStrLn</span> <span class="s">"String B"</span>
+
+<span class="c1">----------------------------------------------------</span>
+<span class="c1">-- 9. O Haskell REPL (Read Eval Print Loop)</span>
+<span class="c1">----------------------------------------------------</span>
+
+<span class="cm">{- Digite dhci no seu terminal
+   para começar o interpretador
+   lembre-se que para definir
+   funções e variáveis em haskell
+   pelo interpretador você precisar
+   iniciar com `let`
+-}</span>
+
+<span class="kt">Prelude</span><span class="o">&gt;</span> <span class="kr">let</span> <span class="n">foo</span> <span class="o">=</span> <span class="mf">1.4</span>
+
+<span class="c1">-- Você pode ver o tipo de algo usando `:t`:</span>
+
+<span class="kt">Prelude</span><span class="o">&gt;</span> <span class="o">:</span><span class="n">t</span> <span class="n">foo</span>
+<span class="n">foo</span> <span class="o">::</span> <span class="kt">Double</span>
+</code></pre></div>
+<h1>Extra</h1>
+
+<p>Compilador e Interpretador Haskell</p>
+
+<ul>
+<li><a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/index.html">GHC</a></li>
+<li><a href="http://www.haskell.org/haskellwiki/GHC">GHC/GHCi</a></li>
+<li><a href="http://www.haskell.org/haskellwiki/Haskell_in_5_steps">Haskell em 5 Passos !!!</a></li>
+</ul>
+
+<p>Instale Haskell <a href="http://www.haskell.org/platform/">Aqui!</a>.</p>
+
+<p>Aplicações Haskell Muito Interessantes:</p>
+
+<ul>
+<li><a href="http://www.haskell.org/haskellwiki/Applications_and_libraries/Music_and_sound">Música e Som</a></li>
+<li><a href="https://github.com/kaoskorobase/hsc3-server">Haskell SuperCollider Servidor</a></li>
+<li><a href="http://hackage.haskell.org/package/hsc3">Haskell SuperCollider Cliente</a></li>
+<li><a href="http://www.haskell.org/haskellwiki/Applications_and_libraries/Mathematics">Física e Matemática</a></li>
+<li><a href="http://www.haskell.org/haskellwiki/Applications_and_libraries/Games">Jogos</a></li>
+<li><a href="http://www.haskell.org/haskellwiki/Applications_and_libraries/Bioinformatics">Bio Informática</a></li>
+<li><a href="http://www.haskell.org/haskellwiki/Libraries_and_tools">Muitos Outras Aplicações</a></li>
+</ul>
+
+<p>Comunidade Haskell
+* <a href="http://www.haskell.org/haskellwiki/Music_of_monads">Musica das Mônadas</a>
+* <a href="https://en.wikibooks.org/wiki/Haskell/Understanding_monads">Entendendo Mônadas</a></p>
+
+<p>Tutoriais:</p>
+
+<ul>
+<li><a href="http://www.haskell.org/ghc/docs/6.12.2/html/libraries/containers-0.3.0.0/Data-Map.html">Mapeadores</a></li>
+<li><a href="http://haskell.tailorfontela.com.br/chapters">Aprenda Haskell!</a></li>
+<li><a href="http://www.haskell.org/haskellwiki/Lambda_calculus">Fundação Teórica da Linguagem Haskell</a></li>
+<li><a href="http://www.haskell.org/haskellwiki/Maybe">Classe Maybe</a></li>
+<li><a href="http://www.zvon.org/other/haskell/">Zvon Referência Haskell</a></li>
+</ul>
+
+<p>Obtenha Também Haskell Wiki Book <a href="https://en.wikibooks.org/wiki/Haskell">Aqui!</a></p>
+
+<p>Leia Sobre As Mônadas <a href="http://www.haskell.org/haskellwiki/Monads">Aqui!</a></p>
+
+<p>Livro: Haskell Uma Abordagem Prática - Claudio Cesar de Sá e Márcio Ferreira da Silva</p>
+
+    <hr>
+    <p>Sugestões ou correções? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Abra uma issue</a> no repositório do Github, ou faça um <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/pt-br/haskell-pt.html.markdown">pull request</a> você mesmo!
+    </p>
+    <p class="contributed">
+    Originalmente contribuído por Adit Bhargava e atualizado por <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/pt-br/haskell-pt.html.markdown">0 colaborador(es)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://adit.io">Adit Bhargava</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="http://www.inf.ufsc.br/~tonussi/">Lucas Tonussi</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>
