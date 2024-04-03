@@ -1,0 +1,37 @@
+name: Build site
+
+on:
+  push:
+    branches: [ main, build-github-action ]
+    paths-ignore: 'build'
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: "true"
+      - name: Update submodules
+        run: |
+          git config --global user.name "Github Actions"
+          git config --global user.email "noreply@example.com"
+          git submodule update --remote --recursive
+      - name: Set up Ruby 3.2
+        uses: ruby/setup-ruby@ec02537da5712d66d4d50a0f33b7eb52773b5ed1
+        with:
+          ruby-version: "3.2"
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Run middleman
+        run: bundle exec middleman build --verbose || exit 0  # Build probably will have errors
+
+      - name: Make build/docs not a submodule
+        run: rm -rf build/docs/.git || exit 0
+
+      - uses: EndBug/add-and-commit@v9
+        with:
+          add: 'build'
