@@ -1,6 +1,6 @@
 ## LearnXInYMinutes.com
 
-This is the [Middleman](http://middlemanapp.com) site behind the magic.
+This is the [Middleman](https://middlemanapp.com) site behind the magic.
 You'll want to check out the [learnxinyminutes-docs](https://github.com/adambard/learnxinyminutes-docs)
 repo as `source/docs`.
 

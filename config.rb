@@ -1,14 +1,7 @@
+require 'open3'
+
 activate :directory_indexes
-#activate :syntax
-require 'pygments'
-
 activate :syntax
-
-module ::Middleman::Syntax::Highlighter
-  def self.highlight(code, language=nil, opts={})
-    Pygments.highlight(code, lexer: language)
-  end
-end
 
 set :markdown_engine, :redcarpet
 set :markdown, :fenced_code_blocks => true, :smartypants => true, :tables => true
@@ -17,9 +10,7 @@ set :css_dir, 'css'
 set :js_dir, 'js'
 set :images_dir, 'img'
 
-with_layout :doc do
-  page "/docs/*"
-end
+page '/docs/*', layout: 'doc'
 
 helpers do
   def twitter_share_url(url, doc)
@@ -104,9 +95,65 @@ end
 # end
 
 IGNORED = [
-  # "docs/ko-kr/lua-kr.html.markdown"
+  "js/script",
+  ".htaccess",
+  "404.html",
+  "crossdomain.xml",
+  "favicon.ico",
+  "humans.txt",
+  "index.html",
+  "LICENSE",
+  "LICENSE.txt",
+  "robots.txt",
+  "js/script.js",
+  "css/dark.css",
+  "css/index.css",
+  "css/light.css",
+  "css/main.css",
+  "css/normalize.css",
+  "css/screen.css",
+  "docs/Gemfile",
+  "docs/Gemfile.lock",
+  "docs/hre.csv",
+  "docs/pets.csv",
+  "docs/Rakefile",
+  "docs/README.markdown",
+  "docs/LICENSE.txt",
+  "docs/images/cairo/build.png",
+  "docs/images/cairo/connect.png",
+  "docs/images/cairo/connect2.png",
+  "docs/images/cairo/declare.png",
+  "docs/images/cairo/deploy.png",
+  "docs/images/solidity/",
+  "docs/images/solidity/copy-address.png",
+  "docs/images/solidity/metamask-kovan.png",
+  "docs/images/solidity/remix-add-token.png",
+  "docs/images/solidity/remix-choose-file.png",
+  "docs/images/solidity/remix-compile.png",
+  "docs/images/solidity/remix-deploy.png",
+  "docs/images/solidity/remix-interact.png",
+  "docs/images/solidity/remix-solidity.png",
+  "docs/images/solidity/remix-testnet.png",
+  "docs/images/solidity/send-link.png",
+  "docs/README",
+  "docs/CONTRIBUTING",
+  "docs/tests/yaml.rb",
+  "docs/tests/encoding.rb",
+  "docs/tests/yaml",
+  "docs/tests/encoding",
+  "docs/file.erb",
+  "docs/file",
+  "docs/.github/PULL_REQUEST_TEMPLATE.md",
+  "docs/.github/ISSUE_TEMPLATE.md",
+  "docs/.github/PULL_REQUEST_TEMPLATE",
+  "docs/.github/ISSUE_TEMPLATE",
+  "docs/.github/CODEOWNERS",
+  "docs/.gitattributes",
+  "docs/.gitignore",
+  "docs/.mailmap",
+  "docs/.travis.yml",
+  "docs/tmp.txt",
 ]
-
 class Article
   attr_accessor :category, :name, :contributors, :contributor_count, :filename, :rawcode, :url, :language, :translations, :translators
 
@@ -120,9 +167,9 @@ class Article
     set_contributor_count(r.path)
     set_rawcode(r)
 
-    @language = r.metadata[:page].fetch("lang", "en")
+    @language = r.metadata[:page].fetch(:lang, "en")
     @translations = []
-    @translators = r.metadata[:page].fetch("translators", [])
+    @translators = r.metadata[:page].fetch(:translators, [])
 
     @url = r.url
   end
@@ -130,23 +177,24 @@ class Article
 
   def set_name_and_category(meta)
     begin
-      @name = meta.fetch("name", nil)
+      @name = meta.fetch(:name, nil)
 
       if @name.nil?
-        @name = meta.fetch("language", nil)
+        @name = meta.fetch(:language, nil)
       end
 
-      @category = meta.fetch("category", nil)
+      @category = meta.fetch(:category, nil)
       if @category.nil? && @name
         @category = "language"
       else
-        @category = meta.fetch("category", "meta")
+        @category = meta.fetch(:category, "meta")
       end
 
       @name_key = case @category
-        when "language" then "language"
-        when "tool" then "tool"
-        else "name"
+        when "language" then :language
+        when "framework" then :framework
+        when "tool" then :tool
+        else :name
       end
 
       @name = meta.fetch(@name_key, "")
@@ -160,31 +208,39 @@ class Article
 
   def set_contributors(meta)
     # Get a list of the authors
-    @contributors = meta.fetch("contributors", nil)
+    @contributors = meta.fetch(:contributors, nil)
     if @contributors.nil?
-      @contributors = [[meta["author"], meta["author_url"]]]
+      @contributors = [[meta[:author], meta[:author_url]]]
     end
   end
 
   def set_contributor_count(path)
-    # Count other contributors with git blame
-    system("cd source/docs && git blame #{path.split('/')[1]}.markdown >> tmp.txt")
-    File::open('source/docs/tmp.txt'){|f|
-      names = f.readlines.map{ |line|
+    dir, filename = File.split(path)
+    # remove "docs/"
+    dir = dir.split(File::SEPARATOR)[1..-1]
+    path = File.join(*dir, filename + '.markdown')
+    # Returns no output but status code 0
+    # stdout, stderr, status = Open3.capture3('git', 'shortlog', '-s', '--', path, chdir: 'source/docs')
+    stdout, stderr, status = Open3.capture3('git', 'blame', '--', path, chdir: 'source/docs')
+    if status.success?
+      names = stdout.lines.map{ |line|
+        # TODO: doesn't handle spaces in names
         name = line.split(' ')[1] || ''
         name[1..name.length]
       }
 
       cnt = Set::new(names).length + @contributors.length - 2
       @contributor_count = (cnt > 0 ? cnt : 0)
-    }
-    system("rm source/docs/tmp.txt")
+
+    else
+      puts "git blame error: #{stderr}"
+    end
   end
 
   def set_rawcode(r)
     meta = r.metadata[:page]
 
-    @filename = meta.fetch("filename", nil)
+    @filename = meta.fetch(:filename, nil)
     if @filename.nil?
       @rawcode = nil
       return
@@ -219,7 +275,7 @@ class Article
 end
 
 class ArticleManager
-  attr_accessor :articles, :articles_by_name, :articles_by_category_en
+  attr_accessor :articles, :articles_by_name, :articles_by_category_en, :categories_en
   def initialize(sitemap)
     @articles = sitemap.resources.select{|r|
       not IGNORED.include?(r.path)
@@ -233,6 +289,8 @@ class ArticleManager
 
     @articles_by_category_en = @articles_en.group_by{|r| r.category}
     @articles_by_name_en = @articles_en.group_by(&:name)
+
+    @categories_en = ["Algorithms & Data Structures", "language", "tool"] | articles_by_category_en.keys
 
     #@articles.each{|a| puts a.url + ": " + a.language + " (" + a.category + ")"}
     @articles.select{|a| a.language != "en" and not a.name.nil?}.each{|a|
@@ -250,17 +308,19 @@ class ArticleManager
   def get_category_display_name(c)
     case c
       when "language" then "Languages"
+      when "framework" then "Frameworks and Libraries"
       when "tool" then "Tools"
       else c
     end
   end
 
   def get_article(page)
-    name = page.fetch("name",
-      page.fetch("tool",
-        page.fetch("language", nil)))
+    name = page.fetch(:name,
+      page.fetch(:tool,
+        page.fetch(:framework,
+          page.fetch(:language, nil))))
 
-    language = page.fetch("lang", "en")
+    language = page.fetch(:lang, "en")
 
     @articles_by_name.fetch(name).select{|a|
       a.language == language
@@ -294,8 +354,8 @@ class I18N
     @articles = articles
   end
 
-  def t(data, key)
-    language = @articles.get(data.page).language.sub('-', '_')
+  def t(data, page, key)
+    language = @articles.get(page).language.sub('-', '_')
     translations = data.i18n[language] || data.i18n['default']
     translations[key]
   end
@@ -303,13 +363,12 @@ end
 
 # Count contributors
 ready do
-
   articles = ArticleManager.new(sitemap)
   set :articles, articles
   set :i18n, I18N.new(articles)
-
-  articles.articles.select{|a| not a.filename.nil?}.each{|a|
-    proxy "/docs/files/#{a.filename}", "/docs/file.html", :locals => {:rawcode => a.rawcode}, :ignore => true, :layout => false
-  }
+  #
+  # articles.articles.select{|a| not a.filename.nil?}.each{|a|
+  #   proxy "/docs/files/#{a.filename}", "/docs/file.html", :locals => {:rawcode => a.rawcode}, :ignore => true, :layout => false
+  # }
 end
 
