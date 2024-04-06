@@ -99,7 +99,6 @@ ZFS不但有把它和传统存储系统分开来的特有术语，也有很多�
 建议使用阵列卡。让ZFS直接管理磁盘。</p>
 
 <p>VDEV的类型
-* stripe (条带。单个磁盘，没有冗余)
 * mirror (镜像。支持n-way镜像)
 * raidz
     * raidz1 (一个奇偶校验磁盘, 类似于RAID 5)
@@ -131,7 +130,7 @@ ZFS不但有把它和传统存储系统分开来的特有术语，也有很多�
 
 <h3>存储池</h3>
 
-<p>Actions: （存储池操作） 
+<p>Actions: （存储池操作）
 * List   （列举）
 * Status （查看状态）
 * Destroy （删除）
@@ -139,7 +138,7 @@ ZFS不但有把它和传统存储系统分开来的特有术语，也有很多�
 
 <p>List zpools （列举存储池（也叫zpool））</p>
 <div class="highlight"><pre class="highlight shell"><code><span class="c"># 创建一个raidz类型的存储池(名称为bucket）</span>
-<span class="nv">$ </span>zpool create bucket raidz1 gpt/zfs0 gpt/zfs1 gpt/zfs2
+<span class="nv">$ </span>zpool create zroot raidz1 gpt/zfs0 gpt/zfs1 gpt/zfs2
 
 <span class="c"># 列出所有存储池</span>
 <span class="nv">$ </span>zpool list
@@ -213,22 +212,22 @@ zroot  comment   Storage of mah stuff  <span class="nb">local</span>
 
 <p>Create datasets</p>
 <div class="highlight"><pre class="highlight shell"><code><span class="c"># 创建数据集</span>
-<span class="nv">$ </span>zfs create tank/root/data
+<span class="nv">$ </span>zfs create zroot/root/data
 <span class="nv">$ </span>mount | <span class="nb">grep </span>data
-tank/root/data on /data <span class="o">(</span>zfs, <span class="nb">local</span>, nfsv4acls<span class="o">)</span>
+zroot/root/data on /data <span class="o">(</span>zfs, <span class="nb">local</span>, nfsv4acls<span class="o">)</span>
 
 <span class="c"># 创建子数据集</span>
-<span class="nv">$ </span>zfs create tank/root/data/stuff
+<span class="nv">$ </span>zfs create zroot/root/data/stuff
 <span class="nv">$ </span>mount | <span class="nb">grep </span>data
-tank/root/data on /data <span class="o">(</span>zfs, <span class="nb">local</span>, nfsv4acls<span class="o">)</span>
-tank/root/data/stuff on /data/stuff <span class="o">(</span>zfs, <span class="nb">local</span>, nfsv4acls<span class="o">)</span>
+zroot/root/data on /data <span class="o">(</span>zfs, <span class="nb">local</span>, nfsv4acls<span class="o">)</span>
+zroot/root/data/stuff on /data/stuff <span class="o">(</span>zfs, <span class="nb">local</span>, nfsv4acls<span class="o">)</span>
 
 
 <span class="c"># 创建卷</span>
 <span class="nv">$ </span>zfs create <span class="nt">-V</span> zroot/win_vm
 <span class="nv">$ </span>zfs list zroot/win_vm
 NAME                 USED  AVAIL  REFER  MOUNTPOINT
-tank/win_vm         4.13G  17.9G    64K  -
+zroot/win_vm         4.13G  17.9G    64K  -
 </code></pre></div>
 <p>List datasets （列举数据集）</p>
 <div class="highlight"><pre class="highlight shell"><code><span class="c"># 列出所有数据集</span>
@@ -260,22 +259,22 @@ zroot/var/log@daily-2015-10-15                                                  
 zroot/var/tmp@daily-2015-10-15                                                          0      -   152K  -
 </code></pre></div>
 <p>Rename datasets （重命名数据集）</p>
-<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>zfs rename tank/root/home tank/root/old_home
-<span class="nv">$ </span>zfs rename tank/root/new_home tank/root/home
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>zfs rename zroot/root/home zroot/root/old_home
+<span class="nv">$ </span>zfs rename zroot/root/new_home zroot/root/home
 </code></pre></div>
 <p>Delete dataset （删除数据集）</p>
 <div class="highlight"><pre class="highlight shell"><code><span class="c"># 数据集如果有快照则无法删除</span>
-zfs destroy tank/root/home
+<span class="nv">$ </span>zfs destroy zroot/root/home
 </code></pre></div>
 <p>Get / set properties of a dataset （获取/设置数据集属性）</p>
 <div class="highlight"><pre class="highlight shell"><code><span class="c"># 获取数据集全部属性</span>
-<span class="nv">$ </span>zfs get all  zroot/usr/home                                                                                              │157 <span class="c"># Create Volume</span>
-NAME            PROPERTY              VALUE                  SOURCE                                                                          │158 <span class="nv">$ </span>zfs create <span class="nt">-V</span> zroot/win_vm
-zroot/home      <span class="nb">type                  </span>filesystem             -                                                                               │159 <span class="nv">$ </span>zfs list zroot/win_vm
-zroot/home      creation              Mon Oct 20 14:44 2014  -                                                                               │160 NAME                 USED  AVAIL  REFER  MOUNTPOINT
-zroot/home      used                  11.9G                  -                                                                               │161 tank/win_vm         4.13G  17.9G    64K  -
-zroot/home      available             94.1G                  -                                                                               │162 <span class="sb">```</span>
-zroot/home      referenced            11.9G                  -                                                                               │163
+<span class="nv">$ </span>zfs get all zroot/usr/home
+NAME            PROPERTY              VALUE                  SOURCE
+zroot/home      <span class="nb">type                  </span>filesystem             -
+zroot/home      creation              Mon Oct 20 14:44 2014  -
+zroot/home      used                  11.9G                  -
+zroot/home      available             94.1G                  -
+zroot/home      referenced            11.9G                  -
 zroot/home      mounted               <span class="nb">yes</span>                    -
 ...
 
@@ -320,31 +319,31 @@ zroot/var                                                           none    none
 
 <p>Create snapshots （创建快照）</p>
 <div class="highlight"><pre class="highlight shell"><code><span class="c"># 为单一数据集创建快照</span>
-zfs snapshot tank/home/sarlalian@now
+zfs snapshot zroot/home/sarlalian@now
 
 <span class="c"># 为数据集及其子集创建快照</span>
-<span class="nv">$ </span>zfs snapshot <span class="nt">-r</span> tank/home@now
+<span class="nv">$ </span>zfs snapshot <span class="nt">-r</span> zroot/home@now
 <span class="nv">$ </span>zfs list <span class="nt">-t</span> snapshot
 NAME                       USED  AVAIL  REFER  MOUNTPOINT
-tank/home@now                 0      -    26K  -
-tank/home/sarlalian@now       0      -   259M  -
-tank/home/alice@now           0      -   156M  -
-tank/home/bob@now             0      -   156M  -
+zroot/home@now                 0      -    26K  -
+zroot/home/sarlalian@now       0      -   259M  -
+zroot/home/alice@now           0      -   156M  -
+zroot/home/bob@now             0      -   156M  -
 ...
 </code></pre></div>
 <p>Destroy snapshots （删除快照）</p>
 <div class="highlight"><pre class="highlight shell"><code><span class="c"># 如何删除快照</span>
-<span class="nv">$ </span>zfs destroy tank/home/sarlalian@now
+<span class="nv">$ </span>zfs destroy zroot/home/sarlalian@now
 
 <span class="c"># 删除某一数据集及其子集的快照</span>
-<span class="nv">$ </span>zfs destroy <span class="nt">-r</span> tank/home/sarlalian@now
+<span class="nv">$ </span>zfs destroy <span class="nt">-r</span> zroot/home/sarlalian@now
 </code></pre></div>
 <p>Renaming Snapshots （重命名）</p>
 <div class="highlight"><pre class="highlight shell"><code><span class="c"># 重命名快照</span>
-<span class="nv">$ </span>zfs rename tank/home/sarlalian@now tank/home/sarlalian@today
-<span class="nv">$ </span>zfs rename tank/home/sarlalian@now today
+<span class="nv">$ </span>zfs rename zroot/home/sarlalian@now zroot/home/sarlalian@today
+<span class="nv">$ </span>zfs rename zroot/home/sarlalian@now today
 
-<span class="c"># zfs rename -r tank/home@now @yesterday</span>
+<span class="nv">$ </span>zfs rename <span class="nt">-r</span> zroot/home@now @yesterday
 </code></pre></div>
 <p>Accessing snapshots  （访问快照）</p>
 <div class="highlight"><pre class="highlight shell"><code><span class="c"># cd进入一个快照目录</span>
@@ -352,23 +351,23 @@ tank/home/bob@now             0      -   156M  -
 </code></pre></div>
 <p>Sending and Receiving</p>
 <div class="highlight"><pre class="highlight shell"><code><span class="c"># 备份快照到一个文件</span>
-<span class="nv">$ </span>zfs send tank/home/sarlalian@now | <span class="nb">gzip</span> <span class="o">&gt;</span> backup_file.gz
+<span class="nv">$ </span>zfs send zroot/home/sarlalian@now | <span class="nb">gzip</span> <span class="o">&gt;</span> backup_file.gz
 
 <span class="c"># 发送快照到另一个数据集</span>
-<span class="nv">$ </span>zfs send tank/home/sarlalian@now | zfs recv backups/home/sarlalian
+<span class="nv">$ </span>zfs send zroot/home/sarlalian@now | zfs recv backups/home/sarlalian
 
 <span class="c"># 发送快照到一个远程主机</span>
-<span class="nv">$ </span>zfs send tank/home/sarlalian@now | ssh root@backup_server <span class="s1">'zfs recv tank/home/sarlalian'</span>
+<span class="nv">$ </span>zfs send zroot/home/sarlalian@now | ssh root@backup_server <span class="s1">'zfs recv zroot/home/sarlalian'</span>
 
 <span class="c"># 发送完整数据集及其快照到一个新主机</span>
-<span class="nv">$ </span>zfs send <span class="nt">-v</span> <span class="nt">-R</span> tank/home@now | ssh root@backup_server <span class="s1">'zfs recv tank/home'</span>
+<span class="nv">$ </span>zfs send <span class="nt">-v</span> <span class="nt">-R</span> zroot/home@now | ssh root@backup_server <span class="s1">'zfs recv zroot/home'</span>
 </code></pre></div>
 <p>Cloneing Snapshots  （克隆快照）</p>
 <div class="highlight"><pre class="highlight shell"><code><span class="c"># 克隆一个快照</span>
-<span class="nv">$ </span>zfs clone tank/home/sarlalian@now tank/home/sarlalian_new
+<span class="nv">$ </span>zfs clone zroot/home/sarlalian@now zroot/home/sarlalian_new
 
 <span class="c"># 提升克隆，让它不再依赖原始快照</span>
-<span class="nv">$ </span>zfs promote tank/home/sarlalian_new
+<span class="nv">$ </span>zfs promote zroot/home/sarlalian_new
 </code></pre></div>
 <h3>汇总</h3>
 
@@ -425,7 +424,7 @@ jail <span class="nt">-c</span> staging
     <p>有建议？或者发现什么错误？在Github上<a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">开一个issue</a>，或者发起<a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/zh-cn/zfs-cn.html.markdown">pull request</a>！
     </p>
     <p class="contributed">
-    原著sarlalian，并由<a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/zh-cn/zfs-cn.html.markdown">1个好心人</a>修改。
+    原著sarlalian，并由<a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/zh-cn/zfs-cn.html.markdown">2个好心人</a>修改。
     </p>
 
     <footer>
