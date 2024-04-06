@@ -1,0 +1,327 @@
+<!DOCTYPE html lang="uk-ua" xml:lang="uk-ua" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="uk-ua">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn WebAssembly in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/uk-ua/wasm-ua/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fuk-ua%2Fwasm-ua%2F&text=Learn+X+in+Y+minutes%2C+where+X%3DWebAssembly">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=WebAssembly</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/learnwasm-ua.wast">learnwasm-ua.wast</a>
+    </p>
+  <div id="doc">
+    <div class="highlight"><pre class="highlight plaintext"><code>;; learnwasm-ua.wast
+
+(module
+  ;; У WebAssembly весь код знаходиться в модулях. Будь-яка операція
+  ;; може бути записана за допомогою s-виразу. Також існує синтаксис "стек машини",
+  ;; втім, він не сумісний з проміжним бінарним представленням коду.
+
+  ;; Формат бінарного проміжного представлення майже повністю сумісний 
+  ;; з текстовим форматом WebAssembly.
+  ;; Деякі відмінності:
+  ;; local_set -&gt; local.set
+  ;; local_get -&gt; local.get
+
+  ;; Код розміщується у функціях
+
+  ;; Типи даних
+  (func $data_types
+    ;; WebAssembly має чотири типи даних:
+    ;; i32 - ціле число, 32 біти
+    ;; i64 - ціле число, 64 біти (не підтримується у JavaScript)
+    ;; f32 - число з плаваючою комою, 32 біти
+    ;; f64 - число з плаваючою комою, 64 біти
+
+    ;; Створити локальну змінну можна за допомогою ключового слова "local".
+    ;; Змінні потрібно оголошувати на початку функції.
+
+    (local $int_32 i32)
+    (local $int_64 i64)
+    (local $float_32 f32)
+    (local $float_64 f64)
+
+    ;; Змінні, оголошені вище, ще не ініціалізовані, себто, не мають значення.
+    ;; Давайте присвоїмо їм значення за допомогою &lt;тип даних&gt;.const:
+
+    (local.set $int_32 (i32.const 16))
+    (local.set $int_32 (i64.const 128))
+    (local.set $float_32 (f32.const 3.14))
+    (local.set $float_64 (f64.const 1.28))
+  )
+
+  ;; Базові операції
+  (func $basic_operations
+
+    ;; Нагадаємо, у WebAssembly будь-що є s-виразом, включно
+    ;; з математичними виразами або зчитуванням значень змінних
+
+    (local $add_result i32)
+    (local $mult_result f64)
+
+    (local.set $add_result (i32.add (i32.const 2) (i32.const 4)))
+    ;; тепер add_result дорівнює 6!
+
+    ;; Для кожної операції потрібно використовувати правильний тип:
+    ;; (local.set $mult_result (f32.mul (f32.const 2.0) (f32.const 4.0))) ;; Ніт! mult_result має тип f64!
+    (local.set $mult_result (f64.mul (f64.const 2.0) (f64.const 4.0))) ;; Ніт! mult_result має тип f64!
+
+    ;; У WebAssembly є вбудовані функції накшталт математики та побітових операцій.
+    ;; Варто зазначити, що тут відсутні вбудовані тригонометричні функції.
+    ;; Тож нам потрібно:
+    ;; - написати їх самостійно (не найкраща ідея)
+    ;; - звідкись їх імпортувати (як саме - побачимо згодом)
+  )
+
+  ;; Функції
+  ;; Параметри вказуються ключовим словом `param`, значення, що повертається - `result`
+  ;; Поточне значення стеку і є значенням функції, що повертається
+
+  ;; Ми можемо викликати інші функції за допомогою `call`
+
+  (func $get_16 (result i32)
+    (i32.const 16)
+  )
+
+  (func $add (param $param0 i32) (param $param1 i32) (result i32)
+    (i32.add
+      (local.get $param0)
+      (local.get $param1)
+    )
+  )
+
+  (func $double_16 (result i32)
+    (i32.mul
+      (i32.const 2)
+      (call $get_16))
+  )
+
+  ;; Досі ми не могли що-небудь вивести на консоль і не мали доступу
+  ;; до високорівневої математики (степеневі функції, обрахунок експоненти або тригонометрія).
+  ;; Більше того, ми навіть не могли викликати WASM функції у Javascript!
+  ;; Виклик цих функцій у WebAssembly залежить від того,
+  ;; де ми знаходимось - чи це Node.js, чи середовище браузера.
+
+  ;; Якщо ми у Node.js, то потрібно виконати два кроки. По-перше, ми маємо сконвертувати
+  ;; текстове представлення WASM у справжній код webassembly.
+  ;; Наприклад, ось так (Binaryen):
+
+  ;; wasm-as learn-wasm.wast -o learn-wasm.wasm
+
+  ;; Давай також застосуємо оптимізації:
+
+  ;; wasm-opt learn-wasm.wasm -o learn-wasm.opt.wasm -O3 --rse
+
+  ;; Тепер наш скомпільований WebAssembly можна завантажити у Node.js:
+  ;; const fs = require('fs')
+  ;; const instantiate = async function (inFilePath, _importObject) {
+  ;;  var importObject = {
+  ;;     console: {
+  ;;       log: (x) =&gt; console.log(x),
+  ;;     },
+  ;;     math: {
+  ;;       cos: (x) =&gt; Math.cos(x),
+  ;;     }
+  ;;   }
+  ;;  importObject = Object.assign(importObject, _importObject)
+  ;;
+  ;;  var buffer = fs.readFileSync(inFilePath)
+  ;;  var module = await WebAssembly.compile(buffer)
+  ;;  var instance = await WebAssembly.instantiate(module, importObject)
+  ;;  return instance.exports
+  ;; }
+  ;;
+  ;; const main = function () {
+  ;;   var wasmExports = await instantiate('learn-wasm.wasm')
+  ;;   wasmExports.print_args(1, 0)
+  ;; }
+
+  ;; Цей код зчитує функції з importObject
+  ;; (вказано у асинхронній JavaScript функції instantiate), а потім експортує функцію
+  ;; "print_args", яку ми викликаємо у Node.js
+
+  (import "console" "log" (func $print_i32 (param i32)))
+  (import "math" "cos" (func $cos (param f64) (result f64)))
+
+  (func $print_args (param $arg0 i32) (param $arg1 i32)
+    (call $print_i32 (local.get $arg0))
+    (call $print_i32 (local.get $arg1))
+  )
+  (export "print_args" (func $print_args))
+
+  ;; Завантаження даних з пам'яті WebAssembly.
+  ;; Наприклад, ми хочемо порахувати cos для елементів Javascript масиву.
+  ;; Нам потрібно отримати доступ до масиву і можливість ітерувати по ньому.
+  ;; У прикладі нижче ми змінимо існуючий масив.
+  ;; f64.load і f64.store приймають адресу числа у пам'яті *у байтах*.
+  ;; Для того, щоб отримати доступ до 3-го елементу масиву, ми маємо передати щось
+  ;; накшталт (i32.mul (i32.const 8) (i32.const 2)) у функцію f64.store.
+
+  ;; У JavaScript ми викличемо `apply_cos64` таким чином
+  ;; (використаємо функцію instantiate з попереднього прикладу):
+  ;;
+  ;; const main = function () {
+  ;;   var wasm = await instantiate('learn-wasm.wasm')
+  ;;   var n = 100
+  ;;   const memory = new Float64Array(wasm.memory.buffer, 0, n)
+  ;;   for (var i=0; i&lt;n; i++) {
+  ;;     memory[i] = i;
+  ;;   }
+  ;;   wasm.apply_cos64(n)
+  ;; }
+  ;;
+  ;; Ця функція не буде працювати, якщо ми виділимо пам'ять для (створимо) Float32Array у JavaScript.
+
+  (memory (export "memory") 100)
+
+  (func $apply_cos64 (param $array_length i32)
+    ;; визначаємо змінну циклу або лічильник
+    (local $idx i32)
+    ;; визначаємо змінну для доступу до пам'яті
+    (local $idx_bytes i32)
+    ;; константа - кількість байтів у числі типу f64.
+    (local $bytes_per_double i32)
+
+    ;; визначаємо змінну, яка зберігатиме значення з пам'яті
+    (local $temp_f64 f64)
+
+    (local.set $idx (i32.const 0))
+    (local.set $idx_bytes (i32.const 0)) ;; не обов'язково
+    (local.set $bytes_per_double (i32.const 8))
+
+    (block
+      (loop
+        ;; записуємо у idx_bytes необхідне зміщення в пам'яті - для поточного числа.
+        (local.set $idx_bytes (i32.mul (local.get $idx) (local.get $bytes_per_double)))
+
+        ;; отримуємо число з пам'яті (за зміщенням):
+        (local.set $temp_f64 (f64.load (local.get $idx_bytes)))
+
+        ;; рахуємо cos:
+        (local.set $temp_64 (call $cos (local.get $temp_64)))
+
+        ;; тепер зберігаємо результат обчислень у пам'ять:
+        (f64.store
+          (local.get $idx_bytes)
+          (local.get $temp_64))
+
+        ;; або робимо все за один крок (альтернативний код)
+        (f64.store
+          (local.get $idx_bytes)
+          (call $cos
+            (f64.load
+              (local.get $idx_bytes))))
+
+        ;; збільшуємо лічильник на одиницю (інкремент)
+        (local.set $idx (i32.add (local.get $idx) (i32.const 1)))
+
+        ;; якщо лічильник дорівнює довжині масиву, то завершуємо цикл
+        (br_if 1 (i32.eq (local.get $idx) (local.get $array_length)))
+        (br 0)
+      )
+    )
+  )
+  (export "apply_cos64" (func $apply_cos64))
+)
+</code></pre></div>
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/uk-ua/wasm-ua.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Dean Shaff, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/uk-ua/wasm-ua.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://dean-shaff.github.io">Dean Shaff</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/ogroleg">Oleh Hromiak</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

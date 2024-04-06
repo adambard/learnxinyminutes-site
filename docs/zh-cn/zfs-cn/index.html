@@ -1,0 +1,448 @@
+<!DOCTYPE html lang="zh-cn" xml:lang="zh-cn" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="zh-cn">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn X in Y Minutes: Scenic Programming Language Tours</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/zh-cn/zfs-cn/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fzh-cn%2Fzfs-cn%2F&text=Y%E5%88%86%E9%92%9F%E9%80%9F%E6%88%90X%2C+%E5%85%B6%E4%B8%AD+X%3Dzfs">
+        分享此页
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">选择主题：</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">亮</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">暗</button>
+  </div>
+  <h1><a href="/">Y分钟速成X</a></h1>
+  <h2>其中 X=zfs</h2>
+    <p class="filelink">
+    源代码下载：
+    <a href="/docs/files/LearnZfs-cn.txt">LearnZfs-cn.txt</a>
+    </p>
+  <div id="doc">
+    <p><a href="http://open-zfs.org/wiki/Main_Page">ZFS</a>
+是重新思考与储存相关技术的结果，它把传统的文件系统和卷管理器集成到一个工具当中.
+ZFS不但有把它和传统存储系统分开来的特有术语，也有很多聚焦于可用性的功能。</p>
+
+<h2>ZFS概念</h2>
+
+<h3>虚拟设备（Virtual Devices，VDEV）</h3>
+
+<p>对于操作系统来说，VDEV和传统的RAID阵列卡所呈现的raid设备类似。VDEV有几种不同的类型，每种类型
+都有自己的优势，包括冗余和速度。一般来说，VDEV的可靠性和安全性比阵列卡要好。因此使用ZFS时不
+建议使用阵列卡。让ZFS直接管理磁盘。</p>
+
+<p>VDEV的类型
+* stripe (条带。单个磁盘，没有冗余)
+* mirror (镜像。支持n-way镜像)
+* raidz
+    * raidz1 (一个奇偶校验磁盘, 类似于RAID 5)
+    * raidz2 (两个奇偶校验磁盘, 类似于RAID 6)
+    * raidz3 (三个奇偶校验磁盘, 没有类似RAID等级)
+* disk  （磁盘）
+* file (文件。不推荐在生产环境中使用，因为中间又多了一层不必要的文件系统)</p>
+
+<p>数据会以条带方式存储于存储池中的所有VDEV上。因此一个存储池中的VDEV越多，IOPS就越高。</p>
+
+<h3>storage pool （存储池）</h3>
+
+<p>ZFS 使用存储池来作为底层存储提供者（VDEV）的抽象。这样可以把用户可见的文件系统和底层的物理磁盘
+布局分离开来。</p>
+
+<h3>ZFS 数据集（Dataset）</h3>
+
+<p>ZFS 数据集类似于传统的文件系统（译者注：或者说是目录），但是提供了更多的功能。ZFS的很多优势也是
+在这一层体现出来的。数据集支持 <a href="https://en.wikipedia.org/wiki/Copy-on-write">Copy on Write</a>
+快照, 配额, 压缩和重复消除（de-duplication）.</p>
+
+<h3>限制</h3>
+
+<p>一个目录最多可包含 2^48个文件, 每个文件最大可以是16 exabytes.  一个存储池最大可包含256 zettabytes 、
+(2^78) 的空间, 可以条带化地分布于2^64 设备上. 单一主机最多可以创建2^64个存储池。这些限制可以说是相
+当大。</p>
+
+<h2>命令</h2>
+
+<h3>存储池</h3>
+
+<p>Actions: （存储池操作） 
+* List   （列举）
+* Status （查看状态）
+* Destroy （删除）
+* Get/Set properties （获取/设置属性）</p>
+
+<p>List zpools （列举存储池（也叫zpool））</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># 创建一个raidz类型的存储池(名称为bucket）</span>
+<span class="nv">$ </span>zpool create bucket raidz1 gpt/zfs0 gpt/zfs1 gpt/zfs2
+
+<span class="c"># 列出所有存储池</span>
+<span class="nv">$ </span>zpool list
+NAME    SIZE  ALLOC   FREE  EXPANDSZ   FRAG    CAP  DEDUP  HEALTH  ALTROOT
+zroot   141G   106G  35.2G         -    43%    75%  1.00x  ONLINE  -
+
+<span class="c"># 列出某一存储池的详细信息</span>
+<span class="nv">$ </span>zpool list <span class="nt">-v</span> zroot
+NAME                                     SIZE  ALLOC   FREE  EXPANDSZ   FRAG    CAP  DEDUP HEALTH  ALTROOT
+zroot                                    141G   106G  35.2G         -    43%    75%  1.00x ONLINE  -
+  gptid/c92a5ccf-a5bb-11e4-a77d-001b2172c655   141G   106G  35.2G         -    43%    75%
+</code></pre></div>
+<p>Status of zpools （存储池状态）</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># 获取全部zpool状态信息</span>
+<span class="nv">$ </span>zpool status
+  pool: zroot
+ state: ONLINE
+  scan: scrub repaired 0 <span class="k">in </span>2h51m with 0 errors on Thu Oct  1 07:08:31 2015
+config:
+
+        NAME                                          STATE     READ WRITE CKSUM
+        zroot                                         ONLINE       0     0     0
+          gptid/c92a5ccf-a5bb-11e4-a77d-001b2172c655  ONLINE       0     0     0
+
+errors: No known data errors
+
+<span class="c"># 用scrub来更正存储池错误信息</span>
+<span class="nv">$ </span>zpool scrub zroot
+<span class="nv">$ </span>zpool status <span class="nt">-v</span> zroot
+  pool: zroot
+ state: ONLINE
+  scan: scrub <span class="k">in </span>progress since Thu Oct 15 16:59:14 2015
+        39.1M scanned out of 106G at 1.45M/s, 20h47m to go
+        0 repaired, 0.04% <span class="k">done
+</span>config:
+
+        NAME                                          STATE     READ WRITE CKSUM
+        zroot                                         ONLINE       0     0     0
+          gptid/c92a5ccf-a5bb-11e4-a77d-001b2172c655  ONLINE       0     0     0
+
+errors: No known data errors
+</code></pre></div>
+<p>Properties of zpools （存储池属性）</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># 获取某一存储池的全部属性。属性可能是系统提供，也可能是用户设置</span>
+<span class="nv">$ </span>zpool get all zroot
+NAME   PROPERTY                       VALUE                          SOURCE
+zroot  size                           141G                           -
+zroot  capacity                       75%                            -
+zroot  altroot                        -                              default
+zroot  health                         ONLINE                         -
+...
+
+<span class="c"># 设置存储池属性，下例这是设置comment(备注)属性</span>
+<span class="nv">$ </span>zpool <span class="nb">set </span><span class="nv">comment</span><span class="o">=</span><span class="s2">"Storage of mah stuff"</span> zroot
+<span class="nv">$ </span>zpool get comment
+NAME   PROPERTY  VALUE                 SOURCE
+tank   comment   -                     default
+zroot  comment   Storage of mah stuff  <span class="nb">local</span>
+</code></pre></div>
+<p>Remove zpool （删除存储池）</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>zpool destroy <span class="nb">test</span>
+</code></pre></div>
+<h3>Datasets （数据集）</h3>
+
+<p>Actions:   （数据集相关操作）
+* Create   （创建）
+* List     （列举）
+* Rename   （重命名）
+* Delete   （删除）
+* Get/Set properties   （获取/设置属性）</p>
+
+<p>Create datasets</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># 创建数据集</span>
+<span class="nv">$ </span>zfs create tank/root/data
+<span class="nv">$ </span>mount | <span class="nb">grep </span>data
+tank/root/data on /data <span class="o">(</span>zfs, <span class="nb">local</span>, nfsv4acls<span class="o">)</span>
+
+<span class="c"># 创建子数据集</span>
+<span class="nv">$ </span>zfs create tank/root/data/stuff
+<span class="nv">$ </span>mount | <span class="nb">grep </span>data
+tank/root/data on /data <span class="o">(</span>zfs, <span class="nb">local</span>, nfsv4acls<span class="o">)</span>
+tank/root/data/stuff on /data/stuff <span class="o">(</span>zfs, <span class="nb">local</span>, nfsv4acls<span class="o">)</span>
+
+
+<span class="c"># 创建卷</span>
+<span class="nv">$ </span>zfs create <span class="nt">-V</span> zroot/win_vm
+<span class="nv">$ </span>zfs list zroot/win_vm
+NAME                 USED  AVAIL  REFER  MOUNTPOINT
+tank/win_vm         4.13G  17.9G    64K  -
+</code></pre></div>
+<p>List datasets （列举数据集）</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># 列出所有数据集</span>
+<span class="nv">$ </span>zfs list
+NAME                                                                       USED  AVAIL  REFER  MOUNTPOINT
+zroot                                                                      106G  30.8G   144K  none
+zroot/ROOT                                                                18.5G  30.8G   144K  none
+zroot/ROOT/10.1                                                              8K  30.8G  9.63G  /
+zroot/ROOT/default                                                        18.5G  30.8G  11.2G  /
+zroot/backup                                                              5.23G  30.8G   144K  none
+zroot/home                                                                 288K  30.8G   144K  none
+...
+
+<span class="c"># 列举某一数据集的信息</span>
+<span class="nv">$ </span>zfs list zroot/home
+NAME         USED  AVAIL  REFER  MOUNTPOINT
+zroot/home   288K  30.8G   144K  none
+
+<span class="c"># 列出快照</span>
+<span class="nv">$ </span>zfs list <span class="nt">-t</span> snapshot
+zroot@daily-2015-10-15                                                                  0      -   144K  -
+zroot/ROOT@daily-2015-10-15                                                             0      -   144K  -
+zroot/ROOT/default@daily-2015-10-15                                                     0      -  24.2G  -
+zroot/tmp@daily-2015-10-15                                                           124K      -   708M  -
+zroot/usr@daily-2015-10-15                                                              0      -   144K  -
+zroot/home@daily-2015-10-15                                                             0      -  11.9G  -
+zroot/var@daily-2015-10-15                                                           704K      -  1.42G  -
+zroot/var/log@daily-2015-10-15                                                       192K      -   828K  -
+zroot/var/tmp@daily-2015-10-15                                                          0      -   152K  -
+</code></pre></div>
+<p>Rename datasets （重命名数据集）</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>zfs rename tank/root/home tank/root/old_home
+<span class="nv">$ </span>zfs rename tank/root/new_home tank/root/home
+</code></pre></div>
+<p>Delete dataset （删除数据集）</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># 数据集如果有快照则无法删除</span>
+zfs destroy tank/root/home
+</code></pre></div>
+<p>Get / set properties of a dataset （获取/设置数据集属性）</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># 获取数据集全部属性</span>
+<span class="nv">$ </span>zfs get all  zroot/usr/home                                                                                              │157 <span class="c"># Create Volume</span>
+NAME            PROPERTY              VALUE                  SOURCE                                                                          │158 <span class="nv">$ </span>zfs create <span class="nt">-V</span> zroot/win_vm
+zroot/home      <span class="nb">type                  </span>filesystem             -                                                                               │159 <span class="nv">$ </span>zfs list zroot/win_vm
+zroot/home      creation              Mon Oct 20 14:44 2014  -                                                                               │160 NAME                 USED  AVAIL  REFER  MOUNTPOINT
+zroot/home      used                  11.9G                  -                                                                               │161 tank/win_vm         4.13G  17.9G    64K  -
+zroot/home      available             94.1G                  -                                                                               │162 <span class="sb">```</span>
+zroot/home      referenced            11.9G                  -                                                                               │163
+zroot/home      mounted               <span class="nb">yes</span>                    -
+...
+
+<span class="c"># 获取数据集属性</span>
+<span class="nv">$ </span>zfs get compression zroot/usr/home
+NAME            PROPERTY     VALUE     SOURCE
+zroot/home      compression  off       default
+
+<span class="c"># 设置数据集属性（下例为设置压缩属性compression）</span>
+<span class="nv">$ </span>zfs <span class="nb">set </span><span class="nv">compression</span><span class="o">=</span>gzip-9 mypool/lamb
+
+<span class="c"># 列举所有数据集的名称、配额和预留属性</span>
+<span class="nv">$ </span>zfs list <span class="nt">-o</span> name,quota,reservation
+NAME                                                               QUOTA  RESERV
+zroot                                                               none    none
+zroot/ROOT                                                          none    none
+zroot/ROOT/default                                                  none    none
+zroot/tmp                                                           none    none
+zroot/usr                                                           none    none
+zroot/home                                                          none    none
+zroot/var                                                           none    none
+...
+</code></pre></div>
+<h3>Snapshots （快照）</h3>
+
+<p>快照是ZFS 的一个非常重要的功能</p>
+
+<ul>
+<li>快照占用的空间等于它和原始数据的差异量</li>
+<li>创建时间以秒计</li>
+<li>恢复时间和写入速度相同</li>
+<li>易于自动化</li>
+</ul>
+
+<p>Actions:  （快照相关操作）
+* Create  （创建）
+* Delete  （删除）
+* Rename  （重命名）
+* Access snapshots  （访问）
+* Send / Receive    （发送/接收）
+* Clone             （克隆。译者注：关于clone和快照的区别可参看<a href="http://docs.oracle.com/cd/E19253-01/819-5461/gbcxz/index.html">这里</a>）</p>
+
+<p>Create snapshots （创建快照）</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># 为单一数据集创建快照</span>
+zfs snapshot tank/home/sarlalian@now
+
+<span class="c"># 为数据集及其子集创建快照</span>
+<span class="nv">$ </span>zfs snapshot <span class="nt">-r</span> tank/home@now
+<span class="nv">$ </span>zfs list <span class="nt">-t</span> snapshot
+NAME                       USED  AVAIL  REFER  MOUNTPOINT
+tank/home@now                 0      -    26K  -
+tank/home/sarlalian@now       0      -   259M  -
+tank/home/alice@now           0      -   156M  -
+tank/home/bob@now             0      -   156M  -
+...
+</code></pre></div>
+<p>Destroy snapshots （删除快照）</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># 如何删除快照</span>
+<span class="nv">$ </span>zfs destroy tank/home/sarlalian@now
+
+<span class="c"># 删除某一数据集及其子集的快照</span>
+<span class="nv">$ </span>zfs destroy <span class="nt">-r</span> tank/home/sarlalian@now
+</code></pre></div>
+<p>Renaming Snapshots （重命名）</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># 重命名快照</span>
+<span class="nv">$ </span>zfs rename tank/home/sarlalian@now tank/home/sarlalian@today
+<span class="nv">$ </span>zfs rename tank/home/sarlalian@now today
+
+<span class="c"># zfs rename -r tank/home@now @yesterday</span>
+</code></pre></div>
+<p>Accessing snapshots  （访问快照）</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># cd进入一个快照目录</span>
+<span class="nv">$ </span><span class="nb">cd</span> /home/.zfs/snapshot/
+</code></pre></div>
+<p>Sending and Receiving</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># 备份快照到一个文件</span>
+<span class="nv">$ </span>zfs send tank/home/sarlalian@now | <span class="nb">gzip</span> <span class="o">&gt;</span> backup_file.gz
+
+<span class="c"># 发送快照到另一个数据集</span>
+<span class="nv">$ </span>zfs send tank/home/sarlalian@now | zfs recv backups/home/sarlalian
+
+<span class="c"># 发送快照到一个远程主机</span>
+<span class="nv">$ </span>zfs send tank/home/sarlalian@now | ssh root@backup_server <span class="s1">'zfs recv tank/home/sarlalian'</span>
+
+<span class="c"># 发送完整数据集及其快照到一个新主机</span>
+<span class="nv">$ </span>zfs send <span class="nt">-v</span> <span class="nt">-R</span> tank/home@now | ssh root@backup_server <span class="s1">'zfs recv tank/home'</span>
+</code></pre></div>
+<p>Cloneing Snapshots  （克隆快照）</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c"># 克隆一个快照</span>
+<span class="nv">$ </span>zfs clone tank/home/sarlalian@now tank/home/sarlalian_new
+
+<span class="c"># 提升克隆，让它不再依赖原始快照</span>
+<span class="nv">$ </span>zfs promote tank/home/sarlalian_new
+</code></pre></div>
+<h3>汇总</h3>
+
+<p>下面这个脚本使用了FreeBSD, jails和ZFS，来自动在一个mysql群集的热备主机上为一个mysq staging数据库
+创建一份纯净的拷贝。</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="c">#!/bin/sh</span>
+
+<span class="nb">echo</span> <span class="s2">"==== Stopping the staging database server ===="</span>
+jail <span class="nt">-r</span> staging
+
+<span class="nb">echo</span> <span class="s2">"==== Cleaning up existing staging server and snapshot ===="</span>
+zfs destroy <span class="nt">-r</span> zroot/jails/staging
+zfs destroy zroot/jails/slave@staging
+
+<span class="nb">echo</span> <span class="s2">"==== Quiescing the slave database ===="</span>
+<span class="nb">echo</span> <span class="s2">"FLUSH TABLES WITH READ LOCK;"</span> | /usr/local/bin/mysql <span class="nt">-u</span> root <span class="nt">-pmyrootpassword</span> <span class="nt">-h</span> slave
+
+<span class="nb">echo</span> <span class="s2">"==== Snapshotting the slave db filesystem as zroot/jails/slave@staging ===="</span>
+zfs snapshot zroot/jails/slave@staging
+
+<span class="nb">echo</span> <span class="s2">"==== Starting the slave database server ===="</span>
+jail <span class="nt">-c</span> slave
+
+<span class="nb">echo</span> <span class="s2">"==== Cloning the slave snapshot to the staging server ===="</span>
+zfs clone zroot/jails/slave@staging zroot/jails/staging
+
+<span class="nb">echo</span> <span class="s2">"==== Installing the staging mysql config ===="</span>
+<span class="nb">mv</span> /jails/staging/usr/local/etc/my.cnf /jails/staging/usr/local/etc/my.cnf.slave
+<span class="nb">cp</span> /jails/staging/usr/local/etc/my.cnf.staging /jails/staging/usr/local/etc/my.cnf
+
+<span class="nb">echo</span> <span class="s2">"==== Setting up the staging rc.conf file ===="</span>
+<span class="nb">mv</span> /jails/staging/etc/rc.conf.local /jails/staging/etc/rc.conf.slave
+<span class="nb">mv</span> /jails/staging/etc/rc.conf.staging /jails/staging/etc/rc.conf.local
+
+<span class="nb">echo</span> <span class="s2">"==== Starting the staging db server ===="</span>
+jail <span class="nt">-c</span> staging
+
+<span class="nb">echo</span> <span class="s2">"==== Makes the staging database not pull from the master ===="</span>
+<span class="nb">echo</span> <span class="s2">"STOP SLAVE;"</span> | /usr/local/bin/mysql <span class="nt">-u</span> root <span class="nt">-pmyrootpassword</span> <span class="nt">-h</span> staging
+<span class="nb">echo</span> <span class="s2">"RESET SLAVE;"</span> | /usr/local/bin/mysql <span class="nt">-u</span> root <span class="nt">-pmyrootpassword</span> <span class="nt">-h</span> staging
+</code></pre></div>
+<h3>延伸阅读</h3>
+
+<ul>
+<li><a href="http://www.bsdnow.tv/tutorials/zfs">BSDNow&rsquo;s Crash Course on ZFS</a></li>
+<li><a href="https://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/zfs.html">FreeBSD Handbook on ZFS</a></li>
+<li><a href="http://www.bsdnow.tv/tutorials/zfs">BSDNow&rsquo;s Crash Course on ZFS</a></li>
+<li><a href="http://www.oracle.com/technetwork/articles/servers-storage-admin/sto-recommended-zfs-settings-1951715.html">Oracle&rsquo;s Tuning Guide</a></li>
+<li><a href="http://open-zfs.org/wiki/Performance_tuning">OpenZFS Tuning Guide</a></li>
+<li><a href="https://wiki.freebsd.org/ZFSTuningGuide">FreeBSD ZFS Tuning Guide</a></li>
+</ul>
+
+    <hr>
+    <p>有建议？或者发现什么错误？在Github上<a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">开一个issue</a>，或者发起<a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/zh-cn/zfs-cn.html.markdown">pull request</a>！
+    </p>
+    <p class="contributed">
+    原著sarlalian，并由<a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/zh-cn/zfs-cn.html.markdown">0个好心人</a>修改。
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://github.com/sarlalian">sarlalian</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/kedaio">Alan Cheng</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

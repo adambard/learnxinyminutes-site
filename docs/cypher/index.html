@@ -1,0 +1,306 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn cypher in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/cypher/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fcypher%2F&text=Learn+X+in+Y+minutes%2C+where+X%3Dcypher">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=cypher</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/LearnCypher.cql">LearnCypher.cql</a>
+    </p>
+  <div id="doc">
+    <p>Cypher is the Neo4j’s query language to manipulate graphs easily. It reuses syntax from SQL and mixes it with kind of ascii-art to represent graphs.
+This tutorial assumes that you already know graph concepts like nodes and relationships.</p>
+
+<p><a href="https://neo4j.com/developer/cypher-query-language/">Read more here.</a></p>
+
+<h2>Nodes</h2>
+
+<p><strong>Represents a record in a graph.</strong></p>
+
+<p><code>()</code>
+It&rsquo;s an empty <em>node</em>, to indicate that there is a <em>node</em>, but it&rsquo;s not relevant for the query.</p>
+
+<p><code>(n)</code>
+It&rsquo;s a <em>node</em> referred by the variable <strong>n</strong>, reusable in the query. It begins with lowercase and uses camelCase.</p>
+
+<p><code>(p:Person)</code>
+You can add a <em>label</em> to your node, here <strong>Person</strong>. It&rsquo;s like a type / a class / a category. It begins with uppercase and uses camelCase.</p>
+
+<p><code>(p:Person:Manager)</code>
+A node can have many <em>labels</em>.</p>
+
+<p><code>(p:Person {name : &#39;Théo Gauchoux&#39;, age : 22})</code>
+A node can have some <em>properties</em>, here <strong>name</strong> and <strong>age</strong>. It begins with lowercase and uses camelCase.</p>
+
+<p>The types allowed in properties :</p>
+
+<ul>
+<li>Numeric</li>
+<li>Boolean</li>
+<li>String</li>
+<li>List of previous primitive types</li>
+</ul>
+
+<p><em>Warning : there isn&rsquo;t datetime property in Cypher ! You can use String with a specific pattern or a Numeric from a specific date.</em></p>
+
+<p><code>p.name</code>
+You can access to a property with the dot style.</p>
+
+<h2>Relationships (or Edges)</h2>
+
+<p><strong>Connects two nodes</strong></p>
+
+<p><code>[:KNOWS]</code>
+It&rsquo;s a <em>relationship</em> with the <em>label</em> <strong>KNOWS</strong>. It&rsquo;s a <em>label</em> as the node&rsquo;s label. It begins with uppercase and use UPPER_SNAKE_CASE.</p>
+
+<p><code>[k:KNOWS]</code>
+The same <em>relationship</em>, referred by the variable <strong>k</strong>, reusable in the query, but it&rsquo;s not necessary.</p>
+
+<p><code>[k:KNOWS {since:2017}]</code>
+The same <em>relationship</em>, with <em>properties</em> (like <em>node</em>), here <strong>since</strong>.</p>
+
+<p><code>[k:KNOWS*..4]</code>
+It&rsquo;s a structural information to use in a <em>path</em> (seen later). Here, <strong>*..4</strong> says &ldquo;Match the pattern, with the relationship <strong>k</strong> which be repeated between 1 and 4 times.</p>
+
+<h2>Paths</h2>
+
+<p><strong>The way to mix nodes and relationships.</strong></p>
+
+<p><code>(a:Person)-[:KNOWS]-(b:Person)</code>
+A path describing that <strong>a</strong> and <strong>b</strong> know each other.</p>
+
+<p><code>(a:Person)-[:MANAGES]-&gt;(b:Person)</code>
+A path can be directed. This path describes that <strong>a</strong> is the manager of <strong>b</strong>.</p>
+
+<p><code>(a:Person)-[:KNOWS]-(b:Person)-[:KNOWS]-(c:Person)</code>
+You can chain multiple relationships. This path describes the friend of a friend.</p>
+
+<p><code>(a:Person)-[:MANAGES]-&gt;(b:Person)-[:MANAGES]-&gt;(c:Person)</code>
+A chain can also be directed. This path describes that <strong>a</strong> is the boss of <strong>b</strong> and the big boss of <strong>c</strong>.</p>
+
+<p>Patterns often used (from Neo4j doc) :</p>
+<div class="highlight"><pre class="highlight plaintext"><code>// Friend-of-a-friend 
+(user)-[:KNOWS]-(friend)-[:KNOWS]-(foaf)
+
+// Shortest path
+path = shortestPath( (user)-[:KNOWS*..5]-(other) )
+
+// Collaborative filtering
+(user)-[:PURCHASED]-&gt;(product)&lt;-[:PURCHASED]-()-[:PURCHASED]-&gt;(otherProduct)
+
+// Tree navigation 
+(root)&lt;-[:PARENT*]-(leaf:Category)-[:ITEM]-&gt;(data:Product)
+</code></pre></div>
+<h2>Create queries</h2>
+
+<p>Create a new node</p>
+<div class="highlight"><pre class="highlight plaintext"><code>CREATE (a:Person {name:"Théo Gauchoux"})
+RETURN a
+</code></pre></div>
+<p><em><code>RETURN</code> allows to have a result after the query. It can be multiple, as <code>RETURN a, b</code>.</em></p>
+
+<p>Create a new relationship (with 2 new nodes)</p>
+<div class="highlight"><pre class="highlight plaintext"><code>CREATE (a:Person)-[k:KNOWS]-(b:Person)
+RETURN a,k,b
+</code></pre></div>
+<h2>Match queries</h2>
+
+<p>Match all nodes</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (n)
+RETURN n
+</code></pre></div>
+<p>Match nodes by label</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (a:Person)
+RETURN a
+</code></pre></div>
+<p>Match nodes by label and property</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (a:Person {name:"Théo Gauchoux"})
+RETURN a
+</code></pre></div>
+<p>Match nodes according to relationships (undirected)</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (a)-[:KNOWS]-(b)
+RETURN a,b
+</code></pre></div>
+<p>Match nodes according to relationships (directed)</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (a)-[:MANAGES]-&gt;(b)
+RETURN a,b
+</code></pre></div>
+<p>Match nodes with a <code>WHERE</code> clause</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (p:Person {name:"Théo Gauchoux"})-[s:LIVES_IN]-&gt;(city:City)
+WHERE s.since = 2015
+RETURN p,state
+</code></pre></div>
+<p>You can use <code>MATCH WHERE</code> clause with <code>CREATE</code> clause</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (a), (b)
+WHERE a.name = "Jacquie" AND b.name = "Michel"
+CREATE (a)-[:KNOWS]-(b)
+</code></pre></div>
+<h2>Update queries</h2>
+
+<p>Update a specific property of a node</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (p:Person)
+WHERE p.name = "Théo Gauchoux"
+SET p.age = 23
+</code></pre></div>
+<p>Replace all properties of a node</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (p:Person)
+WHERE p.name = "Théo Gauchoux"
+SET p = {name: "Michel", age: 23}
+</code></pre></div>
+<p>Add new property to a node</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (p:Person)
+WHERE p.name = "Théo Gauchoux"
+SET p + = {studies: "IT Engineering"}
+</code></pre></div>
+<p>Add a label to a node</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (p:Person)
+WHERE p.name = "Théo Gauchoux"
+SET p:Internship
+</code></pre></div>
+<h2>Delete queries</h2>
+
+<p>Delete a specific node (linked relationships must be deleted before)</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (p:Person)-[relationship]-()
+WHERE p.name = "Théo Gauchoux"
+DELETE relationship, p
+</code></pre></div>
+<p>Remove a property in a specific node</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (p:Person)
+WHERE p.name = "Théo Gauchoux"
+REMOVE p.age
+</code></pre></div>
+<p><em>Pay attention to the <code>REMOVE</code>keyword, it&rsquo;s not <code>DELETE</code> !</em></p>
+
+<p>Remove a label from a specific node</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (p:Person)
+WHERE p.name = "Théo Gauchoux"
+DELETE p:Person
+</code></pre></div>
+<p>Delete entire database</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (n)
+OPTIONAL MATCH (n)-[r]-()
+DELETE n, r
+</code></pre></div>
+<p><em>Seriously, it&rsquo;s the <code>rm -rf /</code> of Cypher !</em></p>
+
+<h2>Other useful clauses</h2>
+
+<p><code>PROFILE</code>
+Before a query, show the execution plan of it.</p>
+
+<p><code>COUNT(e)</code>
+Count entities (nodes or relationships) matching <strong>e</strong>.</p>
+
+<p><code>LIMIT x</code>
+Limit the result to the x first results.</p>
+
+<h2>Special hints</h2>
+
+<ul>
+<li>There is just single-line comments in Cypher, with double-slash : // Comments</li>
+<li>You can execute a Cypher script stored in a <strong>.cql</strong> file directly in Neo4j (it&rsquo;s an import). However, you can&rsquo;t have multiple statements in this file (separated by <strong>;</strong>).</li>
+<li>Use the Neo4j shell to write Cypher, it&rsquo;s really awesome.</li>
+<li>The Cypher will be the standard query language for all graph databases (known as <strong>OpenCypher</strong>).</li>
+</ul>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/cypher.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Théo Gauchoux, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/cypher.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="https://github.com/TheoGauchoux">Théo Gauchoux</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

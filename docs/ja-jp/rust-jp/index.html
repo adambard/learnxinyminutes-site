@@ -1,0 +1,452 @@
+<!DOCTYPE html lang="ja-jp" xml:lang="ja-jp" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="ja-jp">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn Rust in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/ja-jp/rust-jp/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fja-jp%2Frust-jp%2F&text=X%E3%82%92Y%E5%88%86%E3%81%A7%E5%AD%A6%E3%81%B6%2C+%E3%81%9F%E3%81%A0%E3%81%97+X%3DRust">
+        このページをシェアする
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">外観の選択：</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">ライト</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">ダーク</button>
+  </div>
+  <h1><a href="/">XをY分で学ぶ</a></h1>
+  <h2>ただし X=Rust</h2>
+    <p class="filelink">
+    ソースコードの取得：
+    <a href="/docs/files/learnrust-jp.rs">learnrust-jp.rs</a>
+    </p>
+  <div id="doc">
+    <p>RustはMozilla Researchによって開発されたプログラミング言語です。
+Rustは低レベルの性能制御と高レベルの利便性と、安全性の保証を兼ね備えています。</p>
+
+<p>ガベージコレクションやランタイムを必要としないことから上記の目標が達成出来ます。
+それによってRustライブラリをC言語の「完全互換品」として使用することが可能です。</p>
+
+<p>Rustの最初のリリースである0.1は、2012年1月にリリースされ、
+その後3年間の開発は非常に速く進み、最近までは安定板リリースの利用は推奨されていませんでした。
+代わりにナイトリービルドを使用することが一般的なアドバイスでした。</p>
+
+<p>2015年5月15日、後方互換性を完全に保障したRust 1.0がリリースされました。
+コンパイル時間などの改善は、現在ナイトリービルドで提供されています。
+Rustはトレインリリースモデルを採用しており、6週間ごとにリリースしています。
+Rust 1.1 ベータ版は、Rust 1.0がリリースされたのと同時にリリースされました。</p>
+
+<p>Rustは比較的低レベルの言語ですが、一般的に高水準言語に見られるようないくつかの概念を持っています。
+これによりRustはただ速いだけではなく、コーディングが簡単で効率的に書くことが出来ます。</p>
+<div class="highlight"><pre class="highlight rust"><code><span class="c1">// これはコメントです。 行コメントはこのように書けます...</span>
+<span class="c1">// そしてこのように複数行に分けて書くこともできます。</span>
+
+<span class="cd">/// ドキュメントコメントはこのように書けて、マークダウン記法をサポートしています。</span>
+<span class="cd">/// # Examples</span>
+<span class="cd">///</span>
+<span class="cd">/// ```</span>
+<span class="cd">/// let five = 5</span>
+<span class="cd">/// ```</span>
+
+<span class="c1">////////////</span>
+<span class="c1">// 1. 基本 //</span>
+<span class="c1">////////////</span>
+
+<span class="nd">#[allow(dead_code)]</span>
+<span class="c1">// 関数</span>
+<span class="c1">// `i32` は32ビットの符号付き整数の型です</span>
+<span class="k">fn</span> <span class="nf">add2</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">i32</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">i32</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">i32</span> <span class="p">{</span>
+    <span class="c1">// 暗黙の戻り値 (セミコロンなし)</span>
+    <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+<span class="p">}</span>
+
+<span class="nd">#[allow(unused_variables)]</span>
+<span class="nd">#[allow(unused_assignments)]</span>
+<span class="nd">#[allow(dead_code)]</span>
+<span class="c1">// Main関数</span>
+<span class="k">fn</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// 数値 //</span>
+
+    <span class="c1">// 不変な変数</span>
+    <span class="k">let</span> <span class="n">x</span><span class="p">:</span> <span class="nb">i32</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+    <span class="c1">// 整数/浮動小数点の型を数値の末尾に</span>
+    <span class="k">let</span> <span class="n">y</span><span class="p">:</span> <span class="nb">i32</span> <span class="o">=</span> <span class="mi">13i32</span><span class="p">;</span>
+    <span class="k">let</span> <span class="n">f</span><span class="p">:</span> <span class="nb">f64</span> <span class="o">=</span> <span class="mf">1.3f64</span><span class="p">;</span>
+
+    <span class="c1">// 型推論</span>
+    <span class="c1">// ほとんどの場合、Rustコンパイラは変数の型を推測することができるため、</span>
+    <span class="c1">// 明示的に型アノテーションを書く必要はありません。</span>
+    <span class="c1">// このチュートリアルでは、多くの場所で明示的に型がアノテーションされていますが、</span>
+    <span class="c1">// あくまで説明目的です。型推論はほとんどの場合処理することができます。</span>
+    <span class="k">let</span> <span class="n">implicit_x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">let</span> <span class="n">implicit_f</span> <span class="o">=</span> <span class="mf">1.3</span><span class="p">;</span>
+
+    <span class="c1">// 算術</span>
+    <span class="k">let</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">13</span><span class="p">;</span>
+
+    <span class="c1">// 可変な変数</span>
+    <span class="k">let</span> <span class="k">mut</span> <span class="n">mutable</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">mutable</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+    <span class="n">mutable</span> <span class="o">+=</span> <span class="mi">2</span><span class="p">;</span>
+
+    <span class="c1">// 文字列 //</span>
+
+    <span class="c1">// 文字列リテラル</span>
+    <span class="k">let</span> <span class="n">x</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">str</span> <span class="o">=</span> <span class="s">"hello world!"</span><span class="p">;</span>
+
+    <span class="c1">// プリント</span>
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"{} {}"</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">);</span> <span class="c1">// 1.3 hello world</span>
+
+    <span class="c1">// `String`はヒープに割り当てられた文字列です。</span>
+    <span class="c1">// `Vec&lt;u8&gt;`としてヒープに格納され、</span>
+    <span class="c1">// 常に有効なUTF-8シーケンス(ヌル文字で終了していない)を保持します。</span>
+    <span class="k">let</span> <span class="n">s</span><span class="p">:</span> <span class="nb">String</span> <span class="o">=</span> <span class="s">"hello world"</span><span class="nf">.to_string</span><span class="p">();</span>
+
+    <span class="c1">// 文字列スライスは不変なビューを別の文字列に変換します。</span>
+    <span class="c1">// これは基本的に文字列への不変のポインタのペアを保持しており、</span>
+    <span class="c1">// 文字そのものは保持していません。</span>
+    <span class="c1">// 文字列バッファの先頭と末尾へのポイントだけを保持しています。</span>
+    <span class="c1">// 静的割り当てられるか、別のオブジェクトに含まれます。(この場合は`s`)</span>
+    <span class="c1">// 文字列スライスは`&amp;[u8]`を`Vec&lt;T&gt;`に変換するようなものです。</span>
+    <span class="k">let</span> <span class="n">s_slice</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">str</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">s</span><span class="p">;</span>
+
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"{} {}"</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">s_slice</span><span class="p">);</span> <span class="c1">// hello world hello world</span>
+
+    <span class="c1">// ベクター/配列 //</span>
+
+    <span class="c1">// 固定サイズの配列</span>
+    <span class="k">let</span> <span class="n">four_ints</span><span class="p">:</span> <span class="p">[</span><span class="nb">i32</span><span class="p">;</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">];</span>
+
+    <span class="c1">// 動的配列(ベクター)</span>
+    <span class="k">let</span> <span class="k">mut</span> <span class="n">vector</span><span class="p">:</span> <span class="nb">Vec</span><span class="o">&lt;</span><span class="nb">i32</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nd">vec!</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">];</span>
+    <span class="n">vector</span><span class="nf">.push</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+
+    <span class="c1">// スライスは不変なビューをベクターまたは配列に変換します。</span>
+    <span class="c1">// これは文字列スライスによく似ていますが、ベクターに対してのものです。</span>
+    <span class="k">let</span> <span class="n">slice</span><span class="p">:</span> <span class="o">&amp;</span><span class="p">[</span><span class="nb">i32</span><span class="p">]</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">vector</span><span class="p">;</span>
+
+    <span class="c1">// デバッグ形式で何かを表示する際は、`{:?}`を使用できます。</span>
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"{:?} {:?}"</span><span class="p">,</span> <span class="n">vector</span><span class="p">,</span> <span class="n">slice</span><span class="p">);</span> <span class="c1">// [1, 2, 3, 4, 5] [1, 2, 3, 4, 5]</span>
+
+    <span class="c1">// タプル //</span>
+
+    <span class="c1">// タプルは固定サイズの値の集合でできており、値それぞれが異なる型でもよい</span>
+    <span class="k">let</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="nb">i32</span><span class="p">,</span> <span class="o">&amp;</span><span class="nb">str</span><span class="p">,</span> <span class="nb">f64</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">"hello"</span><span class="p">,</span> <span class="mf">3.4</span><span class="p">);</span>
+
+    <span class="c1">// `let`をデストラクト</span>
+    <span class="k">let</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span>
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"{} {} {}"</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span> <span class="c1">// 1 hello 3.4</span>
+
+    <span class="c1">// インデックス</span>
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span> <span class="n">x</span><span class="na">.1</span><span class="p">);</span> <span class="c1">// hello</span>
+
+    <span class="c1">///////////</span>
+    <span class="c1">// 2. 型 //</span>
+    <span class="c1">///////////</span>
+
+    <span class="c1">// 構造体</span>
+    <span class="k">struct</span> <span class="n">Point</span> <span class="p">{</span>
+        <span class="n">x</span><span class="p">:</span> <span class="nb">i32</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">:</span> <span class="nb">i32</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">let</span> <span class="n">origin</span><span class="p">:</span> <span class="n">Point</span> <span class="o">=</span> <span class="n">Point</span> <span class="p">{</span> <span class="n">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="mi">0</span> <span class="p">};</span>
+
+    <span class="c1">// 名前のないフィールドで構成された構造体は、タプル構造体と言われる。</span>
+    <span class="k">struct</span> <span class="nf">Point2</span><span class="p">(</span><span class="nb">i32</span><span class="p">,</span> <span class="nb">i32</span><span class="p">);</span>
+
+    <span class="k">let</span> <span class="n">origin2</span> <span class="o">=</span> <span class="nf">Point2</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+    <span class="c1">// C言語風列挙型</span>
+    <span class="k">enum</span> <span class="n">Direction</span> <span class="p">{</span>
+        <span class="nb">Left</span><span class="p">,</span>
+        <span class="nb">Right</span><span class="p">,</span>
+        <span class="n">Up</span><span class="p">,</span>
+        <span class="n">Down</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">let</span> <span class="n">up</span> <span class="o">=</span> <span class="nn">Direction</span><span class="p">::</span><span class="n">Up</span><span class="p">;</span>
+
+    <span class="c1">// フィールドがある列挙型</span>
+    <span class="k">enum</span> <span class="n">OptionalI32</span> <span class="p">{</span>
+        <span class="nf">AnI32</span><span class="p">(</span><span class="nb">i32</span><span class="p">),</span>
+        <span class="n">Nothing</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">let</span> <span class="n">two</span><span class="p">:</span> <span class="n">OptionalI32</span> <span class="o">=</span> <span class="nn">OptionalI32</span><span class="p">::</span><span class="nf">AnI32</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+    <span class="k">let</span> <span class="n">nothing</span> <span class="o">=</span> <span class="nn">OptionalI32</span><span class="p">::</span><span class="n">Nothing</span><span class="p">;</span>
+
+    <span class="c1">// ジェネリクス //</span>
+
+    <span class="k">struct</span> <span class="n">Foo</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">{</span> <span class="n">bar</span><span class="p">:</span> <span class="n">T</span> <span class="p">}</span>
+
+    <span class="c1">// 以下は標準ライブラリで定義されている`Option`です。</span>
+    <span class="k">enum</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">{</span>
+        <span class="nf">SomeVal</span><span class="p">(</span><span class="n">T</span><span class="p">),</span>
+        <span class="n">NoVal</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c1">// メソッド //</span>
+
+    <span class="k">impl</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">Foo</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">{</span>
+        <span class="c1">// メソッドは明示的に`self`パラメータを受け取ります。</span>
+        <span class="k">fn</span> <span class="nf">bar</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="o">&amp;</span><span class="n">T</span> <span class="p">{</span> <span class="c1">// `self`は借用されています。</span>
+            <span class="o">&amp;</span><span class="k">self</span><span class="py">.bar</span>
+        <span class="p">}</span>
+        <span class="k">fn</span> <span class="nf">bar_mut</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span> <span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="o">&amp;</span><span class="k">mut</span> <span class="n">T</span> <span class="p">{</span> <span class="c1">// `self`は可変に借用されています。</span>
+            <span class="o">&amp;</span><span class="k">mut</span> <span class="k">self</span><span class="py">.bar</span>
+        <span class="p">}</span>
+        <span class="k">fn</span> <span class="nf">into_bar</span><span class="p">(</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="n">T</span> <span class="p">{</span> <span class="c1">// `self`は消費されています。</span>
+            <span class="k">self</span><span class="py">.bar</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">let</span> <span class="n">a_foo</span> <span class="o">=</span> <span class="n">Foo</span> <span class="p">{</span> <span class="n">bar</span><span class="p">:</span> <span class="mi">1</span> <span class="p">};</span>
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span> <span class="n">a_foo</span><span class="nf">.bar</span><span class="p">());</span> <span class="c1">// 1</span>
+
+    <span class="c1">// トレイト (他の言語ではインターフェースや型クラスとして知られています) //</span>
+
+    <span class="k">trait</span> <span class="n">Frobnicate</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">{</span>
+        <span class="k">fn</span> <span class="nf">frobnicate</span><span class="p">(</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">Option</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">impl</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">Frobnicate</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="k">for</span> <span class="n">Foo</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">{</span>
+        <span class="k">fn</span> <span class="nf">frobnicate</span><span class="p">(</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">Option</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="p">{</span>
+            <span class="nf">Some</span><span class="p">(</span><span class="k">self</span><span class="py">.bar</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">let</span> <span class="n">another_foo</span> <span class="o">=</span> <span class="n">Foo</span> <span class="p">{</span> <span class="n">bar</span><span class="p">:</span> <span class="mi">1</span> <span class="p">};</span>
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"{:?}"</span><span class="p">,</span> <span class="n">another_foo</span><span class="nf">.frobnicate</span><span class="p">());</span> <span class="c1">// Some(1)</span>
+
+    <span class="c1">// 関数ポインタの種類 // </span>
+
+    <span class="k">fn</span> <span class="nf">fibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">u32</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">u32</span> <span class="p">{</span>
+        <span class="k">match</span> <span class="n">n</span> <span class="p">{</span>
+            <span class="mi">0</span> <span class="k">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="mi">1</span> <span class="k">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">_</span> <span class="k">=&gt;</span> <span class="nf">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="nf">fibonacci</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">type</span> <span class="n">FunctionPointer</span> <span class="o">=</span> <span class="k">fn</span><span class="p">(</span><span class="nb">u32</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="nb">u32</span><span class="p">;</span>
+
+    <span class="k">let</span> <span class="n">fib</span> <span class="p">:</span> <span class="n">FunctionPointer</span> <span class="o">=</span> <span class="n">fibonacci</span><span class="p">;</span>
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"Fib: {}"</span><span class="p">,</span> <span class="nf">fib</span><span class="p">(</span><span class="mi">4</span><span class="p">));</span>
+
+    <span class="c1">/////////////////////////</span>
+    <span class="c1">// 3. パターンマッチング //</span>
+    <span class="c1">/////////////////////////</span>
+
+    <span class="k">let</span> <span class="n">foo</span> <span class="o">=</span> <span class="nn">OptionalI32</span><span class="p">::</span><span class="nf">AnI32</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="k">match</span> <span class="n">foo</span> <span class="p">{</span>
+        <span class="nn">OptionalI32</span><span class="p">::</span><span class="nf">AnI32</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">=&gt;</span> <span class="nd">println!</span><span class="p">(</span><span class="s">"it’s an i32: {}"</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span>
+        <span class="nn">OptionalI32</span><span class="p">::</span><span class="n">Nothing</span>  <span class="k">=&gt;</span> <span class="nd">println!</span><span class="p">(</span><span class="s">"it’s nothing!"</span><span class="p">),</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 応用的なパターンマッチング</span>
+    <span class="k">struct</span> <span class="n">FooBar</span> <span class="p">{</span> <span class="n">x</span><span class="p">:</span> <span class="nb">i32</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">OptionalI32</span> <span class="p">}</span>
+    <span class="k">let</span> <span class="n">bar</span> <span class="o">=</span> <span class="n">FooBar</span> <span class="p">{</span> <span class="n">x</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nn">OptionalI32</span><span class="p">::</span><span class="nf">AnI32</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="p">};</span>
+
+    <span class="k">match</span> <span class="n">bar</span> <span class="p">{</span>
+        <span class="n">FooBar</span> <span class="p">{</span> <span class="n">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nn">OptionalI32</span><span class="p">::</span><span class="nf">AnI32</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">}</span> <span class="k">=&gt;</span>
+            <span class="nd">println!</span><span class="p">(</span><span class="s">"The numbers are zero!"</span><span class="p">),</span>
+        <span class="n">FooBar</span> <span class="p">{</span> <span class="n">x</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nn">OptionalI32</span><span class="p">::</span><span class="nf">AnI32</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="p">}</span> <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">m</span> <span class="k">=&gt;</span>
+            <span class="nd">println!</span><span class="p">(</span><span class="s">"The numbers are the same"</span><span class="p">),</span>
+        <span class="n">FooBar</span> <span class="p">{</span> <span class="n">x</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nn">OptionalI32</span><span class="p">::</span><span class="nf">AnI32</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="p">}</span> <span class="k">=&gt;</span>
+            <span class="nd">println!</span><span class="p">(</span><span class="s">"Different numbers: {} {}"</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span>
+        <span class="n">FooBar</span> <span class="p">{</span> <span class="n">x</span><span class="p">:</span> <span class="n">_</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nn">OptionalI32</span><span class="p">::</span><span class="n">Nothing</span> <span class="p">}</span> <span class="k">=&gt;</span>
+            <span class="nd">println!</span><span class="p">(</span><span class="s">"The second number is Nothing!"</span><span class="p">),</span>
+    <span class="p">}</span>
+
+    <span class="c1">//////////////////</span>
+    <span class="c1">// 4. 制御フロー //</span>
+    <span class="c1">//////////////////</span>
+
+    <span class="c1">// `for`ループ/イテレーション</span>
+    <span class="k">let</span> <span class="n">array</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">array</span> <span class="p">{</span>
+        <span class="nd">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 範囲</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">0u32</span><span class="o">..</span><span class="mi">10</span> <span class="p">{</span>
+        <span class="nd">print!</span><span class="p">(</span><span class="s">"{} "</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nd">println!</span><span class="p">(</span><span class="s">""</span><span class="p">);</span>
+    <span class="c1">// 右記にある文をプリントします `0 1 2 3 4 5 6 7 8 9 `</span>
+
+    <span class="c1">// `if`</span>
+    <span class="k">if</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+        <span class="nd">println!</span><span class="p">(</span><span class="s">"Maths is working!"</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nd">println!</span><span class="p">(</span><span class="s">"Oh no..."</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 式として使う`if`</span>
+    <span class="k">let</span> <span class="n">value</span> <span class="o">=</span> <span class="k">if</span> <span class="k">true</span> <span class="p">{</span>
+        <span class="s">"good"</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="s">"bad"</span>
+    <span class="p">};</span>
+
+    <span class="c1">// `while` loop</span>
+    <span class="k">while</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+        <span class="nd">println!</span><span class="p">(</span><span class="s">"The universe is operating normally."</span><span class="p">);</span>
+        <span class="c1">// break文でwhileループから抜け出せます。</span>
+        <span class="c1">// 無駄な繰り返しを避けることができます。</span>
+        <span class="k">break</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 無限ループ</span>
+    <span class="k">loop</span> <span class="p">{</span>
+        <span class="nd">println!</span><span class="p">(</span><span class="s">"Hello!"</span><span class="p">);</span>
+        <span class="c1">// break文でループから抜け出せます。</span>
+        <span class="k">break</span>
+    <span class="p">}</span>
+
+    <span class="c1">///////////////////////////</span>
+    <span class="c1">// 5. メモリ安全とポインタ //</span>
+    <span class="c1">///////////////////////////</span>
+
+    <span class="c1">// 所有ポインタはポインタを「所有」できるのは、一度に1つだけです。</span>
+    <span class="c1">// つまり、`Box`がそのスコープから離れると、自動的に安全に解放されます。</span>
+    <span class="k">let</span> <span class="k">mut</span> <span class="n">mine</span><span class="p">:</span> <span class="nb">Box</span><span class="o">&lt;</span><span class="nb">i32</span><span class="o">&gt;</span> <span class="o">=</span> <span class="nn">Box</span><span class="p">::</span><span class="nf">new</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+    <span class="o">*</span><span class="n">mine</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">// デリファレンス</span>
+    <span class="c1">// ここで`now_its_mine`が`mine`の所有権を取得します。言い換えると`mine`がムーブしました。</span>
+    <span class="k">let</span> <span class="k">mut</span> <span class="n">now_its_mine</span> <span class="o">=</span> <span class="n">mine</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">now_its_mine</span> <span class="o">+=</span> <span class="mi">2</span><span class="p">;</span>
+
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span> <span class="n">now_its_mine</span><span class="p">);</span> <span class="c1">// 7</span>
+    <span class="c1">// println!("{}", mine); // これは`now_its_mine`がポインタを所有しているため、コンパイルができません。</span>
+
+    <span class="c1">// 参照は他のデータを参照する不変なポインタです。</span>
+    <span class="c1">// 値を参照する場合、値を「借用」したと言います。</span>
+    <span class="c1">// 値が不変に借用されている間は、値を変更したり、ムーブすることはできない。</span>
+    <span class="c1">// 借用は借用されている変数が使用されている最後まで有効です。</span>
+    <span class="k">let</span> <span class="k">mut</span> <span class="n">var</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+    <span class="n">var</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+    <span class="k">let</span> <span class="n">ref_var</span><span class="p">:</span> <span class="o">&amp;</span><span class="nb">i32</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">var</span><span class="p">;</span>
+
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span> <span class="n">var</span><span class="p">);</span> <span class="c1">// `mine`と違って、`var`はまだ使用できます。</span>
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span> <span class="o">*</span><span class="n">ref_var</span><span class="p">);</span>
+    <span class="c1">// var = 5; // `var`が借用されているため、コンパイルができません。</span>
+    <span class="c1">// *ref_var = 6; // `ref_var`が不変な参照であるため、コンパイルできません。</span>
+    <span class="n">ref_var</span><span class="p">;</span> <span class="c1">// 操作は行っていませんが、使用されているとみなされ、借用が有効になります。</span>
+    <span class="n">var</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// `ref_var`上記行以降使用されていないため、借用は終了しています。</span>
+
+    <span class="c1">// 可変な参照</span>
+    <span class="c1">// 値が可変な借用である間は、一切アクセスできません。</span>
+    <span class="k">let</span> <span class="k">mut</span> <span class="n">var2</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+    <span class="k">let</span> <span class="n">ref_var2</span><span class="p">:</span> <span class="o">&amp;</span><span class="k">mut</span> <span class="nb">i32</span> <span class="o">=</span> <span class="o">&amp;</span><span class="k">mut</span> <span class="n">var2</span><span class="p">;</span>
+    <span class="o">*</span><span class="n">ref_var2</span> <span class="o">+=</span> <span class="mi">2</span><span class="p">;</span>         <span class="c1">// '*'は可変な参照をされた`var2`を指すために使用されます。</span>
+
+    <span class="nd">println!</span><span class="p">(</span><span class="s">"{}"</span><span class="p">,</span> <span class="o">*</span><span class="n">ref_var2</span><span class="p">);</span> <span class="c1">// 6 , // `var2`はコンパイルされません。</span>
+    <span class="c1">// `ref_var2`は型が&amp;mut i32であるため、i32への可変な参照が格納されています。値は入っていません。</span>
+    <span class="c1">// var2 = 2; // `var2`が借用されているため、コンパイルできません。</span>
+    <span class="n">ref_var2</span><span class="p">;</span> <span class="c1">// 操作は行っていませんが、使用されているとみなされ、借用が有効になります。</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2>補足資料</h2>
+
+<p>Rustにはまだまだ多くの魅力がありますが、ここではRustの基本的な知識をお伝えします。
+Rustについてもっと知りたい場合は、<a href="http://doc.rust-lang.org/book/index.html">The Rust Programming
+Language</a>
+を読んで、<a href="http://reddit.com/r/rust">/r/rust</a>をチェックしてみてください。
+irc.mozilla.orgの#rustチャンネルにいる人たちも、新参者にも熱心に助けてくれます。</p>
+
+<p>また、Rustの機能を公式のオンラインコンパイラで試すこともできます。
+<a href="http://play.rust-lang.org">Rust playpen</a> またはメインの
+<a href="http://rust-lang.org">Rust website</a>.</p>
+
+    <hr>
+    <p>提案がありますか？それとも修正が必要ですか？ Githubレポジトリで<a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Issueを開く</a>か自分で<a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/ja-jp/rust-jp.html.markdown">プルリクエスト</a>を作ってください。
+    </p>
+    <p class="contributed">
+    P1startが初めて貢献し、後に<a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/ja-jp/rust-jp.html.markdown">0人の貢献者</a>が更新してきました。
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://p1start.github.io/">P1start</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/Takashicc">Takashi Takeda</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

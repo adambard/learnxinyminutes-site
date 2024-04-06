@@ -1,0 +1,211 @@
+<!DOCTYPE html lang="es-es" xml:lang="es-es" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="es-es">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn PCRE in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/es-es/pcre-es/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fes-es%2Fpcre-es%2F&text=Aprende+X+en+Y+minutos%2C+donde+X%3DPCRE">
+        Comparte esta página
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Seleccione el tema:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">ligero</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">oscuro</button>
+  </div>
+  <h1><a href="/">Aprende X en Y minutos</a></h1>
+  <h2>Donde X=PCRE</h2>
+    <p class="filelink">
+    Descarga el código:
+    <a href="/docs/files/pcre-es.txt">pcre-es.txt</a>
+    </p>
+  <div id="doc">
+    <p>Una expresión regular (regex o regexp para abreviar) es una cadena especial
+utilizada para definir un patrón, por ejemplo, buscar una secuencia de
+caracteres; por ejemplo, <code>/^[a-z]+:/</code> se puede usar para extraer <code>http:</code>
+desde la URL <code>http://github.com/</code>.</p>
+
+<p>PCRE (Pearl Compatible Regular Expressions) es una biblioteca para expresiones
+muy similar a la Perls, desde ahí el nombre. Se trata de una de las sintaxis
+más comunes para escribir expresiones regulares.</p>
+
+<p>Hay dos tipos de metacaracteres (caracteres con una función especial):</p>
+
+<ul>
+<li>Caracteres reconocidos en todas partes excepto corchetes</li>
+</ul>
+<div class="highlight"><pre class="highlight plaintext"><code>  \      caracter de escape
+  ^      buscar al principio de la cadena (o línea, en modo multilínea)
+  $      busca al final de la cadena (o línea, en modo multilínea)
+  .      cualquier caracter exceptoo las nuevas líneas
+  [      inicio de clase de caracter
+  |      condiciones alternativas del separador
+  (      inicio del subpatrón
+  )      fin del subpatrón
+  ?      cuantificador "0 o 1"
+  *      quantificatore "0 o más"
+  +      quantificatore "1 o más"
+  {      inicio de cuantificador numérico
+</code></pre></div>
+<ul>
+<li>Caracteres reconocidos entre corchetes</li>
+</ul>
+<div class="highlight"><pre class="highlight plaintext"><code>  \      caracter de escape
+  ^      negar la clase si es el primer caracter
+  -      indica una serie de caracteres
+  [      clase de caracteres POSIX (si sigue la sintaxis POSIX)
+  ]      termina la clase de caracteres
+</code></pre></div>
+<p>PCRE también proporciona clases de caracteres predefinidas</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  \d     cifra decimal
+  \D     cifra NO decimal
+  \h     espacio horizontal vacío
+  \H     espacio horizontal NO vacío
+  \s     espacio
+  \S     NO esoacui
+  \v     espacio vertical vacío
+  \V     espacio vertical NO vacío
+  \w     palabra
+  \W     "NO palabra"
+</code></pre></div>
+<h2>Ejemplos</h2>
+
+<p>Usaremos la siguiente cadena para nuestras pruebas:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>66.249.64.13 - - [18/Sep/2004:11:07:48 +1000] "GET /robots.txt HTTP/1.0" 200 468 "-" "Googlebot/2.1"
+</code></pre></div>
+<p>Se trata de una línea de log del servidor web Apache.</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Regex</th>
+<th style="text-align: left">Resultado</th>
+<th style="text-align: left">Comentario</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><code>GET</code></td>
+<td style="text-align: left">GET</td>
+<td style="text-align: left">Busque exactamente la cadena &ldquo;GET&rdquo; (distingue entre mayúsculas y minúsculas)</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>\d+.\d+.\d+.\d+</code></td>
+<td style="text-align: left">66.249.64.13</td>
+<td style="text-align: left"><code>\d+</code> identifica uno o más (cuantificador <code>+</code>) números [0-9], <code>\.</code> identifica el caracter <code>.</code></td>
+</tr>
+<tr>
+<td style="text-align: left"><code>(\d+\.){3}\d+</code></td>
+<td style="text-align: left">66.249.64.13</td>
+<td style="text-align: left"><code>(\d+\.){3}</code> busca el grupo (<code>\d+\.</code>) exactamente 3 veces.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>\[.+\]</code></td>
+<td style="text-align: left">[18/Sep/2004:11:07:48 +1000]</td>
+<td style="text-align: left"><code>.+</code> identifica cualquier caracter, excepto las nuevas líneas; <code>.</code> indica cualquier carácter</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>^\S+</code></td>
+<td style="text-align: left">66.249.64.13</td>
+<td style="text-align: left"><code>^</code> buscar al inicio de la cadena, <code>\S+</code> identifica la primera cadena de caracteres que no sea espacio</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>\+[0-9]+</code></td>
+<td style="text-align: left">+1000</td>
+<td style="text-align: left"><code>\+</code> identifica el caracter <code>+</code>. <code>[0-9]</code> indica una cifra de 0 a 9. La expresión es equivalente a <code>\+\d+</code></td>
+</tr>
+</tbody></table>
+
+<h2>Otros recursos</h2>
+
+<p><a href="https://regex101.com/">Regex101</a> - probador de expresiones regulares</p>
+
+    <hr>
+    <p>¿Tienes una sugerencia o rectificación? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Abre un issue</a> en el repositorio de Github, o haz un <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/es-es/pcre-es.html.markdown">pull request</a> tu mismo
+    </p>
+    <p class="contributed">
+    Originalmente contribuido por Sachin Divekar, y actualizado por <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/es-es/pcre-es.html.markdown">0 colaborador(es)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://github.com/ssd532">Sachin Divekar</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/rrodriguze">Roberto R</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

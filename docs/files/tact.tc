@@ -1,0 +1,257 @@
+
+// Single line comment
+
+ // This is a multi-line comment
+  // this is a comment in the comment
+
+    get fun greeting(): String {
+    // This is a function that returns "hello world" message
+    // Return type is specified after a colon :
+        return "hello world";
+    }
+
+contract Counter {
+// Tact allows to create a contract
+    // persistent state variable of type Int to hold the counter value
+    val: Int as uint32;
+
+    // initialize the state variable when contract is deployed
+    init() {
+        self.val = 0;
+    }
+
+    // handler for incoming increment messages that change the state
+    receive("increment") {
+        self.val = self.val + 1;
+    }
+
+    // read-only getter for querying the counter value
+    get fun value(): Int {
+        return self.val;
+    }
+}
+
+const msg = { $$type: "Deploy", queryId: 0n };
+ await contract.send(sender, { value: toNano(1) }, msg);
+
+// this trait has to be imported
+import "@stdlib/deploy";
+
+// the Deployable trait adds a default receiver for the "Deploy" message
+contract Counter with Deployable {
+
+    val: Int as uint32;
+
+    init() {
+        self.val = 0;
+    }
+
+    receive("increment") {
+        self.val = self.val + 1;
+    }
+
+    get fun value(): Int {
+        return self.val;
+    }
+}
+
+import "@stdlib/deploy";
+
+contract Integers with Deployable {
+
+    // contract persistent state variables
+    // integers can be persisted in state in various sizes
+    // range -2^256 to 2^256 - 1 (takes 257 bit = 32 bytes + 1 bit)
+    i1: Int as int257 = 3001;
+    i2: Int as uint256;         // range 0 to 2^256 - 1 (takes 256 bit = 32 bytes)
+    // range -2^255 to 2^255 - 1 (takes 256 bit = 32 bytes)
+    i3: Int as int256 = 17;
+    i4: Int as uint128;         // range 0 to 2^128 - 1 (takes 128 bit = 16 bytes)
+    // range -2^127 to 2^127 - 1 (takes 128 bit = 16 bytes)
+    i5: Int as int128;
+    i6: Int as coins;           // range 0 to 2^120 - 1 (takes 120 bit = 15 bytes)
+    // range 0 to 18,446,744,073,709,551,615 (takes 64 bit = 8 bytes)
+    i7: Int as uint64 = 0x1c4a;
+    // range -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807
+    // (takes 64 bit = 8 bytes)
+    i8: Int as int64 = -203;
+    i9: Int as uint32 = 0;      // range 0 to 4,294,967,295 (takes 32 bit = 4 bytes)
+    // range -2,147,483,648 to 2,147,483,647 (takes 32 bit = 4 bytes)
+    i10: Int as int32 = 0;
+    i11: Int as uint16 = 0;     // range 0 to 65,535 (takes 16 bit = 2 bytes)
+    i12: Int as int16 = 0;      // range -32,768 to 32,767 (takes 16 bit = 2 bytes)
+    i13: Int as uint8 = 0;      // range 0 to 255 (takes 8 bit = 1 byte)
+    i14: Int as int8 = 0;       // range -128 to 127 (takes 8 bit = 1 byte)
+
+    init() {
+        // we can define numbers in hex (base 16)
+        self.i2 = 0x83dfd552e6372;
+        self.i4 = 1507998500293440234999; // we can define numbers in decimal
+        self.i5 = pow(10, 9);   // this is 10^9 = 1,000,000,000
+        self.i6 = ton("1.23");  // easy to read coin balances
+        //  (coins type is nano-tons, like cents, just with 9 decimals)
+    }
+
+    receive("show all") {
+        dump(self.i1);
+        dump(self.i2);
+        dump(self.i3);
+        dump(self.i4);
+        dump(self.i5);
+        dump(self.i6);
+        dump(self.i7);
+        dump(self.i8);
+    }
+
+    get fun result(): Int {
+        return self.i1;
+    }
+}
+
+b1: Bool = true;
+b2: Bool = false;
+
+// bouncable (same foundation wallet)
+a1: Address = address("EQCD39VS5jcptHL8vMjEXrzGaRcCVYto7HUn4bpAOg8xqB2N");
+// non-bounceable (same foundation wallet)
+a2: Address = address("UQCD39VS5jcptHL8vMjEXrzGaRcCVYto7HUn4bpAOg8xqEBI");
+
+s1: String = "hello world";
+sb: StringBuilder = beginString();
+sb.append(self.s1);
+
+i: Int = -12; // temporary variable, runtime Int type is always int257
+i = i1 * 3 + (i2 - i); // basic math expressions
+i = i1 % 10; // modulo (remainder after division), 3001 % 10 = 1
+i = i1 / 1000; // integer division (truncation toward zero), 3001 / 1000 = 3
+i = i1 >> 3; // shift right (multiply by 2^n)
+i = i1 << 2; // shift left (divide by 2^n)
+i = min(i2, 11); // minimum between two numbers
+i = max(i2, 66); // maximum between two numbers
+i = abs(-1 * i2); // absolute value
+
+const StateUnpaid: Int = 0;
+
+count: Int as uint32 = 17;
+
+get fun counter(): Int {
+    return self.count;
+}
+
+receive("increment") {
+    self.val = self.val + 1;
+}
+
+receive(msg: Add) {
+    self.val = self.val + msg.amount;
+}
+
+// Normal struct
+struct Point {
+    x: Int as int64;
+    y: Int as int64;
+}
+
+// Nested struct
+struct Params {
+    name: String = "Satoshi";   // default value
+    age: Int? = null;           // optional field
+    point: Point;               // nested structs
+}
+
+deployer: Address = sender();
+
+require(self.val < 5, "Counter is too high");
+
+let to: Address = ...;
+let value: Int = ton("1");
+send(SendParameters{
+    to: to,                             // address of receiver
+    value: value,                       //  amount of TON you want to send
+    mode: SendIgnoreErrors,             // 8-bit flag configuring how to send message
+    bounce: true,                       // if set to true (default) then message
+                                        // will be bounced back to sender
+    body: "Hello, World!".asComment()   // message body as Cell
+});
+
+val: Int as int64 = myBalance()
+// or
+// print how much TON coin were sent with this message
+dump(context().value);
+
+amount: Int as coins = ton("1");
+send(SendParameters{
+    to: sender(),
+    bounce: true,
+    value: amount,
+    mode: SendRemainingValue + SendIgnoreErrors
+});
+
+if (val > 1000) {
+  dump("larger than 1000");
+} else if (val > 500) {
+  dump("between 500 and 1000");
+} else {
+  dump("smaller than 500");
+}
+
+// repeat exactly 10 times
+
+repeat (10) {
+    i = i + 1;
+    sum = sum + i;
+}
+
+// While loop
+
+let x: Int = 10;
+while(x > 0) {
+  x = x - 1;
+}
+
+// do-until loop
+
+let x: Int = 10;
+do {
+  x = x - 1;
+} until (x <= 0);
+
+fun average(a: Int, b: Int): Int {
+    return (a + b) / 2;
+}
+
+mi1: map<Int, TokenInfo>;           // maps with Int as key
+ma1: map<Address, TokenInfo>;       // maps with Address as key
+
+arr: map<Int, Int>; // this is our array implemented with a map
+
+import "@stdlib/ownable";
+import "@stdlib/deploy";
+
+contract Counter with Deployable, Ownable {
+    owner: Address;
+
+    init() { // initialize a contract with default values like 'constructor'
+        self.owner = sender(); // we can initialize owner to any value we want, the deployer in this case
+        self.val = 0;
+    }
+
+    // this message in only available to the owner
+    receive("double") {
+        self.requireOwner();
+        self.val = self.val * 2;
+    }
+
+    // this message will only work until the contract was stopped
+    receive("increment") {
+        self.requireNotStopped();
+        self.val = self.val + 1;
+    }
+
+    // this message will only work as long as the contract is not stopped
+    receive("increment2") {
+        self.requireNotStopped();
+        self.val = self.val + 1;
+    }
+}
+

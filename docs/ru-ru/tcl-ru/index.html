@@ -1,0 +1,679 @@
+<!DOCTYPE html lang="ru-ru" xml:lang="ru-ru" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="ru-ru">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn Tcl in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/ru-ru/tcl-ru/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fru-ru%2Ftcl-ru%2F&text=%D0%98%D0%B7%D1%83%D1%87%D0%B8%D1%82%D0%B5+X+%D0%B7%D0%B0+Y+%D0%BC%D0%B8%D0%BD%D1%83%D1%82%2C+%D0%B3%D0%B4%D0%B5+X%3DTcl">
+        Поделиться страницей
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Выберите тему:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">светлая</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">тёмная</button>
+  </div>
+  <h1><a href="/">Изучите X за Y минут</a></h1>
+  <h2>Где X=Tcl</h2>
+    <p class="filelink">
+    Получить исходный код:
+    <a href="/docs/files/learntcl-ru.tcl">learntcl-ru.tcl</a>
+    </p>
+  <div id="doc">
+    <p>Tcl был создан <a href="https://ru.wikipedia.org/wiki/Оустерхаут,_Джон">Джоном Оустерхаутом</a>
+в качестве скриптового языка в своих инструментах проектирования электрических цепей.
+В 1997 году за разработку языка Tcl автор получил <a href="https://ru.wikipedia.org/wiki/ACM">ACM</a>
+ Software System Award. Tcl может использоваться и как встраиваемый скриптовый язык,
+и как язык программирования общего назначения. Кроме того, он может быть использован как
+библиотека в программах на C, даже в случаях когда не требуется написание скриптов,
+поскольку Tcl может предоставить программе на C различные типы данных, такие как
+динамические строки, списки и хэш-таблицы. Также с помощью этой библиотеки возможно
+использовать форматирование строк, операции с файловой системой, работу с кодировками и
+динамически загружаемые библиотеки. К другим особенностям Tcl относятся:</p>
+
+<ul>
+<li><p>Удобный кроссплатформенный API для работы с сетью</p></li>
+<li><p>Поддержка виртуальной файловой системы (VFS)</p></li>
+<li><p>Стекируемые каналы ввода-вывода</p></li>
+<li><p>Асинхронность в ядре языка</p></li>
+<li><p>Поддержка корутин</p></li>
+<li><p>Простая и надёжная модель потоков выполнения</p></li>
+</ul>
+
+<p>Tcl имеет много общего с Lisp, но в отличие от списков, в Tcl &ldquo;валютой&rdquo; языка
+являются строки. Все значения являются строками. Список в Tcl это просто строка в
+определённом формате, а тело процедуры (скрипт) это ещё одна строка, а не блок.
+С целью увеличения производительности, интерпретатор Tcl использует кэшированные
+внутренние представления различных типов данных. Например, рутины (routines), работающие
+со списками, фактически используют внутреннее представление списков, а интерпретатор
+Tcl обновляет строковое представление в том случае если оно используется в скрипте.
+В Tcl используется подход copy-on-write, позволяющий оперировать большими объёмами
+данных без дополнительного оверхеда. Процедуры в Tcl автоматически компилируются
+в байткод, кроме случаев когда в процедуре используются динамические рутины, такие
+как <code>uplevel</code>, <code>upvar</code> и <code>trace</code>.</p>
+
+<p>Программировать на Tcl приятно. Его находят привлекательным хакеры, которым интересны
+Lisp, Forth или Smalltalk, а также инженеры и учёные, которым просто необходим
+гибкий инструмент для выполнения их задач. В Tcl языковые конструкции, включая
+циклы и математические операторы, представлены в виде изменяемых рутин, в отличие
+от других языков программирования, где они закреплены в синтаксисе, что позволяет
+синтаксису Tcl не мешать работать с предметной областью проекта. Синтаксис Tcl в этом
+смысле даже более минималистичен чем у Lisp.</p>
+<div class="highlight"><pre class="highlight tcl"><code><span class="c1">#! /bin/env tclsh</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## 1. Рекомендации</span>
+<span class="c1">###############################################################################</span>
+
+<span class="c1"># Tcl это не shell или C! Этот момент требует уточнения, поскольку привычки</span>
+<span class="c1"># написания shell-скриптов почти работают в Tcl и часто люди начинают</span>
+<span class="c1"># изучать Tcl со знанием синтаксиса других языков. Поначалу это работает, но</span>
+<span class="c1"># когда скрипты становятся сложнее, наступает фрустрация.</span>
+
+# Фигурные скобки <span class="p">{}</span> в Tcl используются не для построения блоков кода или
+# списков, а как механизм экранирования <span class="p">(</span>quoting<span class="p">)</span> для кода. Фактически в Tcl
+<span class="c1"># нет ни списков, ни блоков кода. Фигурные скобки использутся для</span>
+<span class="c1"># экранирования специальных символов и потому подходят для представления</span>
+<span class="c1"># тела процедур и строк, которые должны интерпретироваться как списки.</span>
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## 2. Синтаксис</span>
+<span class="c1">###############################################################################</span>
+
+<span class="c1"># Скрипт состоит из команд, разделённых символами перевода строки или символами</span>
+<span class="c1"># точки с запятой. Каждая команда представляет собой вызов рутины. Первое слово</span>
+<span class="c1"># это имя вызываемой рутины, а последующие слова это аргументы. Слова разделены</span>
+<span class="c1"># пробелами. Так как каждый аргумент это слово в команде, он является строкой и</span>
+<span class="c1"># может быть неэкранирован:</span>
+set part1 Sal
+set part2 ut<span class="p">;</span> set part3 ations
+
+
+<span class="c1"># символ доллара используется для подставления значения переменных:</span>
+set greeting $part1$part2$part3
+
+
+# Когда <span class="s2">"set"</span> получает только имя переменной, возвращается значение переменной:
+set part3 <span class="p">;</span><span class="c1"># Возвращает значение переменной</span>
+
+
+<span class="c1"># Содержимое квадратных скобок заменяется на результат выполнения:</span>
+set greeting $part1$part2<span class="p">[</span>set part3<span class="p">]</span>
+
+
+<span class="c1"># Встроенный таким образов скрипт может состоять из нескольких команд, но</span>
+<span class="c1"># результат подстановки определяется последней командой:</span>
+set greeting $greeting<span class="p">[</span>
+    incr i
+    incr i
+    incr i
+<span class="p">]</span>
+puts $greeting <span class="p">;</span># Выведет <span class="s2">"Salutations3"</span>
+
+<span class="c1"># Каждое слово в команде является строкой, включая имя рутины, поэтому</span>
+<span class="c1"># подстановки могут быть использованы и таким образом:</span>
+set action pu
+
+<span class="c1"># следующие команды эквивалентны:</span>
+puts $greeting
+<span class="nv">${action}</span>ts $greeting
+<span class="p">[</span>set action<span class="p">]</span>ts $greeting
+
+
+<span class="c1"># Обратный слэш экранирует специальные символы:</span>
+set amount <span class="se">\$</span>16.42
+
+
+<span class="c1"># и он же используется для ввода специальных символов:</span>
+puts lots<span class="se">\n</span>of<span class="se">\n\n\n\n\n\n</span>newlines
+
+
+<span class="c1"># Слово в фигурных скобках никак не интерпретируется и в нём не работают</span>
+<span class="c1"># никакие подстановки, за исключением экранирования закрывающей скобки:</span>
+set somevar <span class="p">{</span>
+    Это литерал знака $, а это <span class="se">\}</span> экранированная закрывающая скобка
+<span class="p">}</span>
+
+
+<span class="c1"># В слове внутри двойных кавычек, пробельные символы теряют своё</span>
+<span class="c1"># специальное значение:</span>
+set name Neo
+set greeting <span class="s2">"Hello, </span><span class="nv">$name</span><span class="s2">"</span>
+
+
+<span class="c1"># Имя переменной может быть любой строкой:</span>
+set <span class="p">{</span>first name<span class="p">}</span> New
+
+
+<span class="c1"># Фигурные скобки используются для доступа к переменным с составными именами:</span>
+set greeting <span class="s2">"Hello, </span><span class="nv">${first name}</span><span class="s2">"</span>
+
+
+# <span class="s2">"set"</span> всегда можно использовать вместо подстановки переменной:
+set greeting <span class="s2">"Hello, </span><span class="p">[</span>set <span class="p">{</span>first name<span class="p">}]</span><span class="s2">"</span>
+
+
+# Чтобы <span class="s2">"распаковать"</span> список в команду используется оператор расширения <span class="s2">"{*}"</span>
+<span class="c1"># Эти две команды эквивалентны:</span>
+set name Neo
+set <span class="k">{*}</span><span class="p">{</span>name Neo<span class="p">}</span>
+
+
+<span class="c1"># Массив это особая переменная, являющаяся контейнером для других переменных.</span>
+set person<span class="p">(</span>name<span class="p">)</span> Neo
+set person<span class="p">(</span>destiny<span class="p">)</span> <span class="p">{</span>The One<span class="p">}</span>
+set greeting <span class="s2">"Hello, </span><span class="nv">$person</span><span class="s2">(name)"</span>
+
+
+# <span class="s2">"variable"</span> может быть использована для объявления или установки переменных.
+# В отличие от <span class="s2">"set"</span>, которая использует глобальное и локальное пространство
+# имён, <span class="s2">"variable"</span> работает только с локальным пространством:
+variable name New
+
+
+# <span class="s2">"namespace eval"</span> создаёт новое пространство имён, если его не существует.
+<span class="c1"># Пространство имён может содержать рутины и переменные:</span>
+namespace eval people <span class="p">{</span>
+    namespace eval person1 <span class="p">{</span>
+        variable name Neo
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="c1"># Двумя или более двоеточиями в именах переменных отделяется название</span>
+<span class="c1"># пространства имён:</span>
+namespace eval people <span class="p">{</span>
+    set greeting <span class="s2">"Hello </span><span class="nv">$person1::name</span><span class="s2">"</span>
+<span class="p">}</span>
+
+<span class="c1"># Два или более двоеточия также отделяют название пространства имён</span>
+<span class="c1"># в имени рутины:</span>
+proc people::person1::speak <span class="p">{}</span> <span class="p">{</span>
+    puts <span class="p">{</span>I am The One.<span class="p">}</span>
+<span class="p">}</span>
+
+# Полные<span class="p">(</span>fully-qualified<span class="p">)</span> имена начинаются с двух двоеточий:
+set greeting <span class="s2">"Hello </span><span class="nv">$::people::person1::name</span><span class="s2">"</span>
+
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## 3. Больше никакого синтаксиса</span>
+<span class="c1">###############################################################################</span>
+
+<span class="c1"># Все остальные функции реализованы посредством рутин. С этого момента и далее</span>
+<span class="c1"># больше нет нового синтаксиса. Всё остальное что можно изучить о Tcl это</span>
+<span class="c1"># поведение отдельных рутин и какие значения они присваивают своим аргументам.</span>
+
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## 4. Переменные и пространства имён</span>
+<span class="c1">###############################################################################</span>
+
+<span class="c1"># Каждая переменная и рутина связана с пространством имён.</span>
+
+<span class="c1"># Чтобы получить интерпретатор, который не может сделать ничего, достаточно</span>
+<span class="c1"># удалить глобальное пространство имён. Особой пользы в этом нет, но это хорошо</span>
+<span class="c1"># иллюстрирует природу Tcl. Фактически имя глобального пространства имён это</span>
+<span class="c1"># пустая строка, но единственный способ представить её -- в виде полного имени:</span>
+proc delete_global_namespace <span class="p">{}</span> <span class="p">{</span>
+    namespace delete ::
+<span class="p">}</span>
+
+# Поскольку <span class="s2">"set"</span> всегда учитывает и глобальное, и текущее пространства имён,
+# более безопасно использовать <span class="s2">"variable"</span> чтобы объявить новую переменную или
+# задать значение переменной. Если переменная с именем <span class="s2">"name"</span> уже существует
+# в глобальном пространстве имён, использование <span class="s2">"set"</span> задаст значение
+# глобальной переменной, тогда как <span class="s2">"variable"</span> работает только с текущим
+<span class="c1"># пространством имён.</span>
+
+namespace eval people <span class="p">{</span>
+    namespace eval person1 <span class="p">{</span>
+        variable name Neo
+    <span class="p">}</span>
+<span class="p">}</span>
+
+# После объявления переменной в пространстве имён, <span class="p">[</span><span class="k">set</span><span class="p">]</span> видит её, а не
+<span class="c1"># одноимённую переменную в глобальном пространстве имён:</span>
+
+namespace eval people <span class="p">{</span>
+    namespace eval person1 <span class="p">{</span>
+        variable name
+        set name Neo
+    <span class="p">}</span>
+<span class="p">}</span>
+
+# Но если <span class="s2">"set"</span> приходится создать новую переменную, он всегда делает это
+<span class="c1"># с учётом текущего пространства имён:</span>
+unset name
+namespace eval people <span class="p">{</span>
+    namespace eval person1 <span class="p">{</span>
+        set name neo
+    <span class="p">}</span>
+
+<span class="p">}</span>
+set people::person1::name
+
+
+<span class="c1"># Абсолютное имя всегда начинается с имени глобального пространства имён, то</span>
+<span class="c1"># есть с пустой строки, за которой следует два двоеточия:</span>
+set ::people::person1::name Neo
+
+
+# В пределах процедуры <span class="s2">"variable"</span> связывает перменную в текущем пространстве
+<span class="c1"># имён с локальной областью видимости:</span>
+namespace eval people::person1 <span class="p">{</span>
+    proc fly <span class="p">{}</span> <span class="p">{</span>
+        variable name
+        puts <span class="s2">"</span><span class="nv">$name</span><span class="s2"> is flying!"</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## 5. Встроенные рутины</span>
+<span class="c1">###############################################################################</span>
+
+# Математические операции можно выполнять при помощи <span class="s2">"expr"</span>:
+set a 3
+set b 4
+set c <span class="p">[</span>expr <span class="p">{</span><span class="nv">$a</span> + $b<span class="p">}]</span>
+
+# Поскольку <span class="s2">"expr"</span> самостоятельно занимается подстановкой значений переменных,
+<span class="c1"># математическое выражение нужно оборачивать в фигурные скобки чтобы отключить</span>
+<span class="c1"># подстановку значений переменных интерпретатором Tcl.</span>
+<span class="c1"># Подробнее об этом можно прочесть здесь:</span>
+# <span class="s2">"https://wiki.tcl-lang.org/page/Brace+your+expr-essions"</span>
+
+
+# <span class="s2">"expr"</span> выполняет подстановку переменных и результатов команд:
+set c <span class="p">[</span>expr <span class="p">{</span><span class="nv">$a</span> + <span class="p">[</span>set b<span class="p">]}]</span>
+
+
+# <span class="s2">"expr"</span> предоставляет разные математические функции:
+set c <span class="p">[</span>expr <span class="p">{</span>pow<span class="p">(</span><span class="nv">$a</span>,$b<span class="p">)}]</span>
+
+
+<span class="c1"># Математические операторы сами по себе доступны в виде рутин в</span>
+<span class="c1"># пространстве имён ::tcl::mathop</span>
+::tcl::mathop::+ 5 3
+
+<span class="c1"># Рутины могут быть импортированы из других пространств имён:</span>
+namespace import ::tcl::mathop::+
+set result <span class="p">[</span>+ 5 3<span class="p">]</span>
+
+
+# Не числовые значения должны быть квотированы. Такие операторы как <span class="s2">"eq"</span>
+<span class="c1"># Могут быть использованы чтобы провести строковое сравнение:</span>
+set name Neo
+expr <span class="p">{{</span>Bob<span class="p">}</span> eq $name<span class="p">}</span>
+
+<span class="c1"># Общие операторы сравнения тоже работают со строками если числовое значение</span>
+<span class="c1"># операнда недоступно:</span>
+expr <span class="p">{{</span>Bob<span class="p">}</span> == $name<span class="p">}</span>
+
+
+# <span class="s2">"proc"</span> создаёт новые рутины:
+proc greet name <span class="p">{</span>
+    return <span class="s2">"Hello, </span><span class="nv">$name</span><span class="s2">!"</span>
+<span class="p">}</span>
+
+<span class="c1"># можно указать несколько параметров:</span>
+proc greet <span class="p">{</span>greeting name<span class="p">}</span> <span class="p">{</span>
+    return <span class="s2">"</span><span class="nv">$greeting</span><span class="s2">, </span><span class="nv">$name</span><span class="s2">!"</span>
+<span class="p">}</span>
+
+
+<span class="c1"># Как было отмечено ранее, фигурные скобки не обозначают блок кода.</span>
+# Любое значение, даже третий аргумент <span class="s2">"proc"</span>, является строкой.
+<span class="c1"># Предыдущая команда может быть переписана без использования фигурных скобок:</span>
+proc greet greeting<span class="se">\ </span>name return<span class="se">\ \"\$</span>greeting,<span class="se">\ \$</span>name!<span class="se">\"</span>
+
+
+
+# Если последний параметр называется <span class="s2">"args"</span>, все дополнительные аргументы,
+# переданные рутине, собираются в список и передаются как <span class="s2">"args"</span>:
+proc fold <span class="p">{</span>cmd first args<span class="p">}</span> <span class="p">{</span>
+    foreach arg $args <span class="p">{</span>
+        set first <span class="p">[</span><span class="nv">$cmd</span> $first $arg<span class="p">]</span>
+    <span class="p">}</span>
+    return $first
+<span class="p">}</span>
+fold ::tcl::mathop::* 5 3 3 <span class="p">;</span><span class="c1"># -&gt;  45</span>
+
+
+<span class="c1"># Условное выполнение тоже реализовано как рутина:</span>
+if <span class="p">{</span>3 &gt; 4<span class="p">}</span> <span class="p">{</span>
+    puts <span class="p">{</span>This will never happen<span class="p">}</span>
+<span class="p">}</span> elseif <span class="p">{</span>4 &gt; 4<span class="p">}</span> <span class="p">{</span>
+    puts <span class="p">{</span>This will also never happen<span class="p">}</span>
+<span class="p">}</span> else <span class="p">{</span>
+    puts <span class="p">{</span>This will always happen<span class="p">}</span>
+<span class="p">}</span>
+
+
+# Циклы реализованы как рутины. Первый и третий аргумент для <span class="s2">"for"</span>
+<span class="c1"># обрабатываются как скрипты, а второй аргумент как выражение:</span>
+set res 0
+for <span class="p">{</span>set i 0<span class="p">}</span> <span class="p">{</span><span class="nv">$i</span> &lt; 10<span class="p">}</span> <span class="p">{</span>incr i<span class="p">}</span> <span class="p">{</span>
+    set res <span class="p">[</span>expr <span class="p">{</span><span class="nv">$res</span> + $i<span class="p">}]</span>
+<span class="p">}</span>
+unset res
+
+
+# Первый аргумент для <span class="s2">"while"</span> тоже обрабатывается как выражение:
+set i 0
+while <span class="p">{</span><span class="nv">$i</span> &lt; 10<span class="p">}</span> <span class="p">{</span>
+    incr i 2
+<span class="p">}</span>
+
+
+<span class="c1"># Список это строка, а элементы списка разделены пробелами:</span>
+set amounts 10<span class="se">\ </span>33<span class="se">\ </span>18
+set amount <span class="p">[</span>lindex $amounts 1<span class="p">]</span>
+
+<span class="c1"># Если элемент списка содержит пробел, его надо экранировать:</span>
+set inventory <span class="p">{</span><span class="s2">"item 1"</span> item<span class="se">\ </span>2 <span class="p">{</span>item 3<span class="p">}}</span>
+
+
+<span class="c1"># Хорошая практика использовать списковые рутины для обработки списков:</span>
+lappend inventory <span class="p">{</span>item 1<span class="p">}</span> <span class="p">{</span>item 2<span class="p">}</span> <span class="p">{</span>item 3<span class="p">}</span>
+
+
+<span class="c1"># Фигурные скобки и бэкслеш могут быть использованы чтобы хранить более</span>
+<span class="c1"># комплексные структуры внутри списков. Список выглядит как скрипт, за</span>
+<span class="c1"># исключением того, что перевод строки и точка с запятой теряют своё</span>
+<span class="c1"># специальное значение, а также не производится подстановка значений.</span>
+<span class="c1"># Эта особенность Tcl называется гомоиконичность</span>
+<span class="c1"># https://ru.wikipedia.org/wiki/Гомоиконичность</span>
+<span class="c1"># В приведённом списке есть три элемента:</span>
+set values <span class="p">{</span>
+
+    one<span class="se">\ </span>two
+
+    <span class="p">{</span>three four<span class="p">}</span>
+
+    five<span class="se">\{</span>six
+
+<span class="p">}</span>
+
+
+<span class="c1"># Поскольку как и все значения, список является строкой, строковые</span>
+<span class="c1"># операции могут выполняться и над списком, с риском повреждения:</span>
+set values <span class="p">{</span>one two three four<span class="p">}</span>
+set values <span class="p">[</span>string map <span class="p">{</span>two <span class="se">\{</span><span class="p">}</span> $values<span class="p">]</span> <span class="p">;</span># $values больше не <span class="se">\
+</span>    правильно отформатированный список
+
+
+# Безопасный способ работать со списками — использовать <span class="s2">"list"</span> рутины:
+set values <span class="p">[</span>list one <span class="se">\{</span> three four<span class="p">]</span>
+lappend values <span class="p">{</span> <span class="p">}</span> <span class="p">;</span><span class="c1"># добавить символ пробела как элемент в список</span>
+
+
+# Использование <span class="s2">"eval"</span> для вычисления значения скрипта:
+eval <span class="p">{</span>
+    set name Neo
+    set greeting <span class="s2">"Hello, </span><span class="nv">$name</span><span class="s2">"</span>
+<span class="p">}</span>
+
+
+# Список всегда можно передать в <span class="s2">"eval"</span> как скрипт, содержащий одну команду:
+eval <span class="p">{</span>set name Neo<span class="p">}</span>
+eval <span class="p">[</span>list set greeting <span class="s2">"Hello, </span><span class="nv">$name</span><span class="s2">"</span><span class="p">]</span>
+
+
+# Следовательно, когда используется <span class="s2">"eval"</span>, используйте <span class="s2">"list"</span> чтобы собрать
+<span class="c1"># необходимую команду:</span>
+set command <span class="p">{</span>set name<span class="p">}</span>
+lappend command <span class="p">{</span>Archibald Sorbisol<span class="p">}</span>
+eval $command
+
+
+<span class="c1"># Частая ошибка: не использовать списковые функции для построения команды:</span>
+set command <span class="p">{</span>set name<span class="p">}</span>
+append command <span class="p">{</span> Archibald Sorbisol<span class="p">}</span>
+try <span class="p">{</span>
+    eval $command <span class="p">;</span># Здесь будет ошибка, превышено количество аргументов <span class="se">\
+</span>        к <span class="s2">"set"</span> в <span class="p">{</span>set name Archibald Sorbisol<span class="p">}</span>
+<span class="p">}</span> on error <span class="p">{</span>result eoptions<span class="p">}</span> <span class="p">{</span>
+    puts <span class="p">[</span>list <span class="p">{</span>received an error<span class="p">}</span> $result<span class="p">]</span>
+<span class="p">}</span>
+
+# Эта ошибка запросто может произойти с <span class="s2">"subst"</span>:
+
+set replacement <span class="p">{</span>Archibald Sorbisol<span class="p">}</span>
+set command <span class="p">{</span>set name $replacement<span class="p">}</span>
+set command <span class="p">[</span>subst $command<span class="p">]</span>
+try <span class="p">{</span>
+    eval $command <span class="p">;</span># Та же ошибка, лишние аргументы к <span class="se">\
+</span>        <span class="p">{</span>set name Archibald Sorbisol<span class="p">}</span>
+<span class="p">}</span> trap <span class="p">{</span>TCL WRONGARGS<span class="p">}</span> <span class="p">{</span>result options<span class="p">}</span> <span class="p">{</span>
+    puts <span class="p">[</span>list <span class="p">{</span>received another error<span class="p">}</span> $result<span class="p">]</span>
+<span class="p">}</span>
+
+
+# <span class="s2">"list"</span> корректно форматирует значение для подстановки:
+set replacement <span class="p">[</span>list <span class="p">{</span>Archibald Sorbisol<span class="p">}]</span>
+set command <span class="p">{</span>set name $replacement<span class="p">}</span>
+set command <span class="p">[</span>subst $command<span class="p">]</span>
+eval $command
+
+
+# <span class="s2">"list"</span> обычно используется для форматирования значений для подстановки в
+<span class="c1"># скрипты, вот несколько примеров:</span>
+
+
+# <span class="s2">"apply"</span> вычисляет список из двух элементов как рутину:
+set cmd <span class="p">{{</span>greeting name<span class="p">}</span> <span class="p">{</span>
+    return <span class="s2">"</span><span class="nv">$greeting</span><span class="s2">, </span><span class="nv">$name</span><span class="s2">!"</span>
+<span class="p">}}</span>
+apply $cmd Whaddup Neo
+
+<span class="c1"># Третий элемент может быть использован для указания пространства имён рутины:</span>
+set cmd <span class="p">[</span>list <span class="p">{</span>greeting name<span class="p">}</span> <span class="p">{</span>
+    return <span class="s2">"</span><span class="nv">$greeting</span><span class="s2">, </span><span class="nv">$name</span><span class="s2">!"</span>
+<span class="p">}</span> <span class="p">[</span>namespace current<span class="p">]]</span>
+apply $cmd Whaddup Neo
+
+
+# <span class="s2">"uplevel"</span> вычисляет скрипт на уровень выше в списке вызовов:
+proc greet <span class="p">{}</span> <span class="p">{</span>
+    uplevel <span class="p">{</span>puts <span class="s2">"</span><span class="nv">$greeting</span><span class="s2">, </span><span class="nv">$name</span><span class="s2">"</span><span class="p">}</span>
+<span class="p">}</span>
+
+proc set_double <span class="p">{</span>varname value<span class="p">}</span> <span class="p">{</span>
+    if <span class="p">{[</span>string is double $value<span class="p">]}</span> <span class="p">{</span>
+        uplevel <span class="p">[</span>list variable $varname $value<span class="p">]</span>
+    <span class="p">}</span> else <span class="p">{</span>
+        error <span class="p">[</span>list <span class="p">{</span>not a double<span class="p">}</span> $value<span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+# <span class="s2">"upvar"</span> связывает переменную на текущем уровне вызовов с переменной на
+<span class="c1"># более высоком уровне:</span>
+proc set_double <span class="p">{</span>varname value<span class="p">}</span> <span class="p">{</span>
+    if <span class="p">{[</span>string is double $value<span class="p">]}</span> <span class="p">{</span>
+        upvar 1 $varname var
+        set var $value
+    <span class="p">}</span> else <span class="p">{</span>
+        error <span class="p">[</span>list <span class="p">{</span>not a double<span class="p">}</span> $value<span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+# Избавляемся от встроенной рутины <span class="s2">"while"</span> и используем <span class="s2">"proc"</span> чтобы написать
+<span class="c1"># свою версию:</span>
+rename ::while <span class="p">{}</span>
+<span class="c1"># обработка оставлена как упражнение:</span>
+proc while <span class="p">{</span>condition script<span class="p">}</span> <span class="p">{</span>
+    if <span class="p">{[</span>uplevel 1 <span class="p">[</span>list expr $condition<span class="p">]]}</span> <span class="p">{</span>
+        uplevel 1 $script
+        tailcall <span class="p">[</span>namespace which while<span class="p">]</span> $condition $script
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+# <span class="s2">"coroutine"</span> создаёт новый стек вызовов, новую рутину для входа в этот стек
+# и вызывает эту рутину. <span class="s2">"yield"</span> приостанавливает вычисления в этом стеке и
+<span class="c1"># возвращает управление вызывавшему стеку:</span>
+proc countdown count <span class="p">{</span>
+    # отправить что-нибудь обратно создателю корутины, фактически
+    # останавливая стек вызовов на время.
+    yield <span class="p">[</span>info coroutine<span class="p">]</span>
+
+    while <span class="p">{</span><span class="nv">$count</span> &gt; 1<span class="p">}</span> <span class="p">{</span>
+        yield <span class="p">[</span>incr count -1<span class="p">]</span>
+    <span class="p">}</span>
+    return 0
+<span class="p">}</span>
+coroutine countdown1 countdown 3
+coroutine countdown2 countdown 5
+puts <span class="p">[</span>countdown1<span class="p">]</span> <span class="p">;</span><span class="c1"># -&gt; 2</span>
+puts <span class="p">[</span>countdown2<span class="p">]</span> <span class="p">;</span><span class="c1"># -&gt; 4</span>
+puts <span class="p">[</span>countdown1<span class="p">]</span> <span class="p">;</span><span class="c1"># -&gt; 1</span>
+puts <span class="p">[</span>countdown1<span class="p">]</span> <span class="p">;</span><span class="c1"># -&gt; 0</span>
+catch <span class="p">{</span>
+    puts <span class="p">[</span>coundown1<span class="p">]</span> <span class="p">;</span># -&gt; invalid command name <span class="s2">"countdown1"</span>
+<span class="p">}</span> cres copts
+puts $cres
+puts <span class="p">[</span>countdown2<span class="p">]</span> <span class="p">;</span><span class="c1"># -&gt; 3</span>
+
+
+<span class="c1"># Стеки корутин могут передавать контроль друг другу:</span>
+
+proc pass <span class="p">{</span>whom args<span class="p">}</span> <span class="p">{</span>
+    return <span class="p">[</span>yieldto $whom <span class="k">{*}</span><span class="nv">$args</span><span class="p">]</span>
+<span class="p">}</span>
+
+coroutine a apply <span class="p">{{}</span> <span class="p">{</span>
+        yield
+        set result <span class="p">[</span>pass b <span class="p">{</span>please pass the salt<span class="p">}]</span>
+        puts <span class="p">[</span>list got the $result<span class="p">]</span>
+        set result <span class="p">[</span>pass b <span class="p">{</span>please pass the pepper<span class="p">}]</span>
+        puts <span class="p">[</span>list got the $result<span class="p">]</span>
+<span class="p">}}</span>
+
+coroutine b apply <span class="p">{{}</span> <span class="p">{</span>
+    set request <span class="p">[</span>yield<span class="p">]</span>
+    while 1 <span class="p">{</span>
+        set response <span class="p">[</span>pass c $request<span class="p">]</span>
+        puts <span class="p">[</span>list <span class="p">[</span>info coroutine<span class="p">]</span> is now yielding<span class="p">]</span>
+        set request <span class="p">[</span>pass a $response<span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}}</span>
+
+coroutine c apply <span class="p">{{}</span> <span class="p">{</span>
+    set request <span class="p">[</span>yield<span class="p">]</span>
+    while 1 <span class="p">{</span>
+        if <span class="p">{[</span>string match *salt* $request<span class="p">]}</span> <span class="p">{</span>
+            set request <span class="p">[</span>pass b salt<span class="p">]</span>
+        <span class="p">}</span> else <span class="p">{</span>
+            set request <span class="p">[</span>pass b huh?<span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}}</span>
+</code></pre></div>
+<h2>Ссылки</h2>
+
+<p><a href="https://www.tcl-lang.org">Официальная документация Tcl</a></p>
+
+<p><a href="https://wiki.tcl-lang.org">Tcl Wiki</a></p>
+
+<p><a href="http://www.reddit.com/r/Tcl">Tcl на Reddit</a></p>
+
+    <hr>
+    <p>Хотите предложить свой перевод? Может быть, улучшение перевода? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Откройте Issue</a> в репозитории Github или сделайте <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/ru-ru/tcl-ru.html.markdown">pull request</a> сами!
+    </p>
+    <p class="contributed">
+    Первоначально предоставлено автором Poor Yorick, и обновлено <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/ru-ru/tcl-ru.html.markdown">0 автором (-ами)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="https://pooryorick.com/">Poor Yorick</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/weirdvic">Viktor Sokhranov</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

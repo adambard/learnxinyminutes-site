@@ -1,0 +1,875 @@
+<!DOCTYPE html lang="ja-jp" xml:lang="ja-jp" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="ja-jp">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn PHP in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/ja-jp/php-jp/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fja-jp%2Fphp-jp%2F&text=X%E3%82%92Y%E5%88%86%E3%81%A7%E5%AD%A6%E3%81%B6%2C+%E3%81%9F%E3%81%A0%E3%81%97+X%3DPHP">
+        このページをシェアする
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">外観の選択：</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">ライト</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">ダーク</button>
+  </div>
+  <h1><a href="/">XをY分で学ぶ</a></h1>
+  <h2>ただし X=PHP</h2>
+    <p class="filelink">
+    ソースコードの取得：
+    <a href="/docs/files/learnphp-jp.php">learnphp-jp.php</a>
+    </p>
+  <div id="doc">
+    <p>このドキュメントでは、 PHP 5+ について説明します。</p>
+<div class="highlight"><pre class="highlight php"><code><span class="cp">&lt;?php</span> <span class="c1">// PHPのコードは、&lt;?php タグで囲む必要があります。</span>
+
+<span class="c1">// もしあなたのphpファイルがPHPのみで構成される場合、</span>
+<span class="c1">// 意図しない出力を防ぐために、phpの閉じタグは省略するのがベストプラクティスです。</span>
+<span class="c1">// 一行のコメントを書く場合、2つのスラッシュで始めます。</span>
+<span class="c1"># ハッシュ(ポンド記号として知られる)を使いたいでしょうが、//のほうが一般的です</span>
+<span class="cm">/*
+    スラッシュとアスタリスク、アスタリスクとスラッシュで囲むと、
+    複数行のコメントを書けます。
+*/</span>
+
+<span class="c1">// 出力をプリントしたい場合は、"echo" か "print" を使います。</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">'Hello '</span><span class="p">);</span> <span class="c1">// これは "Hello " という改行なしの文字列をプリントします。</span>
+
+<span class="c1">// カッコ()はprintとecho関数に置いては省略できます。</span>
+<span class="k">echo</span> <span class="s2">"World</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span> <span class="c1">// これは改行ありの"World"という文字列をプリントします。</span>
+<span class="c1">// (全ての命令文では、セミコロンを最後に付けることが必須です。)</span>
+
+<span class="c1">// &lt;?php タグの外側にあるものは、自動的にプリントされます。</span>
+<span class="cp">?&gt;</span>
+Hello World Again!
+<span class="cp">&lt;?php</span>
+
+
+<span class="cd">/************************************
+ * 型と変数について
+ */</span>
+
+<span class="c1">// 変数は"$"マークで始まります</span>
+<span class="c1">// 有効な変数名にするには、文字またはアンダースコア(_)で始めて,</span>
+<span class="c1">// その後はどんな数字でも、文字でも、アンダースコアで続けても構いません</span>
+
+<span class="c1">//ブーリアン値は大文字、小文字問いません</span>
+<span class="nv">$boolean</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>  <span class="c1">// or TRUE or True</span>
+<span class="nv">$boolean</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span> <span class="c1">// or FALSE or False</span>
+
+<span class="c1">// 数値</span>
+<span class="nv">$int1</span> <span class="o">=</span> <span class="mi">12</span><span class="p">;</span>   <span class="c1">// =&gt; 12</span>
+<span class="nv">$int2</span> <span class="o">=</span> <span class="o">-</span><span class="mi">12</span><span class="p">;</span>  <span class="c1">// =&gt; -12</span>
+<span class="nv">$int3</span> <span class="o">=</span> <span class="mo">012</span><span class="p">;</span>  <span class="c1">// =&gt; 10 (先頭の0は8進法を示す)</span>
+<span class="nv">$int4</span> <span class="o">=</span> <span class="mh">0x0F</span><span class="p">;</span> <span class="c1">// =&gt; 15 (先頭の0xは16進法を示す)</span>
+
+<span class="c1">// floats(浮動小数) (別名double)</span>
+<span class="nv">$float</span> <span class="o">=</span> <span class="mf">1.234</span><span class="p">;</span>
+<span class="nv">$float</span> <span class="o">=</span> <span class="mf">1.2e3</span><span class="p">;</span>
+<span class="nv">$float</span> <span class="o">=</span> <span class="mi">7</span><span class="nc">E</span><span class="o">-</span><span class="mi">10</span><span class="p">;</span>
+
+<span class="c1">// 変数の削除</span>
+<span class="k">unset</span><span class="p">(</span><span class="nv">$int1</span><span class="p">);</span>
+
+<span class="c1">// 計算式</span>
+<span class="nv">$sum</span>        <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// 2</span>
+<span class="nv">$difference</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// 1</span>
+<span class="nv">$product</span>    <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// 4</span>
+<span class="nv">$quotient</span>   <span class="o">=</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// 2</span>
+
+<span class="c1">// 式の省略</span>
+<span class="nv">$number</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="nv">$number</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>      <span class="c1">// $numberに1加算Increment $number by 1</span>
+<span class="k">echo</span> <span class="nv">$number</span><span class="o">++</span><span class="p">;</span>    <span class="c1">// 1 がプリントされる(式の評価の後に加算される)</span>
+<span class="k">echo</span> <span class="o">++</span><span class="nv">$number</span><span class="p">;</span>    <span class="c1">// 3 がプリントされる(式の評価の前に加算される)</span>
+<span class="nv">$number</span> <span class="o">/=</span> <span class="nv">$float</span><span class="p">;</span> <span class="c1">// 割り算した結果の商を$numberに割り当てる</span>
+
+<span class="c1">// 文字列はシングルクォートで囲むのが望ましいです</span>
+<span class="nv">$sgl_quotes</span> <span class="o">=</span> <span class="s1">'$String'</span><span class="p">;</span> <span class="c1">// =&gt; '$String'</span>
+
+<span class="c1">// 文字列中に、他の変数を埋め込みたい場合以外は、ダブルクォートを使用するのはやめましょう</span>
+<span class="nv">$dbl_quotes</span> <span class="o">=</span> <span class="s2">"This is a </span><span class="nv">$sgl_quotes</span><span class="s2">."</span><span class="p">;</span> <span class="c1">// =&gt; 'This is a $String.'</span>
+
+<span class="c1">// Special characters are only escaped in double quotes</span>
+<span class="c1">// 特殊文字はダブルクォートによってのみ、エスケープされます</span>
+<span class="nv">$escaped</span>   <span class="o">=</span> <span class="s2">"This contains a </span><span class="se">\t</span><span class="s2"> tab character."</span><span class="p">;</span>
+<span class="nv">$unescaped</span> <span class="o">=</span> <span class="s1">'This just contains a slash and a t: \t'</span><span class="p">;</span>
+
+<span class="c1">// 必要があれば、変数を波括弧で囲みます</span>
+<span class="nv">$money</span> <span class="o">=</span> <span class="s2">"I have $${number} in the bank."</span><span class="p">;</span>
+
+<span class="c1">// PHP 5.3から、nowdocs形式が変数の挿入をしない複数行の文字列の定義に使用できます</span>
+<span class="nv">$nowdoc</span> <span class="o">=</span> <span class="sh">&lt;&lt;&lt;'END'
+Multi line
+string
+END;</span>
+
+<span class="c1">// ヒアドキュメント形式なら、文字列中に変数の挿入を行えます。</span>
+<span class="nv">$heredoc</span> <span class="o">=</span> <span class="sh">&lt;&lt;&lt;END
+Multi line
+$sgl_quotes
+END;</span>
+
+<span class="c1">// 文字列の連結は . で行います</span>
+<span class="k">echo</span> <span class="s1">'This string '</span> <span class="mf">.</span> <span class="s1">'is concatenated'</span><span class="p">;</span>
+
+<span class="c1">// 別々のパラメータとしてechoに渡すこともできます</span>
+<span class="k">echo</span> <span class="s1">'Multiple'</span><span class="p">,</span> <span class="s1">'Parameters'</span><span class="p">,</span> <span class="s1">'Valid'</span><span class="p">;</span>
+
+<span class="cd">/********************************
+ * 定数
+ */</span>
+
+<span class="c1">// 定数は define() を使って定義します</span>
+<span class="c1">// また、実行中は変更することができないので注意が必要です！</span>
+
+<span class="c1">// 有効は定数は文字かアンダースコアで始めます</span>
+<span class="c1">// それ移行のは、どんな数値でも文字列でもアンダースコアでも構いません</span>
+<span class="nb">define</span><span class="p">(</span><span class="s2">"FOO"</span><span class="p">,</span>     <span class="s2">"something"</span><span class="p">);</span>
+
+<span class="c1">// 定義した名前をそのまま($はつけずに)使用することで、定数にアクセスできます</span>
+<span class="c1">// access to a constant is possible by direct using the chosen name</span>
+<span class="k">echo</span> <span class="s1">'This outputs '</span><span class="mf">.</span><span class="no">FOO</span><span class="p">;</span>
+
+
+<span class="cd">/********************************
+ * 配列
+ */</span>
+
+<span class="c1">// PHPの配列はすべて連想配列です</span>
+
+<span class="c1">// 連想配列は、他の言語ではハッシュ(ハッシュマップ)として知られています</span>
+
+<span class="c1">// すべてのバージョンのPHPで動作します</span>
+<span class="nv">$associative</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">'One'</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'Two'</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'Three'</span> <span class="o">=&gt;</span> <span class="mi">3</span><span class="p">);</span>
+
+<span class="c1">// PHP 5.4 から、新しいシンタックスが導入されました</span>
+<span class="nv">$associative</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'One'</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'Two'</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'Three'</span> <span class="o">=&gt;</span> <span class="mi">3</span><span class="p">];</span>
+
+<span class="k">echo</span> <span class="nv">$associative</span><span class="p">[</span><span class="s1">'One'</span><span class="p">];</span> <span class="c1">// 1とプリントされます</span>
+
+<span class="c1">// キーを指定しないシンプルな配列にも、自動的に数値キーが振られます</span>
+<span class="nv">$array</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'One'</span><span class="p">,</span> <span class="s1">'Two'</span><span class="p">,</span> <span class="s1">'Three'</span><span class="p">];</span>
+<span class="k">echo</span> <span class="nv">$array</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span> <span class="c1">// =&gt; "One"</span>
+
+<span class="c1">// 配列の最後に要素を追加する</span>
+<span class="nv">$array</span><span class="p">[]</span> <span class="o">=</span> <span class="s1">'Four'</span><span class="p">;</span>
+<span class="c1">// または、次のようにも書けます</span>
+<span class="nb">array_push</span><span class="p">(</span><span class="nv">$array</span><span class="p">,</span> <span class="s1">'Five'</span><span class="p">);</span>
+
+<span class="c1">// 配列から要素を削除</span>
+<span class="k">unset</span><span class="p">(</span><span class="nv">$array</span><span class="p">[</span><span class="mi">3</span><span class="p">]);</span>
+
+<span class="cd">/********************************
+ * 出力
+ */</span>
+
+<span class="k">echo</span><span class="p">(</span><span class="s1">'Hello World!'</span><span class="p">);</span>
+<span class="c1">// 標準出力にHello World! とプリントします</span>
+<span class="c1">// 標準出力はブラウザーで実行していればWebページに出力されます</span>
+<span class="c1">// Stdout is the web page if running in a browser.</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s1">'Hello World!'</span><span class="p">);</span> <span class="c1">// echoの結果と同じです</span>
+
+<span class="c1">// echo は言語自体の構成要素であり、括弧なしで呼び出せます</span>
+<span class="c1">// echo is actually a language construct, so you can drop the parentheses.</span>
+<span class="k">echo</span> <span class="s1">'Hello World!'</span><span class="p">;</span>
+<span class="k">print</span> <span class="s1">'Hello World!'</span><span class="p">;</span> <span class="c1">// printも同様です</span>
+
+<span class="nv">$paragraph</span> <span class="o">=</span> <span class="s1">'paragraph'</span><span class="p">;</span>
+
+<span class="k">echo</span> <span class="mi">100</span><span class="p">;</span>        <span class="c1">// スカラー数値を直接出力します</span>
+<span class="k">echo</span> <span class="nv">$paragraph</span><span class="p">;</span> <span class="c1">// 変数も使用できます</span>
+
+<span class="c1">// PHPタグの短縮型が設定されているか、使用しているPHPのバージョンが</span>
+<span class="c1">// 5.4.0 以上であれば、短縮echoシンタックスを使用できます</span>
+<span class="cp">?&gt;</span>
+<span class="nt">&lt;p&gt;</span><span class="cp">&lt;?=</span> <span class="nv">$paragraph</span> <span class="cp">?&gt;</span><span class="nt">&lt;/p&gt;</span>
+<span class="cp">&lt;?php</span>
+
+<span class="nv">$x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="nv">$y</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<span class="nv">$x</span> <span class="o">=</span> <span class="nv">$y</span><span class="p">;</span> <span class="c1">// $xに$yの値を代入します</span>
+<span class="nv">$z</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nv">$y</span><span class="p">;</span>
+<span class="c1">// $zは$yへの参照です。</span>
+<span class="c1">// $zの値を変更すると$yの値も変更されるでしょう。逆も同様です。</span>
+<span class="c1">// $xは$yの最初の値を変わらず保持しています</span>
+
+<span class="k">echo</span> <span class="nv">$x</span><span class="p">;</span> <span class="c1">// =&gt; 2</span>
+<span class="k">echo</span> <span class="nv">$z</span><span class="p">;</span> <span class="c1">// =&gt; 2</span>
+<span class="nv">$y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">echo</span> <span class="nv">$x</span><span class="p">;</span> <span class="c1">// =&gt; 2</span>
+<span class="k">echo</span> <span class="nv">$z</span><span class="p">;</span> <span class="c1">// =&gt; 0</span>
+
+<span class="c1">// 変数の型と値を標準出力へダンプします</span>
+<span class="nb">var_dump</span><span class="p">(</span><span class="nv">$z</span><span class="p">);</span> <span class="c1">// int(0) と出力されます</span>
+
+<span class="c1">// 人間が読めるフォーマットで変数を標準出力にプリントします</span>
+<span class="nb">print_r</span><span class="p">(</span><span class="nv">$array</span><span class="p">);</span> <span class="c1">// prints: Array ( [0] =&gt; One [1] =&gt; Two [2] =&gt; Three )</span>
+
+<span class="cd">/********************************
+ * ロジック
+ */</span>
+<span class="nv">$a</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="nv">$b</span> <span class="o">=</span> <span class="s1">'0'</span><span class="p">;</span>
+<span class="nv">$c</span> <span class="o">=</span> <span class="s1">'1'</span><span class="p">;</span>
+<span class="nv">$d</span> <span class="o">=</span> <span class="s1">'1'</span><span class="p">;</span>
+
+<span class="c1">// assertは引数がfalseの場合、Exceptionを投げます</span>
+
+<span class="c1">//これらの比較は型が違ったとしても、常に真です。</span>
+<span class="nb">assert</span><span class="p">(</span><span class="nv">$a</span> <span class="o">==</span> <span class="nv">$b</span><span class="p">);</span> <span class="c1">// equality</span>
+<span class="nb">assert</span><span class="p">(</span><span class="nv">$c</span> <span class="o">!=</span> <span class="nv">$a</span><span class="p">);</span> <span class="c1">// inequality</span>
+<span class="nb">assert</span><span class="p">(</span><span class="nv">$c</span> <span class="o">&lt;&gt;</span> <span class="nv">$a</span><span class="p">);</span> <span class="c1">// alternative inequality</span>
+<span class="nb">assert</span><span class="p">(</span><span class="nv">$a</span> <span class="o">&lt;</span> <span class="nv">$c</span><span class="p">);</span>
+<span class="nb">assert</span><span class="p">(</span><span class="nv">$c</span> <span class="o">&gt;</span> <span class="nv">$b</span><span class="p">);</span>
+<span class="nb">assert</span><span class="p">(</span><span class="nv">$a</span> <span class="o">&lt;=</span> <span class="nv">$b</span><span class="p">);</span>
+<span class="nb">assert</span><span class="p">(</span><span class="nv">$c</span> <span class="o">&gt;=</span> <span class="nv">$d</span><span class="p">);</span>
+
+<span class="c1">// 次の比較は値が等しく、かつ同じ型である場合のみ真です</span>
+<span class="nb">assert</span><span class="p">(</span><span class="nv">$c</span> <span class="o">===</span> <span class="nv">$d</span><span class="p">);</span>
+<span class="nb">assert</span><span class="p">(</span><span class="nv">$a</span> <span class="o">!==</span> <span class="nv">$d</span><span class="p">);</span>
+<span class="nb">assert</span><span class="p">(</span><span class="mi">1</span> <span class="o">===</span> <span class="s1">'1'</span><span class="p">);</span>
+<span class="nb">assert</span><span class="p">(</span><span class="mi">1</span> <span class="o">!==</span> <span class="s1">'1'</span><span class="p">);</span>
+
+<span class="c1">// spaceship演算子はPHP7から使用可能です</span>
+<span class="nv">$a</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+<span class="nv">$b</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">;</span>
+
+<span class="k">echo</span> <span class="nv">$a</span> <span class="o">&lt;=&gt;</span> <span class="nv">$a</span><span class="p">;</span> <span class="c1">// 等しいので0になります</span>
+<span class="k">echo</span> <span class="nv">$a</span> <span class="o">&lt;=&gt;</span> <span class="nv">$b</span><span class="p">;</span> <span class="c1">// $a &lt; $b なので -1 です</span>
+<span class="k">echo</span> <span class="nv">$b</span> <span class="o">&lt;=&gt;</span> <span class="nv">$a</span><span class="p">;</span> <span class="c1">// $b &gt; $a なので 1 です</span>
+
+<span class="c1">// 変数は使用するコンテキストによって、変換されます</span>
+
+<span class="nv">$integer</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="k">echo</span> <span class="nv">$integer</span> <span class="o">+</span> <span class="nv">$integer</span><span class="p">;</span> <span class="c1">// =&gt; 2</span>
+
+<span class="nv">$string</span> <span class="o">=</span> <span class="s1">'1'</span><span class="p">;</span>
+<span class="k">echo</span> <span class="nv">$string</span> <span class="o">+</span> <span class="nv">$string</span><span class="p">;</span> <span class="c1">// =&gt; 2 (文字列は強制的に数値として処理されます)</span>
+
+<span class="nv">$string</span> <span class="o">=</span> <span class="s1">'one'</span><span class="p">;</span>
+<span class="k">echo</span> <span class="nv">$string</span> <span class="o">+</span> <span class="nv">$string</span><span class="p">;</span> <span class="c1">// =&gt; 0</span>
+<span class="c1">// '+'演算子は文字列'one'を数値にキャストできないので、0と出力されます</span>
+
+<span class="c1">// 型のキャスティングによって、変数を指定したもう一つの型として扱うことができます</span>
+<span class="c1">// Type casting can be used to treat a variable as another type</span>
+
+<span class="nv">$boolean</span> <span class="o">=</span> <span class="p">(</span><span class="n">boolean</span><span class="p">)</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// =&gt; true</span>
+
+<span class="nv">$zero</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="nv">$boolean</span> <span class="o">=</span> <span class="p">(</span><span class="n">boolean</span><span class="p">)</span> <span class="nv">$zero</span><span class="p">;</span> <span class="c1">// =&gt; false</span>
+
+<span class="c1">// 型をキャストするため専用の関数も存在します</span>
+<span class="nv">$integer</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+<span class="nv">$string</span> <span class="o">=</span> <span class="nb">strval</span><span class="p">(</span><span class="nv">$integer</span><span class="p">);</span>
+
+<span class="nv">$var</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span> <span class="c1">// Null値</span>
+
+
+<span class="cd">/********************************
+ * 制御構造
+ */</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">print</span> <span class="s1">'I get printed'</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">print</span> <span class="s1">'I don\'t'</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">print</span> <span class="s1">'I get printed'</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">print</span> <span class="s1">'Does not get printed'</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">elseif</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">print</span> <span class="s1">'Does'</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 三項演算子</span>
+<span class="k">print</span> <span class="p">(</span><span class="kc">false</span> <span class="o">?</span> <span class="s1">'Does not get printed'</span> <span class="o">:</span> <span class="s1">'Does'</span><span class="p">);</span>
+
+<span class="c1">// PHP 5.3から、三項演算子の短縮形が使用できます</span>
+<span class="c1">// $x ? $x : 'Does'と同義です</span>
+<span class="nv">$x</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+<span class="k">print</span><span class="p">(</span><span class="nv">$x</span> <span class="o">?:</span> <span class="s1">'Does'</span><span class="p">);</span>
+
+<span class="c1">// null合体演算子はPHP 7から使用できます</span>
+<span class="nv">$a</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<span class="nv">$b</span> <span class="o">=</span> <span class="s1">'Does print'</span><span class="p">;</span>
+<span class="k">echo</span> <span class="nv">$a</span> <span class="o">??</span> <span class="s1">'a is not set'</span><span class="p">;</span> <span class="c1">// prints 'a is not set'</span>
+<span class="k">echo</span> <span class="nv">$b</span> <span class="o">??</span> <span class="s1">'b is not set'</span><span class="p">;</span> <span class="c1">// prints 'Does print'</span>
+
+
+<span class="nv">$x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="nv">$x</span> <span class="o">===</span> <span class="s1">'0'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">print</span> <span class="s1">'Does not print'</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">elseif</span><span class="p">(</span><span class="nv">$x</span> <span class="o">==</span> <span class="s1">'1'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">print</span> <span class="s1">'Does not print'</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">print</span> <span class="s1">'Does print'</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+
+<span class="c1">// :を用いる別の構文はテンプレートで有用です</span>
+<span class="cp">?&gt;</span>
+
+<span class="cp">&lt;?php</span> <span class="k">if</span> <span class="p">(</span><span class="nv">$x</span><span class="p">)</span><span class="o">:</span> <span class="cp">?&gt;</span>
+この部分はifが真のとき表示されます
+<span class="cp">&lt;?php</span> <span class="k">else</span><span class="o">:</span> <span class="cp">?&gt;</span>
+それ以外の場合は、この部分が表示されます
+<span class="cp">&lt;?php</span> <span class="k">endif</span><span class="p">;</span> <span class="cp">?&gt;</span>
+
+<span class="cp">&lt;?php</span>
+
+<span class="c1">// いくつかのロジックを保存するにはswitchを使用します</span>
+<span class="k">switch</span> <span class="p">(</span><span class="nv">$x</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="s1">'0'</span><span class="o">:</span>
+        <span class="k">print</span> <span class="s1">'Switch does type coercion'</span><span class="p">;</span>
+        <span class="k">break</span><span class="p">;</span> <span class="c1">// breakを書く必要があります。</span>
+               <span class="c1">// でなければ、次の'two', 'three'のcase文を続けて実行することになります。</span>
+    <span class="k">case</span> <span class="s1">'two'</span><span class="o">:</span>
+    <span class="k">case</span> <span class="s1">'three'</span><span class="o">:</span>
+        <span class="c1">// 変数が'two'または'three'の場合、何かを実行します</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="k">default</span><span class="o">:</span>
+        <span class="c1">//デフォルトで何かを実行します</span>
+<span class="p">}</span>
+
+<span class="c1">// while, do,  forの構文は、おそらく他の言語とも共通なものです</span>
+<span class="nv">$i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="nv">$i</span><span class="o">++</span><span class="p">;</span>
+<span class="p">};</span> <span class="c1">// Prints "01234"</span>
+
+<span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+
+<span class="nv">$i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">do</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="nv">$i</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">);</span> <span class="c1">// Prints "01234"</span>
+
+<span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="nv">$x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nv">$x</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nv">$x</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="nv">$x</span><span class="p">;</span>
+<span class="p">}</span> <span class="c1">// Prints "0123456789"</span>
+
+<span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+
+<span class="nv">$wheels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'bicycle'</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'car'</span> <span class="o">=&gt;</span> <span class="mi">4</span><span class="p">];</span>
+
+<span class="c1">//Foreachループによって、 配列を反復処理できます</span>
+<span class="k">foreach</span> <span class="p">(</span><span class="nv">$wheels</span> <span class="k">as</span> <span class="nv">$wheel_count</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="nv">$wheel_count</span><span class="p">;</span>
+<span class="p">}</span> <span class="c1">// Prints "24"</span>
+
+<span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+
+<span class="c1">// 値と同じ様に、keyも反復処理できます</span>
+<span class="k">foreach</span> <span class="p">(</span><span class="nv">$wheels</span> <span class="k">as</span> <span class="nv">$vehicle</span> <span class="o">=&gt;</span> <span class="nv">$wheel_count</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="s2">"A </span><span class="nv">$vehicle</span><span class="s2"> has </span><span class="nv">$wheel_count</span><span class="s2"> wheels"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">echo</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+
+<span class="nv">$i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">===</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">break</span><span class="p">;</span> <span class="c1">// Exit out of the while loop</span>
+    <span class="p">}</span>
+    <span class="k">echo</span> <span class="nv">$i</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span> <span class="c1">// Prints "012"</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nv">$i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="nv">$i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">===</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">continue</span><span class="p">;</span> <span class="c1">// Skip this iteration of the loop</span>
+    <span class="p">}</span>
+    <span class="k">echo</span> <span class="nv">$i</span><span class="p">;</span>
+<span class="p">}</span> <span class="c1">// Prints "0124"</span>
+
+
+<span class="cd">/********************************
+ * 関数
+ */</span>
+
+<span class="c1">// 関数を"function"で定義します</span>
+<span class="k">function</span> <span class="n">my_function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s1">'Hello'</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">echo</span> <span class="nf">my_function</span><span class="p">();</span> <span class="c1">// =&gt; "Hello"</span>
+
+<span class="c1">// 有効な関数名は、文字またはアンダースコアで始めます。それ以降は</span>
+<span class="c1">// どれだけ長い文字、数値、アンダースコアを続けても構いません</span>
+
+<span class="k">function</span> <span class="n">add</span> <span class="p">(</span><span class="nv">$x</span><span class="p">,</span> <span class="nv">$y</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// $yはオプショナルな値であり、デフォルトで 1 です</span>
+    <span class="nv">$result</span> <span class="o">=</span> <span class="nv">$x</span> <span class="o">+</span> <span class="nv">$y</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nv">$result</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">echo</span> <span class="nf">add</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span> <span class="c1">// =&gt; 5</span>
+<span class="k">echo</span> <span class="nf">add</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span> <span class="c1">// =&gt; 6</span>
+
+<span class="c1">// $result には、関数の外からアクセス出来ません</span>
+<span class="c1">// print $result; // エラーになります</span>
+
+<span class="c1">// PHP 5.3 から、無名関数が使えます</span>
+<span class="nv">$inc</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span><span class="nv">$x</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nv">$x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">echo</span> <span class="nv">$inc</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span> <span class="c1">// =&gt; 3</span>
+
+<span class="k">function</span> <span class="n">foo</span> <span class="p">(</span><span class="nv">$x</span><span class="p">,</span> <span class="nv">$y</span><span class="p">,</span> <span class="nv">$z</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">echo</span> <span class="s2">"</span><span class="nv">$x</span><span class="s2"> - </span><span class="nv">$y</span><span class="s2"> - </span><span class="nv">$z</span><span class="s2">"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// 関数は、関数を返すことができます</span>
+<span class="k">function</span> <span class="n">bar</span> <span class="p">(</span><span class="nv">$x</span><span class="p">,</span> <span class="nv">$y</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 関数外の変数を利用したいときは、'use'を使います</span>
+    <span class="k">return</span> <span class="k">function</span> <span class="p">(</span><span class="nv">$z</span><span class="p">)</span> <span class="k">use</span> <span class="p">(</span><span class="nv">$x</span><span class="p">,</span> <span class="nv">$y</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nf">foo</span><span class="p">(</span><span class="nv">$x</span><span class="p">,</span> <span class="nv">$y</span><span class="p">,</span> <span class="nv">$z</span><span class="p">);</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="nv">$bar</span> <span class="o">=</span> <span class="nf">bar</span><span class="p">(</span><span class="s1">'A'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">);</span>
+<span class="nv">$bar</span><span class="p">(</span><span class="s1">'C'</span><span class="p">);</span> <span class="c1">// Prints "A - B - C"</span>
+
+<span class="c1">// 文字列を使って、定義済みの関数を呼び出すことができます</span>
+<span class="nv">$function_name</span> <span class="o">=</span> <span class="s1">'add'</span><span class="p">;</span>
+<span class="k">echo</span> <span class="nv">$function_name</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span> <span class="c1">// =&gt; 3</span>
+
+<span class="c1">// プログラミング中に、動的に動かす関数を決める場合に便利です。</span>
+<span class="c1">// もしくは、call_user_func(callable $callback [, $parameter [, ... ]]) を使っても同じことができます</span>
+
+
+<span class="c1">// 特に指定しなくても、渡された引数を受け取ることもできます</span>
+<span class="k">function</span> <span class="n">parameters</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nv">$numargs</span> <span class="o">=</span> <span class="nb">func_num_args</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$numargs</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">echo</span> <span class="nb">func_get_arg</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="mf">.</span> <span class="s1">' | '</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nv">$args_array</span> <span class="o">=</span> <span class="nb">func_get_args</span><span class="p">();</span>
+    <span class="k">foreach</span> <span class="p">(</span><span class="nv">$args_array</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$arg</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">echo</span> <span class="nv">$key</span> <span class="mf">.</span> <span class="s1">' - '</span> <span class="mf">.</span> <span class="nv">$arg</span> <span class="mf">.</span> <span class="s1">' | '</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nf">parameters</span><span class="p">(</span><span class="s1">'Hello'</span><span class="p">,</span> <span class="s1">'World'</span><span class="p">);</span> <span class="c1">// Hello | 0 - Hello | 1 - World |</span>
+
+<span class="cd">/********************************
+ * ファイルの読み込み
+ */</span>
+
+<span class="o">&lt;?</span><span class="n">php</span>
+<span class="c1">// 読み込まれたファイル中のPHPは、同じくPHPのオープンタグで始める必要があります</span>
+
+<span class="k">include</span> <span class="s1">'my-file.php'</span><span class="p">;</span>
+<span class="c1">// my-file.php中のコードは、現在のスコープの中で使用可能です</span>
+<span class="c1">// もしファイルを読み込めなければ (例:file not found)、警告が発せられます</span>
+
+<span class="k">include_once</span> <span class="s1">'my-file.php'</span><span class="p">;</span>
+<span class="c1">// my-file.phpのコードが既にどこかで読み込まれていれば、</span>
+<span class="c1">// ファイルを読み込みません。これは、クラスの多重定義のエラーを防ぎます</span>
+
+<span class="k">require</span> <span class="s1">'my-file.php'</span><span class="p">;</span>
+<span class="k">require_once</span> <span class="s1">'my-file.php'</span><span class="p">;</span>
+<span class="c1">// include()と同じように、require()はもしファイルを読み込むことができなければ、</span>
+<span class="c1">// 致命的エラーの原因となります</span>
+
+<span class="c1">// my-include.phpの内容</span>
+<span class="o">&lt;?</span><span class="n">php</span>
+
+<span class="k">return</span> <span class="s1">'Anything you like.'</span><span class="p">;</span>
+<span class="c1">// End file</span>
+
+<span class="c1">// include()とrequire()は一つの値を返します</span>
+<span class="nv">$value</span> <span class="o">=</span> <span class="k">include</span> <span class="s1">'my-include.php'</span><span class="p">;</span>
+
+<span class="c1">// ファイルは与えられたファイルパスを基に読み込まれます。</span>
+<span class="c1">// ファイルパスを指定しない場合は、include_path の設定を利用します。</span>
+<span class="c1">// もしファイルがinclude_path中に見つからない場合は、</span>
+<span class="c1">// 呼び出し元スクリプトのディレクトリと作業ディレクトリの中も探します。</span>
+<span class="c1">// それでも見つからない場合、失敗します。</span>
+<span class="cm">/* */</span>
+
+<span class="cd">/********************************
+ * クラス
+ */</span>
+
+<span class="c1">// クラスはclassキーワードで定義します</span>
+
+<span class="kd">class</span> <span class="nc">MyClass</span>
+<span class="p">{</span>
+    <span class="k">const</span> <span class="no">MY_CONST</span>      <span class="o">=</span> <span class="s1">'value'</span><span class="p">;</span> <span class="c1">// クラス定数です</span>
+
+    <span class="k">static</span> <span class="nv">$staticVar</span>   <span class="o">=</span> <span class="s1">'static'</span><span class="p">;</span>
+
+    <span class="c1">// スタティック変数とアクセス制限</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="nv">$publicStaticVar</span> <span class="o">=</span> <span class="s1">'publicStatic'</span><span class="p">;</span>
+    <span class="c1">// クラス内でのみアクセス可能</span>
+    <span class="k">private</span> <span class="k">static</span> <span class="nv">$privateStaticVar</span> <span class="o">=</span> <span class="s1">'privateStatic'</span><span class="p">;</span>
+    <span class="c1">// そのクラスと子クラスで参照可能</span>
+    <span class="k">protected</span> <span class="k">static</span> <span class="nv">$protectedStaticVar</span> <span class="o">=</span> <span class="s1">'protectedStatic'</span><span class="p">;</span>
+
+    <span class="c1">// プロパティはアクセス制限を宣言する必要があります</span>
+    <span class="k">public</span> <span class="nv">$property</span>    <span class="o">=</span> <span class="s1">'public'</span><span class="p">;</span>
+    <span class="k">public</span> <span class="nv">$instanceProp</span><span class="p">;</span>
+    <span class="k">protected</span> <span class="nv">$prot</span> <span class="o">=</span> <span class="s1">'protected'</span><span class="p">;</span> <span class="c1">// そのクラスと子クラスで参照可能</span>
+    <span class="k">private</span> <span class="nv">$priv</span>   <span class="o">=</span> <span class="s1">'private'</span><span class="p">;</span>   <span class="c1">// クラス内でのみアクセス可能</span>
+
+    <span class="c1">// __constructでコンストラクターを生成します</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="n">__construct</span><span class="p">(</span><span class="nv">$instanceProp</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// $thisでインスタンス変数にアクセスします</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="n">instanceProp</span> <span class="o">=</span> <span class="nv">$instanceProp</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// メソッドはクラス内で関数として定義されます</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="n">myMethod</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">print</span> <span class="s1">'MyClass'</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// finalキーワードは関数の上書きを禁止します</span>
+    <span class="k">final</span> <span class="k">function</span> <span class="n">youCannotOverrideMe</span><span class="p">()</span>
+    <span class="p">{</span>
+    <span class="p">}</span>
+
+<span class="cm">/*
+ * クラスプロパティまたはメソッドをstaticとして作成すれば、
+ * クラスをインスタンス化(newすること)しなくてもアクセスできます。
+ * プロパティをstaticとして定義すると、
+ * インスタンス化されたクラスオブジェクトを通してのアクセスはできなくなります。
+ */</span>
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">function</span> <span class="n">myStaticMethod</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">print</span> <span class="s1">'I am static'</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// クラス定数は、いつでも静的にアクセスできます。</span>
+<span class="k">echo</span> <span class="nc">MyClass</span><span class="o">::</span><span class="no">MY_CONST</span><span class="p">;</span>    <span class="c1">// Outputs 'value';</span>
+
+<span class="k">echo</span> <span class="nc">MyClass</span><span class="o">::</span><span class="nv">$staticVar</span><span class="p">;</span>  <span class="c1">// Outputs 'static';</span>
+<span class="nc">MyClass</span><span class="o">::</span><span class="nf">myStaticMethod</span><span class="p">();</span> <span class="c1">// Outputs 'I am static';</span>
+
+<span class="c1">// クラスをインスタンス化するには、newを使います。</span>
+<span class="nv">$my_class</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MyClass</span><span class="p">(</span><span class="s1">'An instance property'</span><span class="p">);</span>
+<span class="c1">// 括弧はもし引数を渡す必要がなければ省略可能です。</span>
+
+<span class="c1">// -&gt;を使ってクラスのメンバにアクセスします。</span>
+<span class="k">echo</span> <span class="nv">$my_class</span><span class="o">-&gt;</span><span class="n">property</span><span class="p">;</span>     <span class="c1">// =&gt; "public"</span>
+<span class="k">echo</span> <span class="nv">$my_class</span><span class="o">-&gt;</span><span class="n">instanceProp</span><span class="p">;</span> <span class="c1">// =&gt; "An instance property"</span>
+<span class="nv">$my_class</span><span class="o">-&gt;</span><span class="nf">myMethod</span><span class="p">();</span>        <span class="c1">// =&gt; "MyClass"</span>
+
+
+<span class="c1">// extendsを使用してクラスを継承します。</span>
+<span class="kd">class</span> <span class="nc">MyOtherClass</span> <span class="kd">extends</span> <span class="nc">MyClass</span>
+<span class="p">{</span>
+    <span class="k">function</span> <span class="n">printProtectedProperty</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">echo</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="n">prot</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// メソッドを上書きします。</span>
+    <span class="k">function</span> <span class="n">myMethod</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">parent</span><span class="o">::</span><span class="nf">myMethod</span><span class="p">();</span>
+        <span class="k">print</span> <span class="s1">' &gt; MyOtherClass'</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nv">$my_other_class</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MyOtherClass</span><span class="p">(</span><span class="s1">'Instance prop'</span><span class="p">);</span>
+<span class="nv">$my_other_class</span><span class="o">-&gt;</span><span class="nf">printProtectedProperty</span><span class="p">();</span> <span class="c1">// =&gt; Prints "protected"</span>
+<span class="nv">$my_other_class</span><span class="o">-&gt;</span><span class="nf">myMethod</span><span class="p">();</span>               <span class="c1">// Prints "MyClass &gt; MyOtherClass"</span>
+
+<span class="k">final</span> <span class="kd">class</span> <span class="nc">YouCannotExtendMe</span>
+<span class="p">{</span>
+<span class="p">}</span>
+
+<span class="c1">// 「マジックメソッド」を使ってゲッターとセッターを生成できます。</span>
+<span class="kd">class</span> <span class="nc">MyMapClass</span>
+<span class="p">{</span>
+    <span class="k">private</span> <span class="nv">$property</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="n">__get</span><span class="p">(</span><span class="nv">$key</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="nv">$key</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="n">__set</span><span class="p">(</span><span class="nv">$key</span><span class="p">,</span> <span class="nv">$value</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nv">$this</span><span class="o">-&gt;</span><span class="nv">$key</span> <span class="o">=</span> <span class="nv">$value</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nv">$x</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MyMapClass</span><span class="p">();</span>
+<span class="k">echo</span> <span class="nv">$x</span><span class="o">-&gt;</span><span class="n">property</span><span class="p">;</span> <span class="c1">// __get() メソッドを使用します</span>
+<span class="nv">$x</span><span class="o">-&gt;</span><span class="n">property</span> <span class="o">=</span> <span class="s1">'Something'</span><span class="p">;</span> <span class="c1">// __set() メソッドを使用します</span>
+
+<span class="c1">// クラスは抽象クラスにもできます(abstractキーワードを使用します)し、</span>
+<span class="c1">// インターフェースを実装することもできます(implementsキーワードを使用します)。</span>
+<span class="c1">// インターフェースはinterfaceキーワードで定義します。</span>
+
+<span class="kd">interface</span> <span class="nc">InterfaceOne</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="n">doSomething</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kd">interface</span> <span class="nc">InterfaceTwo</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="n">doSomethingElse</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="c1">// インターフェースは継承することができます</span>
+<span class="kd">interface</span> <span class="nc">InterfaceThree</span> <span class="kd">extends</span> <span class="nc">InterfaceTwo</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="n">doAnotherContract</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="k">abstract</span> <span class="kd">class</span> <span class="nc">MyAbstractClass</span> <span class="kd">implements</span> <span class="nc">InterfaceOne</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="nv">$x</span> <span class="o">=</span> <span class="s1">'doSomething'</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nc">MyConcreteClass</span> <span class="kd">extends</span> <span class="nc">MyAbstractClass</span> <span class="kd">implements</span> <span class="nc">InterfaceTwo</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="n">doSomething</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">echo</span> <span class="nv">$x</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="n">doSomethingElse</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">echo</span> <span class="s1">'doSomethingElse'</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="c1">// クラスは1つ以上のインターフェースを実装できます。</span>
+<span class="kd">class</span> <span class="nc">SomeOtherClass</span> <span class="kd">implements</span> <span class="nc">InterfaceOne</span><span class="p">,</span> <span class="nc">InterfaceTwo</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="n">doSomething</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">echo</span> <span class="s1">'doSomething'</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">function</span> <span class="n">doSomethingElse</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">echo</span> <span class="s1">'doSomethingElse'</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="cd">/********************************
+ * トレイト
+ */</span>
+
+<span class="c1">// トレイトはPHP 5.4.0 以上で使用可能で、traitキーワードで定義します。</span>
+
+<span class="kd">trait</span> <span class="nc">MyTrait</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">function</span> <span class="n">myTraitMethod</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="k">print</span> <span class="s1">'I have MyTrait'</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nc">MyTraitfulClass</span>
+<span class="p">{</span>
+    <span class="kn">use</span> <span class="nc">MyTrait</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nv">$cls</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MyTraitfulClass</span><span class="p">();</span>
+<span class="nv">$cls</span><span class="o">-&gt;</span><span class="nf">myTraitMethod</span><span class="p">();</span> <span class="c1">// Prints "I have MyTrait"</span>
+
+
+<span class="cd">/********************************
+ *  名前空間
+ */</span>
+
+<span class="c1">// このセクションは名前空間の定義はファイルの先頭で宣言される必要があるため、</span>
+<span class="c1">// 独立しています。</span>
+<span class="c1">// そのケースには当てはまらないふりをして続けましょう。</span>
+
+<span class="o">&lt;?</span><span class="n">php</span>
+
+<span class="c1">// デフォルトでは、クラスはグローバルな名前空間に存在し、</span>
+<span class="c1">// バックスラッシュによって明確にコールできます。</span>
+
+<span class="nv">$cls</span> <span class="o">=</span> <span class="k">new</span> <span class="err">\</span><span class="nf">MyClass</span><span class="p">();</span>
+
+
+
+<span class="c1">// ファイルに名前空間をセットします</span>
+<span class="kn">namespace</span> <span class="nn">My\Namespace</span><span class="p">;</span>
+
+<span class="kd">class</span> <span class="nc">MyClass</span>
+<span class="p">{</span>
+<span class="p">}</span>
+
+<span class="c1">// (別のファイルからの呼び出し)</span>
+<span class="nv">$cls</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">My\Namespace\MyClass</span><span class="p">;</span>
+
+<span class="c1">// 異なる名前空間からの呼び出し</span>
+<span class="kn">namespace</span> <span class="nn">My\Other\Namespace</span><span class="p">;</span>
+
+<span class="kn">use</span> <span class="nc">My\Namespace\MyClass</span><span class="p">;</span>
+
+<span class="nv">$cls</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MyClass</span><span class="p">();</span>
+
+<span class="c1">// 名前空間に別名をつけることもできます</span>
+
+<span class="kn">namespace</span> <span class="nn">My\Other\Namespace</span><span class="p">;</span>
+
+<span class="kn">use</span> <span class="nc">My\Namespace</span> <span class="k">as</span> <span class="nc">SomeOtherNamespace</span><span class="p">;</span>
+
+<span class="nv">$cls</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SomeOtherNamespace\MyClass</span><span class="p">();</span>
+
+<span class="cd">/**********************
+*  エラーハンドリング
+*  
+*/</span>
+
+<span class="c1">// シンプルなエラーハンドリングは、try catchを使えば行えます</span>
+
+<span class="k">try</span> <span class="p">{</span>
+    <span class="c1">// 処理を実行します</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span> <span class="nc">Exception</span> <span class="nv">$e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 例外を処理します</span>
+<span class="p">}</span>
+
+<span class="c1">// try catchを名前空間を持った環境で使用するときは、次のようにします。</span>
+
+<span class="k">try</span> <span class="p">{</span> 
+    <span class="c1">// Do something</span>
+    <span class="c1">// 処理を実行します</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="err">\</span><span class="nc">Exception</span> <span class="nv">$e</span><span class="p">)</span> <span class="p">{</span> 
+    <span class="c1">// 例外を処理します</span>
+<span class="p">}</span>
+
+<span class="c1">// 例外のカスタマイズ</span>
+
+<span class="kd">class</span> <span class="nc">MyException</span> <span class="kd">extends</span> <span class="nc">Exception</span> <span class="p">{}</span>
+
+<span class="k">try</span> <span class="p">{</span>
+
+    <span class="nv">$condition</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span> 
+
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$condition</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nc">MyException</span><span class="p">(</span><span class="s1">'Something just happend'</span><span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nc">MyException</span> <span class="nv">$e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// Handle my exception</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2>より詳しい情報</h2>
+
+<p>リファレンスを見るため、またコミュニティへの情報提供のために、 <a href="http://www.php.net/manual/">PHP公式ドキュメント</a> を訪れてみてください。</p>
+
+<p>もし最新のベストプラクティスに興味があるなら、
+<a href="http://www.phptherightway.com/">PHP The Right Way</a>を訪れてみてください。</p>
+
+<p>もしあなたがよいパッケージマネジメント・システムを持つ言語で開発経験があるのなら、
+<a href="http://getcomposer.org/">Composer</a>も確かめてみてください。</p>
+
+<p>共通基準を知るためには、PHP Framework Interoperability Groupの
+<a href="https://github.com/php-fig/fig-standards">PSR standards</a>にも訪れてみてください。</p>
+
+    <hr>
+    <p>提案がありますか？それとも修正が必要ですか？ Githubレポジトリで<a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Issueを開く</a>か自分で<a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/ja-jp/php-jp.html.markdown">プルリクエスト</a>を作ってください。
+    </p>
+    <p class="contributed">
+    Malcolm Fellが初めて貢献し、後に<a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/ja-jp/php-jp.html.markdown">1人の貢献者</a>が更新してきました。
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://emarref.net/">Malcolm Fell</a>,
+        <a href="https://github.com/Trismegiste">Trismegiste</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/kazu9su">Kazushige Tominaga</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

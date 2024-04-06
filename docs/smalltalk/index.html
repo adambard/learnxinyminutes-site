@@ -1,0 +1,1116 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn Smalltalk in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/smalltalk/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fsmalltalk%2F&text=Learn+X+in+Y+minutes%2C+where+X%3DSmalltalk">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=Smalltalk</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/smalltalk.st">smalltalk.st</a>
+    </p>
+  <div id="doc">
+    <blockquote>Every effort has been made in the preparation of this material to ensure the accuracy and completeness of the information presented. However, no guarantee is given nor responsibility taken for errors or omissions. In case of any error, questions or suggestions on reach out to me at <a href="https://jigyasa-grover.github.io" target="_blank">jigyasa-grover.github.io</a> or drop me an e-mail at <a href="mailto:grover.jigyasa1@gmail.com" target="_blank">grover[dot]jigyasa1[at]gmail.com</a>.</blockquote>
+
+<ul>
+<li>Smalltalk is a fully object-oriented, dynamically typed, reflective programming language with no &lsquo;non-object&rsquo; types.</li>
+<li>Smalltalk was created as the language to underpin the &ldquo;new world&rdquo; of computing exemplified by &ldquo;human–computer symbiosis.&rdquo;</li>
+<li>It was designed and created in part for educational use, more so for constructionist learning, at the Learning Research Group (LRG) of Xerox PARC by Alan Kay, Dan Ingalls, Adele Goldberg, Ted Kaehler, Scott Wallace, and others during the 1970s.</li>
+</ul>
+
+<h2>The Basics</h2>
+
+<h3>Everything is an object</h3>
+
+<p>Yes, everything. Integers are instances of one of the numeric classes. Classes are instances of the class Metaclass and are just as manipulable as any other object. All classes are part of a single class tree; no disjoint class trees. Stack frames are objects and can be manipulated, which is how the debugger works. There are no pointers into memory locations that you can dereference and mess with.</p>
+
+<h3>Functions are not called; messages are sent to objects</h3>
+
+<ul>
+<li>Work is done by sending messages to objects, which decide how to respond to that message and run a method as a result, which eventually returns some object to the original message sending code.</li>
+<li>The system knows the class of the object receiving a message and looks up the message in that class&rsquo;s list of methods. If it is not found, the lookup continues in the super class until either it is found or the root of the classes is reached and there is still no relevant method. </li>
+<li>If a suitable method is found the code is run, and the same process keeps on going with all the methods sent by that method and so on forever.</li>
+<li>If no suitable method is found an exception is raised, which typically results in a user interface notifier to tell the user that the message was not understood. It is entirely possible to catch the exception and do something to fix the problem, which might range from &lsquo;ignore it&rsquo; to &lsquo;load some new packages for this class and try again&rsquo;.</li>
+<li>A method (more strictly an instance of the class CompiledMethod) is a chunk of Smalltalk code that has been compiled into bytecodes. Executing methods start at the beginning and return to the sender when a return is encountered (we use ^ to signify &lsquo;return the following object&rsquo;) or the end of the code is reached, in which case the current object running the code is returned.</li>
+</ul>
+
+<h3>Simple syntax</h3>
+
+<p>Smalltalk has a simple syntax with very few rules. 
+The most basic operation is to send a message to an object
+<code>anObject aMessage</code></p>
+
+<p>There are three sorts of messages</p>
+
+<ul>
+<li>unary - a single symbol that may be several words conjoined in what we call camelcase form, with no arguments. For example &lsquo;size&rsquo;, &lsquo;reverseBytes&rsquo;, &lsquo;convertToLargerFormatPixels&rsquo;</li>
+<li>binary - a small set of symbols of the sort often used for arithmetic operations in most languages, requiring a single argument. For example &lsquo;+&rsquo;, &lsquo;//&rsquo;, &lsquo;@&rsquo;. We do not use traditional arithmetic precedence, something to keep an eye on.</li>
+<li>keyword - the general form where multiple arguments can be passed. As with the unary form we use camelcase to join words together but arguments are inserted in the midst of the message with colons used to separate them lexically. For example &lsquo;setTemperature:&rsquo;, &lsquo;at:put:&rsquo;, &lsquo;drawFrom:to:lineWidth:fillColor:&rsquo;</li>
+</ul>
+
+<h4>An example</h4>
+
+<p><code>result := myObject doSomethingWith: thatObject</code>
+We are sending the message &lsquo;doSomethingWith:&rsquo; to myObject. This happens to be a message that has a single argument but that&rsquo;s not important yet.
+&lsquo;myObject&rsquo; is a &lsquo;MyExampleClass&rsquo; instance so the system looks at the list of messages understood by MyExampleClass</p>
+
+<ul>
+<li>beClever</li>
+<li>doWeirdThing:</li>
+<li>doSomethingWith</li>
+</ul>
+
+<p>In searching we see what initially looks like a match - but no, it lacks the final colon. So we find the super class of MyExampleClass - BigExampleClass. Which has a list of known messages of its own</p>
+
+<ul>
+<li>beClever</li>
+<li>doSomethingWith:</li>
+<li>buildCastleInAir</li>
+<li>annoyUserByDoing:</li>
+</ul>
+
+<p>We find a proper exact match and start to execute the code:</p>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="nf">doSomethingWith:</span> <span class="nv">argumentObject</span>
+    <span class="bp">self</span> <span class="nf">size</span> <span class="nf">&gt;</span> <span class="m">4</span> <span class="nb">ifTrue:</span> <span class="p">[</span><span class="o">^</span><span class="nv">argumentObject</span> <span class="nf">sizeRelatingTo:</span> <span class="bp">self</span><span class="p">].</span>
+</code></pre></div>
+<p>Everything here except the <code>^</code> involves sending more messages. Event the <code>ifTrue:</code> that you might think is a language control structure is just Smalltalk code.</p>
+
+<p>We start by sending <code>size</code> to <code>self</code>. <code>self</code> is the object currently running the code - so in this case it is the myObject we started with. <code>size</code> is a very common message that we might anticipate tells us something about how big an object is; you could look it up with the Smalltalk tools very simply. The result we get is then sent the message <code>&gt;</code> with the plain old integer 4 (which is an object too; no strange primitive types to pollute the system here) and nobody should be surprised the <code>&gt;</code> is a comparison that answers true or false. That boolean (which is actually a Boolean object in Smalltalk) is sent the message <code>ifTrue:</code> with the block of code between the <code>[]</code> as its argument; obviously a true boolean might be expected to run that block of code and a false to ignore it. </p>
+
+<p>If the block is run then we do some more message sending to the argument object and noting the <code>^</code> we return the answer back to our starting point and it gets assigned to <code>result</code>. If the block is ignored we seem to run out of code and so <code>self</code> is returned and assigned to <code>result</code>.</p>
+
+<h2>Smalltalk quick reference cheat-sheet</h2>
+
+<p>Taken from <a href="http://www.angelfire.com/tx4/cus/notes/smalltalk.html">Smalltalk Cheatsheet</a></p>
+
+<h4>Allowable characters:</h4>
+
+<ul>
+<li>a-z</li>
+<li>A-Z</li>
+<li>0-9</li>
+<li>.+/*~&lt;&gt;@%|&amp;?</li>
+<li>blank, tab, cr, ff, lf</li>
+</ul>
+
+<h4>Variables:</h4>
+
+<ul>
+<li>variable names must be declared before use but are untyped</li>
+<li>shared vars (globals, class vars) conventionally begin with uppercase (except the reserved names shown below)</li>
+<li>local vars (instance vars, temporaries, method &amp; block arguments) conventionally begin with lowercase</li>
+<li>reserved names: <code>nil</code>, <code>true</code>, <code>false</code>, <code>self</code>, <code>super</code>, and <code>thisContext</code></li>
+</ul>
+
+<h4>Variable scope:</h4>
+
+<ul>
+<li>Global: defined in a Dictionary named &lsquo;Smalltalk&rsquo; and accessible by all objects in system</li>
+<li>Special: (reserved) <code>Smalltalk</code>, <code>super</code>, <code>self</code>, <code>true</code>, <code>false</code>, &amp; <code>nil</code></li>
+<li>Method Temporary: local to a method</li>
+<li>Block Temporary: local to a block</li>
+<li>Pool: variables in a Dictionary object, possibly shared with classes not directly related by inheritance</li>
+<li>Method Parameters: automatic method temp vars that name the incoming parameters. Cannot be assigned to </li>
+<li>Block Parameters: automatic block temp vars that name the incoming parameters. Cannot be assigned to</li>
+<li>Class: shared with all instances of a class &amp; its subclasses</li>
+<li>Class Instance: unique to each instance of a class. Too commonly confused with class variables</li>
+<li>Instance Variables: unique to each instance of a class</li>
+</ul>
+
+<p><code>&quot;Comments are enclosed in quotes and may be arbitrary length&quot;</code></p>
+
+<p><code>&quot;Period (.) is the statement separator. Not required on last line of a method&quot;</code></p>
+
+<h4>Transcript:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="nc">Transcript</span> <span class="nf">clear</span><span class="p">.</span>                        <span class="c">"clear to transcript window"</span>
+<span class="nc">Transcript</span> <span class="nf">show:</span> <span class="s">'Hello World'</span><span class="p">.</span>          <span class="c">"output string in transcript window"</span>
+<span class="nc">Transcript</span> <span class="nf">nextPutAll:</span> <span class="s">'Hello World'</span><span class="p">.</span>    <span class="c">"output string in transcript window"</span>
+<span class="nc">Transcript</span> <span class="nf">nextPut:</span> <span class="sc">$A</span><span class="p">.</span>                  <span class="c">"output character in transcript window"</span>
+<span class="nc">Transcript</span> <span class="nf">space</span><span class="p">.</span>                        <span class="c">"output space character in transcript window"</span>
+<span class="nc">Transcript</span> <span class="nf">tab</span><span class="p">.</span>                          <span class="c">"output tab character in transcript window"</span>
+<span class="nc">Transcript</span> <span class="nf">cr</span><span class="p">.</span>                           <span class="c">"carriage return / linefeed"</span>
+<span class="s">'Hello'</span> <span class="nf">printOn:</span> <span class="nc">Transcript</span><span class="p">.</span>             <span class="c">"append print string into the window"</span>
+<span class="s">'Hello'</span> <span class="nf">storeOn:</span> <span class="nc">Transcript</span><span class="p">.</span>             <span class="c">"append store string into the window"</span>
+<span class="nc">Transcript</span> <span class="nf">endEntry</span><span class="p">.</span>                     <span class="c">"flush the output buffer"</span>
+</code></pre></div>
+<h4>Assignment:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> x y </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">_</span> <span class="m">4</span><span class="p">.</span>                            <span class="c">"assignment (Squeak) &lt;-"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">5</span><span class="p">.</span>                           <span class="c">"assignment"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nv">y</span> <span class="o">:=</span> <span class="nv">z</span> <span class="o">:=</span> <span class="m">6</span><span class="p">.</span>                 <span class="c">"compound assignment"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">y</span> <span class="o">:=</span> <span class="m">6</span><span class="p">)</span> <span class="nf">+</span> <span class="m">1</span><span class="p">.</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Object</span> <span class="nb">new</span><span class="p">.</span>                  <span class="c">"bind to allocated instance of a class"</span>
+</code></pre></div>
+<h4>Constants:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> b </span><span class="p">|</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="bp">true</span><span class="p">.</span>                <span class="c">"true constant"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="bp">false</span><span class="p">.</span>               <span class="c">"false constant"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="bp">nil</span><span class="p">.</span>                 <span class="c">"nil object constant"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">1</span><span class="p">.</span>                   <span class="c">"integer constants"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">3.14</span><span class="p">.</span>                <span class="c">"float constants"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">2e-2</span><span class="p">.</span>                <span class="c">"fractional constants"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">16r0</span><span class="nf">F</span><span class="p">.</span>               <span class="c">"hex constant"</span><span class="err">.</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">-1</span><span class="p">.</span>                  <span class="c">"negative constants"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="s">'Hello'</span><span class="p">.</span>             <span class="c">"string constant"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="s">'I''m here'</span><span class="p">.</span>         <span class="c">"single quote escape"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="sc">$A</span><span class="p">.</span>                  <span class="c">"character constant"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="sc">$ </span><span class="p">.</span>                  <span class="c">"character constant (space)"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="ss">#aSymbol</span><span class="p">.</span>            <span class="c">"symbol constants"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="ss">#(</span><span class="m">3</span> <span class="m">2</span> <span class="m">1</span><span class="ss">)</span><span class="p">.</span>            <span class="c">"array constants"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="ss">#(</span><span class="s">'abc'</span> <span class="m">2</span> <span class="sc">$a</span><span class="ss">)</span><span class="p">.</span>       <span class="c">"mixing of types allowed"</span>
+</code></pre></div>
+<h4>Booleans:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> b x y </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">1</span><span class="p">.</span> <span class="nv">y</span> <span class="o">:=</span> <span class="m">2</span><span class="p">.</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">=</span> <span class="nv">y</span><span class="p">).</span>                         <span class="c">"equals"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">~=</span> <span class="nv">y</span><span class="p">).</span>                         <span class="c">"not equals"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">==</span> <span class="nv">y</span><span class="p">).</span>                         <span class="c">"identical"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">~~</span> <span class="nv">y</span><span class="p">).</span>                         <span class="c">"not identical"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">&gt;</span> <span class="nv">y</span><span class="p">).</span>                          <span class="c">"greater than"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">&lt;</span> <span class="nv">y</span><span class="p">).</span>                          <span class="c">"less than"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">&gt;=</span> <span class="nv">y</span><span class="p">).</span>                         <span class="c">"greater than or equal"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">&lt;=</span> <span class="nv">y</span><span class="p">).</span>                         <span class="c">"less than or equal"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">b</span> <span class="nf">not</span><span class="p">.</span>                            <span class="c">"boolean not"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">&lt;</span> <span class="m">5</span><span class="p">)</span> <span class="nf">&amp;</span> <span class="p">(</span><span class="nv">y</span> <span class="nf">&gt;</span> <span class="m">1</span><span class="p">).</span>                <span class="c">"boolean and"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">&lt;</span> <span class="m">5</span><span class="p">)</span> <span class="nf">|</span> <span class="p">(</span><span class="nv">y</span> <span class="nf">&gt;</span> <span class="m">1</span><span class="p">).</span>                <span class="c">"boolean or"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">&lt;</span> <span class="m">5</span><span class="p">)</span> <span class="nf">and:</span> <span class="p">[</span><span class="nv">y</span> <span class="nf">&gt;</span> <span class="m">1</span><span class="p">].</span>             <span class="c">"boolean and (short-circuit)"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">&lt;</span> <span class="m">5</span><span class="p">)</span> <span class="nf">or:</span> <span class="p">[</span><span class="nv">y</span> <span class="nf">&gt;</span> <span class="m">1</span><span class="p">].</span>              <span class="c">"boolean or (short-circuit)"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">&lt;</span> <span class="m">5</span><span class="p">)</span> <span class="nf">eqv:</span> <span class="p">(</span><span class="nv">y</span> <span class="nf">&gt;</span> <span class="m">1</span><span class="p">).</span>             <span class="c">"test if both true or both false"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">&lt;</span> <span class="m">5</span><span class="p">)</span> <span class="nf">xor:</span> <span class="p">(</span><span class="nv">y</span> <span class="nf">&gt;</span> <span class="m">1</span><span class="p">).</span>             <span class="c">"test if one true and other false"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="m">5</span> <span class="nf">between:</span> <span class="m">3</span> <span class="nf">and:</span> <span class="m">12</span><span class="p">.</span>             <span class="c">"between (inclusive)"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="m">123</span> <span class="nf">isKindOf:</span> <span class="nc">Number</span><span class="p">.</span>             <span class="c">"test if object is class or subclass of"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="m">123</span> <span class="nf">isMemberOf:</span> <span class="nc">SmallInteger</span><span class="p">.</span>     <span class="c">"test if object is type of class"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="m">123</span> <span class="nf">respondsTo:</span> <span class="ss">#sqrt</span><span class="p">.</span>             <span class="c">"test if object responds to message"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isNil</span><span class="p">.</span>                          <span class="c">"test if object is nil"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isZero</span><span class="p">.</span>                         <span class="c">"test if number is zero"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">positive</span><span class="p">.</span>                       <span class="c">"test if number is positive"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">strictlyPositive</span><span class="p">.</span>               <span class="c">"test if number is greater than zero"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">negative</span><span class="p">.</span>                       <span class="c">"test if number is negative"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">even</span><span class="p">.</span>                           <span class="c">"test if number is even"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">odd</span><span class="p">.</span>                            <span class="c">"test if number is odd"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isLiteral</span><span class="p">.</span>                      <span class="c">"test if literal constant"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isInteger</span><span class="p">.</span>                      <span class="c">"test if object is integer"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isFloat</span><span class="p">.</span>                        <span class="c">"test if object is float"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isNumber</span><span class="p">.</span>                       <span class="c">"test if object is number"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="sc">$A</span> <span class="nf">isUppercase</span><span class="p">.</span>                   <span class="c">"test if upper case character"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="sc">$A</span> <span class="nf">isLowercase</span><span class="p">.</span>                   <span class="c">"test if lower case character"</span>
+</code></pre></div>
+<h4>Arithmetic expressions:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> x </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">6</span> <span class="nf">+</span> <span class="m">3</span><span class="p">.</span>                             <span class="c">"addition"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">6</span> <span class="nf">-</span> <span class="m">3</span><span class="p">.</span>                             <span class="c">"subtraction"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">6</span> <span class="nf">*</span> <span class="m">3</span><span class="p">.</span>                             <span class="c">"multiplication"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">1</span> <span class="nf">+</span> <span class="m">2</span> <span class="nf">*</span> <span class="m">3</span><span class="p">.</span>                         <span class="c">"evaluation always left to right (1 + 2) * 3"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">5</span> <span class="nf">/</span> <span class="m">3</span><span class="p">.</span>                             <span class="c">"division with fractional result"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">5.0</span> <span class="nf">/</span> <span class="m">3.0</span><span class="p">.</span>                         <span class="c">"division with float result"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">5.0</span> <span class="nf">//</span> <span class="m">3.0</span><span class="p">.</span>                        <span class="c">"integer divide"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">5.0</span> <span class="nf">\\</span> <span class="m">3.0</span><span class="p">.</span>                        <span class="c">"integer remainder"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">-5</span><span class="p">.</span>                                <span class="c">"unary minus"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">5</span> <span class="nf">sign</span><span class="p">.</span>                            <span class="c">"numeric sign (1, -1 or 0)"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">5</span> <span class="nf">negated</span><span class="p">.</span>                         <span class="c">"negate receiver"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">1.2</span> <span class="nf">integerPart</span><span class="p">.</span>                   <span class="c">"integer part of number (1.0)"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">1.2</span> <span class="nf">fractionPart</span><span class="p">.</span>                  <span class="c">"fractional part of number (0.2)"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">5</span> <span class="nf">reciprocal</span><span class="p">.</span>                      <span class="c">"reciprocal function"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">6</span> <span class="nf">*</span> <span class="m">3.1</span><span class="p">.</span>                           <span class="c">"auto convert to float"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">5</span> <span class="nf">squared</span><span class="p">.</span>                         <span class="c">"square function"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">25</span> <span class="nf">sqrt</span><span class="p">.</span>                           <span class="c">"square root"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">5</span> <span class="nf">raisedTo:</span> <span class="m">2</span><span class="p">.</span>                     <span class="c">"power function"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">5</span> <span class="nf">raisedToInteger:</span> <span class="m">2</span><span class="p">.</span>              <span class="c">"power function with integer"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">5</span> <span class="nf">exp</span><span class="p">.</span>                             <span class="c">"exponential"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">-5</span> <span class="nf">abs</span><span class="p">.</span>                            <span class="c">"absolute value"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">3.99</span> <span class="nf">rounded</span><span class="p">.</span>                      <span class="c">"round"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">3.99</span> <span class="nf">truncated</span><span class="p">.</span>                    <span class="c">"truncate"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">3.99</span> <span class="nf">roundTo:</span> <span class="m">1</span><span class="p">.</span>                   <span class="c">"round to specified decimal places"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">3.99</span> <span class="nf">truncateTo:</span> <span class="m">1</span><span class="p">.</span>                <span class="c">"truncate to specified decimal places"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">3.99</span> <span class="nf">floor</span><span class="p">.</span>                        <span class="c">"truncate"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">3.99</span> <span class="nf">ceiling</span><span class="p">.</span>                      <span class="c">"round up"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">5</span> <span class="nf">factorial</span><span class="p">.</span>                       <span class="c">"factorial"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">-5</span> <span class="nf">quo:</span> <span class="m">3</span><span class="p">.</span>                         <span class="c">"integer divide rounded toward zero"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">-5</span> <span class="nf">rem:</span> <span class="m">3</span><span class="p">.</span>                         <span class="c">"integer remainder rounded toward zero"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">28</span> <span class="nf">gcd:</span> <span class="m">12</span><span class="p">.</span>                        <span class="c">"greatest common denominator"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">28</span> <span class="nf">lcm:</span> <span class="m">12</span><span class="p">.</span>                        <span class="c">"least common multiple"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">100</span> <span class="nf">ln</span><span class="p">.</span>                            <span class="c">"natural logarithm"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">100</span> <span class="nf">log</span><span class="p">.</span>                           <span class="c">"base 10 logarithm"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">100</span> <span class="nf">log:</span> <span class="m">10</span><span class="p">.</span>                       <span class="c">"floor of the log"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">180</span> <span class="nf">degreesToRadians</span><span class="p">.</span>              <span class="c">"convert degrees to radians"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">3.14</span> <span class="nf">radiansToDegrees</span><span class="p">.</span>             <span class="c">"convert radians to degrees"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">0.7</span> <span class="nf">sin</span><span class="p">.</span>                           <span class="c">"sine"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">0.7</span> <span class="nf">cos</span><span class="p">.</span>                           <span class="c">"cosine"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">0.7</span> <span class="nf">tan</span><span class="p">.</span>                           <span class="c">"tangent"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">0.7</span> <span class="nf">arcSin</span><span class="p">.</span>                        <span class="c">"arcsine"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">0.7</span> <span class="nf">arcCos</span><span class="p">.</span>                        <span class="c">"arccosine"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">0.7</span> <span class="nf">arcTan</span><span class="p">.</span>                        <span class="c">"arctangent"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">10</span> <span class="nf">max:</span> <span class="m">20</span><span class="p">.</span>                        <span class="c">"get maximum of two numbers"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">10</span> <span class="nf">min:</span> <span class="m">20</span><span class="p">.</span>                        <span class="c">"get minimum of two numbers"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Float</span> <span class="nf">pi</span><span class="p">.</span>                          <span class="c">"pi"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Float</span> <span class="nf">e</span><span class="p">.</span>                           <span class="c">"exp constant"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Float</span> <span class="nf">infinity</span><span class="p">.</span>                    <span class="c">"infinity"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Float</span> <span class="nf">nan</span><span class="p">.</span>                         <span class="c">"not-a-number"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Random</span> <span class="nb">new</span> <span class="nf">next</span><span class="p">;</span> <span class="nf">yourself</span><span class="p">.</span> <span class="nv">x</span> <span class="nf">next</span><span class="p">.</span> <span class="c">"random number stream (0.0 to 1.0)"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">100</span> <span class="nf">atRandom</span><span class="p">.</span>                      <span class="c">"quick random number"</span>
+</code></pre></div>
+<h4>Bitwise Manipulation:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> b x </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">16</span><span class="nf">rFF</span> <span class="nf">bitAnd:</span> <span class="m">16r0</span><span class="nf">F</span><span class="p">.</span>           <span class="c">"and bits"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">16</span><span class="nf">rF0</span> <span class="nf">bitOr:</span> <span class="m">16r0</span><span class="nf">F</span><span class="p">.</span>            <span class="c">"or bits"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">16</span><span class="nf">rFF</span> <span class="nf">bitXor:</span> <span class="m">16r0</span><span class="nf">F</span><span class="p">.</span>           <span class="c">"xor bits"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">16</span><span class="nf">rFF</span> <span class="nf">bitInvert</span><span class="p">.</span>               <span class="c">"invert bits"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">16r0</span><span class="nf">F</span> <span class="nf">bitShift:</span> <span class="m">4</span><span class="p">.</span>             <span class="c">"left shift"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">16</span><span class="nf">rF0</span> <span class="nf">bitShift:</span> <span class="m">-4</span><span class="p">.</span>            <span class="c">"right shift"</span>
+<span class="c">"x := 16r80 bitAt: 7."</span>              <span class="c">"bit at position (0|1) [!Squeak]"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">16r80</span> <span class="nf">highbit</span><span class="p">.</span>                 <span class="c">"position of highest bit set"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="m">16</span><span class="nf">rFF</span> <span class="nf">allMask:</span> <span class="m">16r0</span><span class="nf">F</span><span class="p">.</span>          <span class="c">"test if all bits set in mask set in receiver"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="m">16</span><span class="nf">rFF</span> <span class="nf">anyMask:</span> <span class="m">16r0</span><span class="nf">F</span><span class="p">.</span>          <span class="c">"test if any bits set in mask set in receiver"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="m">16</span><span class="nf">rFF</span> <span class="nf">noMask:</span> <span class="m">16r0</span><span class="nf">F</span><span class="p">.</span>           <span class="c">"test if all bits set in mask clear in receiver"</span>
+</code></pre></div>
+<h4>Conversion:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> x </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">3.99</span> <span class="nf">asInteger</span><span class="p">.</span>               <span class="c">"convert number to integer (truncates in Squeak)"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">3.99</span> <span class="nf">asFraction</span><span class="p">.</span>              <span class="c">"convert number to fraction"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">3</span> <span class="nf">asFloat</span><span class="p">.</span>                    <span class="c">"convert number to float"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">65</span> <span class="nf">asCharacter</span><span class="p">.</span>               <span class="c">"convert integer to character"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="sc">$A</span> <span class="nf">asciiValue</span><span class="p">.</span>                <span class="c">"convert character to integer"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">3.99</span> <span class="nf">printString</span><span class="p">.</span>             <span class="c">"convert object to string via printOn:"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">3.99</span> <span class="nf">storeString</span><span class="p">.</span>             <span class="c">"convert object to string via storeOn:"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">15</span> <span class="nf">radix:</span> <span class="m">16</span><span class="p">.</span>                 <span class="c">"convert to string in given base"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">15</span> <span class="nf">printStringBase:</span> <span class="m">16</span><span class="p">.</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">15</span> <span class="nf">storeStringBase:</span> <span class="m">16</span><span class="p">.</span>
+</code></pre></div>
+<h4>Blocks:</h4>
+
+<ul>
+<li>blocks are objects and may be assigned to a variable</li>
+<li>value is last expression evaluated unless explicit return</li>
+<li>blocks may be nested</li>
+<li>specification [ arguments | | localvars | expressions ]</li>
+<li>Squeak does not currently support localvars in blocks</li>
+<li>max of three arguments allowed</li>
+<li><code>^</code>expression terminates block &amp; method (exits all nested blocks)</li>
+<li>blocks intended for long term storage should not contain <code>^</code></li>
+</ul>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> x y z </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="p">[</span> <span class="nv">y</span> <span class="o">:=</span> <span class="m">1</span><span class="p">.</span> <span class="nv">z</span> <span class="o">:=</span> <span class="m">2</span><span class="p">.</span> <span class="p">].</span> <span class="nv">x</span> <span class="nf">value</span><span class="p">.</span>                          <span class="c">"simple block usage"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="p">[</span> <span class="o">:</span><span class="nv">argOne</span> <span class="o">:</span><span class="nv">argTwo</span> <span class="p">|</span>   <span class="nv">argOne</span><span class="nf">,</span> <span class="s">' and '</span> <span class="nf">,</span> <span class="nv">argTwo</span><span class="p">.].</span>      <span class="c">"set up block with argument passing"</span>
+<span class="nc">Transcript</span> <span class="nf">show:</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">value:</span> <span class="s">'First'</span> <span class="nf">value:</span> <span class="s">'Second'</span><span class="p">);</span> <span class="nf">cr</span><span class="p">.</span>    <span class="c">"use block with argument passing"</span>
+
+<span class="c">"x := [ | z | z := 1.]. *** localvars not available in squeak blocks"</span>
+</code></pre></div>
+<h4>Method calls:</h4>
+
+<ul>
+<li>unary methods are messages with no arguments</li>
+<li>binary methods</li>
+<li>keyword methods are messages with selectors including colons standard categories/protocols:</li>
+<li>initialize-release    (methods called for new instance)</li>
+<li>accessing             (get/set methods)</li>
+<li>testing               (boolean tests - is)</li>
+<li>comparing             (boolean tests with parameter</li>
+<li>displaying            (gui related methods)</li>
+<li>printing              (methods for printing)</li>
+<li>updating              (receive notification of changes)</li>
+<li>private               (methods private to class)</li>
+<li>instance-creation     (class methods for creating instance)</li>
+</ul>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> x </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">2</span> <span class="nf">sqrt</span><span class="p">.</span>                                  <span class="c">"unary message"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">2</span> <span class="nf">raisedTo:</span> <span class="m">10</span><span class="p">.</span>                          <span class="c">"keyword message"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">194</span> <span class="nf">*</span> <span class="m">9</span><span class="p">.</span>                                 <span class="c">"binary message"</span>
+<span class="nc">Transcript</span> <span class="nf">show:</span> <span class="p">(</span><span class="m">194</span> <span class="nf">*</span> <span class="m">9</span><span class="p">)</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">cr</span><span class="p">.</span>   <span class="c">"combination (chaining)"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">2</span> <span class="nf">perform:</span> <span class="ss">#sqrt</span><span class="p">.</span>                        <span class="c">"indirect method invocation"</span>
+<span class="nc">Transcript</span>                                    <span class="c">"Cascading - send multiple messages to receiver"</span>
+   <span class="nf">show:</span> <span class="s">'hello '</span><span class="p">;</span>
+   <span class="nf">show:</span> <span class="s">'world'</span><span class="p">;</span>
+   <span class="nf">cr</span><span class="p">.</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">3</span> <span class="nf">+</span> <span class="m">2</span><span class="p">;</span> <span class="nf">*</span> <span class="m">100</span><span class="p">.</span>                            <span class="c">"result=300. Sends message to same receiver (3)"</span>
+</code></pre></div>
+<h4>Conditional Statements:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> x </span><span class="p">|</span>
+<span class="nv">x</span> <span class="nf">&gt;</span> <span class="m">10</span> <span class="nb">ifTrue:</span> <span class="p">[</span><span class="nc">Transcript</span> <span class="nf">show:</span> <span class="s">'ifTrue'</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>     <span class="c">"if then"</span>
+<span class="nv">x</span> <span class="nf">&gt;</span> <span class="m">10</span> <span class="nb">ifFalse:</span> <span class="p">[</span><span class="nc">Transcript</span> <span class="nf">show:</span> <span class="s">'ifFalse'</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>   <span class="c">"if else"</span>
+
+<span class="c">"if then else"</span>
+<span class="nv">x</span> <span class="nf">&gt;</span> <span class="m">10</span>                                                      
+   <span class="nb">ifTrue:</span> <span class="p">[</span><span class="nc">Transcript</span> <span class="nf">show:</span> <span class="s">'ifTrue'</span><span class="p">;</span> <span class="nf">cr</span><span class="p">]</span>
+   <span class="nb">ifFalse:</span> <span class="p">[</span><span class="nc">Transcript</span> <span class="nf">show:</span> <span class="s">'ifFalse'</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>
+
+<span class="c">"if else then"</span>
+<span class="nv">x</span> <span class="nf">&gt;</span> <span class="m">10</span>                                                      
+   <span class="nb">ifFalse:</span> <span class="p">[</span><span class="nc">Transcript</span> <span class="nf">show:</span> <span class="s">'ifFalse'</span><span class="p">;</span> <span class="nf">cr</span><span class="p">]</span>
+   <span class="nb">ifTrue:</span> <span class="p">[</span><span class="nc">Transcript</span> <span class="nf">show:</span> <span class="s">'ifTrue'</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>
+<span class="nf">Transcript</span>
+   <span class="err">show:</span>
+      <span class="p">(</span><span class="nv">x</span> <span class="nf">&gt;</span> <span class="m">10</span>
+         <span class="nb">ifTrue:</span> <span class="p">[</span><span class="s">'ifTrue'</span><span class="p">]</span>
+         <span class="nb">ifFalse:</span> <span class="p">[</span><span class="s">'ifFalse'</span><span class="p">]);</span>
+   <span class="nf">cr</span><span class="p">.</span>
+
+<span class="c">"nested if then else"</span>
+<span class="nf">Transcript</span>                                                  
+   <span class="err">show:</span>
+      <span class="p">(</span><span class="nv">x</span> <span class="nf">&gt;</span> <span class="m">10</span>
+         <span class="nb">ifTrue:</span> <span class="p">[</span><span class="nv">x</span> <span class="nf">&gt;</span> <span class="m">5</span>
+            <span class="nb">ifTrue:</span> <span class="p">[</span><span class="s">'A'</span><span class="p">]</span>
+            <span class="nb">ifFalse:</span> <span class="p">[</span><span class="s">'B'</span><span class="p">]]</span>
+         <span class="nb">ifFalse:</span> <span class="p">[</span><span class="s">'C'</span><span class="p">]);</span>
+   <span class="nf">cr</span><span class="p">.</span>
+
+<span class="c">"switch functionality"</span>
+<span class="nv">switch</span> <span class="o">:=</span> <span class="nc">Dictionary</span> <span class="nb">new</span><span class="p">.</span>     
+<span class="nv">switch</span> <span class="nf">at:</span> <span class="sc">$A</span> <span class="nf">put:</span> <span class="p">[</span><span class="nc">Transcript</span> <span class="nf">show:</span> <span class="s">'Case A'</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>
+<span class="nv">switch</span> <span class="nf">at:</span> <span class="sc">$B</span> <span class="nf">put:</span> <span class="p">[</span><span class="nc">Transcript</span> <span class="nf">show:</span> <span class="s">'Case B'</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>
+<span class="nv">switch</span> <span class="nf">at:</span> <span class="sc">$C</span> <span class="nf">put:</span> <span class="p">[</span><span class="nc">Transcript</span> <span class="nf">show:</span> <span class="s">'Case C'</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>
+<span class="nv">result</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">switch</span> <span class="nf">at:</span> <span class="sc">$B</span><span class="p">)</span> <span class="nf">value</span><span class="p">.</span>
+</code></pre></div>
+<h4>Iteration statements:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> x y </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">4</span><span class="p">.</span> <span class="nv">y</span> <span class="o">:=</span> <span class="m">1</span><span class="p">.</span>
+<span class="p">[</span><span class="nv">x</span> <span class="nf">&gt;</span> <span class="m">0</span><span class="p">]</span> <span class="nb">whileTrue:</span> <span class="p">[</span><span class="nv">x</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">-</span> <span class="m">1</span><span class="p">.</span> <span class="nv">y</span> <span class="o">:=</span> <span class="nv">y</span> <span class="nf">*</span> <span class="m">2</span><span class="p">].</span>     <span class="c">"while true loop"</span>
+<span class="p">[</span><span class="nv">x</span> <span class="nf">&gt;=</span> <span class="m">4</span><span class="p">]</span> <span class="nb">whileFalse:</span> <span class="p">[</span><span class="nv">x</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">+</span> <span class="m">1</span><span class="p">.</span> <span class="nv">y</span> <span class="o">:=</span> <span class="nv">y</span> <span class="nf">*</span> <span class="m">2</span><span class="p">].</span>   <span class="c">"while false loop"</span>
+<span class="nv">x</span> <span class="nb">timesRepeat:</span> <span class="p">[</span><span class="nv">y</span> <span class="o">:=</span> <span class="nv">y</span> <span class="nf">*</span> <span class="m">2</span><span class="p">].</span>                     <span class="c">"times repeat loop (i := 1 to x)"</span>
+<span class="m">1</span> <span class="nf">to:</span> <span class="nv">x</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">y</span> <span class="o">:=</span> <span class="nv">y</span> <span class="nf">*</span> <span class="m">2</span><span class="p">].</span>                   <span class="c">"for loop"</span>
+<span class="m">1</span> <span class="nf">to:</span> <span class="nv">x</span> <span class="nf">by:</span> <span class="m">2</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">y</span> <span class="o">:=</span> <span class="nv">y</span> <span class="nf">/</span> <span class="m">2</span><span class="p">].</span>             <span class="c">"for loop with specified increment"</span>
+<span class="ss">#(</span><span class="m">5</span> <span class="m">4</span> <span class="m">3</span><span class="ss">)</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">x</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">+</span> <span class="nv">a</span><span class="p">].</span>                  <span class="c">"iterate over array elements"</span>
+</code></pre></div>
+<h4>Character:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> x y </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="sc">$A</span><span class="p">.</span>                         <span class="c">"character assignment"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isLowercase</span><span class="p">.</span>              <span class="c">"test if lower case"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isUppercase</span><span class="p">.</span>              <span class="c">"test if upper case"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isLetter</span><span class="p">.</span>                 <span class="c">"test if letter"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isDigit</span><span class="p">.</span>                  <span class="c">"test if digit"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isAlphaNumeric</span><span class="p">.</span>           <span class="c">"test if alphanumeric"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isSeparator</span><span class="p">.</span>              <span class="c">"test if separator char"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isVowel</span><span class="p">.</span>                  <span class="c">"test if vowel"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">digitValue</span><span class="p">.</span>               <span class="c">"convert to numeric digit value"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asLowercase</span><span class="p">.</span>              <span class="c">"convert to lower case"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asUppercase</span><span class="p">.</span>              <span class="c">"convert to upper case"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asciiValue</span><span class="p">.</span>               <span class="c">"convert to numeric ascii value"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asString</span><span class="p">.</span>                 <span class="c">"convert to string"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="sc">$A</span> <span class="nf">&lt;=</span> <span class="sc">$B</span><span class="p">.</span>                   <span class="c">"comparison"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="sc">$A</span> <span class="nf">max:</span> <span class="sc">$B</span><span class="p">.</span>
+</code></pre></div>
+<h4>Symbol:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> b x y </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="ss">#Hello</span><span class="p">.</span>                                      <span class="c">"symbol assignment"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="ss">#Symbol</span><span class="nf">,</span> <span class="ss">#Concatenation</span><span class="p">.</span>                     <span class="c">"symbol concatenation (result is string)"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isEmpty</span><span class="p">.</span>                                   <span class="c">"test if symbol is empty"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">size</span><span class="p">.</span>                                      <span class="c">"string size"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">at:</span> <span class="m">2</span><span class="p">.</span>                                     <span class="c">"char at location"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">copyFrom:</span> <span class="m">2</span> <span class="nf">to:</span> <span class="m">4</span><span class="p">.</span>                         <span class="c">"substring"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">indexOf:</span> <span class="sc">$e</span> <span class="nf">ifAbsent:</span> <span class="p">[</span><span class="m">0</span><span class="p">].</span>                 <span class="c">"first position of character within string"</span>
+<span class="nv">x</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">a</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>  <span class="c">"iterate over the string"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">conform:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&gt;=</span> <span class="sc">$a</span><span class="p">)</span> <span class="nf">&amp;</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&lt;=</span> <span class="sc">$z</span><span class="p">)].</span>     <span class="c">"test if all elements meet condition"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">select:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&gt;</span> <span class="sc">$a</span><span class="p">].</span>                     <span class="c">"return all elements that meet condition"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asString</span><span class="p">.</span>                                  <span class="c">"convert symbol to string"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asText</span><span class="p">.</span>                                    <span class="c">"convert symbol to text"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asArray</span><span class="p">.</span>                                   <span class="c">"convert symbol to array"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asOrderedCollection</span><span class="p">.</span>                       <span class="c">"convert symbol to ordered collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSortedCollection</span><span class="p">.</span>                        <span class="c">"convert symbol to sorted collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asBag</span><span class="p">.</span>                                     <span class="c">"convert symbol to bag collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSet</span><span class="p">.</span>                                     <span class="c">"convert symbol to set collection"</span>
+</code></pre></div>
+<h4>String:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> b x y </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="s">'This is a string'</span><span class="p">.</span>                           <span class="c">"string assignment"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="s">'String'</span><span class="nf">,</span> <span class="s">'Concatenation'</span><span class="p">.</span>                    <span class="c">"string concatenation"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isEmpty</span><span class="p">.</span>                                    <span class="c">"test if string is empty"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">size</span><span class="p">.</span>                                       <span class="c">"string size"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">at:</span> <span class="m">2</span><span class="p">.</span>                                      <span class="c">"char at location"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">copyFrom:</span> <span class="m">2</span> <span class="nf">to:</span> <span class="m">4</span><span class="p">.</span>                          <span class="c">"substring"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">indexOf:</span> <span class="sc">$a</span> <span class="nf">ifAbsent:</span> <span class="p">[</span><span class="m">0</span><span class="p">].</span>                  <span class="c">"first position of character within string"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">new:</span> <span class="m">4</span><span class="p">.</span>                                <span class="c">"allocate string object"</span>
+<span class="nv">x</span>                                                  <span class="c">"set string elements"</span>
+   <span class="nf">at:</span> <span class="m">1</span> <span class="nf">put:</span> <span class="sc">$a</span><span class="p">;</span>
+   <span class="nf">at:</span> <span class="m">2</span> <span class="nf">put:</span> <span class="sc">$b</span><span class="p">;</span>
+   <span class="nf">at:</span> <span class="m">3</span> <span class="nf">put:</span> <span class="sc">$c</span><span class="p">;</span>
+   <span class="nf">at:</span> <span class="m">4</span> <span class="nf">put:</span> <span class="sc">$e</span><span class="p">.</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">with:</span> <span class="sc">$a</span> <span class="nf">with:</span> <span class="sc">$b</span> <span class="nf">with:</span> <span class="sc">$c</span> <span class="nf">with:</span> <span class="sc">$d</span><span class="p">.</span>  <span class="c">"set up to 4 elements at a time"</span>
+<span class="nv">x</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">a</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>  <span class="c">"iterate over the string"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">conform:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&gt;=</span> <span class="sc">$a</span><span class="p">)</span> <span class="nf">&amp;</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&lt;=</span> <span class="sc">$z</span><span class="p">)].</span>     <span class="c">"test if all elements meet condition"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">select:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&gt;</span> <span class="sc">$a</span><span class="p">].</span>                     <span class="c">"return all elements that meet condition"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSymbol</span><span class="p">.</span>                                  <span class="c">"convert string to symbol"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asArray</span><span class="p">.</span>                                   <span class="c">"convert string to array"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="s">'ABCD'</span> <span class="nf">asByteArray</span><span class="p">.</span>                          <span class="c">"convert string to byte array"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asOrderedCollection</span><span class="p">.</span>                       <span class="c">"convert string to ordered collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSortedCollection</span><span class="p">.</span>                        <span class="c">"convert string to sorted collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asBag</span><span class="p">.</span>                                     <span class="c">"convert string to bag collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSet</span><span class="p">.</span>                                     <span class="c">"convert string to set collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">shuffled</span><span class="p">.</span>                                  <span class="c">"randomly shuffle string"</span>
+</code></pre></div>
+<h4>Array:</h4>
+
+<p>Fixed length collection
+- ByteArray:     Array limited to byte elements (0-255)
+- WordArray:     Array limited to word elements (0-2^32)</p>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> b x y sum max </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="ss">#(</span><span class="m">4</span> <span class="m">3</span> <span class="m">2</span> <span class="m">1</span><span class="ss">)</span><span class="p">.</span>                                 <span class="c">"constant array"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Array</span> <span class="nf">with:</span> <span class="m">5</span> <span class="nf">with:</span> <span class="m">4</span> <span class="nf">with:</span> <span class="m">3</span> <span class="nf">with:</span> <span class="m">2</span><span class="p">.</span>      <span class="c">"create array with up to 4 elements"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Array</span> <span class="nf">new:</span> <span class="m">4</span><span class="p">.</span>                               <span class="c">"allocate an array with specified size"</span>
+<span class="nv">x</span>                                                <span class="c">"set array elements"</span>
+   <span class="nf">at:</span> <span class="m">1</span> <span class="nf">put:</span> <span class="m">5</span><span class="p">;</span>
+   <span class="nf">at:</span> <span class="m">2</span> <span class="nf">put:</span> <span class="m">4</span><span class="p">;</span>
+   <span class="nf">at:</span> <span class="m">3</span> <span class="nf">put:</span> <span class="m">3</span><span class="p">;</span>
+   <span class="nf">at:</span> <span class="m">4</span> <span class="nf">put:</span> <span class="m">2</span><span class="p">.</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isEmpty</span><span class="p">.</span>                                  <span class="c">"test if array is empty"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">size</span><span class="p">.</span>                                     <span class="c">"array size"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">at:</span> <span class="m">4</span><span class="p">.</span>                                    <span class="c">"get array element at index"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">includes:</span> <span class="m">3</span><span class="p">.</span>                              <span class="c">"test if element is in array"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">copyFrom:</span> <span class="m">2</span> <span class="nf">to:</span> <span class="m">4</span><span class="p">.</span>                        <span class="c">"subarray"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">indexOf:</span> <span class="m">3</span> <span class="nf">ifAbsent:</span> <span class="p">[</span><span class="m">0</span><span class="p">].</span>                 <span class="c">"first position of element within array"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">occurrencesOf:</span> <span class="m">3</span><span class="p">.</span>                         <span class="c">"number of times object in collection"</span>
+<span class="nv">x</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">a</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span> <span class="c">"iterate over the array"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">conform:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&gt;=</span> <span class="m">1</span><span class="p">)</span> <span class="nf">&amp;</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&lt;=</span> <span class="m">4</span><span class="p">)].</span>      <span class="c">"test if all elements meet condition"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">select:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&gt;</span> <span class="m">2</span><span class="p">].</span>                     <span class="c">"return collection of elements that pass test"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">reject:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&lt;</span> <span class="m">2</span><span class="p">].</span>                     <span class="c">"return collection of elements that fail test"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">collect:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">+</span> <span class="nv">a</span><span class="p">].</span>                    <span class="c">"transform each element for new collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">detect:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&gt;</span> <span class="m">3</span><span class="p">]</span> <span class="nf">ifNone:</span> <span class="p">[].</span>          <span class="c">"find position of first element that passes test"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="m">0</span><span class="p">.</span> <span class="nv">x</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">sum</span> <span class="o">:=</span> <span class="nv">sum</span> <span class="nf">+</span> <span class="nv">a</span><span class="p">].</span> <span class="nv">sum</span><span class="p">.</span>      <span class="c">"sum array elements"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="m">0</span><span class="p">.</span> <span class="m">1</span> <span class="nf">to:</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">size</span><span class="p">)</span> 
+            <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">sum</span> <span class="o">:=</span> <span class="nv">sum</span> <span class="nf">+</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">at:</span> <span class="nv">a</span><span class="p">)].</span>   <span class="c">"sum array elements"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">inject:</span> <span class="m">0</span> <span class="nf">into:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="o">:</span><span class="nv">c</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">+</span> <span class="nv">c</span><span class="p">].</span>        <span class="c">"sum array elements"</span>
+<span class="nv">max</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">inject:</span> <span class="m">0</span> <span class="nf">into:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="o">:</span><span class="nv">c</span> <span class="p">|</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&gt;</span> <span class="nv">c</span><span class="p">)</span>        <span class="c">"find max element in array"</span>
+   <span class="nb">ifTrue:</span> <span class="p">[</span><span class="nv">a</span><span class="p">]</span>
+   <span class="nb">ifFalse:</span> <span class="p">[</span><span class="nv">c</span><span class="p">]].</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">shuffled</span><span class="p">.</span>                                 <span class="c">"randomly shuffle collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asArray</span><span class="p">.</span>                                  <span class="c">"convert to array"</span>
+<span class="c">"y := x asByteArray."</span>                            <span class="c">"note: this instruction not available on Squeak"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asWordArray</span><span class="p">.</span>                              <span class="c">"convert to word array"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asOrderedCollection</span><span class="p">.</span>                      <span class="c">"convert to ordered collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSortedCollection</span><span class="p">.</span>                       <span class="c">"convert to sorted collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asBag</span><span class="p">.</span>                                    <span class="c">"convert to bag collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSet</span><span class="p">.</span>                                    <span class="c">"convert to set collection"</span>
+</code></pre></div>
+<h4>OrderedCollection:</h4>
+
+<p>acts like an expandable array</p>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> b x y sum max </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">OrderedCollection</span> 
+     <span class="nf">with:</span> <span class="m">4</span> <span class="nf">with:</span> <span class="m">3</span> <span class="nf">with:</span> <span class="m">2</span> <span class="nf">with:</span> <span class="m">1</span><span class="p">.</span>            <span class="c">"create collection with up to 4 elements"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">OrderedCollection</span> <span class="nb">new</span><span class="p">.</span>                      <span class="c">"allocate collection"</span>
+<span class="nv">x</span> <span class="nf">add:</span> <span class="m">3</span><span class="p">;</span> <span class="nf">add:</span> <span class="m">2</span><span class="p">;</span> <span class="nf">add:</span> <span class="m">1</span><span class="p">;</span> <span class="nf">add:</span> <span class="m">4</span><span class="p">;</span> <span class="nf">yourself</span><span class="p">.</span>      <span class="c">"add element to collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">addFirst:</span> <span class="m">5</span><span class="p">.</span>                              <span class="c">"add element at beginning of collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">removeFirst</span><span class="p">.</span>                              <span class="c">"remove first element in collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">addLast:</span> <span class="m">6</span><span class="p">.</span>                               <span class="c">"add element at end of collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">removeLast</span><span class="p">.</span>                               <span class="c">"remove last element in collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">addAll:</span> <span class="ss">#(</span><span class="m">7</span> <span class="m">8</span> <span class="m">9</span><span class="ss">)</span><span class="p">.</span>                         <span class="c">"add multiple elements to collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">removeAll:</span> <span class="ss">#(</span><span class="m">7</span> <span class="m">8</span> <span class="m">9</span><span class="ss">)</span><span class="p">.</span>                      <span class="c">"remove multiple elements from collection"</span>
+<span class="nv">x</span> <span class="nf">at:</span> <span class="m">2</span> <span class="nf">put:</span> <span class="m">3</span><span class="p">.</span>                                  <span class="c">"set element at index"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">remove:</span> <span class="m">5</span> <span class="nf">ifAbsent:</span> <span class="p">[].</span>                   <span class="c">"remove element from collection"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isEmpty</span><span class="p">.</span>                                  <span class="c">"test if empty"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">size</span><span class="p">.</span>                                     <span class="c">"number of elements"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">at:</span> <span class="m">2</span><span class="p">.</span>                                    <span class="c">"retrieve element at index"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">first</span><span class="p">.</span>                                    <span class="c">"retrieve first element in collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">last</span><span class="p">.</span>                                     <span class="c">"retrieve last element in collection"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">includes:</span> <span class="m">5</span><span class="p">.</span>                              <span class="c">"test if element is in collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">copyFrom:</span> <span class="m">2</span> <span class="nf">to:</span> <span class="m">3</span><span class="p">.</span>                        <span class="c">"subcollection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">indexOf:</span> <span class="m">3</span> <span class="nf">ifAbsent:</span> <span class="p">[</span><span class="m">0</span><span class="p">].</span>                 <span class="c">"first position of element within collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">occurrencesOf:</span> <span class="m">3</span><span class="p">.</span>                         <span class="c">"number of times object in collection"</span>
+<span class="nv">x</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">a</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span> <span class="c">"iterate over the collection"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">conform:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&gt;=</span> <span class="m">1</span><span class="p">)</span> <span class="nf">&amp;</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&lt;=</span> <span class="m">4</span><span class="p">)].</span>      <span class="c">"test if all elements meet condition"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">select:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&gt;</span> <span class="m">2</span><span class="p">].</span>                     <span class="c">"return collection of elements that pass test"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">reject:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&lt;</span> <span class="m">2</span><span class="p">].</span>                     <span class="c">"return collection of elements that fail test"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">collect:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">+</span> <span class="nv">a</span><span class="p">].</span>                    <span class="c">"transform each element for new collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">detect:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&gt;</span> <span class="m">3</span><span class="p">]</span> <span class="nf">ifNone:</span> <span class="p">[].</span>          <span class="c">"find position of first element that passes test"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="m">0</span><span class="p">.</span> <span class="nv">x</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">sum</span> <span class="o">:=</span> <span class="nv">sum</span> <span class="nf">+</span> <span class="nv">a</span><span class="p">].</span> <span class="nv">sum</span><span class="p">.</span>      <span class="c">"sum elements"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="m">0</span><span class="p">.</span> <span class="m">1</span> <span class="nf">to:</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">size</span><span class="p">)</span> 
+            <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">sum</span> <span class="o">:=</span> <span class="nv">sum</span> <span class="nf">+</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">at:</span> <span class="nv">a</span><span class="p">)].</span>   <span class="c">"sum elements"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">inject:</span> <span class="m">0</span> <span class="nf">into:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="o">:</span><span class="nv">c</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">+</span> <span class="nv">c</span><span class="p">].</span>        <span class="c">"sum elements"</span>
+<span class="nv">max</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">inject:</span> <span class="m">0</span> <span class="nf">into:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="o">:</span><span class="nv">c</span> <span class="p">|</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&gt;</span> <span class="nv">c</span><span class="p">)</span>        <span class="c">"find max element in collection"</span>
+   <span class="nb">ifTrue:</span> <span class="p">[</span><span class="nv">a</span><span class="p">]</span>
+   <span class="nb">ifFalse:</span> <span class="p">[</span><span class="nv">c</span><span class="p">]].</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">shuffled</span><span class="p">.</span>                                 <span class="c">"randomly shuffle collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asArray</span><span class="p">.</span>                                  <span class="c">"convert to array"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asOrderedCollection</span><span class="p">.</span>                      <span class="c">"convert to ordered collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSortedCollection</span><span class="p">.</span>                       <span class="c">"convert to sorted collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asBag</span><span class="p">.</span>                                    <span class="c">"convert to bag collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSet</span><span class="p">.</span>                                    <span class="c">"convert to set collection"</span>
+</code></pre></div>
+<h4>SortedCollection:</h4>
+
+<p>like OrderedCollection except order of elements determined by sorting criteria</p>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> b x y sum max </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">SortedCollection</span> 
+     <span class="nf">with:</span> <span class="m">4</span> <span class="nf">with:</span> <span class="m">3</span> <span class="nf">with:</span> <span class="m">2</span> <span class="nf">with:</span> <span class="m">1</span><span class="p">.</span>              <span class="c">"create collection with up to 4 elements"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">SortedCollection</span> <span class="nb">new</span><span class="p">.</span>                         <span class="c">"allocate collection"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">SortedCollection</span> <span class="nf">sortBlock:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="o">:</span><span class="nv">c</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&gt;</span> <span class="nv">c</span><span class="p">].</span>  <span class="c">"set sort criteria"</span>
+<span class="nv">x</span> <span class="nf">add:</span> <span class="m">3</span><span class="p">;</span> <span class="nf">add:</span> <span class="m">2</span><span class="p">;</span> <span class="nf">add:</span> <span class="m">1</span><span class="p">;</span> <span class="nf">add:</span> <span class="m">4</span><span class="p">;</span> <span class="nf">yourself</span><span class="p">.</span>        <span class="c">"add element to collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">addFirst:</span> <span class="m">5</span><span class="p">.</span>                                <span class="c">"add element at beginning of collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">removeFirst</span><span class="p">.</span>                                <span class="c">"remove first element in collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">addLast:</span> <span class="m">6</span><span class="p">.</span>                                 <span class="c">"add element at end of collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">removeLast</span><span class="p">.</span>                                 <span class="c">"remove last element in collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">addAll:</span> <span class="ss">#(</span><span class="m">7</span> <span class="m">8</span> <span class="m">9</span><span class="ss">)</span><span class="p">.</span>                           <span class="c">"add multiple elements to collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">removeAll:</span> <span class="ss">#(</span><span class="m">7</span> <span class="m">8</span> <span class="m">9</span><span class="ss">)</span><span class="p">.</span>                        <span class="c">"remove multiple elements from collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">remove:</span> <span class="m">5</span> <span class="nf">ifAbsent:</span> <span class="p">[].</span>                     <span class="c">"remove element from collection"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isEmpty</span><span class="p">.</span>                                    <span class="c">"test if empty"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">size</span><span class="p">.</span>                                       <span class="c">"number of elements"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">at:</span> <span class="m">2</span><span class="p">.</span>                                      <span class="c">"retrieve element at index"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">first</span><span class="p">.</span>                                      <span class="c">"retrieve first element in collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">last</span><span class="p">.</span>                                       <span class="c">"retrieve last element in collection"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">includes:</span> <span class="m">4</span><span class="p">.</span>                                <span class="c">"test if element is in collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">copyFrom:</span> <span class="m">2</span> <span class="nf">to:</span> <span class="m">3</span><span class="p">.</span>                          <span class="c">"subcollection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">indexOf:</span> <span class="m">3</span> <span class="nf">ifAbsent:</span> <span class="p">[</span><span class="m">0</span><span class="p">].</span>                   <span class="c">"first position of element within collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">occurrencesOf:</span> <span class="m">3</span><span class="p">.</span>                           <span class="c">"number of times object in collection"</span>
+<span class="nv">x</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">a</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>   <span class="c">"iterate over the collection"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">conform:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&gt;=</span> <span class="m">1</span><span class="p">)</span> <span class="nf">&amp;</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&lt;=</span> <span class="m">4</span><span class="p">)].</span>        <span class="c">"test if all elements meet condition"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">select:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&gt;</span> <span class="m">2</span><span class="p">].</span>                       <span class="c">"return collection of elements that pass test"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">reject:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&lt;</span> <span class="m">2</span><span class="p">].</span>                       <span class="c">"return collection of elements that fail test"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">collect:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">+</span> <span class="nv">a</span><span class="p">].</span>                      <span class="c">"transform each element for new collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">detect:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&gt;</span> <span class="m">3</span><span class="p">]</span> <span class="nf">ifNone:</span> <span class="p">[].</span>            <span class="c">"find position of first element that passes test"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="m">0</span><span class="p">.</span> <span class="nv">x</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">sum</span> <span class="o">:=</span> <span class="nv">sum</span> <span class="nf">+</span> <span class="nv">a</span><span class="p">].</span> <span class="nv">sum</span><span class="p">.</span>        <span class="c">"sum elements"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="m">0</span><span class="p">.</span> <span class="m">1</span> <span class="nf">to:</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">size</span><span class="p">)</span> 
+            <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">sum</span> <span class="o">:=</span> <span class="nv">sum</span> <span class="nf">+</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">at:</span> <span class="nv">a</span><span class="p">)].</span>     <span class="c">"sum elements"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">inject:</span> <span class="m">0</span> <span class="nf">into:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="o">:</span><span class="nv">c</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">+</span> <span class="nv">c</span><span class="p">].</span>          <span class="c">"sum elements"</span>
+<span class="nv">max</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">inject:</span> <span class="m">0</span> <span class="nf">into:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="o">:</span><span class="nv">c</span> <span class="p">|</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&gt;</span> <span class="nv">c</span><span class="p">)</span>          <span class="c">"find max element in collection"</span>
+   <span class="nb">ifTrue:</span> <span class="p">[</span><span class="nv">a</span><span class="p">]</span>
+   <span class="nb">ifFalse:</span> <span class="p">[</span><span class="nv">c</span><span class="p">]].</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asArray</span><span class="p">.</span>                                     <span class="c">"convert to array"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asOrderedCollection</span><span class="p">.</span>                         <span class="c">"convert to ordered collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSortedCollection</span><span class="p">.</span>                          <span class="c">"convert to sorted collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asBag</span><span class="p">.</span>                                       <span class="c">"convert to bag collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSet</span><span class="p">.</span>                                       <span class="c">"convert to set collection"</span>
+</code></pre></div>
+<h4>Bag:</h4>
+
+<p>like OrderedCollection except elements are in no particular order</p>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> b x y sum max </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Bag</span> <span class="nf">with:</span> <span class="m">4</span> <span class="nf">with:</span> <span class="m">3</span> <span class="nf">with:</span> <span class="m">2</span> <span class="nf">with:</span> <span class="m">1</span><span class="p">.</span>        <span class="c">"create collection with up to 4 elements"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Bag</span> <span class="nb">new</span><span class="p">.</span>                                    <span class="c">"allocate collection"</span>
+<span class="nv">x</span> <span class="nf">add:</span> <span class="m">4</span><span class="p">;</span> <span class="nf">add:</span> <span class="m">3</span><span class="p">;</span> <span class="nf">add:</span> <span class="m">1</span><span class="p">;</span> <span class="nf">add:</span> <span class="m">2</span><span class="p">;</span> <span class="nf">yourself</span><span class="p">.</span>      <span class="c">"add element to collection"</span>
+<span class="nv">x</span> <span class="nf">add:</span> <span class="m">3</span> <span class="nf">withOccurrences:</span> <span class="m">2</span><span class="p">.</span>                     <span class="c">"add multiple copies to collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">addAll:</span> <span class="ss">#(</span><span class="m">7</span> <span class="m">8</span> <span class="m">9</span><span class="ss">)</span><span class="p">.</span>                         <span class="c">"add multiple elements to collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">removeAll:</span> <span class="ss">#(</span><span class="m">7</span> <span class="m">8</span> <span class="m">9</span><span class="ss">)</span><span class="p">.</span>                      <span class="c">"remove multiple elements from collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">remove:</span> <span class="m">4</span> <span class="nf">ifAbsent:</span> <span class="p">[].</span>                   <span class="c">"remove element from collection"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isEmpty</span><span class="p">.</span>                                  <span class="c">"test if empty"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">size</span><span class="p">.</span>                                     <span class="c">"number of elements"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">includes:</span> <span class="m">3</span><span class="p">.</span>                              <span class="c">"test if element is in collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">occurrencesOf:</span> <span class="m">3</span><span class="p">.</span>                         <span class="c">"number of times object in collection"</span>
+<span class="nv">x</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">a</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span> <span class="c">"iterate over the collection"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">conform:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&gt;=</span> <span class="m">1</span><span class="p">)</span> <span class="nf">&amp;</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&lt;=</span> <span class="m">4</span><span class="p">)].</span>      <span class="c">"test if all elements meet condition"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">select:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&gt;</span> <span class="m">2</span><span class="p">].</span>                     <span class="c">"return collection of elements that pass test"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">reject:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&lt;</span> <span class="m">2</span><span class="p">].</span>                     <span class="c">"return collection of elements that fail test"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">collect:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">+</span> <span class="nv">a</span><span class="p">].</span>                    <span class="c">"transform each element for new collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">detect:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&gt;</span> <span class="m">3</span><span class="p">]</span> <span class="nf">ifNone:</span> <span class="p">[].</span>          <span class="c">"find position of first element that passes test"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="m">0</span><span class="p">.</span> <span class="nv">x</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">sum</span> <span class="o">:=</span> <span class="nv">sum</span> <span class="nf">+</span> <span class="nv">a</span><span class="p">].</span> <span class="nv">sum</span><span class="p">.</span>      <span class="c">"sum elements"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">inject:</span> <span class="m">0</span> <span class="nf">into:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="o">:</span><span class="nv">c</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">+</span> <span class="nv">c</span><span class="p">].</span>        <span class="c">"sum elements"</span>
+<span class="nv">max</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">inject:</span> <span class="m">0</span> <span class="nf">into:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="o">:</span><span class="nv">c</span> <span class="p">|</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&gt;</span> <span class="nv">c</span><span class="p">)</span>        <span class="c">"find max element in collection"</span>
+   <span class="nb">ifTrue:</span> <span class="p">[</span><span class="nv">a</span><span class="p">]</span>
+   <span class="nb">ifFalse:</span> <span class="p">[</span><span class="nv">c</span><span class="p">]].</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asOrderedCollection</span><span class="p">.</span>                       <span class="c">"convert to ordered collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSortedCollection</span><span class="p">.</span>                        <span class="c">"convert to sorted collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asBag</span><span class="p">.</span>                                     <span class="c">"convert to bag collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSet</span><span class="p">.</span>                                     <span class="c">"convert to set collection"</span>
+</code></pre></div>
+<h4>Set:</h4>
+
+<p>like Bag except duplicates not allowed</p>
+
+<h4>IdentitySet:</h4>
+
+<p>uses identity test (== rather than =)</p>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> b x y sum max </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Set</span> <span class="nf">with:</span> <span class="m">4</span> <span class="nf">with:</span> <span class="m">3</span> <span class="nf">with:</span> <span class="m">2</span> <span class="nf">with:</span> <span class="m">1</span><span class="p">.</span>        <span class="c">"create collection with up to 4 elements"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Set</span> <span class="nb">new</span><span class="p">.</span>                                    <span class="c">"allocate collection"</span>
+<span class="nv">x</span> <span class="nf">add:</span> <span class="m">4</span><span class="p">;</span> <span class="nf">add:</span> <span class="m">3</span><span class="p">;</span> <span class="nf">add:</span> <span class="m">1</span><span class="p">;</span> <span class="nf">add:</span> <span class="m">2</span><span class="p">;</span> <span class="nf">yourself</span><span class="p">.</span>      <span class="c">"add element to collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">addAll:</span> <span class="ss">#(</span><span class="m">7</span> <span class="m">8</span> <span class="m">9</span><span class="ss">)</span><span class="p">.</span>                         <span class="c">"add multiple elements to collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">removeAll:</span> <span class="ss">#(</span><span class="m">7</span> <span class="m">8</span> <span class="m">9</span><span class="ss">)</span><span class="p">.</span>                      <span class="c">"remove multiple elements from collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">remove:</span> <span class="m">4</span> <span class="nf">ifAbsent:</span> <span class="p">[].</span>                   <span class="c">"remove element from collection"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isEmpty</span><span class="p">.</span>                                  <span class="c">"test if empty"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">size</span><span class="p">.</span>                                     <span class="c">"number of elements"</span>
+<span class="nv">x</span> <span class="nf">includes:</span> <span class="m">4</span><span class="p">.</span>                                   <span class="c">"test if element is in collection"</span>
+<span class="nv">x</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">a</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span> <span class="c">"iterate over the collection"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">conform:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&gt;=</span> <span class="m">1</span><span class="p">)</span> <span class="nf">&amp;</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&lt;=</span> <span class="m">4</span><span class="p">)].</span>      <span class="c">"test if all elements meet condition"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">select:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&gt;</span> <span class="m">2</span><span class="p">].</span>                     <span class="c">"return collection of elements that pass test"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">reject:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&lt;</span> <span class="m">2</span><span class="p">].</span>                     <span class="c">"return collection of elements that fail test"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">collect:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">+</span> <span class="nv">a</span><span class="p">].</span>                    <span class="c">"transform each element for new collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">detect:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&gt;</span> <span class="m">3</span><span class="p">]</span> <span class="nf">ifNone:</span> <span class="p">[].</span>          <span class="c">"find position of first element that passes test"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="m">0</span><span class="p">.</span> <span class="nv">x</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">sum</span> <span class="o">:=</span> <span class="nv">sum</span> <span class="nf">+</span> <span class="nv">a</span><span class="p">].</span> <span class="nv">sum</span><span class="p">.</span>      <span class="c">"sum elements"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">inject:</span> <span class="m">0</span> <span class="nf">into:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="o">:</span><span class="nv">c</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">+</span> <span class="nv">c</span><span class="p">].</span>        <span class="c">"sum elements"</span>
+<span class="nv">max</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">inject:</span> <span class="m">0</span> <span class="nf">into:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="o">:</span><span class="nv">c</span> <span class="p">|</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&gt;</span> <span class="nv">c</span><span class="p">)</span>        <span class="c">"find max element in collection"</span>
+   <span class="nb">ifTrue:</span> <span class="p">[</span><span class="nv">a</span><span class="p">]</span>
+   <span class="nb">ifFalse:</span> <span class="p">[</span><span class="nv">c</span><span class="p">]].</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asArray</span><span class="p">.</span>                                  <span class="c">"convert to array"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asOrderedCollection</span><span class="p">.</span>                      <span class="c">"convert to ordered collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSortedCollection</span><span class="p">.</span>                       <span class="c">"convert to sorted collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asBag</span><span class="p">.</span>                                    <span class="c">"convert to bag collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSet</span><span class="p">.</span>                                    <span class="c">"convert to set collection"</span>
+</code></pre></div>
+<h4>Interval:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> b x y sum max </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Interval</span> <span class="nf">from:</span> <span class="m">5</span> <span class="nf">to:</span> <span class="m">10</span><span class="p">.</span>                     <span class="c">"create interval object"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">5</span> <span class="nf">to:</span> <span class="m">10</span><span class="p">.</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Interval</span> <span class="nf">from:</span> <span class="m">5</span> <span class="nf">to:</span> <span class="m">10</span> <span class="nf">by:</span> <span class="m">2</span><span class="p">.</span>               <span class="c">"create interval object with specified increment"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">5</span> <span class="nf">to:</span> <span class="m">10</span> <span class="nf">by:</span> <span class="m">2</span><span class="p">.</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isEmpty</span><span class="p">.</span>                                   <span class="c">"test if empty"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">size</span><span class="p">.</span>                                      <span class="c">"number of elements"</span>
+<span class="nv">x</span> <span class="nf">includes:</span> <span class="m">9</span><span class="p">.</span>                                    <span class="c">"test if element is in collection"</span>
+<span class="nv">x</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">k</span> <span class="p">|</span> <span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">k</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>  <span class="c">"iterate over interval"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">conform:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&gt;=</span> <span class="m">1</span><span class="p">)</span> <span class="nf">&amp;</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&lt;=</span> <span class="m">4</span><span class="p">)].</span>       <span class="c">"test if all elements meet condition"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">select:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&gt;</span> <span class="m">7</span><span class="p">].</span>                      <span class="c">"return collection of elements that pass test"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">reject:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&lt;</span> <span class="m">2</span><span class="p">].</span>                      <span class="c">"return collection of elements that fail test"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">collect:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">+</span> <span class="nv">a</span><span class="p">].</span>                     <span class="c">"transform each element for new collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">detect:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&gt;</span> <span class="m">3</span><span class="p">]</span> <span class="nf">ifNone:</span> <span class="p">[].</span>           <span class="c">"find position of first element that passes test"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="m">0</span><span class="p">.</span> <span class="nv">x</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">sum</span> <span class="o">:=</span> <span class="nv">sum</span> <span class="nf">+</span> <span class="nv">a</span><span class="p">].</span> <span class="nv">sum</span><span class="p">.</span>       <span class="c">"sum elements"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="m">0</span><span class="p">.</span> <span class="m">1</span> <span class="nf">to:</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">size</span><span class="p">)</span> 
+            <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">sum</span> <span class="o">:=</span> <span class="nv">sum</span> <span class="nf">+</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">at:</span> <span class="nv">a</span><span class="p">)].</span>    <span class="c">"sum elements"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">inject:</span> <span class="m">0</span> <span class="nf">into:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="o">:</span><span class="nv">c</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">+</span> <span class="nv">c</span><span class="p">].</span>         <span class="c">"sum elements"</span>
+<span class="nv">max</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">inject:</span> <span class="m">0</span> <span class="nf">into:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="o">:</span><span class="nv">c</span> <span class="p">|</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&gt;</span> <span class="nv">c</span><span class="p">)</span>         <span class="c">"find max element in collection"</span>
+   <span class="nb">ifTrue:</span> <span class="p">[</span><span class="nv">a</span><span class="p">]</span>
+   <span class="nb">ifFalse:</span> <span class="p">[</span><span class="nv">c</span><span class="p">]].</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asArray</span><span class="p">.</span>                                   <span class="c">"convert to array"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asOrderedCollection</span><span class="p">.</span>                       <span class="c">"convert to ordered collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSortedCollection</span><span class="p">.</span>                        <span class="c">"convert to sorted collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asBag</span><span class="p">.</span>                                     <span class="c">"convert to bag collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSet</span><span class="p">.</span>                                     <span class="c">"convert to set collection"</span>
+</code></pre></div>
+<h4>Associations:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> x y </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="ss">#myVar</span><span class="nf">-&gt;</span><span class="s">'hello'</span><span class="p">.</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">key</span><span class="p">.</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">value</span><span class="p">.</span>
+</code></pre></div>
+<h4>Dictionary:</h4>
+
+<h4>IdentityDictionary:</h4>
+
+<p>uses identity test (== rather than =)</p>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> b x y </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Dictionary</span> <span class="nb">new</span><span class="p">.</span>                   <span class="c">"allocate collection"</span>
+<span class="nv">x</span> <span class="nf">add:</span> <span class="ss">#a</span><span class="nf">-&gt;</span><span class="m">4</span><span class="p">;</span> 
+  <span class="nf">add:</span> <span class="ss">#b</span><span class="nf">-&gt;</span><span class="m">3</span><span class="p">;</span> 
+  <span class="nf">add:</span> <span class="ss">#c</span><span class="nf">-&gt;</span><span class="m">1</span><span class="p">;</span> 
+  <span class="nf">add:</span> <span class="ss">#d</span><span class="nf">-&gt;</span><span class="m">2</span><span class="p">;</span> <span class="nf">yourself</span><span class="p">.</span>                <span class="c">"add element to collection"</span>
+<span class="nv">x</span> <span class="nf">at:</span> <span class="ss">#e</span> <span class="nf">put:</span> <span class="m">3</span><span class="p">.</span>                       <span class="c">"set element at index"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">isEmpty</span><span class="p">.</span>                        <span class="c">"test if empty"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">size</span><span class="p">.</span>                           <span class="c">"number of elements"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">at:</span> <span class="ss">#a</span> <span class="nf">ifAbsent:</span> <span class="p">[].</span>            <span class="c">"retrieve element at index"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">keyAtValue:</span> <span class="m">3</span> <span class="nf">ifAbsent:</span> <span class="p">[].</span>     <span class="c">"retrieve key for given value with error block"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">removeKey:</span> <span class="ss">#e</span> <span class="nf">ifAbsent:</span> <span class="p">[].</span>     <span class="c">"remove element from collection"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">includes:</span> <span class="m">3</span><span class="p">.</span>                    <span class="c">"test if element is in values collection"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">includesKey:</span> <span class="ss">#a</span><span class="p">.</span>                <span class="c">"test if element is in keys collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">occurrencesOf:</span> <span class="m">3</span><span class="p">.</span>               <span class="c">"number of times object in collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">keys</span><span class="p">.</span>                           <span class="c">"set of keys"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">values</span><span class="p">.</span>                         <span class="c">"bag of values"</span>
+<span class="nv">x</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">a</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>            <span class="c">"iterate over the values collection"</span>
+<span class="nv">x</span> <span class="nf">keysDo:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">a</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>        <span class="c">"iterate over the keys collection"</span>
+<span class="nv">x</span> <span class="nf">associationsDo:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">a</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span><span class="c">"iterate over the associations"</span>
+<span class="nv">x</span> <span class="nf">keysAndValuesDo:</span> <span class="p">[</span><span class="o">:</span><span class="nv">aKey</span> <span class="o">:</span><span class="nv">aValue</span> <span class="p">|</span> <span class="nc">Transcript</span>              <span class="c">"iterate over keys and values"</span>
+   <span class="nf">show:</span> <span class="nv">aKey</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">space</span><span class="p">;</span>
+   <span class="nf">show:</span> <span class="nv">aValue</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">conform:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&gt;=</span> <span class="m">1</span><span class="p">)</span> <span class="nf">&amp;</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&lt;=</span> <span class="m">4</span><span class="p">)].</span>      <span class="c">"test if all elements meet condition"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">select:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&gt;</span> <span class="m">2</span><span class="p">].</span>                     <span class="c">"return collection of elements that pass test"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">reject:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&lt;</span> <span class="m">2</span><span class="p">].</span>                     <span class="c">"return collection of elements that fail test"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">collect:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">+</span> <span class="nv">a</span><span class="p">].</span>                    <span class="c">"transform each element for new collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">detect:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">&gt;</span> <span class="m">3</span><span class="p">]</span> <span class="nf">ifNone:</span> <span class="p">[].</span>          <span class="c">"find position of first element that passes test"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="m">0</span><span class="p">.</span> <span class="nv">x</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="p">|</span> <span class="nv">sum</span> <span class="o">:=</span> <span class="nv">sum</span> <span class="nf">+</span> <span class="nv">a</span><span class="p">].</span> <span class="nv">sum</span><span class="p">.</span>      <span class="c">"sum elements"</span>
+<span class="nv">sum</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">inject:</span> <span class="m">0</span> <span class="nf">into:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="o">:</span><span class="nv">c</span> <span class="p">|</span> <span class="nv">a</span> <span class="nf">+</span> <span class="nv">c</span><span class="p">].</span>        <span class="c">"sum elements"</span>
+<span class="nv">max</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">inject:</span> <span class="m">0</span> <span class="nf">into:</span> <span class="p">[</span><span class="o">:</span><span class="nv">a</span> <span class="o">:</span><span class="nv">c</span> <span class="p">|</span> <span class="p">(</span><span class="nv">a</span> <span class="nf">&gt;</span> <span class="nv">c</span><span class="p">)</span>        <span class="c">"find max element in collection"</span>
+   <span class="nb">ifTrue:</span> <span class="p">[</span><span class="nv">a</span><span class="p">]</span>
+   <span class="nb">ifFalse:</span> <span class="p">[</span><span class="nv">c</span><span class="p">]].</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asArray</span><span class="p">.</span>                                   <span class="c">"convert to array"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asOrderedCollection</span><span class="p">.</span>                       <span class="c">"convert to ordered collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSortedCollection</span><span class="p">.</span>                        <span class="c">"convert to sorted collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asBag</span><span class="p">.</span>                                     <span class="c">"convert to bag collection"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSet</span><span class="p">.</span>                                     <span class="c">"convert to set collection"</span>
+
+<span class="nc">Smalltalk</span> <span class="nf">at:</span> <span class="ss">#CMRGlobal</span> <span class="nf">put:</span> <span class="s">'CMR entry'</span><span class="p">.</span>        <span class="c">"put global in Smalltalk Dictionary"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Smalltalk</span> <span class="nf">at:</span> <span class="ss">#CMRGlobal</span><span class="p">.</span>                    <span class="c">"read global from Smalltalk Dictionary"</span>
+<span class="nc">Transcript</span> <span class="nf">show:</span> <span class="p">(</span><span class="nc">CMRGlobal</span> <span class="nf">printString</span><span class="p">).</span>         <span class="c">"entries are directly accessible by name"</span>
+<span class="nc">Smalltalk</span> <span class="nf">keys</span> <span class="nf">do:</span> <span class="p">[</span> <span class="o">:</span><span class="nv">k</span> <span class="p">|</span>                         <span class="c">"print out all classes"</span>
+   <span class="p">((</span><span class="nc">Smalltalk</span> <span class="nf">at:</span> <span class="nv">k</span><span class="p">)</span> <span class="nf">isKindOf:</span> <span class="nc">Class</span><span class="p">)</span>
+      <span class="nb">ifFalse:</span> <span class="p">[</span><span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">k</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">cr</span><span class="p">]].</span>
+<span class="nc">Smalltalk</span> <span class="nf">at:</span> <span class="ss">#CMRDictionary</span> <span class="nf">put:</span> <span class="p">(</span><span class="nc">Dictionary</span> <span class="nb">new</span><span class="p">).</span> <span class="c">"set up user defined dictionary"</span>
+<span class="nc">CMRDictionary</span> <span class="nf">at:</span> <span class="ss">#MyVar1</span> <span class="nf">put:</span> <span class="s">'hello1'</span><span class="p">.</span>            <span class="c">"put entry in dictionary"</span>
+<span class="nc">CMRDictionary</span> <span class="nf">add:</span> <span class="ss">#MyVar2</span><span class="nf">-&gt;</span><span class="s">'hello2'</span><span class="p">.</span>               <span class="c">"add entry to dictionary use key-&gt;value combo"</span>
+<span class="nc">CMRDictionary</span> <span class="nf">size</span><span class="p">.</span>                                 <span class="c">"dictionary size"</span>
+<span class="nc">CMRDictionary</span> <span class="nf">keys</span> <span class="nf">do:</span> <span class="p">[</span> <span class="o">:</span><span class="nv">k</span> <span class="p">|</span>                       <span class="c">"print out keys in dictionary"</span>
+   <span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">k</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>
+<span class="nc">CMRDictionary</span> <span class="nf">values</span> <span class="nf">do:</span> <span class="p">[</span> <span class="o">:</span><span class="nv">k</span> <span class="p">|</span>                     <span class="c">"print out values in dictionary"</span>
+   <span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">k</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>
+<span class="nc">CMRDictionary</span> <span class="nf">keysAndValuesDo:</span> <span class="p">[</span><span class="o">:</span><span class="nv">aKey</span> <span class="o">:</span><span class="nv">aValue</span> <span class="p">|</span>     <span class="c">"print out keys and values"</span>
+   <span class="nc">Transcript</span>
+      <span class="nf">show:</span> <span class="nv">aKey</span> <span class="nf">printString</span><span class="p">;</span>
+      <span class="nf">space</span><span class="p">;</span>
+      <span class="nf">show:</span> <span class="nv">aValue</span> <span class="nf">printString</span><span class="p">;</span>
+      <span class="nf">cr</span><span class="p">].</span>
+<span class="nc">CMRDictionary</span> <span class="nf">associationsDo:</span> <span class="p">[</span><span class="o">:</span><span class="nv">aKeyValue</span> <span class="p">|</span>           <span class="c">"another iterator for printing key values"</span>
+   <span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">aKeyValue</span> <span class="nf">printString</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>
+<span class="nc">Smalltalk</span> <span class="nf">removeKey:</span> <span class="ss">#CMRGlobal</span> <span class="nf">ifAbsent:</span> <span class="p">[].</span>         <span class="c">"remove entry from Smalltalk dictionary"</span>
+<span class="nc">Smalltalk</span> <span class="nf">removeKey:</span> <span class="ss">#CMRDictionary</span> <span class="nf">ifAbsent:</span> <span class="p">[].</span>     <span class="c">"remove user dictionary from Smalltalk dictionary"</span>
+</code></pre></div>
+<h4>Internal Stream:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> b x ios </span><span class="p">|</span>
+<span class="nv">ios</span> <span class="o">:=</span> <span class="nc">ReadStream</span> <span class="nf">on:</span> <span class="s">'Hello read stream'</span><span class="p">.</span>
+<span class="nv">ios</span> <span class="o">:=</span> <span class="nc">ReadStream</span> <span class="nf">on:</span> <span class="s">'Hello read stream'</span> <span class="nf">from:</span> <span class="m">1</span> <span class="nf">to:</span> <span class="m">5</span><span class="p">.</span>
+<span class="p">[(</span><span class="nv">x</span> <span class="o">:=</span> <span class="nv">ios</span> <span class="nf">nextLine</span><span class="p">)</span> <span class="nf">notNil</span><span class="p">]</span> <span class="nb">whileTrue:</span> <span class="p">[</span><span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">x</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>
+<span class="nv">ios</span> <span class="nf">position:</span> <span class="m">3</span><span class="p">.</span>
+<span class="nv">ios</span> <span class="nf">position</span><span class="p">.</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nv">ios</span> <span class="nf">next</span><span class="p">.</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nv">ios</span> <span class="nf">peek</span><span class="p">.</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nv">ios</span> <span class="nf">contents</span><span class="p">.</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">ios</span> <span class="nf">atEnd</span><span class="p">.</span>
+
+<span class="nv">ios</span> <span class="o">:=</span> <span class="nc">ReadWriteStream</span> <span class="nf">on:</span> <span class="s">'Hello read stream'</span><span class="p">.</span>
+<span class="nv">ios</span> <span class="o">:=</span> <span class="nc">ReadWriteStream</span> <span class="nf">on:</span> <span class="s">'Hello read stream'</span> <span class="nf">from:</span> <span class="m">1</span> <span class="nf">to:</span> <span class="m">5</span><span class="p">.</span>
+<span class="nv">ios</span> <span class="o">:=</span> <span class="nc">ReadWriteStream</span> <span class="nf">with:</span> <span class="s">'Hello read stream'</span><span class="p">.</span>
+<span class="nv">ios</span> <span class="o">:=</span> <span class="nc">ReadWriteStream</span> <span class="nf">with:</span> <span class="s">'Hello read stream'</span> <span class="nf">from:</span> <span class="m">1</span> <span class="nf">to:</span> <span class="m">10</span><span class="p">.</span>
+<span class="nv">ios</span> <span class="nf">position:</span> <span class="m">0</span><span class="p">.</span>
+<span class="p">[(</span><span class="nv">x</span> <span class="o">:=</span> <span class="nv">ios</span> <span class="nf">nextLine</span><span class="p">)</span> <span class="nf">notNil</span><span class="p">]</span> <span class="nb">whileTrue:</span> <span class="p">[</span><span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">x</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>
+<span class="nv">ios</span> <span class="nf">position:</span> <span class="m">6</span><span class="p">.</span>
+<span class="nv">ios</span> <span class="nf">position</span><span class="p">.</span>
+<span class="nv">ios</span> <span class="nf">nextPutAll:</span> <span class="s">'Chris'</span><span class="p">.</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nv">ios</span> <span class="nf">next</span><span class="p">.</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nv">ios</span> <span class="nf">peek</span><span class="p">.</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nv">ios</span> <span class="nf">contents</span><span class="p">.</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">ios</span> <span class="nf">atEnd</span><span class="p">.</span>
+</code></pre></div>
+<h4>FileStream:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> b x ios </span><span class="p">|</span>
+<span class="nv">ios</span> <span class="o">:=</span> <span class="nc">FileStream</span> <span class="nf">newFileNamed:</span> <span class="s">'ios.txt'</span><span class="p">.</span>
+<span class="nv">ios</span> <span class="nf">nextPut:</span> <span class="sc">$H</span><span class="p">;</span> <span class="nf">cr</span><span class="p">.</span>
+<span class="nv">ios</span> <span class="nf">nextPutAll:</span> <span class="s">'Hello File'</span><span class="p">;</span> <span class="nf">cr</span><span class="p">.</span>
+<span class="s">'Hello File'</span> <span class="nf">printOn:</span> <span class="nv">ios</span><span class="p">.</span>
+<span class="s">'Hello File'</span> <span class="nf">storeOn:</span> <span class="nv">ios</span><span class="p">.</span>
+<span class="nv">ios</span> <span class="nf">close</span><span class="p">.</span>
+
+<span class="nv">ios</span> <span class="o">:=</span> <span class="nc">FileStream</span> <span class="nf">oldFileNamed:</span> <span class="s">'ios.txt'</span><span class="p">.</span>
+<span class="p">[(</span><span class="nv">x</span> <span class="o">:=</span> <span class="nv">ios</span> <span class="nf">nextLine</span><span class="p">)</span> <span class="nf">notNil</span><span class="p">]</span> <span class="nb">whileTrue:</span> <span class="p">[</span><span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">x</span><span class="p">;</span> <span class="nf">cr</span><span class="p">].</span>
+<span class="nv">ios</span> <span class="nf">position:</span> <span class="m">3</span><span class="p">.</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nv">ios</span> <span class="nf">position</span><span class="p">.</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nv">ios</span> <span class="nf">next</span><span class="p">.</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nv">ios</span> <span class="nf">peek</span><span class="p">.</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nv">ios</span> <span class="nf">atEnd</span><span class="p">.</span>
+<span class="nv">ios</span> <span class="nf">close</span><span class="p">.</span>
+</code></pre></div>
+<h4>Date:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> x y </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Date</span> <span class="nf">today</span><span class="p">.</span>                                <span class="c">"create date for today"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Date</span> <span class="nf">dateAndTimeNow</span><span class="p">.</span>                       <span class="c">"create date from current time/date"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Date</span> <span class="nf">readFromString:</span> <span class="s">'01/02/1999'</span><span class="p">.</span>         <span class="c">"create date from formatted string"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Date</span> <span class="nf">newDay:</span> <span class="m">12</span> <span class="nf">month:</span> <span class="ss">#July</span> <span class="nf">year:</span> <span class="m">1999</span>    <span class="c">"create date from parts"</span>
+<span class="nf">x</span> <span class="o">:=</span> <span class="nc">Date</span> <span class="nf">fromDays:</span> <span class="m">36000</span><span class="p">.</span>                      <span class="c">"create date from elapsed days since 1/1/1901"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nc">Date</span> <span class="nf">dayOfWeek:</span> <span class="ss">#Monday</span><span class="p">.</span>                   <span class="c">"day of week as int (1-7)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nc">Date</span> <span class="nf">indexOfMonth:</span> <span class="ss">#January</span><span class="p">.</span>               <span class="c">"month of year as int (1-12)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nc">Date</span> <span class="nf">daysInMonth:</span> <span class="m">2</span> <span class="nf">forYear:</span> <span class="m">1996</span><span class="p">.</span>         <span class="c">"day of month as int (1-31)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nc">Date</span> <span class="nf">daysInYear:</span> <span class="m">1996</span><span class="p">.</span>                     <span class="c">"days in year (365|366)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nc">Date</span> <span class="nf">nameOfDay:</span> <span class="m">1</span>                          <span class="c">"weekday name (#Monday,...)"</span>
+<span class="nf">y</span> <span class="o">:=</span> <span class="nc">Date</span> <span class="nf">nameOfMonth:</span> <span class="m">1</span><span class="p">.</span>                       <span class="c">"month name (#January,...)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nc">Date</span> <span class="nf">leapYear:</span> <span class="m">1996</span><span class="p">.</span>                       <span class="c">"1 if leap year; 0 if not leap year"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">weekday</span><span class="p">.</span>                                 <span class="c">"day of week (#Monday,...)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">previous:</span> <span class="ss">#Monday</span><span class="p">.</span>                       <span class="c">"date for previous day of week"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">dayOfMonth</span><span class="p">.</span>                              <span class="c">"day of month (1-31)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">day</span><span class="p">.</span>                                     <span class="c">"day of year (1-366)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">firstDayOfMonth</span><span class="p">.</span>                         <span class="c">"day of year for first day of month"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">monthName</span><span class="p">.</span>                               <span class="c">"month of year (#January,...)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">monthIndex</span><span class="p">.</span>                              <span class="c">"month of year (1-12)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">daysInMonth</span><span class="p">.</span>                             <span class="c">"days in month (1-31)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">year</span><span class="p">.</span>                                    <span class="c">"year (19xx)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">daysInYear</span><span class="p">.</span>                              <span class="c">"days in year (365|366)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">daysLeftInYear</span><span class="p">.</span>                          <span class="c">"days left in year (364|365)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSeconds</span><span class="p">.</span>                               <span class="c">"seconds elapsed since 1/1/1901"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">addDays:</span> <span class="m">10</span><span class="p">.</span>                             <span class="c">"add days to date object"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">subtractDays:</span> <span class="m">10</span><span class="p">.</span>                        <span class="c">"subtract days to date object"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">subtractDate:</span> <span class="p">(</span><span class="nc">Date</span> <span class="nf">today</span><span class="p">).</span>              <span class="c">"subtract date (result in days)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">printFormat:</span> <span class="ss">#(</span><span class="m">2</span> <span class="m">1</span> <span class="m">3</span> <span class="sc">$/</span> <span class="m">1</span> <span class="m">1</span><span class="ss">)</span><span class="p">.</span>            <span class="c">"print formatted date"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">&lt;=</span> <span class="nc">Date</span> <span class="nf">today</span><span class="p">).</span>                         <span class="c">"comparison"</span>
+</code></pre></div>
+<h4>Time:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> x y </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Time</span> <span class="nf">now</span><span class="p">.</span>                                      <span class="c">"create time from current time"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Time</span> <span class="nf">dateAndTimeNow</span><span class="p">.</span>                           <span class="c">"create time from current time/date"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Time</span> <span class="nf">readFromString:</span> <span class="s">'3:47:26 pm'</span><span class="p">.</span>             <span class="c">"create time from formatted string"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Time</span> <span class="nf">fromSeconds:</span> <span class="p">(</span><span class="m">60</span> <span class="nf">*</span> <span class="m">60</span> <span class="nf">*</span> <span class="m">4</span><span class="p">).</span>               <span class="c">"create time from elapsed time from midnight"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nc">Time</span> <span class="nf">millisecondClockValue</span><span class="p">.</span>                    <span class="c">"milliseconds since midnight"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nc">Time</span> <span class="nf">totalSeconds</span><span class="p">.</span>                             <span class="c">"total seconds since 1/1/1901"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">seconds</span><span class="p">.</span>                                     <span class="c">"seconds past minute (0-59)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">minutes</span><span class="p">.</span>                                     <span class="c">"minutes past hour (0-59)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">hours</span><span class="p">.</span>                                       <span class="c">"hours past midnight (0-23)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">addTime:</span> <span class="p">(</span><span class="nc">Time</span> <span class="nf">now</span><span class="p">).</span>                         <span class="c">"add time to time object"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">subtractTime:</span> <span class="p">(</span><span class="nc">Time</span> <span class="nf">now</span><span class="p">).</span>                    <span class="c">"subtract time to time object"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">asSeconds</span><span class="p">.</span>                                   <span class="c">"convert time to seconds"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">Time</span> <span class="nf">millisecondsToRun:</span> <span class="p">[</span>                      <span class="c">"timing facility"</span>
+   <span class="m">1</span> <span class="nf">to:</span> <span class="m">1000</span> <span class="nf">do:</span> <span class="p">[</span><span class="o">:</span><span class="nv">index</span> <span class="p">|</span> <span class="nv">y</span> <span class="o">:=</span> <span class="m">3.14</span> <span class="nf">*</span> <span class="nv">index</span><span class="p">]].</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="p">(</span><span class="nv">x</span> <span class="nf">&lt;=</span> <span class="nc">Time</span> <span class="nf">now</span><span class="p">).</span>                               <span class="c">"comparison"</span>
+</code></pre></div>
+<h4>Point:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> x y </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">200</span><span class="nf">@</span><span class="m">100</span><span class="p">.</span>                            <span class="c">"obtain a new point"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">x</span><span class="p">.</span>                                <span class="c">"x coordinate"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">y</span><span class="p">.</span>                                <span class="c">"y coordinate"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">200</span><span class="nf">@</span><span class="m">100</span> <span class="nf">negated</span><span class="p">.</span>                    <span class="c">"negates x and y"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="p">(</span><span class="m">-200</span><span class="nf">@-</span><span class="m">100</span><span class="p">)</span> <span class="nf">abs</span><span class="p">.</span>                    <span class="c">"absolute value of x and y"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="p">(</span><span class="m">200.5</span><span class="nf">@</span><span class="m">100.5</span><span class="p">)</span> <span class="nf">rounded</span><span class="p">.</span>              <span class="c">"round x and y"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="p">(</span><span class="m">200.5</span><span class="nf">@</span><span class="m">100.5</span><span class="p">)</span> <span class="nf">truncated</span><span class="p">.</span>            <span class="c">"truncate x and y"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">200</span><span class="nf">@</span><span class="m">100</span> <span class="nf">+</span> <span class="m">100</span><span class="p">.</span>                      <span class="c">"add scale to both x and y"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">200</span><span class="nf">@</span><span class="m">100</span> <span class="nf">-</span> <span class="m">100</span><span class="p">.</span>                      <span class="c">"subtract scale from both x and y"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">200</span><span class="nf">@</span><span class="m">100</span> <span class="nf">*</span> <span class="m">2</span><span class="p">.</span>                        <span class="c">"multiply x and y by scale"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">200</span><span class="nf">@</span><span class="m">100</span> <span class="nf">/</span> <span class="m">2</span><span class="p">.</span>                        <span class="c">"divide x and y by scale"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">200</span><span class="nf">@</span><span class="m">100</span> <span class="nf">//</span> <span class="m">2</span><span class="p">.</span>                       <span class="c">"divide x and y by scale"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">200</span><span class="nf">@</span><span class="m">100</span> <span class="nf">\\</span> <span class="m">3</span><span class="p">.</span>                       <span class="c">"remainder of x and y by scale"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">200</span><span class="nf">@</span><span class="m">100</span> <span class="nf">+</span> <span class="m">50</span><span class="nf">@</span><span class="m">25</span><span class="p">.</span>                    <span class="c">"add points"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">200</span><span class="nf">@</span><span class="m">100</span> <span class="nf">-</span> <span class="m">50</span><span class="nf">@</span><span class="m">25</span><span class="p">.</span>                    <span class="c">"subtract points"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">200</span><span class="nf">@</span><span class="m">100</span> <span class="nf">*</span> <span class="m">3</span><span class="nf">@</span><span class="m">4</span><span class="p">.</span>                      <span class="c">"multiply points"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">200</span><span class="nf">@</span><span class="m">100</span> <span class="nf">//</span> <span class="m">3</span><span class="nf">@</span><span class="m">4</span><span class="p">.</span>                     <span class="c">"divide points"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">200</span><span class="nf">@</span><span class="m">100</span> <span class="nf">max:</span> <span class="m">50</span><span class="nf">@</span><span class="m">200</span><span class="p">.</span>                <span class="c">"max x and y"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">200</span><span class="nf">@</span><span class="m">100</span> <span class="nf">min:</span> <span class="m">50</span><span class="nf">@</span><span class="m">200</span><span class="p">.</span>                <span class="c">"min x and y"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">20</span><span class="nf">@</span><span class="m">5</span> <span class="nf">dotProduct:</span> <span class="m">10</span><span class="nf">@</span><span class="m">2</span><span class="p">.</span>              <span class="c">"sum of product (x1*x2 + y1*y2)"</span>
+</code></pre></div>
+<h4>Rectangle:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="nc">Rectangle</span> <span class="nf">fromUser</span><span class="p">.</span>
+</code></pre></div>
+<h4>Pen:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> myPen </span><span class="p">|</span>
+<span class="nc">Display</span> <span class="nf">restoreAfter:</span> <span class="p">[</span>
+   <span class="nc">Display</span> <span class="nf">fillWhite</span><span class="p">.</span>
+
+<span class="nv">myPen</span> <span class="o">:=</span> <span class="nc">Pen</span> <span class="nb">new</span><span class="p">.</span>                            <span class="c">"get graphic pen"</span>
+<span class="nv">myPen</span> <span class="nf">squareNib:</span> <span class="m">1</span><span class="p">.</span>
+<span class="nv">myPen</span> <span class="nf">color:</span> <span class="p">(</span><span class="nc">Color</span> <span class="nf">blue</span><span class="p">).</span>                   <span class="c">"set pen color"</span>
+<span class="nv">myPen</span> <span class="nf">home</span><span class="p">.</span>                                  <span class="c">"position pen at center of display"</span>
+<span class="nv">myPen</span> <span class="nf">up</span><span class="p">.</span>                                    <span class="c">"makes nib unable to draw"</span>
+<span class="nv">myPen</span> <span class="nf">down</span><span class="p">.</span>                                  <span class="c">"enable the nib to draw"</span>
+<span class="nv">myPen</span> <span class="nf">north</span><span class="p">.</span>                                 <span class="c">"points direction towards top"</span>
+<span class="nv">myPen</span> <span class="nf">turn:</span> <span class="m">-180</span><span class="p">.</span>                            <span class="c">"add specified degrees to direction"</span>
+<span class="nv">myPen</span> <span class="nf">direction</span><span class="p">.</span>                             <span class="c">"get current angle of pen"</span>
+<span class="nv">myPen</span> <span class="nf">go:</span> <span class="m">50</span><span class="p">.</span>                                <span class="c">"move pen specified number of pixels"</span>
+<span class="nv">myPen</span> <span class="nf">location</span><span class="p">.</span>                              <span class="c">"get the pen position"</span>
+<span class="nv">myPen</span> <span class="nf">goto:</span> <span class="m">200</span><span class="nf">@</span><span class="m">200</span><span class="p">.</span>                         <span class="c">"move to specified point"</span>
+<span class="nv">myPen</span> <span class="nf">place:</span> <span class="m">250</span><span class="nf">@</span><span class="m">250</span><span class="p">.</span>                        <span class="c">"move to specified point without drawing"</span>
+<span class="nv">myPen</span> <span class="nf">print:</span> <span class="s">'Hello World'</span> 
+      <span class="nf">withFont:</span> <span class="p">(</span><span class="nc">TextStyle</span> <span class="nf">default</span> <span class="nf">fontAt:</span> <span class="m">1</span><span class="p">).</span>
+<span class="nc">Display</span> <span class="nf">extent</span><span class="p">.</span>                              <span class="c">"get display width@height"</span>
+<span class="nc">Display</span> <span class="nf">width</span><span class="p">.</span>                               <span class="c">"get display width"</span>
+<span class="nc">Display</span> <span class="nf">height</span><span class="p">.</span>                              <span class="c">"get display height"</span>
+
+<span class="p">].</span>
+</code></pre></div>
+<h4>Dynamic Message Calling/Compiling:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> receiver message result argument keyword1 keyword2 argument1 argument2 </span><span class="p">|</span>
+
+<span class="c">"unary message"</span>
+<span class="nv">receiver</span> <span class="o">:=</span> <span class="m">5</span><span class="p">.</span>
+<span class="nv">message</span> <span class="o">:=</span> <span class="s">'factorial'</span> <span class="nf">asSymbol</span><span class="p">.</span>
+<span class="nv">result</span> <span class="o">:=</span> <span class="nv">receiver</span> <span class="nf">perform:</span> <span class="nv">message</span><span class="p">.</span>
+<span class="nv">result</span> <span class="o">:=</span> <span class="nc">Compiler</span> <span class="nf">evaluate:</span> <span class="p">((</span><span class="nv">receiver</span> <span class="nf">storeString</span><span class="p">)</span><span class="nf">,</span> <span class="s">' '</span><span class="nf">,</span> <span class="nv">message</span><span class="p">).</span>
+<span class="nv">result</span> <span class="o">:=</span> <span class="p">(</span><span class="nc">Message</span> <span class="nb">new</span> <span class="nf">setSelector:</span> <span class="nv">message</span> <span class="nf">arguments:</span> <span class="ss">#()</span><span class="p">)</span> <span class="nf">sentTo:</span> <span class="nv">receiver</span><span class="p">.</span>
+
+<span class="c">"binary message"</span>
+<span class="nv">receiver</span> <span class="o">:=</span> <span class="m">1</span><span class="p">.</span>
+<span class="nv">message</span> <span class="o">:=</span> <span class="s">'+'</span> <span class="nf">asSymbol</span><span class="p">.</span>
+<span class="nv">argument</span> <span class="o">:=</span> <span class="m">2</span><span class="p">.</span>
+<span class="nv">result</span> <span class="o">:=</span> <span class="nv">receiver</span> <span class="nf">perform:</span> <span class="nv">message</span> <span class="nf">withArguments:</span> <span class="p">(</span><span class="nc">Array</span> <span class="nf">with:</span> <span class="nv">argument</span><span class="p">).</span>
+<span class="nv">result</span> <span class="o">:=</span> <span class="nc">Compiler</span> <span class="nf">evaluate:</span> <span class="p">((</span><span class="nv">receiver</span> <span class="nf">storeString</span><span class="p">)</span><span class="nf">,</span> <span class="s">' '</span><span class="nf">,</span> <span class="nv">message</span><span class="nf">,</span> <span class="s">' '</span><span class="nf">,</span> <span class="p">(</span><span class="nv">argument</span> <span class="nf">storeString</span><span class="p">)).</span>
+<span class="nv">result</span> <span class="o">:=</span> <span class="p">(</span><span class="nc">Message</span> <span class="nb">new</span> <span class="nf">setSelector:</span> <span class="nv">message</span> <span class="nf">arguments:</span> <span class="p">(</span><span class="nc">Array</span> <span class="nf">with:</span> <span class="nv">argument</span><span class="p">))</span> <span class="nf">sentTo:</span> <span class="nv">receiver</span><span class="p">.</span>
+
+<span class="c">"keyword messages"</span>
+<span class="nv">receiver</span> <span class="o">:=</span> <span class="m">12</span><span class="p">.</span>
+<span class="nv">keyword1</span> <span class="o">:=</span> <span class="s">'between:'</span> <span class="nf">asSymbol</span><span class="p">.</span>
+<span class="nv">keyword2</span> <span class="o">:=</span> <span class="s">'and:'</span> <span class="nf">asSymbol</span><span class="p">.</span>
+<span class="nv">argument1</span> <span class="o">:=</span> <span class="m">10</span><span class="p">.</span>
+<span class="nv">argument2</span> <span class="o">:=</span> <span class="m">20</span><span class="p">.</span>
+
+<span class="nv">result</span> <span class="o">:=</span> <span class="nv">receiver</span>
+   <span class="nf">perform:</span> <span class="p">(</span><span class="nv">keyword1</span><span class="nf">,</span> <span class="nv">keyword2</span><span class="p">)</span> <span class="nf">asSymbol</span>
+   <span class="nf">withArguments:</span> <span class="p">(</span><span class="nc">Array</span> <span class="nf">with:</span> <span class="nv">argument1</span> <span class="nf">with:</span> <span class="nv">argument2</span><span class="p">).</span>
+
+<span class="nv">result</span> <span class="o">:=</span> <span class="nc">Compiler</span> <span class="nf">evaluate:</span>
+   <span class="p">((</span><span class="nv">receiver</span> <span class="nf">storeString</span><span class="p">)</span><span class="nf">,</span> <span class="s">' '</span><span class="nf">,</span> <span class="nv">keyword1</span><span class="nf">,</span> <span class="p">(</span><span class="nv">argument1</span> <span class="nf">storeString</span><span class="p">)</span> <span class="nf">,</span> <span class="s">' '</span><span class="nf">,</span> <span class="nv">keyword2</span><span class="nf">,</span> <span class="p">(</span><span class="nv">argument2</span> <span class="nf">storeString</span><span class="p">)).</span>
+
+<span class="nv">result</span> <span class="o">:=</span> <span class="p">(</span><span class="nc">Message</span>
+   <span class="nb">new</span>
+      <span class="nf">setSelector:</span> <span class="p">(</span><span class="nv">keyword1</span><span class="nf">,</span> <span class="nv">keyword2</span><span class="p">)</span> <span class="nf">asSymbol</span>
+      <span class="nf">arguments:</span> <span class="p">(</span><span class="nc">Array</span> <span class="nf">with:</span> <span class="nv">argument1</span> <span class="nf">with:</span> <span class="nv">argument2</span><span class="p">))</span>
+   <span class="nf">sentTo:</span> <span class="nv">receiver</span><span class="p">.</span>
+</code></pre></div>
+<h4>Class/Meta-Class:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> b x </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">name</span><span class="p">.</span>                     <span class="c">"class name"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">category</span><span class="p">.</span>                 <span class="c">"organization category"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">comment</span><span class="p">.</span>                  <span class="c">"class comment"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">kindOfSubclass</span><span class="p">.</span>           <span class="c">"subclass type - subclass: variableSubclass, etc"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">definition</span><span class="p">.</span>               <span class="c">"class definition"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">instVarNames</span><span class="p">.</span>             <span class="c">"immediate instance variable names"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">allInstVarNames</span><span class="p">.</span>          <span class="c">"accumulated instance variable names"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">classVarNames</span><span class="p">.</span>            <span class="c">"immediate class variable names"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">allClassVarNames</span><span class="p">.</span>         <span class="c">"accumulated class variable names"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">sharedPools</span><span class="p">.</span>              <span class="c">"immediate dictionaries used as shared pools"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">allSharedPools</span><span class="p">.</span>           <span class="c">"accumulated dictionaries used as shared pools"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">selectors</span><span class="p">.</span>                <span class="c">"message selectors for class"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">sourceCodeAt:</span> <span class="ss">#size</span><span class="p">.</span>      <span class="c">"source code for specified method"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">allInstances</span><span class="p">.</span>             <span class="c">"collection of all instances of class"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">superclass</span><span class="p">.</span>               <span class="c">"immediate superclass"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">allSuperclasses</span><span class="p">.</span>          <span class="c">"accumulated superclasses"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">withAllSuperclasses</span><span class="p">.</span>      <span class="c">"receiver class and accumulated superclasses"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">subclasses</span><span class="p">.</span>               <span class="c">"immediate subclasses"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">allSubclasses</span><span class="p">.</span>            <span class="c">"accumulated subclasses"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">withAllSubclasses</span><span class="p">.</span>        <span class="c">"receiver class and accumulated subclasses"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">instSize</span><span class="p">.</span>                 <span class="c">"number of named instance variables"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">isFixed</span><span class="p">.</span>                  <span class="c">"true if no indexed instance variables"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">isVariable</span><span class="p">.</span>               <span class="c">"true if has indexed instance variables"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">isPointers</span><span class="p">.</span>               <span class="c">"true if index instance vars contain objects"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">isBits</span><span class="p">.</span>                   <span class="c">"true if index instance vars contain bytes/words"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">isBytes</span><span class="p">.</span>                  <span class="c">"true if index instance vars contain bytes"</span>
+<span class="nv">b</span> <span class="o">:=</span> <span class="nc">String</span> <span class="nf">isWords</span><span class="p">.</span>                  <span class="c">"true if index instance vars contain words"</span>
+<span class="nc">Object</span> <span class="nf">withAllSubclasses</span> <span class="nf">size</span><span class="p">.</span>        <span class="c">"get total number of class entries"</span>
+</code></pre></div>
+<h4>Debugging:</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> a b x </span><span class="p">|</span>
+<span class="nv">x</span> <span class="nf">yourself</span><span class="p">.</span>                             <span class="c">"returns receiver"</span>
+<span class="nc">String</span> <span class="nf">browse</span><span class="p">.</span>                          <span class="c">"browse specified class"</span>
+<span class="nv">x</span> <span class="nf">inspect</span><span class="p">.</span>                              <span class="c">"open object inspector window"</span>
+<span class="nv">x</span> <span class="nf">confirm:</span> <span class="s">'Is this correct?'</span><span class="p">.</span>
+<span class="nv">x</span> <span class="nf">halt</span><span class="p">.</span>                                 <span class="c">"breakpoint to open debugger window"</span>
+<span class="nv">x</span> <span class="nf">halt:</span> <span class="s">'Halt message'</span><span class="p">.</span>
+<span class="nv">x</span> <span class="nf">notify:</span> <span class="s">'Notify text'</span><span class="p">.</span>
+<span class="nv">x</span> <span class="nf">error:</span> <span class="s">'Error string'</span><span class="p">.</span>                <span class="c">"open up error window with title"</span>
+<span class="nv">x</span> <span class="nf">doesNotUnderstand:</span> <span class="ss">#cmrMessage</span><span class="p">.</span>       <span class="c">"flag message is not handled"</span>
+<span class="nv">x</span> <span class="nf">shouldNotImplement</span><span class="p">.</span>                   <span class="c">"flag message should not be implemented"</span>
+<span class="nv">x</span> <span class="nf">subclassResponsibility</span><span class="p">.</span>               <span class="c">"flag message as abstract"</span>
+<span class="nv">x</span> <span class="nf">errorImproperStore</span><span class="p">.</span>                   <span class="c">"flag an improper store into indexable object"</span>
+<span class="nv">x</span> <span class="nf">errorNonIntegerIndex</span><span class="p">.</span>                 <span class="c">"flag only integers should be used as index"</span>
+<span class="nv">x</span> <span class="nf">errorSubscriptBounds</span><span class="p">.</span>                 <span class="c">"flag subscript out of bounds"</span>
+<span class="nv">x</span> <span class="nf">primitiveFailed</span><span class="p">.</span>                      <span class="c">"system primitive failed"</span>
+
+<span class="nv">a</span> <span class="o">:=</span> <span class="s">'A1'</span><span class="p">.</span> <span class="nv">b</span> <span class="o">:=</span> <span class="s">'B2'</span><span class="p">.</span> <span class="nv">a</span> <span class="nf">become:</span> <span class="nv">b</span><span class="p">.</span>      <span class="c">"switch two objects"</span>
+<span class="nc">Transcript</span> <span class="nf">show:</span> <span class="nv">a</span><span class="nf">,</span> <span class="nv">b</span><span class="p">;</span> <span class="nf">cr</span><span class="p">.</span>
+</code></pre></div>
+<h4>Miscellaneous</h4>
+<div class="highlight"><pre class="highlight smalltalk"><code><span class="p">|</span><span class="nv"> x </span><span class="p">|</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="m">1.2</span> <span class="nf">hash</span><span class="p">.</span>                                  <span class="c">"hash value for object"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">copy</span><span class="p">.</span>                                    <span class="c">"copy object"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">shallowCopy</span><span class="p">.</span>                             <span class="c">"copy object (not overridden)"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">deepCopy</span><span class="p">.</span>                                <span class="c">"copy object and instance vars"</span>
+<span class="nv">y</span> <span class="o">:=</span> <span class="nv">x</span> <span class="nf">veryDeepCopy</span><span class="p">.</span>                            <span class="c">"complete tree copy using a dictionary"</span>
+<span class="c">"Smalltalk condenseChanges."</span>                    <span class="c">"compress the change file"</span>
+<span class="nv">x</span> <span class="o">:=</span> <span class="nc">FillInTheBlank</span> <span class="nf">request:</span> <span class="s">'Prompt Me'</span><span class="p">.</span>       <span class="c">"prompt user for input"</span>
+<span class="nc">Utilities</span> <span class="nf">openCommandKeyHelp</span>
+</code></pre></div>
+<h2>Ready For More?</h2>
+
+<h3>Online Smalltalk systems</h3>
+
+<p>Most Smalltalks are either free as in OSS or have a free downloadable version with some payment required for commercial usage.
+* <a href="https://www.squeak.org">Squeak</a>
+* <a href="http://pharo.org">Pharo</a>
+* <a href="https://www.exept.de/en/smalltalk-x.html">Smalltalk/X</a>
+* <a href="http://gemtalksystems.com/">Gemstone</a>
+* <a href="http://www.instantiations.com/products/vasmalltalk/">VA Smalltalk</a>
+* <a href="http://www.cincomsmalltalk.com/">VisualWorks Smalltalk</a></p>
+
+<h3>Online Smalltalk books and articles</h3>
+
+<ul>
+<li><a href="http://www.whoishostingthis.com/resources/smalltalk/">Smalltalk Programming Resources</a></li>
+<li><a href="http://www.angelfire.com/tx4/cus/notes/smalltalk.html">Smalltalk Cheatsheet</a></li>
+<li><a href="http://www.bitsavers.org/pdf/xerox/parc/techReports/Smalltalk-72_Instruction_Manual_Mar76.pdf">Smalltalk-72 Manual</a></li>
+<li><a href="https://www.gnu.org/software/smalltalk/manual/html_node/Tutorial.html">GNU Smalltalk User&rsquo;s Guide</a></li>
+</ul>
+
+<h4>Historical Documentation(s)</h4>
+
+<ul>
+<li><a href="https://archive.org/details/byte-magazine-1981-08">BYTE: A Special issue on Smalltalk</a></li>
+<li><a href="http://www.bitsavers.org/pdf/xerox/parc/techReports/Smalltalk-72_Instruction_Manual_Mar76.pdf">Smalltalk-72 Manual</a></li>
+<li><a href="https://books.google.co.in/books?id=W8_Une9cbbgC&amp;printsec=frontcover&amp;dq=smalltalk&amp;hl=en&amp;sa=X&amp;ved=0CCIQ6AEwAWoVChMIw63Vo6CpyAIV0HGOCh3S2Alf#v=onepage&amp;q=smalltalk&amp;f=false">Smalltalk, Objects, and Design</a></li>
+<li><a href="https://books.google.co.in/books?id=zalQAAAAMAAJ&amp;q=smalltalk&amp;dq=smalltalk&amp;hl=en&amp;sa=X&amp;ved=0CCgQ6AEwAmoVChMIw63Vo6CpyAIV0HGOCh3S2Alf/">Smalltalk: An Introduction to Application Development Using VisualWorks</a></li>
+</ul>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/smalltalk.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Jigyasa Grover, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/smalltalk.html.markdown">1 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="https://jigyasa-grover.github.io">Jigyasa Grover</a>,
+        <a href="tim@rowledge.org">tim Rowledge</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

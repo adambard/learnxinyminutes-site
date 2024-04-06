@@ -1,0 +1,342 @@
+<!DOCTYPE html lang="ru-ru" xml:lang="ru-ru" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="ru-ru">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn forth in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/ru-ru/forth-ru/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fru-ru%2Fforth-ru%2F&text=%D0%98%D0%B7%D1%83%D1%87%D0%B8%D1%82%D0%B5+X+%D0%B7%D0%B0+Y+%D0%BC%D0%B8%D0%BD%D1%83%D1%82%2C+%D0%B3%D0%B4%D0%B5+X%3Dforth">
+        Поделиться страницей
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Выберите тему:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">светлая</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">тёмная</button>
+  </div>
+  <h1><a href="/">Изучите X за Y минут</a></h1>
+  <h2>Где X=forth</h2>
+    <p class="filelink">
+    Получить исходный код:
+    <a href="/docs/files/learnforth-ru.fs">learnforth-ru.fs</a>
+    </p>
+  <div id="doc">
+    <p>Форт создан Чарлзом Муром в 70-е годы. Это императивный, стековый язык программирования и среда исполнения программ. Использовался в таких проектах как Open Firmware. Продолжает применятся в проектах. Применяется в НАСА.</p>
+
+<p>Внимание: этот материал использует реализацию Форта - Gforth, но большая часть написанного будет работать в других средах.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>\ Это комментарий
+( Это тоже комментарий, но используется для предоределённых слов )
+
+\ --------------------------------- Прекурсор --------------------------------
+
+\ Всё программирование на Форте заключается в манипулировании 
+\ параметрами на стеке.
+5 2 3 56 76 23 65    \ ok
+
+\ Эти числа добавляются в стек слева направо
+.s    \ &lt;7&gt; 5 2 3 56 76 23 65 ok
+
+\ В Форте всё - это слова-команды или числа. Слова разделяются любым числом
+\ пробелов и переходов на новую строку. Длина слова не больше 31 литеры.
+
+\ ---------------------------- Базовая арифметика ----------------------------
+
+\ Арифметика (фактически все ключевые слова требуют данных) - это манипуляция 
+\ данными на стеке.
+5 4 +    \ ok
+
+\ `.` показывает верхнее значение в стеке:
+.    \ 9 ok
+
+\ Ещё примеры арифметических выражений:
+6 7 * .        \ 42 ok
+1360 23 - .    \ 1337 ok
+12 12 / .      \ 1 ok
+13 2 mod .     \ 1 ok
+
+99 negate .    \ -99 ok
+-99 abs .      \ 99 ok
+52 23 max .    \ 52 ok
+52 23 min .    \ 23 ok
+
+\ --------------------------- Манипуляции со стеком ---------------------------
+
+\ Естественно, когда мы работаем со стеком, то используем 
+\ больше полезных методов:
+
+3 dup -          \ дублировать верхний элемент в стеке 
+                 \ (1-й становится эквивалентным 2-му): 3 - 3
+2 5 swap /       \ поменять местами верхний элемент со 2-м элементом: 5 / 2
+6 4 5 rot .s     \ сменять по очереди 3-и верхних элемента: 4 5 6
+4 0 drop 2 /     \ снять верхний элемент (не печатается на экране): 4 / 2
+1 2 3 nip .s     \ снять второй элемент (подобно исключению элемента):   1 3
+
+\ ------------------ Более продвинутые манипуляции со стеком ------------------
+
+1 2 3 4 tuck   \ дублировать верхний елемент стека во вторую позицию: 
+               \ 1 2 4 3 4 ok
+1 2 3 4 over   \ диблировать второй елемент наверх стека: 
+               \ 1 2 3 4 3 ok
+1 2 3 4 2 roll \ *переместить* элемент в заданной позиции наверх стека:
+               \ 1 3 4 2 ok
+1 2 3 4 2 pick \ *дублировать* элемент в заданной позиции наверх: 
+               \ 1 2 3 4 2 ok
+
+\ Внимание! Обращения к стеку индексируются с нуля.
+
+\ --------------------------- Создание новых слов -----------------------------
+
+\ Определение новых слов через уже известные. Двоеточие `:` переводит Форт 
+\ в режим компиляции выражения, которое заканчивается точкой с запятой `;`.
+: square ( n -- n ) dup * ;    \ ok
+5 square .                     \ 25 ok
+
+\ Мы всегда можем посмотреть, что содержится в слове:
+see square     \ : square dup * ; ok
+
+\ -------------------------------- Зависимости --------------------------------
+
+\ -1 == true, 0 == false. Однако, некоторые ненулевые значения 
+\ обрабатываются как true:
+42 42 =    \ -1 ok
+12 53 =    \ 0 ok
+
+\ `if` это компилируемое слово. `if` &lt;stuff to do&gt; `then` &lt;rest of program&gt;.
+: ?&gt;64 ( n -- n ) dup 64 &gt; if ." Больше чем 64!" then ;   
+\ ok
+100 ?&gt;64                                                  
+\ Больше чем 64! ok
+
+\ Else:
+: ?&gt;64 ( n -- n ) dup 64 &gt; if ." Больше чем 64!" else ." меньше чем 64!" then ;
+100 ?&gt;64    \ Больше чем 64! ok
+20 ?&gt;64     \ меньше чем 64! ok
+
+\ ------------------------------------ Циклы -----------------------------------
+
+\ `do` это тоже компилируемое слово.
+: myloop ( -- ) 5 0 do cr ." Hello!" loop ; \ ok
+myloop
+\ Hello!
+\ Hello!
+\ Hello!
+\ Hello!
+\ Hello! ok
+
+\ `do` предполагает наличие двух чисел на стеке: конечное и начальное число.
+
+\ Мы можем назначить в цикле переменную `i` для значения индекса:
+: one-to-12 ( -- ) 12 0 do i . loop ;     \ ok
+one-to-12                                 \ 0 1 2 3 4 5 6 7 8 9 10 11 12 ok
+
+\ `?do` работает подобным образом, за исключением пропуска начального 
+\ и конечного значения индекса цикла.
+: squares ( n -- ) 0 ?do i square . loop ;   \ ok
+10 squares                                   \ 0 1 4 9 16 25 36 49 64 81 ok
+
+\ Изменение "шага" цикла проиводится командой `+loop`:
+: threes ( n n -- ) ?do i . 3 +loop ;    \ ok
+15 0 threes                             \ 0 3 6 9 12 ok
+
+\ Запуск бесконечного цикла - `begin` &lt;stuff to do&gt; &lt;flag&gt; `until`:
+: death ( -- ) begin ." Вы всё ещё здесь?" 0 until ;    \ ok
+
+\ ---------------------------- Переменные и память ----------------------------
+
+\ Используйте `variable`, что бы объявить `age` в качестве переменной.
+variable age    \ ok
+
+\ Затем мы запишем число 21 в переменную 'age' (возраст) словом `!`.
+21 age !    \ ok
+
+\ В заключении мы можем напечатать значение переменной прочитав его словом `@`, 
+\ которое добавит значение на стек или использовать слово `?`, 
+\ что бы прочитать и распечатать в одно действие.
+age @ .    \ 21 ok
+age ?      \ 21 ok
+
+\ Константы объявляются аналогично, за исключем того, что мы не должны 
+\ беспокоиться о выделении адреса в памяти:
+100 constant WATER-BOILING-POINT    \ ok
+WATER-BOILING-POINT .               \ 100 ok
+
+\ ---------------------------------- Массивы ----------------------------------
+
+\ Создание массива похоже на объявление переменной, но нам нужно выделить
+\ больше памяти.
+
+\ Вы можете использовать слова `2 cells allot` для создания массива 
+\ размером 3 элемента:
+variable mynumbers 2 cells allot    \ ok
+
+\ Инициализировать все значения в 0
+mynumbers 3 cells erase    \ ok
+
+\ В качестве альтернативы мы можем использовать `fill`:
+mynumbers 3 cells 0 fill
+
+\ или мы можем пропустить все слова выше и инициализировать массив 
+\ нужными значениями:
+create mynumbers 64 , 9001 , 1337 , \ ok (the last `,` is important!)
+
+\ ... что эквивалентно:
+
+\ Ручная запись значений по индексам ячеек:
+64 mynumbers 0 cells + !      \ ok
+9001 mynumbers 1 cells + !    \ ok
+1337 mynumbers 2 cells + !    \ ok
+
+\ Чтение значений по индексу:
+0 cells mynumbers + ?    \ 64 ok
+1 cells mynumbers + ?    \ 9001 ok
+
+\ Мы можем просто сделать собственное слово для манипуляции массивом:
+: of-arr ( n n -- n ) cells + ;    \ ok
+mynumbers 2 of-arr ?               \ 1337 ok
+
+\ Которую тоже можно использовать для записи значений:
+20 mynumbers 1 of-arr !    \ ok
+mynumbers 1 of-arr ?       \ 20 ok
+
+\ ------------------------------ Стек возвратов ------------------------------
+
+\ Стек возвратов используется для удержания ссылки,
+\ когда одно слово запускает другое, например, в цикле.
+
+\ Мы всегда видим это, когда используем `i`, которая возвращает дубль верхнего
+\ значения стека. `i` это эквивалент `r@`.
+: myloop ( -- ) 5 0 do r@ . loop ;    \ ok
+
+\ Так же как при чтении мы можем добавить ссылку в стек возвратов и удалить её:
+5 6 4 &gt;r swap r&gt; .s    \ 6 5 4 ok
+
+\ Внимание: так как Форт использует стек возвратов для указателей на слово `&gt;r`
+\ следует всегда пользоваться `r&gt;`.
+
+\ ---------------- Операции над числами с плавающей точкой --------------------
+
+\ Многие фортовцы стараются избегать использование слов с вещественными числами.
+8.3e 0.8e f+ f.    \ 9.1 ok
+
+\ Обычно мы просто используем слово 'f', когда обращаемся к вещественным числам:
+variable myfloatingvar    \ ok
+4.4e myfloatingvar f!     \ ok
+myfloatingvar f@ f.       \ 4.4 ok
+
+\ ---------- В завершение несколько полезных замечаний и слов -----------------
+
+\ Указание несуществующего слова очистит стек. Тем не менее, есть специальное 
+\ слово для этого:
+clearstack
+
+\ Очистка экрана:
+page
+
+\ Загрузка форт-файла:
+\ s" forthfile.fs" included
+
+\ Вы можете вывести список всех слов словаря Форта (это большой список!):
+words
+
+\ Выход из Gforth:
+bye
+</code></pre></div>
+<h2>Готовы к большему?</h2>
+
+<ul>
+<li><a href="http://www.forth.com/starting-forth/">Начала Форта (англ.)</a></li>
+<li><a href="http://www.murphywong.net/hello/simple.htm">Простой Форт (англ.)</a></li>
+<li><a href="http://thinking-forth.sourceforge.net/">Мышление Форта (англ.)</a></li>
+<li><a href="http://wiki.forth.org.ru/УчебникиФорта">Учебники Форта (рус.)</a></li>
+</ul>
+
+    <hr>
+    <p>Хотите предложить свой перевод? Может быть, улучшение перевода? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Откройте Issue</a> в репозитории Github или сделайте <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/ru-ru/forth-ru.html.markdown">pull request</a> сами!
+    </p>
+    <p class="contributed">
+    Первоначально предоставлено автором Horse M.D., и обновлено <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/ru-ru/forth-ru.html.markdown">0 автором (-ами)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://github.com/HorseMD/">Horse M.D.</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/torgeek">Dmitrii Kuznetsov</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

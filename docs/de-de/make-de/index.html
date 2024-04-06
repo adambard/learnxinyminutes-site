@@ -1,0 +1,362 @@
+<!DOCTYPE html lang="de-de" xml:lang="de-de" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="de-de">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn X in Y Minutes: Scenic Programming Language Tours</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/de-de/make-de/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fde-de%2Fmake-de%2F&text=Lerne+X+in+Y+Minuten%2C+wobei+X%3Dmake">
+        Teile diese Seite mit anderen
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Thema wählen:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">hell</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dunkel</button>
+  </div>
+  <h1><a href="/">Lerne X in Y Minuten</a></h1>
+  <h2>Wobei X=make</h2>
+    <p class="filelink">
+    Lade den Code herunter:
+    <a href="/docs/files/Makefile-de">Makefile-de</a>
+    </p>
+  <div id="doc">
+    <p>Eine Makefile definiert einen Graphen von Regeln um ein Ziel (oder Ziele)
+zu erzeugen. Es dient dazu, die geringste Menge an Arbeit zu verrichten um
+ein Ziel in Einklang mit dem Quellcode zu bringen. Make wurde berühmterweise
+von Stuart Feldman 1976 übers Wochenende geschrieben. Make ist noch immer
+sehr verbreitet (vorallem im Unix Umfeld) obwohl es bereits sehr viel
+Konkurrenz und Kritik zu Make gibt.</p>
+
+<p>Es gibt eine Vielzahl an Varianten von Make, dieser Artikel beschäftigt sich
+mit der Version GNU Make. Diese Version ist Standard auf Linux.</p>
+<div class="highlight"><pre class="highlight make"><code><span class="c"># Kommentare können so geschrieben werden.
+</span>
+<span class="c"># Dateien sollten Makefile heißen, denn dann können sie als `make &lt;ziel&gt;`
+# aufgerufen werden. Ansonsten muss `make -f "dateiname" &lt;ziel&gt;` verwendet
+# werden.
+</span>
+<span class="c"># Warnung - Es sollten nur TABULATOREN zur Einrückung im Makefile verwendet
+# werden. Niemals Leerzeichen!
+</span>
+<span class="c">#-----------------------------------------------------------------------
+# Grundlagen
+#-----------------------------------------------------------------------
+</span>
+<span class="c"># Eine Regel - Diese Regel wird nur abgearbeitet wenn die Datei file0.txt
+# nicht existiert.
+</span><span class="nl">file0.txt</span><span class="o">:</span>
+    <span class="err">echo</span> <span class="s2">"foo"</span> <span class="err">&gt;</span> <span class="err">file0.txt</span>
+    <span class="c"># Selbst Kommentare in der 'Rezept' Sektion werden an die Shell
+</span>    <span class="c"># weitergegeben. Versuche `make file0.txt` oder einfach `make`
+</span>    <span class="c"># die erste Regel ist die Standard-Regel.
+</span>
+
+<span class="c"># Diese Regel wird nur abgearbeitet, wenn file0.txt aktueller als file1.txt ist.
+</span><span class="nl">file1.txt</span><span class="o">:</span> <span class="nf">file0.txt</span>
+    <span class="err">cat</span> <span class="err">file0.txt</span> <span class="err">&gt;</span> <span class="err">file1.txt</span>
+    <span class="c"># Verwende die selben Quoting-Regeln wie die Shell
+</span>    <span class="err">@cat</span> <span class="err">file0.txt</span> <span class="err">&gt;&gt;</span> <span class="err">file1.txt</span>
+    <span class="c"># @ unterdrückt die Ausgabe des Befehls an stdout.
+</span>    <span class="err">-@echo</span> <span class="s1">'hello'</span>
+    <span class="c"># - bedeutet, dass Make die Abarbeitung fortsetzt auch wenn Fehler
+</span>    <span class="c"># passieren.
+</span>    <span class="c"># Versuche `make file1.txt` auf der Kommandozeile.
+</span>
+<span class="c"># Eine Regel kann mehrere Ziele und mehrere Voraussetzungen haben.
+</span><span class="nl">file2.txt file3.txt</span><span class="o">:</span> <span class="nf">file0.txt file1.txt</span>
+    <span class="err">touch</span> <span class="err">file2.txt</span>
+    <span class="err">touch</span> <span class="err">file3.txt</span>
+
+<span class="c"># Make wird sich beschweren, wenn es mehrere Rezepte für die gleiche Regel gibt.
+# Leere Rezepte zählen nicht und können dazu verwendet werden weitere
+# Voraussetzungen hinzuzufügen.
+</span>
+<span class="c">#-----------------------------------------------------------------------
+# Phony-Ziele
+#-----------------------------------------------------------------------
+</span>
+<span class="c"># Ein Phony-Ziel ist ein Ziel, das keine Datei ist.
+# Es wird nie aktuell sein, daher wird Make immer versuchen, es abzuarbeiten
+</span><span class="nl">all</span><span class="o">:</span> <span class="nf">maker process</span>
+
+<span class="c"># Es ist erlaubt Dinge ausserhalb der Reihenfolge zu deklarieren.
+</span><span class="nl">maker</span><span class="o">:</span>
+    <span class="err">touch</span> <span class="err">ex0.txt</span> <span class="err">ex1.txt</span>
+
+<span class="c"># Um das Fehlschlagen von Phony-Regeln zu vermeiden wenn eine echte Datei den
+# selben namen wie ein Phony-Ziel hat:
+</span><span class="nl">.PHONY</span><span class="o">:</span> <span class="nf">all maker process</span>
+<span class="c"># Das ist ein spezielles Ziel. Es gibt noch ein paar mehr davon.
+</span>
+<span class="c"># Eine Regel mit einem Phony-Ziel als Voraussetzung wird immer abgearbeitet
+</span><span class="nl">ex0.txt ex1.txt</span><span class="o">:</span> <span class="nf">maker</span>
+
+<span class="c"># Häufige Phony-Ziele sind: all make clean install ...
+</span>
+<span class="c">#-----------------------------------------------------------------------
+# Automatische Variablen &amp; Wildcards
+#-----------------------------------------------------------------------
+</span>
+<span class="nl">process</span><span class="o">:</span> <span class="nf">file*.txt  </span><span class="c">#</span><span class="nf"> Eine Wildcard um Dateinamen zu vergleichen</span>
+    <span class="err">@echo</span> <span class="err">$^</span>    <span class="c"># $^ ist eine Variable die eine Liste aller
+</span>            <span class="c"># Voraussetzungen enthält.
+</span>    <span class="err">@echo</span> <span class="err">$@</span>    <span class="c"># Namen des Ziels ausgeben.
+</span>    <span class="c">#(Bei mehreren Ziel-Regeln enthält $@ den Verursacher der Abarbeitung
+</span>    <span class="c">#der Regel.)
+</span>    <span class="err">@echo</span> <span class="err">$&lt;</span>    <span class="c"># Die erste Voraussetzung aus der Liste
+</span>    <span class="err">@echo</span> <span class="err">$?</span>    <span class="c"># Nur die Voraussetzungen, die nicht aktuell sind.
+</span>    <span class="err">@echo</span> <span class="err">$+</span>    <span class="c"># Alle Voraussetzungen inklusive Duplikate (nicht wie Üblich)
+</span>    <span class="c">#@echo $|   # Alle 'order only' Voraussetzungen
+</span>
+<span class="c"># Selbst wenn wir die Voraussetzungen der Regel aufteilen, $^ wird sie finden.
+</span><span class="nl">process</span><span class="o">:</span> <span class="nf">ex1.txt file0.txt</span>
+<span class="c"># ex1.txt wird gefunden werden, aber file0.txt wird dedupliziert.
+</span>
+<span class="c">#-----------------------------------------------------------------------
+# Muster
+#-----------------------------------------------------------------------
+</span>
+<span class="c"># Mit Mustern kann man make beibringen wie Dateien in andere Dateien
+# umgewandelt werden.
+</span>
+<span class="nl">%.png</span><span class="o">:</span> <span class="nf">%.svg</span>
+    <span class="err">inkscape</span> <span class="err">--export-png</span> <span class="err">$^</span>
+
+<span class="c"># Muster-Vergleichs-Regeln werden nur abgearbeitet, wenn make entscheidet das
+# Ziel zu erzeugen
+</span>
+<span class="c"># Verzeichnis-Pfade werden normalerweise bei Muster-Vergleichs-Regeln ignoriert.
+# Aber make wird versuchen die am besten passende Regel zu verwenden.
+</span><span class="nl">small/%.png</span><span class="o">:</span> <span class="nf">%.svg</span>
+    <span class="err">inkscape</span> <span class="err">--export-png</span> <span class="err">--export-dpi</span> <span class="err">30</span> <span class="err">$^</span>
+
+<span class="c"># Make wird die letzte Version einer Muster-Vergleichs-Regel verwenden, die es
+# findet.
+</span><span class="nl">%.png</span><span class="o">:</span> <span class="nf">%.svg</span>
+    <span class="err">@echo</span> <span class="err">this</span> <span class="err">rule</span> <span class="err">is</span> <span class="err">chosen</span>
+
+<span class="c"># Allerdings wird make die erste Muster-Vergleicher-Regel verwenden, die das
+# Ziel erzeugen kann.
+</span><span class="nl">%.png</span><span class="o">:</span> <span class="nf">%.ps</span>
+    <span class="err">@echo</span> <span class="err">this</span> <span class="err">rule</span> <span class="err">is</span> <span class="err">not</span> <span class="err">chosen</span> <span class="err">if</span> <span class="err">*.svg</span> <span class="err">and</span> <span class="err">*.ps</span> <span class="err">are</span> <span class="err">both</span> <span class="err">present</span>
+
+<span class="c"># Make hat bereits ein paar eingebaute Muster-Vergleichs-Regelen. Zum Beispiel
+# weiß Make wie man aus *.c Dateien *.o Dateien erzeugt.
+</span>
+<span class="c"># Ältere Versionen von Make verwenden möglicherweise Suffix-Regeln anstatt
+# Muster-Vergleichs-Regeln.
+</span><span class="nl">.png.ps</span><span class="o">:</span>
+    <span class="err">@echo</span> <span class="err">this</span> <span class="err">rule</span> <span class="err">is</span> <span class="err">similar</span> <span class="err">to</span> <span class="err">a</span> <span class="err">pattern</span> <span class="err">rule.</span>
+
+<span class="c"># Aktivieren der Suffix-Regel
+</span><span class="nl">.SUFFIXES</span><span class="o">:</span> <span class="nf">.png</span>
+
+<span class="c">#-----------------------------------------------------------------------
+# Variablen
+#-----------------------------------------------------------------------
+# auch Makros genannt.
+</span>
+<span class="c"># Variablen sind im Grunde genommen Zeichenketten-Typen.
+</span>
+<span class="nv">name</span> <span class="o">=</span> Ted
+<span class="nv">name2</span><span class="o">=</span><span class="s2">"Sarah"</span>
+
+<span class="nl">echo</span><span class="o">:</span>
+    <span class="err">@echo</span> <span class="err">$(name)</span>
+    <span class="err">@echo</span> <span class="err">${name2}</span>
+    <span class="err">@echo</span> <span class="err">$name</span>    <span class="c"># Das funktioniert nicht, wird als $(n)ame behandelt.
+</span>    <span class="err">@echo</span> <span class="err">$(name3)</span> <span class="c"># Unbekannte Variablen werden als leere Zeichenketten behandelt.
+</span>
+<span class="c"># Es git 4 Stellen um Variablen zu setzen.
+# In Reihenfolge der Priorität von höchster zu niedrigster:
+# 1: Befehls-Zeilen Argumente
+# 2: Makefile
+# 3: Shell Umbebungs-Variablen - Make importiert diese automatisch.
+# 3: MAke hat einige vordefinierte Variablen.
+</span>
+<span class="nv">name4</span> <span class="o">?=</span> Jean
+<span class="c"># Setze die Variable nur wenn es eine gleichnamige Umgebungs-Variable noch
+# nicht gibt.
+</span>
+<span class="err">override</span> <span class="nv">name5</span> <span class="o">=</span> David
+<span class="c"># Verhindert, dass Kommando-Zeilen Argumente diese Variable ändern können.
+</span>
+<span class="nv">name4</span> <span class="o">+=</span>grey
+<span class="c"># Werte an eine Variable anhängen (inkludiert Leerzeichen).
+</span>
+<span class="c"># Muster-Spezifische Variablen Werte (GNU Erweiterung).
+</span><span class="nl">echo</span><span class="o">:</span> <span class="nf">name2 = Sara </span><span class="c">#</span><span class="nf"> Wahr innerhalb der passenden Regel und auch innerhalb</span>
+    <span class="c"># rekursiver Voraussetzungen (ausser wenn es den Graphen zerstören
+</span>    <span class="c"># kann, wenn es zu kompilizert wird!)
+</span>
+<span class="c"># Ein paar Variablen, die von Make automatisch definiert werden.
+</span><span class="nl">echo_inbuilt</span><span class="o">:</span>
+    <span class="err">echo</span> <span class="err">$(CC)</span>
+    <span class="err">echo</span> <span class="err">${CXX}</span>
+    <span class="err">echo</span> <span class="err">$(FC)</span>
+    <span class="err">echo</span> <span class="err">${CFLAGS}</span>
+    <span class="err">echo</span> <span class="err">$(CPPFLAGS)</span>
+    <span class="err">echo</span> <span class="err">${CXXFLAGS}</span>
+    <span class="err">echo</span> <span class="err">$(LDFLAGS)</span>
+    <span class="err">echo</span> <span class="err">${LDLIBS}</span>
+
+<span class="c">#-----------------------------------------------------------------------
+# Variablen 2
+#-----------------------------------------------------------------------
+</span>
+<span class="c"># Der erste Typ von Variablen wird bei jeder Verwendung ausgewertet.
+# Das kann aufwendig sein, daher exisitert ein zweiter Typ von Variablen.
+# Diese werden nur einmal ausgewertet. (Das ist eine GNU make Erweiterung)
+</span>
+<span class="nv">var</span> <span class="o">:=</span> hello
+<span class="nl">var2 </span><span class="o">::</span><span class="nf">=  $(var) hello</span>
+<span class="c">#:= und ::= sind äquivalent.
+</span>
+<span class="c"># Diese Variablen werden prozedural ausgwertet (in der Reihenfolge in der sie
+# auftauchen), die stehen daher im wiederspruch zum Rest der Sprache!
+</span>
+<span class="c"># Das funktioniert nicht
+</span><span class="nl">var3 </span><span class="o">::</span><span class="nf">= $(var4) and good luck</span>
+<span class="nl">var4 </span><span class="o">::</span><span class="nf">= good night</span>
+
+<span class="c">#-----------------------------------------------------------------------
+# Funktionen
+#-----------------------------------------------------------------------
+</span>
+<span class="c"># Make verfügt über eine Vielzahl von Funktionen.
+</span>
+<span class="nv">sourcefiles</span> <span class="o">=</span> <span class="nf">$(</span><span class="nb">wildcard</span> <span class="k">*</span>.c <span class="k">*</span>/<span class="k">*</span>.c<span class="nf">)</span>
+<span class="nv">objectfiles</span> <span class="o">=</span> <span class="nf">$(</span><span class="nb">patsubst</span> %.c,%.o,<span class="nv">$(sourcefiles)</span><span class="nf">)</span>
+
+<span class="c"># Das Format ist $(func arg0,arg1,arg2...)
+</span>
+<span class="c"># Ein paar Beispiele
+</span><span class="nl">ls</span><span class="o">:</span> <span class="nf">* src/*</span>
+    <span class="err">@echo</span> <span class="err">$(filter</span> <span class="err">%.txt,</span> <span class="err">$^)</span>
+    <span class="err">@echo</span> <span class="err">$(notdir</span> <span class="err">$^)</span>
+    <span class="err">@echo</span> <span class="err">$(join</span> <span class="err">$(dir</span> <span class="err">$^),$(notdir</span> <span class="err">$^))</span>
+
+<span class="c">#-----------------------------------------------------------------------
+# Direktiven
+#-----------------------------------------------------------------------
+</span>
+<span class="c"># Inkludiere andere Makefile, sehr praktisch für platformspezifischen Code
+</span><span class="k">include</span><span class="sx"> foo.mk</span>
+
+<span class="nv">sport</span> <span class="o">=</span> tennis
+<span class="c"># Konditionale kompiliereung
+</span><span class="nl">report</span><span class="o">:</span>
+<span class="k">ifeq</span> <span class="nv">($(sport),tennis)</span>
+    <span class="err">@echo</span> <span class="s1">'game, set, match'</span>
+<span class="k">else</span>
+    <span class="err">@echo</span> <span class="s2">"They think it's all over; it is now"</span>
+<span class="k">endif</span>
+
+<span class="c"># Es gibt auch ifneq, ifdef, ifndef
+</span>
+<span class="nv">foo</span> <span class="o">=</span> <span class="nb">true</span>
+
+<span class="k">ifdef</span> <span class="nv">$(foo)</span>
+<span class="nv">bar</span> <span class="o">=</span> <span class="s1">'hello'</span>
+<span class="k">endif</span>
+</code></pre></div>
+<h3>Mehr Resourcen</h3>
+
+<ul>
+<li><a href="https://www.gnu.org/software/make/manual/">gnu make documentation</a></li>
+<li><a href="http://swcarpentry.github.io/make-novice/">software carpentry tutorial</a></li>
+<li>learn C the hard way <a href="http://c.learncodethehardway.org/book/ex2.html">ex2</a> <a href="http://c.learncodethehardway.org/book/ex28.html">ex28</a></li>
+</ul>
+
+    <hr>
+    <p>Du hast einen Verbesserungsvorschlag oder einen Fehler gefunden? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Erstelle ein Ticket</a> im offiziellen Github Repo, oder du erstellst einfach gleich einen <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/de-de/make-de.html.markdown">pull request</a>!
+    </p>
+    <p class="contributed">
+    Originalversion von Robert Steed, mit Updates von <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/de-de/make-de.html.markdown">1 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="https://github.com/robochat">Robert Steed</a>,
+        <a href="https://github.com/sfuhrm">Stephan Fuhrmann</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/Git-Jiro">Martin Schimandl</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

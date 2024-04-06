@@ -1,0 +1,313 @@
+
+---
+"{{ Ansible }}" is an orchestration tool written in Python.
+...
+
+---
+- hosts: apache
+
+  vars:
+      apache2_log_level: "warn"
+
+  handlers:
+  - name: restart apache
+    service:
+      name: apache2
+      state: restarted
+      enabled: True
+    notify:
+      - Wait for instances to listen on port 80
+    become: True
+
+  - name: reload apache
+    service:
+      name: apache2
+      state: reloaded
+    notify:
+      - Wait for instances to listen on port 80
+    become: True
+
+  - name: Wait for instances to listen on port 80
+    wait_for:
+      state: started
+      host: localhost
+      port: 80
+      timeout: 15
+      delay: 5
+
+  tasks:
+  - name: Update cache
+    apt:
+      update_cache: yes
+      cache_valid_time: 7200
+    become: True
+
+  - name: Install packages
+    apt:
+      name={{ item }}
+    with_items:
+      - apache2
+      - logrotate
+    notify:
+      - restart apache
+    become: True
+
+  - name: Configure apache2 log level
+    lineinfile:
+      dest: /etc/apache2/apache2.conf
+      line: "LogLevel {{ apache2_log_level }}"
+      regexp: "^LogLevel"
+    notify:
+      - reload apache
+    become: True
+...
+
+# Universal way
+$ pip install ansible
+
+# Debian, Ubuntu
+$ apt-get install ansible
+
+# Command pings localhost (defined in default inventory: /etc/ansible/hosts)
+$ ansible -m ping localhost
+# You should see this output
+localhost | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+
+$ ansible -m ping all
+$ ansible -m shell -a 'date; whoami' localhost #hostname_or_a_group_name
+
+$ ansible -m command -a 'date; whoami' # FAILURE
+$ ansible -m command -a 'date' all
+$ ansible -m command -a 'whoami' all
+
+- hosts: all
+
+  tasks:
+    - name: "ping all"
+      ping:
+
+    - name: "execute a shell command"
+      shell: "date; whoami; df -h;"
+
+$ ansible-playbook path/name_of_the_playbook.yml
+
+localhost
+
+[some_group]
+hostA.mydomain.com
+hostB.localdomain
+1.2.3.4
+
+[a_group_of_a_groups:children]
+some_group
+some_other_group
+
+- hosts: all
+
+  tasks:
+      - name: "ping all"
+        ping:
+      - name: "execute a shell command"
+        shell: "date; whoami; df -h;"
+
+  roles:
+      - some_role
+      - { role: another_role, some_variable: 'learnxiny', tags: ['my_tag'] }
+
+  pre_tasks:
+      - name: some pre-task
+        shell: echo 'this task is the last, but would be executed before roles, and before tasks'
+
+$ # The following example contains a shell-prompt to indicate the venv and relative path
+$ git clone git@github.com:sirkubax/ansible-for-learnXinYminutes.git
+user@host:~/$ cd ansible-for-learnXinYminutes
+user@host:~/ansible-for-learnXinYminutes$ source environment.sh
+$
+$ # First lets execute the simple_playbook.yml
+(venv) user@host:~/ansible-for-learnXinYminutes$ ansible-playbook playbooks/simple_playbook.yml
+
+$ source environment.sh
+$ # Now we would run the above playbook with roles
+(venv) user@host:~/ansible-for-learnXinYminutes$ ansible-playbook playbooks/simple_role.yml
+
+roles/
+   some_role/
+     defaults/      # contains default variables
+     files/         # for static files
+     templates/     # for jinja templates
+     tasks/         # tasks
+     handlers/      # handlers
+     vars/          # more variables (higher priority)
+     meta/          # meta - package (role) info
+
+playbooks/roles/simple_apache_role/
+├── tasks
+│   └── main.yml
+└── templates
+    └── main.yml
+
+# read playbooks/lookup.yml
+# then run
+(venv) user@host:~/ansible-for-learnXinYminutes$ ansible-playbook playbooks/lookup.yml
+
+ansible -m shell -a 'echo "{{ my_variable }}"' -e 'my_variable="{{ lookup("pipe", "date") }}"' localhost
+ansible -m shell -a 'echo "{{ my_variable }}"' -e 'my_variable="{{ lookup("pipe", "hostname") }}"' all
+
+# Or use in playbook
+
+(venv) user@host:~/ansible-for-learnXinYminutes$ ansible-playbook playbooks/lookup.yml
+
+(venv) user@host:~/ansible-for-learnXinYminutes$ ansible-playbook playbooks/register_and_when.yml
+
+---
+- hosts: localhost
+  tasks:
+   - name: check the system capacity
+     shell: df -h /
+     register: root_size
+
+   - name: debug root_size
+     debug:
+        msg: "{{ root_size }}"
+
+   - name: debug root_size return code
+     debug:
+       msg:  "{{ root_size.rc }}"
+
+# when: example
+
+   - name: Print this message when return code of 'check the system capacity' was ok
+     debug:
+       msg:  "{{ root_size.rc }}"
+     when: root_size.rc == 0
+...
+
+---
+- hosts: localhost
+  tasks:
+   - name: check the system capacity
+     shell: df -h /
+     when: some_variable in 'a string'
+  roles:
+   - { role: mid_nagios_probe, when: allow_nagios_probes }
+...
+
+ansible-playbook playbooks/simple_playbook.yml --tags=tagA,tag_other
+ansible-playbook playbooks/simple_playbook.yml -t tagA,tag_other
+
+There are special tags:
+    always
+
+--skip-tags can be used to exclude a block of code
+--list-tags to list available tags
+
+ansible-playbook playbooks/simple_playbook.yml --limit localhost
+
+--limit my_hostname
+--limit groupname
+--limit some_prefix*
+--limit hostname:group #JM
+
+Some static content
+
+{{ a_variable }}
+
+{% for item in loop_items %}
+    this line item is {{ item }}
+{% endfor %}
+
+$ source environment.sh
+$ # Now we would run the above playbook with roles
+(venv) user@host:~/ansible-for-learnXinYminutes$ ansible-playbook playbooks/simple_role.yml --tags apache2
+
+ansible -m shell -a 'echo {{ my_variable }}' -e 'my_variable=something, playbook_parameter=twentytwo' localhost
+
+# check part of this playbook: playbooks/roles/sys_debug/tasks/debug_time.yml
+- local_action: shell date +'%F %T'
+  register: ts
+  become: False
+  changed_when: False
+
+- name: Timestamp
+  debug: msg="{{ ts.stdout }}"
+  when: ts is defined and ts.stdout is defined
+  become: False
+
+# get first item of the list
+{{ some_list | first() }}
+# if variable is undefined - use default value
+{{ some_variable | default('default_value') }}
+
+# Try (this would fail)
+$ ansible-playbook playbooks/vault_example.yml
+
+$ echo some_very_very_long_secret > ~/.ssh/secure_located_file
+
+# in ansible.cfg set the path to your secret file
+$ vi ansible.cfg
+  ansible_vault_password_file = ~/.ssh/secure_located_file
+
+#or use env
+$ export ANSIBLE_VAULT_PASSWORD_FILE=~/.ssh/secure_located_file
+
+$ ansible-playbook playbooks/vault_example.yml
+
+  # encrypt the file
+$ ansible-vault encrypt path/somefile
+
+  # view the file
+$ ansible-vault view path/somefile
+
+  # check the file content:
+$ cat path/somefile
+
+  # decrypt the file
+$ ansible-vault decrypt path/somefile
+
+$ etc/inv/ec2.py --refresh
+$ ansible -m ping all -i etc/inv/ec2.py
+
+vi ansible.cfg
+# set this to:
+callback_whitelist = profile_tasks
+
+vi ansible.cfg
+
+# if set to a persistent type (not 'memory', for example 'redis') fact values
+# from previous runs in Ansible will be stored.  This may be useful when
+# wanting to use, for example, IP information from one group of servers
+# without having to talk to them in the same playbook run to get their
+# current IP information.
+fact_caching = jsonfile
+fact_caching_connection = ~/facts_cache
+fact_caching_timeout = 86400
+
+# recreate ansible 2.x venv
+$ rm -rf venv2
+$ source environment2.sh
+
+# execute playbook
+(venv2)$ ansible-playbook playbooks/ansible1.9_playbook.yml # would fail - deprecated syntax
+
+# now lets install ansible 1.9.x next to ansible 2.x
+(venv2)$ deactivate
+$ source environment.1.9.sh
+
+# execute playbook
+(venv1.9)$ ansible-playbook playbooks/ansible1.9_playbook.yml # works!
+
+# please note that you have both venv1.9 and venv2 present - you need to (de)activate one - that is all
+
+- name: Ensure the httpd service is running
+  service:
+    name: httpd
+    state: started
+  become: true
+
+ansible -m ping web*
+
+ansible -m ping web*:!backend:monitoring:&allow_change
+

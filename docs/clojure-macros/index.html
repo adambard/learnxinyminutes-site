@@ -1,0 +1,251 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn clojure macros in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/clojure-macros/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fclojure-macros%2F&text=Learn+X+in+Y+minutes%2C+where+X%3Dclojure+macros">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=clojure macros</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/learnclojuremacros.clj">learnclojuremacros.clj</a>
+    </p>
+  <div id="doc">
+    <p>As with all Lisps, Clojure&rsquo;s inherent <a href="https://en.wikipedia.org/wiki/Homoiconic">homoiconicity</a>
+gives you access to the full extent of the language to write code-generation routines
+called &ldquo;macros&rdquo;. Macros provide a powerful way to tailor the language to your needs.</p>
+
+<p>Be careful though. It&rsquo;s considered bad form to write a macro when a function will do.
+Use a macro only when you need control over when or if the arguments to a form will
+be evaluated.</p>
+
+<p>You&rsquo;ll want to be familiar with Clojure. Make sure you understand everything in
+<a href="/docs/clojure/">Clojure in Y Minutes</a>.</p>
+<div class="highlight"><pre class="highlight clojure"><code><span class="c1">;; Define a macro using defmacro. Your macro should output a list that can</span><span class="w">
+</span><span class="c1">;; be evaluated as clojure code.</span><span class="w">
+</span><span class="c1">;;</span><span class="w">
+</span><span class="c1">;; This macro is the same as if you wrote (reverse "Hello World")</span><span class="w">
+</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">my-first-macro</span><span class="w"> </span><span class="p">[]</span><span class="w">
+  </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="nb">reverse</span><span class="w"> </span><span class="s">"Hello World"</span><span class="p">))</span><span class="w">
+
+</span><span class="c1">;; Inspect the result of a macro using macroexpand or macroexpand-1.</span><span class="w">
+</span><span class="c1">;;</span><span class="w">
+</span><span class="c1">;; Note that the call must be quoted.</span><span class="w">
+</span><span class="p">(</span><span class="nb">macroexpand</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">my-first-macro</span><span class="p">))</span><span class="w">
+</span><span class="c1">;; -&gt; (#&lt;core$reverse clojure.core$reverse@xxxxxxxx&gt; "Hello World")</span><span class="w">
+
+</span><span class="c1">;; You can eval the result of macroexpand directly:</span><span class="w">
+</span><span class="p">(</span><span class="nb">eval</span><span class="w"> </span><span class="p">(</span><span class="nb">macroexpand</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">my-first-macro</span><span class="p">)))</span><span class="w">
+</span><span class="c1">; -&gt; (\d \l \o \r \W \space \o \l \l \e \H)</span><span class="w">
+
+</span><span class="c1">;; But you should use this more succinct, function-like syntax:</span><span class="w">
+</span><span class="p">(</span><span class="nf">my-first-macro</span><span class="p">)</span><span class="w">  </span><span class="c1">; -&gt; (\d \l \o \r \W \space \o \l \l \e \H)</span><span class="w">
+
+</span><span class="c1">;; You can make things easier on yourself by using the more succinct quote syntax</span><span class="w">
+</span><span class="c1">;; to create lists in your macros:</span><span class="w">
+</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">my-first-quoted-macro</span><span class="w"> </span><span class="p">[]</span><span class="w">
+  </span><span class="o">'</span><span class="p">(</span><span class="nb">reverse</span><span class="w"> </span><span class="s">"Hello World"</span><span class="p">))</span><span class="w">
+
+</span><span class="p">(</span><span class="nb">macroexpand</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">my-first-quoted-macro</span><span class="p">))</span><span class="w">
+</span><span class="c1">;; -&gt; (reverse "Hello World")</span><span class="w">
+</span><span class="c1">;; Notice that reverse is no longer function object, but a symbol.</span><span class="w">
+
+</span><span class="c1">;; Macros can take arguments.</span><span class="w">
+</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">inc2</span><span class="w"> </span><span class="p">[</span><span class="n">arg</span><span class="p">]</span><span class="w">
+  </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="nb">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="n">arg</span><span class="p">))</span><span class="w">
+
+</span><span class="p">(</span><span class="nf">inc2</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; 4</span><span class="w">
+
+</span><span class="c1">;; But, if you try to do this with a quoted list, you'll get an error, because</span><span class="w">
+</span><span class="c1">;; the argument will be quoted too. To get around this, clojure provides a</span><span class="w">
+</span><span class="c1">;; way of quoting macros: `. Inside `, you can use ~ to get at the outer scope</span><span class="w">
+</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">inc2-quoted</span><span class="w"> </span><span class="p">[</span><span class="n">arg</span><span class="p">]</span><span class="w">
+  </span><span class="o">`</span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">~</span><span class="n">arg</span><span class="p">))</span><span class="w">
+
+</span><span class="p">(</span><span class="nf">inc2-quoted</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">;; You can use the usual destructuring args. Expand list variables using ~@</span><span class="w">
+</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">unless</span><span class="w"> </span><span class="p">[</span><span class="n">arg</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">body</span><span class="p">]</span><span class="w">
+  </span><span class="o">`</span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">not</span><span class="w"> </span><span class="o">~</span><span class="n">arg</span><span class="p">)</span><span class="w">
+     </span><span class="p">(</span><span class="nf">do</span><span class="w"> </span><span class="o">~@</span><span class="n">body</span><span class="p">)))</span><span class="w"> </span><span class="c1">; Remember the do!</span><span class="w">
+
+</span><span class="p">(</span><span class="nb">macroexpand</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">unless</span><span class="w"> </span><span class="n">true</span><span class="w"> </span><span class="p">(</span><span class="nb">reverse</span><span class="w"> </span><span class="s">"Hello World"</span><span class="p">)))</span><span class="w">
+</span><span class="c1">;; -&gt;</span><span class="w">
+</span><span class="c1">;; (if (clojure.core/not true) (do (reverse "Hello World")))</span><span class="w">
+
+</span><span class="c1">;; (unless) evaluates and returns its body if the first argument is false.</span><span class="w">
+</span><span class="c1">;; Otherwise, it returns nil</span><span class="w">
+
+</span><span class="p">(</span><span class="nf">unless</span><span class="w"> </span><span class="n">true</span><span class="w"> </span><span class="s">"Hello"</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; nil</span><span class="w">
+</span><span class="p">(</span><span class="nf">unless</span><span class="w"> </span><span class="n">false</span><span class="w"> </span><span class="s">"Hello"</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; "Hello"</span><span class="w">
+
+</span><span class="c1">;; Used without care, macros can do great evil by clobbering your vars</span><span class="w">
+</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">define-x</span><span class="w"> </span><span class="p">[]</span><span class="w">
+  </span><span class="o">'</span><span class="p">(</span><span class="nf">do</span><span class="w">
+     </span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">
+     </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="n">x</span><span class="p">)))</span><span class="w">
+
+</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w">
+</span><span class="p">(</span><span class="nf">define-x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span><span class="w">
+</span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span><span class="w">
+
+</span><span class="c1">;; To avoid this, use gensym to get a unique identifier</span><span class="w">
+</span><span class="p">(</span><span class="nb">gensym</span><span class="w"> </span><span class="ss">'x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; x1281 (or some such thing)</span><span class="w">
+
+</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">define-x-safely</span><span class="w"> </span><span class="p">[]</span><span class="w">
+  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[</span><span class="n">sym</span><span class="w"> </span><span class="p">(</span><span class="nb">gensym</span><span class="w"> </span><span class="ss">'x</span><span class="p">)]</span><span class="w">
+    </span><span class="o">`</span><span class="p">(</span><span class="nf">do</span><span class="w">
+       </span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="o">~</span><span class="n">sym</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">
+       </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="o">~</span><span class="n">sym</span><span class="p">))))</span><span class="w">
+
+</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w">
+</span><span class="p">(</span><span class="nf">define-x-safely</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span><span class="w">
+</span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (4)</span><span class="w">
+
+</span><span class="c1">;; You can use # within ` to produce a gensym for each symbol automatically</span><span class="w">
+</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">define-x-hygienically</span><span class="w"> </span><span class="p">[]</span><span class="w">
+  </span><span class="o">`</span><span class="p">(</span><span class="nf">do</span><span class="w">
+     </span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">x</span><span class="o">#</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">
+     </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="n">x</span><span class="o">#</span><span class="p">)))</span><span class="w">
+
+</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w">
+</span><span class="p">(</span><span class="nf">define-x-hygienically</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span><span class="w">
+</span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (4)</span><span class="w">
+
+</span><span class="c1">;; It's typical to use helper functions with macros. Let's create a few to</span><span class="w">
+</span><span class="c1">;; help us support a (dumb) inline arithmetic syntax</span><span class="w">
+</span><span class="p">(</span><span class="nf">declare</span><span class="w"> </span><span class="n">inline-2-helper</span><span class="p">)</span><span class="w">
+</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">clean-arg</span><span class="w"> </span><span class="p">[</span><span class="n">arg</span><span class="p">]</span><span class="w">
+  </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">seq?</span><span class="w"> </span><span class="n">arg</span><span class="p">)</span><span class="w">
+    </span><span class="p">(</span><span class="nf">inline-2-helper</span><span class="w"> </span><span class="n">arg</span><span class="p">)</span><span class="w">
+    </span><span class="n">arg</span><span class="p">))</span><span class="w">
+
+</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">apply-arg</span><span class="w">
+  </span><span class="s">"Given args [x (+ y)], return (+ x y)"</span><span class="w">
+  </span><span class="p">[</span><span class="nb">val</span><span class="w"> </span><span class="p">[</span><span class="n">op</span><span class="w"> </span><span class="n">arg</span><span class="p">]]</span><span class="w">
+  </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="nb">val</span><span class="w"> </span><span class="p">(</span><span class="nf">clean-arg</span><span class="w"> </span><span class="n">arg</span><span class="p">)))</span><span class="w">
+
+</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">inline-2-helper</span><span class="w">
+  </span><span class="p">[[</span><span class="n">arg1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">ops-and-args</span><span class="p">]]</span><span class="w">
+  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[</span><span class="n">ops</span><span class="w"> </span><span class="p">(</span><span class="nf">partition</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="n">ops-and-args</span><span class="p">)]</span><span class="w">
+    </span><span class="p">(</span><span class="nb">reduce</span><span class="w"> </span><span class="n">apply-arg</span><span class="w"> </span><span class="p">(</span><span class="nf">clean-arg</span><span class="w"> </span><span class="n">arg1</span><span class="p">)</span><span class="w"> </span><span class="n">ops</span><span class="p">)))</span><span class="w">
+
+</span><span class="c1">;; We can test it immediately, without creating a macro</span><span class="w">
+</span><span class="p">(</span><span class="nf">inline-2-helper</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">a</span><span class="w"> </span><span class="nb">+</span><span class="w"> </span><span class="p">(</span><span class="nf">b</span><span class="w"> </span><span class="nb">-</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">-</span><span class="w"> </span><span class="p">(</span><span class="nf">c</span><span class="w"> </span><span class="nb">*</span><span class="w"> </span><span class="mi">5</span><span class="p">)))</span><span class="w"> </span><span class="c1">; -&gt; (- (+ a (- b 2)) (* c 5))</span><span class="w">
+
+</span><span class="c1">; However, we'll need to make it a macro if we want it to be run at compile time</span><span class="w">
+</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">inline-2</span><span class="w"> </span><span class="p">[</span><span class="n">form</span><span class="p">]</span><span class="w">
+  </span><span class="p">(</span><span class="nf">inline-2-helper</span><span class="w"> </span><span class="n">form</span><span class="p">))</span><span class="w">
+
+</span><span class="p">(</span><span class="nb">macroexpand</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">inline-2</span><span class="w"> </span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="nb">+</span><span class="w"> </span><span class="p">(</span><span class="nf">3</span><span class="w"> </span><span class="nb">/</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">-</span><span class="w"> </span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="nb">/</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)))</span><span class="w">
+</span><span class="c1">; -&gt; (+ (- (+ 1 (/ 3 2)) (/ 1 2)) 1)</span><span class="w">
+
+</span><span class="p">(</span><span class="nf">inline-2</span><span class="w"> </span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="nb">+</span><span class="w"> </span><span class="p">(</span><span class="nf">3</span><span class="w"> </span><span class="nb">/</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">-</span><span class="w"> </span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="nb">/</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w">
+</span><span class="c1">; -&gt; 3 (actually, 3N, since the number got cast to a rational fraction with /)</span><span class="w">
+</span></code></pre></div>
+<h3>Further Reading</h3>
+
+<p><a href="http://www.braveclojure.com/writing-macros/">Writing Macros</a></p>
+
+<p><a href="http://clojure.org/macros">Official docs</a></p>
+
+<p><a href="https://lispcast.com/when-to-use-a-macro/">When to use macros?</a></p>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/clojure-macros.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Adam Bard, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/clojure-macros.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://adambard.com/">Adam Bard</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

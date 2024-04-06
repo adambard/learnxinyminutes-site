@@ -1,0 +1,308 @@
+<!DOCTYPE html lang="uk-ua" xml:lang="uk-ua" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="uk-ua">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn cypher in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/uk-ua/cypher-ua/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fuk-ua%2Fcypher-ua%2F&text=Learn+X+in+Y+minutes%2C+where+X%3Dcypher">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=cypher</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/LearnCypher-ua.cql">LearnCypher-ua.cql</a>
+    </p>
+  <div id="doc">
+    <p>Cypher - це мова запитів Neo4j для спрощення роботи з графами. Вона повторює синтаксис SQL та перемішує його з таким собі ascii стилем для відображення структури графа.
+Цей навчальний матеріал передбачає, що ви вже знайомі із концепцією графів, зобрема що таке вершини та зв&#39;язки між ними.</p>
+
+<p><a href="https://neo4j.com/developer/cypher-query-language/">Деталі тут</a></p>
+
+<h2>Вершини</h2>
+
+<p><strong>Відображує запис у графі.</strong></p>
+
+<p><code>()</code>
+Таким чином у запиті позначається пуста <em>вершина</em>. Використовується зазвичай для того, щоб позначити, що вона є, проте це не так вже й важливо для запиту.</p>
+
+<p><code>(n)</code>
+Це вершина, яка має назву <strong>n</strong>, до неї можна повторно звертатись у запиті. Звернення до вершини <strong>n</strong> починається з нижнього підкреслення та використовує camelCase (верблюжий регіст).</p>
+
+<p><code>(p:Person)</code>
+Можна також додати <em>ярлик</em> до вершини, в данному випадку - <strong>Person</strong>. Це як тип / клас / категорія. Назва <em>ярлика</em> починається з великої літери та використовує верблюжу нотацію.</p>
+
+<p><code>(p:Person:Manager)</code>
+Вершина може мати кілька <em>ярликів</em>.</p>
+
+<p><code>(p:Person {name : &#39;Théo Gauchoux&#39;, age : 22})</code>
+Вершина також може мати різні <em>властивості</em>, в данному випадку - <strong>name</strong> та <strong>age</strong>. Також мають починатися з великої літери та використовувати верблюжу нотацію.</p>
+
+<p>Наступні типи дозволяється використовувати у властивостях:</p>
+
+<ul>
+<li>Чиселиний</li>
+<li>Булевий</li>
+<li>Рядок</li>
+<li>Списки попередніх примітивних типів</li>
+</ul>
+
+<p><em>Увага! В Cypher не існує типу, що відображає час. Замість нього можна використовувати рядок із визначеним шаблоном або чисельне відображення певної дати.</em></p>
+
+<p><code>p.name</code>
+За допомогою крапки можна звернутись до властивості вершини.</p>
+
+<h2>Зв&#39;язки (або ребра)</h2>
+
+<p><strong>Сполучають дві вершини</strong></p>
+
+<p><code>[:KNOWS]</code>
+Це <em>зв&#39;язок</em> з <em>ярликом</em> <strong>KNOWS</strong>. Це такий же самий <em>ярлик</em> як і у вершини. Починається з великої літери та використовує ВЕРХНІЙ_РЕГІСТР_ІЗ_ЗМІЇНОЮ_НОТАЦІЄЮ.</p>
+
+<p><code>[k:KNOWS]</code>
+Це той же самий <em>зв&#39;язок</em>, до якого можна звертатись через змінну <strong>k</strong>. Можна подалі використовувати у запиті, хоч це і не обов&#39;язково. </p>
+
+<p><code>[k:KNOWS {since:2017}]</code>
+Той же <em>зв&#39;язок</em>, але вже із <em>властивостями</em> (як у <em>вершини</em>), в данному випадку властивість - це  <strong>since</strong>.</p>
+
+<p><code>[k:KNOWS*..4]</code>
+Це структурна інформація, яку використовують <em>шляхи</em>, які розглянуті нижче. В данному випадку, <strong>*..4</strong> говорить: &ldquo;Сумістити шаблон із зв&#39;язком <strong>k</strong>, що повторюватиметься від одного до чотирьох разів.&rdquo;</p>
+
+<h2>Шляхи</h2>
+
+<p><strong>Спосіб поєднувати вершини та зв&#39;язки.</strong></p>
+
+<p><code>(a:Person)-[:KNOWS]-(b:Person)</code>
+Шлях описує, що вершини <strong>a</strong> та <strong>b</strong> знають (knows) один одного.</p>
+
+<p><code>(a:Person)-[:MANAGES]-&gt;(b:Person)</code>
+Шлях може бути направленим. Цей описує, що <strong>а</strong> є менеджером <strong>b</strong>.</p>
+
+<p><code>(a:Person)-[:KNOWS]-(b:Person)-[:KNOWS]-(c:Person)</code>
+Можна створювати ланцюги зі зв&#39;язків. Цей шлях описує друга друга (<strong>a</strong> знає <strong>b</strong>, який в свою чергу знає <strong>c</strong>).</p>
+
+<p><code>(a:Person)-[:MANAGES]-&gt;(b:Person)-[:MANAGES]-&gt;(c:Person)</code>
+Ланцюг, аналогічно, також може бути направленим. Шлях описує, що <strong>a</strong> -  бос <strong>b</strong> і супер бос для <strong>c</strong>.</p>
+
+<p>Шаблони, які часто використовуються (з документації Neo4j):</p>
+<div class="highlight"><pre class="highlight plaintext"><code>// Друг-мого-друга 
+(user)-[:KNOWS]-(friend)-[:KNOWS]-(foaf)
+
+// Найкоротший шлях
+path = shortestPath( (user)-[:KNOWS*..5]-(other) )
+
+// Спільна фільтрація
+(user)-[:PURCHASED]-&gt;(product)&lt;-[:PURCHASED]-()-[:PURCHASED]-&gt;(otherProduct)
+
+// Навігація по дереву
+(root)&lt;-[:PARENT*]-(leaf:Category)-[:ITEM]-&gt;(data:Product)
+</code></pre></div>
+<h2>Запити на створення</h2>
+
+<p>Створити нову вершину:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>CREATE (a:Person {name:"Théo Gauchoux"})
+RETURN a
+</code></pre></div>
+<p><em><code>RETURN</code>  дозволяє повернути результат після виконання запиту. Можна повертати кілька значень, наприклад, <code>RETURN a, b</code>.</em></p>
+
+<p>Створити новий зв&#39;язок (із двома вершинами):</p>
+<div class="highlight"><pre class="highlight plaintext"><code>CREATE (a:Person)-[k:KNOWS]-(b:Person)
+RETURN a,k,b
+</code></pre></div>
+<h2>Запити на знаходження</h2>
+
+<p>Знайти всі вершини:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (n)
+RETURN n
+</code></pre></div>
+<p>Знайти вершини за ярликом:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (a:Person)
+RETURN a
+</code></pre></div>
+<p>Знайти вершини за ярликом та властивістю:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (a:Person {name:"Théo Gauchoux"})
+RETURN a
+</code></pre></div>
+<p>Знайти вершини відповідно до зв&#39;язків (ненаправлених):</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (a)-[:KNOWS]-(b)
+RETURN a,b
+</code></pre></div>
+<p>Знайти вершини відповідно до зв&#39;язків (направлених):</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (a)-[:MANAGES]-&gt;(b)
+RETURN a,b
+</code></pre></div>
+<p>Знайти вершини за допомогою <code>WHERE</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (p:Person {name:"Théo Gauchoux"})-[s:LIVES_IN]-&gt;(city:City)
+WHERE s.since = 2015
+RETURN p,state
+</code></pre></div>
+<p>Можна використовувати вираз <code>MATCH WHERE</code> разом із операцією <code>CREATE</code>:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (a), (b)
+WHERE a.name = "Jacquie" AND b.name = "Michel"
+CREATE (a)-[:KNOWS]-(b)
+</code></pre></div>
+<h2>Запити на оновлення</h2>
+
+<p>Оновити окрему властивість вершини:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (p:Person)
+WHERE p.name = "Théo Gauchoux"
+SET p.age = 23
+</code></pre></div>
+<p>Оновити всі властивості вершини:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (p:Person)
+WHERE p.name = "Théo Gauchoux"
+SET p = {name: "Michel", age: 23}
+</code></pre></div>
+<p>Додати нову властивіcть до вершини:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (p:Person)
+WHERE p.name = "Théo Gauchoux"
+SET p + = {studies: "IT Engineering"}
+</code></pre></div>
+<p>Повісити ярлик на вершину:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (p:Person)
+WHERE p.name = "Théo Gauchoux"
+SET p:Internship
+</code></pre></div>
+<h2>Запити на видалення</h2>
+
+<p>Видалити окрему вершину (пов&#39;язані ребра повинні бути видалені перед цим):</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (p:Person)-[relationship]-()
+WHERE p.name = "Théo Gauchoux"
+DELETE relationship, p
+</code></pre></div>
+<p>Видалити властивість певної вершини:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (p:Person)
+WHERE p.name = "Théo Gauchoux"
+REMOVE p.age
+</code></pre></div>
+<p><em>Зверніть увагу, що ключове слово <code>REMOVE</code> це не те саме, що й  <code>DELETE</code>!</em></p>
+
+<p>Видалити ярлик певної вершини: </p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (p:Person)
+WHERE p.name = "Théo Gauchoux"
+DELETE p:Person
+</code></pre></div>
+<p>Видалити всю базу даних: </p>
+<div class="highlight"><pre class="highlight plaintext"><code>MATCH (n)
+OPTIONAL MATCH (n)-[r]-()
+DELETE n, r
+</code></pre></div>
+<p><em>Так, це <code>rm -rf /</code> на мові Cypher !</em></p>
+
+<h2>Інші корисні запити</h2>
+
+<p><code>PROFILE</code>
+Перед виконанням, показати план виконання запитів.</p>
+
+<p><code>COUNT(e)</code>
+Порахувати елементи (вершини та зв&#39;язки), що відповідають <strong>e</strong>.</p>
+
+<p><code>LIMIT x</code>
+Обмежити результат до x перших результатів.</p>
+
+<h2>Особливі підказки</h2>
+
+<ul>
+<li>У мові Cypher існують лише однорядкові коментарі, що позначаються двійним слешем : // Коментар</li>
+<li>Можна виконати скрипт Cypher, збережений у файлі <strong>.cql</strong> прямо в Neo4j (прямо як імпорт). Проте, не можна мати мати кілька виразів в цьому файлі (розділених <strong>;</strong>).</li>
+<li>Використовуйте командний рядок Neo4j для написання запитів Cypher, це легко і швидко.</li>
+<li>Cypher планує бути стандартною мовою запитів для всіх графових баз даних (більш відома як  <strong>OpenCypher</strong>).</li>
+</ul>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/uk-ua/cypher-ua.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Théo Gauchoux, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/uk-ua/cypher-ua.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="https://github.com/TheoGauchoux">Théo Gauchoux</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/AstiaSun">AstiaSun</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

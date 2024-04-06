@@ -1,0 +1,313 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn PureScript in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/purescript/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fpurescript%2F&text=Learn+X+in+Y+minutes%2C+where+X%3DPureScript">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=PureScript</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/purescript.purs">purescript.purs</a>
+    </p>
+  <div id="doc">
+    <p>PureScript is a small strongly, statically typed language compiling to JavaScript.</p>
+
+<ul>
+<li>Learn more at <a href="https://www.purescript.org/">https://www.purescript.org/</a></li>
+<li>Documentation: <a href="https://pursuit.purescript.org/">https://pursuit.purescript.org/</a></li>
+<li>Book: Purescript by Example, <a href="https://book.purescript.org/">https://book.purescript.org/</a></li>
+</ul>
+
+<p>All the noncommented lines of code can be run in the PSCi REPL, though some
+will require &ldquo;paste&rdquo; mode (<code>:paste</code> followed by multiple lines, terminated by
+^D).</p>
+<div class="highlight"><pre class="highlight haskell"><code><span class="c1">--</span>
+<span class="c1">-- 1. Primitive datatypes that corresponds to their JavaScript</span>
+<span class="c1">-- equivalents at runtime.</span>
+
+<span class="kr">import</span> <span class="nn">Prelude</span>
+<span class="c1">-- Numbers</span>
+<span class="mf">1.0</span> <span class="o">+</span> <span class="mf">7.2</span><span class="o">*</span><span class="mf">5.5</span> <span class="o">::</span> <span class="kt">Number</span> <span class="c1">-- 40.6</span>
+<span class="c1">-- Ints</span>
+<span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="mi">5</span> <span class="o">::</span> <span class="kt">Int</span> <span class="c1">-- 11</span>
+<span class="c1">-- Types are inferred, so the following works fine</span>
+<span class="mf">9.0</span><span class="o">/</span><span class="mf">2.5</span> <span class="o">+</span> <span class="mf">4.4</span> <span class="c1">-- 8.0</span>
+<span class="c1">-- But Ints and Numbers don't mix, so the following won't</span>
+<span class="mi">5</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="mf">2.5</span> <span class="c1">-- Expression 2.5 does not have type Int</span>
+<span class="c1">-- Hexadecimal literals</span>
+<span class="mh">0xff</span> <span class="o">+</span> <span class="mi">1</span> <span class="c1">-- 256</span>
+<span class="c1">-- Unary negation</span>
+<span class="mi">6</span> <span class="o">*</span> <span class="o">-</span><span class="mi">3</span> <span class="c1">-- -18</span>
+<span class="mi">6</span> <span class="o">*</span> <span class="n">negate</span> <span class="mi">3</span> <span class="c1">-- -18</span>
+<span class="c1">-- Modulus, from purescript-math (Math)</span>
+<span class="mf">3.0</span> <span class="o">%</span> <span class="mf">2.0</span> <span class="c1">-- 1.0</span>
+<span class="mf">4.0</span> <span class="o">%</span> <span class="mf">2.0</span> <span class="c1">-- 0.0</span>
+<span class="c1">-- Inspect the type of an expression in psci</span>
+<span class="o">:</span><span class="n">t</span> <span class="mf">9.5</span><span class="o">/</span><span class="mf">2.5</span> <span class="o">+</span> <span class="mf">4.4</span> <span class="c1">-- Number</span>
+
+<span class="c1">-- Booleans</span>
+<span class="n">true</span> <span class="o">::</span> <span class="kt">Boolean</span> <span class="c1">-- true</span>
+<span class="n">false</span> <span class="o">::</span> <span class="kt">Boolean</span> <span class="c1">-- false</span>
+<span class="c1">-- Negation</span>
+<span class="n">not</span> <span class="n">true</span> <span class="c1">-- false</span>
+<span class="mi">23</span> <span class="o">==</span> <span class="mi">23</span> <span class="c1">-- true</span>
+<span class="mi">1</span> <span class="o">/=</span> <span class="mi">4</span> <span class="c1">-- true</span>
+<span class="mi">1</span> <span class="o">&gt;=</span> <span class="mi">4</span> <span class="c1">-- false</span>
+<span class="c1">-- Comparisons &lt; &lt;= &gt; &gt;=</span>
+<span class="c1">-- are defined in terms of compare</span>
+<span class="n">compare</span> <span class="mi">1</span> <span class="mi">2</span> <span class="c1">-- LT</span>
+<span class="n">compare</span> <span class="mi">2</span> <span class="mi">2</span> <span class="c1">-- EQ</span>
+<span class="n">compare</span> <span class="mi">3</span> <span class="mi">2</span> <span class="c1">-- GT</span>
+<span class="c1">-- Conjunction and Disjunction</span>
+<span class="n">true</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="mi">9</span> <span class="o">&gt;=</span> <span class="mi">19</span> <span class="o">||</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="c1">-- true</span>
+
+<span class="c1">-- Strings</span>
+<span class="s">"Hello"</span> <span class="o">::</span> <span class="kt">String</span> <span class="c1">-- "Hello"</span>
+<span class="c1">-- Multiline string without newlines, to run in PSCi use "paste" mode.</span>
+<span class="s">"Hello</span><span class="se">\
+\</span><span class="s">orld"</span> <span class="c1">-- "Helloworld"</span>
+<span class="c1">-- Multiline string with newlines</span>
+<span class="s">"""Hello
+world"""</span> <span class="c1">-- "Hello\nworld"</span>
+<span class="c1">-- Concatenate</span>
+<span class="s">"such "</span> <span class="o">&lt;&gt;</span> <span class="s">"amaze"</span> <span class="c1">-- "such amaze"</span>
+
+<span class="c1">--</span>
+<span class="c1">-- 2. Arrays are JavaScript arrays, but must be homogeneous</span>
+
+<span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span> <span class="o">::</span> <span class="kt">Array</span> <span class="kt">Int</span> <span class="c1">-- [1,1,2,3,5,8]</span>
+<span class="p">[</span><span class="mf">1.2</span><span class="p">,</span><span class="mf">2.0</span><span class="p">,</span><span class="mf">3.14</span><span class="p">]</span> <span class="o">::</span> <span class="kt">Array</span> <span class="kt">Number</span> <span class="c1">-- [1.2,2.0,3.14]</span>
+<span class="p">[</span><span class="n">true</span><span class="p">,</span> <span class="n">true</span><span class="p">,</span> <span class="n">false</span><span class="p">]</span> <span class="o">::</span> <span class="kt">Array</span> <span class="kt">Boolean</span> <span class="c1">-- [true,true,false]</span>
+<span class="c1">-- [1,2, true, "false"] won't work</span>
+<span class="c1">-- `Cannot unify Int with Boolean`</span>
+
+<span class="c1">-- Requires purescript-arrays (Data.Array)</span>
+<span class="c1">-- Cons (prepend)</span>
+<span class="mi">1</span> <span class="o">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="c1">-- [1,2,4,3]</span>
+
+<span class="c1">-- and purescript-maybe (Data.Maybe)</span>
+<span class="c1">-- Safe access return Maybe a</span>
+<span class="n">head</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="c1">-- (Just 1)</span>
+<span class="n">tail</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="c1">-- (Just [2,1])</span>
+<span class="n">init</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="c1">-- (Just [1,2])</span>
+<span class="n">last</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="c1">-- (Just 1)</span>
+<span class="c1">-- Array access - indexing</span>
+<span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">]</span> <span class="o">!!</span> <span class="mi">2</span> <span class="c1">-- (Just 5)</span>
+<span class="c1">-- Range</span>
+<span class="mi">1</span><span class="o">..</span><span class="mi">5</span> <span class="c1">-- [1,2,3,4,5]</span>
+<span class="n">length</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="c1">-- 3</span>
+<span class="n">drop</span> <span class="mi">3</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="c1">-- [2,1]</span>
+<span class="n">take</span> <span class="mi">3</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="c1">-- [5,4,3]</span>
+<span class="n">append</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span> <span class="c1">-- [1,2,3,4,5,6]</span>
+
+<span class="c1">--</span>
+<span class="c1">-- 3. Records are JavaScript objects, with zero or more fields, which</span>
+<span class="c1">-- can have different types.</span>
+<span class="n">book</span> <span class="o">=</span> <span class="p">{</span><span class="n">title</span><span class="o">:</span> <span class="s">"Foucault's pendulum"</span><span class="p">,</span> <span class="n">author</span><span class="o">:</span> <span class="s">"Umberto Eco"</span><span class="p">}</span>
+<span class="c1">-- Access properties</span>
+<span class="n">book</span><span class="o">.</span><span class="n">title</span> <span class="c1">-- "Foucault's pendulum"</span>
+
+<span class="n">getTitle</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">title</span>
+<span class="c1">-- Works on all records with a title (but doesn't require any other field)</span>
+<span class="n">getTitle</span> <span class="n">book</span> <span class="c1">-- "Foucault's pendulum"</span>
+<span class="n">getTitle</span> <span class="p">{</span><span class="n">title</span><span class="o">:</span> <span class="s">"Weekend in Monaco"</span><span class="p">,</span> <span class="n">artist</span><span class="o">:</span> <span class="s">"The Rippingtons"</span><span class="p">}</span> <span class="c1">-- "Weekend in Monaco"</span>
+<span class="c1">-- Can use underscores as shorthand</span>
+<span class="kr">_</span><span class="o">.</span><span class="n">title</span> <span class="n">book</span> <span class="c1">-- "Foucault's pendulum"</span>
+<span class="c1">-- Update a record</span>
+<span class="n">changeTitle</span> <span class="n">b</span> <span class="n">t</span> <span class="o">=</span> <span class="n">b</span> <span class="p">{</span><span class="n">title</span> <span class="o">=</span> <span class="n">t</span><span class="p">}</span>
+<span class="n">getTitle</span> <span class="p">(</span><span class="n">changeTitle</span> <span class="n">book</span> <span class="s">"Ill nome della rosa"</span><span class="p">)</span> <span class="c1">-- "Ill nome della rosa"</span>
+
+<span class="c1">--</span>
+<span class="c1">-- 4. Functions</span>
+<span class="c1">-- In PSCi's paste mode</span>
+<span class="n">sumOfSquares</span> <span class="o">::</span> <span class="kt">Int</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="o">-&gt;</span> <span class="kt">Int</span>
+<span class="n">sumOfSquares</span> <span class="n">x</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">*</span><span class="n">y</span>
+<span class="n">sumOfSquares</span> <span class="mi">3</span> <span class="mi">4</span> <span class="c1">-- 25</span>
+
+<span class="n">myMod</span> <span class="n">x</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">%</span> <span class="n">y</span>
+<span class="n">myMod</span> <span class="mf">3.0</span> <span class="mf">2.0</span> <span class="c1">-- 1.0</span>
+<span class="c1">-- Infix application of function</span>
+<span class="mi">3</span> <span class="p">`</span><span class="n">mod</span><span class="p">`</span> <span class="mi">2</span> <span class="c1">-- 1</span>
+
+<span class="c1">-- function application has higher precedence than all other</span>
+<span class="c1">-- operators</span>
+<span class="n">sumOfSquares</span> <span class="mi">3</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">sumOfSquares</span> <span class="mi">4</span> <span class="mi">5</span> <span class="c1">-- 1025</span>
+
+<span class="c1">-- Conditional</span>
+<span class="n">abs'</span> <span class="n">n</span> <span class="o">=</span> <span class="kr">if</span> <span class="n">n</span><span class="o">&gt;=</span><span class="mi">0</span> <span class="kr">then</span> <span class="n">n</span> <span class="kr">else</span> <span class="o">-</span><span class="n">n</span>
+<span class="n">abs'</span> <span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span> <span class="c1">-- 3</span>
+
+<span class="c1">-- Guarded equations</span>
+<span class="c1">-- In PSCi's paste mode</span>
+<span class="n">abs''</span> <span class="n">n</span> <span class="o">|</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="mi">0</span>    <span class="o">=</span> <span class="n">n</span>
+        <span class="o">|</span> <span class="n">otherwise</span> <span class="o">=</span> <span class="o">-</span><span class="n">n</span>
+
+<span class="c1">-- Pattern matching</span>
+
+<span class="c1">-- Note the type signature, input is a list of numbers. The pattern matching</span>
+<span class="c1">-- destructures and binds the list into parts.</span>
+<span class="c1">-- Requires purescript-lists (Data.List) and purescript-maybe (Data.Maybe)</span>
+<span class="n">first</span> <span class="o">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">List</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">Maybe</span> <span class="n">a</span>
+<span class="n">first</span> <span class="p">(</span><span class="n">x</span> <span class="o">:</span> <span class="kr">_</span><span class="p">)</span> <span class="o">=</span> <span class="kt">Just</span> <span class="n">x</span>
+<span class="n">first</span> <span class="kt">Nil</span> <span class="o">=</span> <span class="kt">Nothing</span>
+<span class="n">first</span> <span class="p">(</span><span class="n">fromFoldable</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span> <span class="c1">-- (Just 3)</span>
+
+<span class="n">second</span> <span class="o">::</span> <span class="n">forall</span> <span class="n">a</span><span class="o">.</span> <span class="kt">List</span> <span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">Maybe</span> <span class="n">a</span>
+<span class="n">second</span> <span class="kt">Nil</span> <span class="o">=</span> <span class="kt">Nothing</span>
+<span class="n">second</span> <span class="p">(</span><span class="kr">_</span> <span class="o">:</span> <span class="kt">Nil</span><span class="p">)</span> <span class="o">=</span> <span class="kt">Nothing</span>
+<span class="n">second</span> <span class="p">(</span><span class="kr">_</span> <span class="o">:</span> <span class="p">(</span><span class="n">y</span> <span class="o">:</span> <span class="kr">_</span><span class="p">))</span> <span class="o">=</span> <span class="kt">Just</span> <span class="n">y</span>
+<span class="n">second</span> <span class="p">(</span><span class="n">fromFoldable</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span> <span class="c1">-- (Just 4)</span>
+
+<span class="c1">-- Complementing patterns to match</span>
+<span class="c1">-- Good ol' Fibonacci</span>
+<span class="n">fib</span> <span class="mi">1</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">fib</span> <span class="mi">2</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">fib</span> <span class="n">x</span> <span class="o">=</span> <span class="n">fib</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">fib</span> <span class="mi">10</span> <span class="c1">-- 89</span>
+
+<span class="c1">-- Use underscore to match any, where you don't care about the binding name</span>
+<span class="n">isZero</span> <span class="mi">0</span> <span class="o">=</span> <span class="n">true</span>
+<span class="n">isZero</span> <span class="kr">_</span> <span class="o">=</span> <span class="n">false</span>
+<span class="n">isZero</span> <span class="mi">9</span> <span class="c1">-- false</span>
+
+<span class="c1">-- Pattern matching on records</span>
+<span class="n">ecoTitle</span> <span class="p">{</span><span class="n">author</span><span class="o">:</span> <span class="s">"Umberto Eco"</span><span class="p">,</span> <span class="n">title</span><span class="o">:</span> <span class="n">t</span><span class="p">}</span> <span class="o">=</span> <span class="kt">Just</span> <span class="n">t</span>
+<span class="n">ecoTitle</span> <span class="kr">_</span> <span class="o">=</span> <span class="kt">Nothing</span>
+
+<span class="n">ecoTitle</span> <span class="p">{</span><span class="n">title</span><span class="o">:</span> <span class="s">"Foucault's pendulum"</span><span class="p">,</span> <span class="n">author</span><span class="o">:</span> <span class="s">"Umberto Eco"</span><span class="p">}</span> <span class="c1">-- (Just "Foucault's pendulum")</span>
+<span class="n">ecoTitle</span> <span class="p">{</span><span class="n">title</span><span class="o">:</span> <span class="s">"The Quantum Thief"</span><span class="p">,</span> <span class="n">author</span><span class="o">:</span> <span class="s">"Hannu Rajaniemi"</span><span class="p">}</span> <span class="c1">-- Nothing</span>
+<span class="c1">-- ecoTitle requires both field to type check:</span>
+<span class="n">ecoTitle</span> <span class="p">{</span><span class="n">title</span><span class="o">:</span> <span class="s">"The Quantum Thief"</span><span class="p">}</span> <span class="c1">-- Object lacks required property "author"</span>
+
+<span class="c1">-- Lambda expressions</span>
+<span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">)</span> <span class="mi">3</span> <span class="c1">-- 9</span>
+<span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="n">y</span> <span class="o">-&gt;</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">*</span><span class="n">y</span><span class="p">)</span> <span class="mi">4</span> <span class="mi">5</span> <span class="c1">-- 41</span>
+<span class="n">sqr</span> <span class="o">=</span> <span class="nf">\</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
+
+<span class="c1">-- Currying</span>
+<span class="n">myAdd</span> <span class="n">x</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="c1">-- is equivalent with</span>
+<span class="n">myAdd'</span> <span class="o">=</span> <span class="nf">\</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="nf">\</span><span class="n">y</span> <span class="o">-&gt;</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+<span class="n">add3</span> <span class="o">=</span> <span class="n">myAdd</span> <span class="mi">3</span>
+<span class="o">:</span><span class="n">t</span> <span class="n">add3</span> <span class="c1">-- Int -&gt; Int</span>
+
+<span class="c1">-- Forward and backward function composition</span>
+<span class="c1">-- drop 3 followed by taking 5</span>
+<span class="p">(</span><span class="n">drop</span> <span class="mi">3</span> <span class="o">&gt;&gt;&gt;</span> <span class="n">take</span> <span class="mi">5</span><span class="p">)</span> <span class="p">(</span><span class="mi">1</span><span class="o">..</span><span class="mi">20</span><span class="p">)</span> <span class="c1">-- [4,5,6,7,8]</span>
+<span class="c1">-- take 5 followed by dropping 3</span>
+<span class="p">(</span><span class="n">drop</span> <span class="mi">3</span> <span class="o">&lt;&lt;&lt;</span> <span class="n">take</span> <span class="mi">5</span><span class="p">)</span> <span class="p">(</span><span class="mi">1</span><span class="o">..</span><span class="mi">20</span><span class="p">)</span> <span class="c1">-- [4,5]</span>
+
+<span class="c1">-- Operations using higher order functions</span>
+<span class="n">even</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="p">`</span><span class="n">mod</span><span class="p">`</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="n">filter</span> <span class="n">even</span> <span class="p">(</span><span class="mi">1</span><span class="o">..</span><span class="mi">10</span><span class="p">)</span> <span class="c1">-- [2,4,6,8,10]</span>
+<span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">11</span><span class="p">)</span> <span class="p">(</span><span class="mi">1</span><span class="o">..</span><span class="mi">5</span><span class="p">)</span> <span class="c1">-- [12,13,14,15,16]</span>
+
+<span class="c1">-- Requires purescript-foldable-traversable (Data.Foldable)</span>
+
+<span class="n">foldr</span> <span class="p">(</span><span class="o">+</span><span class="p">)</span> <span class="mi">0</span> <span class="p">(</span><span class="mi">1</span><span class="o">..</span><span class="mi">10</span><span class="p">)</span> <span class="c1">-- 55</span>
+<span class="n">sum</span> <span class="p">(</span><span class="mi">1</span><span class="o">..</span><span class="mi">10</span><span class="p">)</span> <span class="c1">-- 55</span>
+<span class="n">product</span> <span class="p">(</span><span class="mi">1</span><span class="o">..</span><span class="mi">10</span><span class="p">)</span> <span class="c1">-- 3628800</span>
+
+<span class="c1">-- Testing with predicate</span>
+<span class="n">any</span> <span class="n">even</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="c1">-- true</span>
+<span class="n">all</span> <span class="n">even</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span> <span class="c1">-- false</span>
+</code></pre></div>
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/purescript.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Fredrik Dyrkell, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/purescript.html.markdown">1 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://www.lexicallyscoped.com">Fredrik Dyrkell</a>,
+        <a href="https://github.com/Thimoteus">Thimoteus</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

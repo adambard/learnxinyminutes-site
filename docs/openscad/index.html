@@ -1,0 +1,222 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn openscad in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/openscad/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fopenscad%2F&text=Learn+X+in+Y+minutes%2C+where+X%3Dopenscad">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=openscad</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/learnopenscad.scad">learnopenscad.scad</a>
+    </p>
+  <div id="doc">
+    <p>Draw 3D models with code using <a href="https://openscad.org/">OpenSCAD</a>.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>// Comments look like this
+
+// 3D Primitives
+cube(10);
+cube([5, 10, 20]);
+sphere(10);
+
+// Transformations
+translate([20, 0, 0]) cube(10);
+rotate([0, 20, 30]) cube(10);
+
+translate([20, 0, 0]) rotate([0, 20, 30]) cube(10);
+rotate([0, 20, 30]) translate([20, 0, 0]) cube(10);
+
+// Modifiers
+//
+//     * disable
+//     ! show only
+//     # highlight / debug
+//     % transparent / background
+//
+// For example, show only the rotated cube at the origin, before we translate it.
+translate([20, 0, 0]) !rotate([0, 20, 30]) cube(10);
+
+// Formatting
+// The following models are the same. The official docs prefer the second.
+rotate([0, 20, 30]) translate([20, 0, 0]) cube(10);
+
+rotate([0, 20, 30])
+    translate([20, 0, 0])
+    cube(10);
+
+rotate([0, 20, 30]) {
+    translate([20, 0, 0]) {
+        cube(10);
+    }
+}
+
+// Loops
+num_cubes = 5;
+r = 20;
+cube_len = 5;
+
+for (i = [0:num_cubes]) {
+    echo(str("Plot cube ", i));
+    rotate([0, i * 360 / num_cubes, 0])
+        translate([r, 0, 0])
+        cube(cube_len, center=true);
+}
+
+// Boolean operations
+//
+//            union() - the sum of both shapes
+//       difference() - the first shape, minus the second shape
+//     intersection() - only parts of both shapes which intersect
+//
+cube_l = 20;
+cube_w = 10;
+cube_h = 10;
+
+hole_pos_l = 10;
+hole_pos_h = 5;
+hole_r = 3;
+
+difference() {
+    cube([cube_l, cube_w, cube_h]);
+    translate([hole_pos_l, 0, hole_pos_h])
+        rotate([-90, 0, 0])
+        cylinder(cube_w, r=hole_r);
+}
+
+// Functions calculate values
+function inch2mm(i) = i * 25.4;
+
+cube(inch2mm(2));
+
+// Modules create objects you want to use later
+module house(roof="flat", paint=[1,0,0]) {
+    color(paint)
+    if (roof=="flat") {
+        translate([0,-1,0]) cube();
+    } else if (roof=="pitched") {
+        rotate([90,0,0])
+            linear_extrude(height=1)
+            polygon(points=[[0,0],[0,1],[0.5,1.5],[1,1],[1,0]]);
+    }
+    else if (roof=="domical") {
+        translate([0,-1,0]) {
+            translate([0.5,0.5,1])
+                sphere(r=0.5,$fn=20);
+            cube();
+        }
+    }
+}
+
+house("pitched");
+translate([2, 0, 0]) house("domical");
+
+// Import modules and function from other files
+include &lt;filename&gt; // Import the content of the file as if they were written in this file
+use &lt;filename&gt;     // Import modules and functions, but do not execute any commands
+</code></pre></div>
+<h2>Further Reading</h2>
+
+<ul>
+<li>Official docs https://openscad.org/documentation.html</li>
+<li>Cheat sheet https://openscad.org/cheatsheet/index.html</li>
+<li>Vim bindings https://github.com/sirtaj/vim-openscad</li>
+</ul>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/openscad.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Tom Preston, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/openscad.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="https://github.com/tompreston/">Tom Preston</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

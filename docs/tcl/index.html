@@ -1,0 +1,682 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn Tcl in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/tcl/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Ftcl%2F&text=Learn+X+in+Y+minutes%2C+where+X%3DTcl">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=Tcl</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/learntcl.tcl">learntcl.tcl</a>
+    </p>
+  <div id="doc">
+    <p>Tcl was created by <a href="https://wiki.tcl-lang.org/page/John+Ousterhout">John Ousterhout</a> as a
+reusable scripting language for circuit design tools that he authored.  In 1997 he
+was awarded the <a href="https://en.wikipedia.org/wiki/ACM_Software_System_Award">ACM Software System
+Award</a> for Tcl.   Tcl
+can be used both as an embeddable scripting language and as a general
+programming language.  It can also be used as a portable C library, even in
+cases where no scripting capability is needed, as it provides data structures
+such as dynamic strings, lists, and hash tables.  The C library also provides
+portable functionality for loading dynamic libraries, string formatting and
+code conversion, filesystem operations, network operations, and more.  Various
+features of Tcl stand out:</p>
+
+<ul>
+<li><p>Convenient cross-platform networking API</p></li>
+<li><p>Fully virtualized filesystem</p></li>
+<li><p>Stackable I/O channels</p></li>
+<li><p>Asynchronous to the core</p></li>
+<li><p>Full coroutines</p></li>
+<li><p>A threading model recognized as robust and easy to use</p></li>
+</ul>
+
+<p>Tcl has much in common with Lisp, but instead of lists, Tcl uses strings as the
+currency of the language.  All values are strings.  A list is a string with a
+defined format, and the body of a procedure (a script) is also a string rather
+than a block.  To achieve performance, Tcl internally caches structured
+representations of these values.  list routines, for example, operate on
+the internal cached representation, and Tcl takes care of updating the string
+representation if it is ever actually needed in the script.  The copy-on-write
+design of Tcl allows script authors to pass around large data values without
+actually incurring additional memory overhead.  Procedures are automatically
+byte-compiled unless they use the more dynamic routines such as &ldquo;uplevel&rdquo;,
+&ldquo;upvar&rdquo;, and &ldquo;trace&rdquo;.</p>
+
+<p>Tcl is a pleasure to program in.  It will appeal to hacker types who find Lisp,
+Forth, or Smalltalk interesting, as well as to engineers and scientists who
+just want to get down to business with a tool that bends to their will.  Its
+discipline of exposing all programmatic functionality as routines, including
+things like looping and mathematical operations that are usually baked into the
+syntax of other languages, allows it to fade into the background of whatever
+domain-specific functionality a project needs. Its syntax, which is even
+lighter than that of Lisp, just gets out of the way.</p>
+<div class="highlight"><pre class="highlight tcl"><code><span class="c1">#! /bin/env tclsh</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## 1. Guidelines</span>
+<span class="c1">###############################################################################</span>
+
+<span class="c1"># Tcl is not Sh or C!  This needs to be said because standard shell quoting</span>
+<span class="c1"># habits almost work in Tcl and it is common for people to pick up Tcl and try</span>
+<span class="c1"># to get by with syntax they know from another language.  It works at first,</span>
+<span class="c1"># but soon leads to frustration when scripts become more complex.</span>
+
+<span class="c1"># Braces are a quoting mechanism, not syntax for the construction of code</span>
+<span class="c1"># blocks or lists. Tcl doesn't have either of those things.  Braces are used to</span>
+<span class="c1"># escape special characters, which makes them well-suited for quoting procedure</span>
+<span class="c1"># bodies and strings that should be interpreted as lists.</span>
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## 2. Syntax</span>
+<span class="c1">###############################################################################</span>
+
+<span class="c1"># A script is made up of commands delimited by newlines or semicolons.  Each</span>
+<span class="c1"># command is a call to a routine.  The first word is the name of a routine to</span>
+<span class="c1"># call, and subsequent words are arguments to the routine.  Words are delimited</span>
+<span class="c1"># by whitespace.  Since each argument is a word in the command it is already a</span>
+<span class="c1"># string, and may be unquoted:</span>
+set part1 Sal
+set part2 ut<span class="p">;</span> set part3 ations
+
+
+<span class="c1"># a dollar sign introduces variable substitution:</span>
+set greeting $part1$part2$part3
+
+
+# When <span class="s2">"set"</span> is given only the name of a variable, it returns the
+<span class="c1"># value of that variable:</span>
+set part3 <span class="p">;</span><span class="c1"># Returns the value of the variable.</span>
+
+
+<span class="c1"># Left and right brackets embed a script to be evaluated for a result to</span>
+<span class="c1"># substitute into the word:</span>
+set greeting $part1$part2<span class="p">[</span>set part3<span class="p">]</span>
+
+
+<span class="c1"># An embedded script may be composed of multiple commands, the last of which provides</span>
+<span class="c1"># the result for the substitution:</span>
+set greeting $greeting<span class="p">[</span>
+    incr i
+    incr i
+    incr i
+<span class="p">]</span>
+puts $greeting <span class="p">;</span># The output is <span class="s2">"Salutations3"</span>
+
+<span class="c1"># Every word in a command is a string, including the name of the routine, so</span>
+<span class="c1"># substitutions can be used on it as well. Given this variable</span>
+<span class="c1"># assignment,</span>
+set action pu
+
+<span class="c1"># , the following three commands are equivalent:</span>
+puts $greeting
+<span class="nv">${action}</span>ts $greeting 
+<span class="p">[</span>set action<span class="p">]</span>ts $greeting
+
+
+<span class="c1"># backslash suppresses the special meaning of characters:</span>
+set amount <span class="se">\$</span>16.42
+
+
+<span class="c1"># backslash adds special meaning to certain characters:</span>
+puts lots<span class="se">\n</span>of<span class="se">\n\n\n\n\n\n</span>newlines
+
+
+<span class="c1"># A word enclosed in braces is not subject to any special interpretation or</span>
+<span class="c1"># substitutions, except that a backslash before a brace is not counted when</span>
+<span class="c1"># looking for the closing brace:</span>
+set somevar <span class="p">{</span>
+    This is a literal $ sign, and this <span class="se">\}</span> escaped
+    brace remains uninterpreted
+<span class="p">}</span>
+
+
+<span class="c1"># In a word enclosed in double quotes, whitespace characters lose their special</span>
+<span class="c1"># meaning:</span>
+set name Neo
+set greeting <span class="s2">"Hello, </span><span class="nv">$name</span><span class="s2">"</span>
+
+
+<span class="c1"># A variable name can be any string:</span>
+set <span class="p">{</span>first name<span class="p">}</span> New
+
+
+<span class="c1"># The braced form of variable substitution handles more complex variable names:</span>
+set greeting <span class="s2">"Hello, </span><span class="nv">${first name}</span><span class="s2">"</span>
+
+
+# <span class="s2">"set"</span> can always be used instead of variable substitution, and can handle all
+<span class="c1"># variable names:</span>
+set greeting <span class="s2">"Hello, </span><span class="p">[</span>set <span class="p">{</span>first name<span class="p">}]</span><span class="s2">"</span>
+
+
+# To unpack a list into the command, use the expansion operator, <span class="s2">"{*}"</span>.  These
+<span class="c1"># two commands are equivalent:</span>
+set name Neo
+set <span class="k">{*}</span><span class="p">{</span>name Neo<span class="p">}</span>
+
+
+<span class="c1"># An array is a special variable that is a container for other variables.</span>
+set person<span class="p">(</span>name<span class="p">)</span> Neo
+set person<span class="p">(</span>destiny<span class="p">)</span> <span class="p">{</span>The One<span class="p">}</span>
+set greeting <span class="s2">"Hello, </span><span class="nv">$person</span><span class="s2">(name)"</span>
+
+
+# <span class="s2">"variable"</span> can be used to declare or set variables. In contrast with <span class="s2">"set"</span>,
+<span class="c1"># which uses both the global namespace and the current namespace to resolve a</span>
+# variable name, <span class="s2">"variable"</span> uses only the current namespace:
+variable name New
+
+
+# <span class="s2">"namespace eval"</span> creates a new namespace if it doesn't exist.  A namespace
+<span class="c1"># can contain both routines and variables:</span>
+namespace eval people <span class="p">{</span>
+    namespace eval person1 <span class="p">{</span>
+        variable name Neo
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="c1"># Use two or more colons to delimit namespace components in variable names:</span>
+namespace eval people <span class="p">{</span>
+    set greeting <span class="s2">"Hello </span><span class="nv">$person1::name</span><span class="s2">"</span>
+<span class="p">}</span>
+
+<span class="c1"># Two or more colons also delimit namespace components in routine names:</span>
+proc people::person1::speak <span class="p">{}</span> <span class="p">{</span>
+    puts <span class="p">{</span>I am The One.<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1"># Fully-qualified names begin with two colons:</span>
+set greeting <span class="s2">"Hello </span><span class="nv">$::people::person1::name</span><span class="s2">"</span>
+
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## 3. No More Syntax</span>
+<span class="c1">###############################################################################</span>
+
+<span class="c1"># All other functionality is implemented via routines.  From this point on,</span>
+<span class="c1"># there is no new syntax.  Everything else there is to learn about</span>
+<span class="c1"># Tcl is about the behaviour of individual routines and what meaning they</span>
+<span class="c1"># assign to their arguments.</span>
+
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## 4. Variables and Namespaces</span>
+<span class="c1">###############################################################################</span>
+
+<span class="c1"># Each variable and routine is associated with some namespace.</span>
+
+<span class="c1"># To end up with an interpreter that can do nothing, delete the global</span>
+<span class="c1"># namespace.  It's not very useful to do such a thing, but it illustrates the</span>
+<span class="c1"># nature of Tcl.  The name of the global namespace is actually the empty</span>
+<span class="c1"># string, but the only way to represent it is as a fully-qualified name. To</span>
+<span class="c1"># try it out call this routine:</span>
+proc delete_global_namespace <span class="p">{}</span> <span class="p">{</span>
+    namespace delete ::
+<span class="p">}</span>
+
+# Because <span class="s2">"set"</span> always keeps its eye on both the global namespace and the
+# current namespace, it's safer to use <span class="s2">"variable"</span> to declare a variable or
+# assign a value to a variable.  If a variable called <span class="s2">"name"</span> already exists in
+# the global namespace, using <span class="s2">"set"</span> here will assign a value to the global
+<span class="c1"># variable instead of to a variable in the current namespace, whereas</span>
+# <span class="s2">"variable"</span> operates only on the current namespace.
+namespace eval people <span class="p">{</span>
+    namespace eval person1 <span class="p">{</span>
+        variable name Neo
+    <span class="p">}</span>
+<span class="p">}</span>
+
+# Once a variable is declared in a namespace, <span class="p">[</span><span class="k">set</span><span class="p">]</span> sees it instead of seeing
+<span class="c1"># an identically-named variable in the global namespace:</span>
+namespace eval people <span class="p">{</span>
+    namespace eval person1 <span class="p">{</span>
+        variable name
+        set name Neo
+    <span class="p">}</span>
+<span class="p">}</span>
+
+# But if <span class="s2">"set"</span> has to create a new variable, it always does it relative to the
+<span class="c1"># current namespace:</span>
+unset name
+namespace eval people <span class="p">{</span>
+    namespace eval person1 <span class="p">{</span>
+        set name neo
+    <span class="p">}</span>
+
+<span class="p">}</span>
+set people::person1::name
+
+
+# An absolute name always begins with the name of the global namespace <span class="p">(</span>the
+<span class="c1"># empty string</span><span class="p">)</span>, followed by two colons:
+set ::people::person1::name Neo
+
+
+# Within a procedure, the <span class="s2">"variable"</span> links a variable in the current namespace
+<span class="c1"># into the local scope:</span>
+namespace eval people::person1 <span class="p">{</span>
+    proc fly <span class="p">{}</span> <span class="p">{</span>
+        variable name
+        puts <span class="s2">"</span><span class="nv">$name</span><span class="s2"> is flying!"</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1">## 5. Built-in Routines</span>
+<span class="c1">###############################################################################</span>
+
+# Math can be done with the <span class="s2">"expr"</span>:
+set a 3
+set b 4
+set c <span class="p">[</span>expr <span class="p">{</span><span class="nv">$a</span> + $b<span class="p">}]</span>
+
+# Since <span class="s2">"expr"</span> performs variable substitution on its own, brace the expression
+<span class="c1"># to prevent Tcl from performing variable substitution first.  See</span>
+# <span class="s2">"https://wiki.tcl-lang.org/page/Brace+your+expr-essions"</span> for details.
+
+
+# <span class="s2">"expr"</span> understands variable and script substitution:
+set c <span class="p">[</span>expr <span class="p">{</span><span class="nv">$a</span> + <span class="p">[</span>set b<span class="p">]}]</span>
+
+
+# <span class="s2">"expr"</span> provides a set of mathematical functions:
+set c <span class="p">[</span>expr <span class="p">{</span>pow<span class="p">(</span><span class="nv">$a</span>,$b<span class="p">)}]</span>
+
+
+<span class="c1"># Mathematical operators are available as routines in the ::tcl::mathop</span>
+<span class="c1"># namespace:</span>
+::tcl::mathop::+ 5 3
+
+<span class="c1"># Routines can be imported from other namespaces:</span>
+namespace import ::tcl::mathop::+
+set result <span class="p">[</span>+ 5 3<span class="p">]</span>
+
+
+# Non-numeric values must be quoted, and operators like <span class="s2">"eq"</span> can be used to
+<span class="c1"># constrain the operation to string comparison:</span>
+set name Neo
+expr <span class="p">{{</span>Bob<span class="p">}</span> eq $name<span class="p">}</span>
+
+<span class="c1"># The general operators fall back to string comparison if numeric</span>
+<span class="c1"># operation isn't feasible:</span>
+expr <span class="p">{{</span>Bob<span class="p">}</span> == $name<span class="p">}</span>
+
+
+# <span class="s2">"proc"</span> creates new routines:
+proc greet name <span class="p">{</span>
+    return <span class="s2">"Hello, </span><span class="nv">$name</span><span class="s2">!"</span>
+<span class="p">}</span>
+
+<span class="c1">#multiple parameters can be specified:</span>
+proc greet <span class="p">{</span>greeting name<span class="p">}</span> <span class="p">{</span>
+    return <span class="s2">"</span><span class="nv">$greeting</span><span class="s2">, </span><span class="nv">$name</span><span class="s2">!"</span>
+<span class="p">}</span>
+
+
+<span class="c1"># As noted earlier, braces do not construct a code block.  Every value, even</span>
+# the third argument to <span class="s2">"proc"</span>, is a string.  The previous command
+<span class="c1"># can be rewritten using no braces:</span>
+proc greet greeting<span class="se">\ </span>name return<span class="se">\ \"\$</span>greeting,<span class="se">\ \$</span>name!<span class="se">\"</span>
+# <span class="s2">"
+
+
+
+# When the last parameter is the literal value "</span>args<span class="s2">", all extra arguments
+# passed to the routine are collected into a list and assigned to "</span>args<span class="s2">":
+proc fold {cmd first args} {
+    foreach arg </span><span class="nv">$args</span><span class="s2"> {
+        set first </span><span class="p">[</span><span class="nv">$cmd</span> $first $arg<span class="p">]</span><span class="s2">
+    }
+    return </span><span class="nv">$first</span><span class="s2">
+}
+fold ::tcl::mathop::* 5 3 3 ;# -&gt;  45
+
+
+# Conditional execution is implemented as a routine:
+if {3 &gt; 4} {
+    puts {This will never happen}
+} elseif {4 &gt; 4} {
+    puts {This will also never happen}
+} else {
+    puts {This will always happen}
+}
+
+
+# Loops are implemented as routines.  The first and third arguments to 
+# "</span>for<span class="s2">" are treated as scripts, while the second argument is treated as
+# an expression:
+set res 0
+for {set i 0} {</span><span class="nv">$i</span><span class="s2"> &lt; 10} {incr i} {
+    set res </span><span class="p">[</span>expr <span class="p">{</span><span class="nv">$res</span> + $i<span class="p">}]</span><span class="s2">
+}
+unset res
+
+
+# The first argument to "</span>while<span class="s2">" is also treated as an expression:
+set i 0
+while {</span><span class="nv">$i</span><span class="s2"> &lt; 10} {
+    incr i 2
+}
+
+
+# A list is a string, and items in the list are delimited by whitespace:
+set amounts 10</span><span class="se">\ </span><span class="s2">33</span><span class="se">\ </span><span class="s2">18
+set amount </span><span class="p">[</span>lindex $amounts 1<span class="p">]</span><span class="s2">
+
+# Whitespace in a list item must be quoted:
+set inventory {"</span>item 1<span class="s2">" item</span><span class="se">\ </span><span class="s2">2 {item 3}}
+
+
+# It's generally a better idea to use list routines when modifying lists:
+lappend inventory {item 1} {item 2} {item 3}
+
+
+# Braces and backslash can be used to format more complex values in a list.  A
+# list looks exactly like a script, except that the newline character and the
+# semicolon character lose their special meanings, and there is no script or
+# variable substitution.  This feature makes Tcl homoiconic.  There are three
+# items in the following list:
+set values {
+
+    one</span><span class="se">\ </span><span class="s2">two
+
+    {three four}
+
+    five</span><span class="se">\{</span><span class="s2">six
+
+}
+
+
+# Since, like all values, a list is a string, string operations could be
+# performed on it, at the risk of corrupting the formatting of the list:
+set values {one two three four}
+set values </span><span class="p">[</span>string map <span class="p">{</span>two <span class="se">\{</span><span class="p">}</span> $values<span class="p">]</span><span class="s2"> ;# </span><span class="nv">$values</span><span class="s2"> is no-longer a </span><span class="se">\
+</span><span class="s2">    properly-formatted list
+
+
+# The sure-fire way to get a properly-formatted list is to use "</span>list<span class="s2">" routines:
+set values </span><span class="p">[</span>list one <span class="se">\{</span> three four<span class="p">]</span><span class="s2">
+lappend values { } ;# add a single space as an item in the list
+
+
+# Use "</span>eval<span class="s2">" to evaluate a value as a script:
+eval {
+    set name Neo
+    set greeting "</span>Hello, $name<span class="s2">"
+}
+
+
+# A list can always be passed to "</span>eval<span class="s2">" as a script composed of a single
+# command:
+eval {set name Neo}
+eval </span><span class="p">[</span>list set greeting <span class="s2">"Hello, </span><span class="nv">$name</span><span class="s2">"</span><span class="p">]</span><span class="s2">
+
+
+# Therefore, when using "</span>eval<span class="s2">", use "</span>list<span class="s2">" to build up the desired command:
+set command {set name}
+lappend command {Archibald Sorbisol}
+eval </span><span class="nv">$command</span><span class="s2">
+
+
+# A common mistake is not to use list functions when building up a command:
+set command {set name}
+append command { Archibald Sorbisol}
+try {
+    eval </span><span class="nv">$command</span><span class="s2"> ;# The error here is that there are too many arguments </span><span class="se">\
+</span><span class="s2">        to "</span>set<span class="s2">" in {set name Archibald Sorbisol}
+} on error {result eoptions} {
+    puts </span><span class="p">[</span>list <span class="p">{</span>received an error<span class="p">}</span> $result<span class="p">]</span><span class="s2">
+}
+
+# This mistake can easily occur with "</span>subst<span class="s2">":
+
+set replacement {Archibald Sorbisol}
+set command {set name </span><span class="nv">$replacement</span><span class="s2">}
+set command </span><span class="p">[</span>subst $command<span class="p">]</span><span class="s2"> 
+try {
+    eval </span><span class="nv">$command</span><span class="s2"> ;# The same error as before:  too many arguments to "</span>set<span class="s2">" in </span><span class="se">\
+</span><span class="s2">        {set name Archibald Sorbisol}
+} trap {TCL WRONGARGS} {result options} {
+    puts </span><span class="p">[</span>list <span class="p">{</span>received another error<span class="p">}</span> $result<span class="p">]</span><span class="s2">
+}
+
+
+# "</span>list<span class="s2">" correctly formats a value for substitution:
+set replacement </span><span class="p">[</span>list <span class="p">{</span>Archibald Sorbisol<span class="p">}]</span><span class="s2">
+set command {set name </span><span class="nv">$replacement</span><span class="s2">}
+set command </span><span class="p">[</span>subst $command<span class="p">]</span><span class="s2">
+eval </span><span class="nv">$command</span><span class="s2">
+
+
+# "</span>list<span class="s2">" is commonly used to format values for substitution into scripts: There
+# are several examples of this, below.
+
+
+# "</span>apply<span class="s2">" evaluates a two-item list as a routine:
+set cmd {{greeting name} {
+    return "</span><span class="nv">$greeting</span>, $name!<span class="s2">"
+}}
+apply </span><span class="nv">$cmd</span><span class="s2"> Whaddup Neo
+
+# A third item can be used to specify the namespace to apply the routine in:
+set cmd </span><span class="p">[</span>list <span class="p">{</span>greeting name<span class="p">}</span> <span class="p">{</span>
+    return <span class="s2">"</span><span class="nv">$greeting</span><span class="s2">, </span><span class="nv">$name</span><span class="s2">!"</span>
+<span class="p">}</span> <span class="p">[</span>namespace current<span class="p">]]</span><span class="s2">
+apply </span><span class="nv">$cmd</span><span class="s2"> Whaddup Neo
+
+
+# "</span>uplevel<span class="s2">" evaluates a script at some higher level in the call stack:
+proc greet {} {
+    uplevel {puts "</span><span class="nv">$greeting</span>, $name<span class="s2">"}
+}
+
+proc set_double {varname value} {
+    if {</span><span class="p">[</span>string is double $value<span class="p">]</span><span class="s2">} {
+        uplevel </span><span class="p">[</span>list variable $varname $value<span class="p">]</span><span class="s2">
+    } else {
+        error </span><span class="p">[</span>list <span class="p">{</span>not a double<span class="p">}</span> $value<span class="p">]</span><span class="s2">
+    }
+}
+
+
+# "</span>upvar<span class="s2">" links a variable at the current level in the call stack to a variable
+# at some higher level:
+proc set_double {varname value} {
+    if {</span><span class="p">[</span>string is double $value<span class="p">]</span><span class="s2">} {
+        upvar 1 </span><span class="nv">$varname</span><span class="s2"> var
+        set var </span><span class="nv">$value</span><span class="s2">
+    } else {
+        error </span><span class="p">[</span>list <span class="p">{</span>not a double<span class="p">}</span> $value<span class="p">]</span><span class="s2">
+    }
+}
+
+
+# Get rid of the built-in "</span>while<span class="s2">" routine, and use "</span>proc<span class="s2">" to define a new one:
+rename ::while {}
+# handling is left as an exercise:
+proc while {condition script} {
+    if {</span><span class="p">[</span>uplevel 1 <span class="p">[</span>list expr $condition<span class="p">]]</span><span class="s2">} {
+        uplevel 1 </span><span class="nv">$script</span><span class="s2">
+        tailcall </span><span class="p">[</span>namespace which while<span class="p">]</span><span class="s2"> </span><span class="nv">$condition</span><span class="s2"> </span><span class="nv">$script</span><span class="s2">
+    }
+}
+
+
+# "</span>coroutine<span class="s2">" creates a new call stack, a new routine to enter that call stack,
+# and then calls that routine.  "</span>yield<span class="s2">" suspends evaluation in that stack and
+# returns control to the calling stack:
+proc countdown count {
+    # send something back to the creator of the coroutine, effectively pausing
+    # this call stack for the time being.
+    yield </span><span class="p">[</span>info coroutine<span class="p">]</span><span class="s2">
+
+    while {</span><span class="nv">$count</span><span class="s2"> &gt; 1} {
+        yield </span><span class="p">[</span>incr count -1<span class="p">]</span><span class="s2">
+    }
+    return 0
+}
+coroutine countdown1 countdown 3
+coroutine countdown2 countdown 5
+puts </span><span class="p">[</span>countdown1<span class="p">]</span><span class="s2"> ;# -&gt; 2 
+puts </span><span class="p">[</span>countdown2<span class="p">]</span><span class="s2"> ;# -&gt; 4 
+puts </span><span class="p">[</span>countdown1<span class="p">]</span><span class="s2"> ;# -&gt; 1 
+puts </span><span class="p">[</span>countdown1<span class="p">]</span><span class="s2"> ;# -&gt; 0 
+catch {
+    puts </span><span class="p">[</span>coundown1<span class="p">]</span><span class="s2"> ;# -&gt; invalid command name "</span>countdown1<span class="s2">"
+} cres copts 
+puts </span><span class="nv">$cres</span><span class="s2">
+puts </span><span class="p">[</span>countdown2<span class="p">]</span><span class="s2"> ;# -&gt; 3 
+
+
+# Coroutine stacks can yield control to each other:
+
+proc pass {whom args} {
+    return </span><span class="p">[</span>yieldto $whom <span class="k">{*}</span><span class="nv">$args</span><span class="p">]</span><span class="s2">
+}
+
+coroutine a apply {{} {
+        yield
+        set result </span><span class="p">[</span>pass b <span class="p">{</span>please pass the salt<span class="p">}]</span><span class="s2">
+        puts </span><span class="p">[</span>list got the $result<span class="p">]</span><span class="s2">
+        set result </span><span class="p">[</span>pass b <span class="p">{</span>please pass the pepper<span class="p">}]</span><span class="s2">
+        puts </span><span class="p">[</span>list got the $result<span class="p">]</span><span class="s2">
+}}
+
+coroutine b apply {{} {
+    set request </span><span class="p">[</span>yield<span class="p">]</span><span class="s2">
+    while 1 {
+        set response </span><span class="p">[</span>pass c $request<span class="p">]</span><span class="s2">
+        puts </span><span class="p">[</span>list <span class="p">[</span>info coroutine<span class="p">]</span> is now yielding<span class="p">]</span><span class="s2">
+        set request </span><span class="p">[</span>pass a $response<span class="p">]</span><span class="s2">
+    }
+}}
+
+coroutine c apply {{} {
+    set request </span><span class="p">[</span>yield<span class="p">]</span><span class="s2">
+    while 1 {
+        if {</span><span class="p">[</span>string match *salt* $request<span class="p">]</span><span class="s2">} {
+            set request </span><span class="p">[</span>pass b salt<span class="p">]</span><span class="s2">
+        } else {
+            set request </span><span class="p">[</span>pass b huh?<span class="p">]</span><span class="s2">
+        }
+    }
+}}
+
+# get things moving
+a
+</span></code></pre></div>
+<h2>Reference</h2>
+
+<p><a href="https://www.tcl-lang.org">Official Tcl Documentation</a></p>
+
+<p><a href="https://wiki.tcl-lang.org">Tcl Wiki</a></p>
+
+<p><a href="http://www.reddit.com/r/Tcl">Tcl Subreddit</a></p>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/tcl.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Poor Yorick, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/tcl.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="https://pooryorick.com/">Poor Yorick</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

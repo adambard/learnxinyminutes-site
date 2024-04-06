@@ -1,0 +1,521 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn Lua in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/lua/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Flua%2F&text=Learn+X+in+Y+minutes%2C+where+X%3DLua">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=Lua</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/learnlua.lua">learnlua.lua</a>
+    </p>
+  <div id="doc">
+    <div class="highlight"><pre class="highlight lua"><code><span class="c1">-- Two dashes start a one-line comment.</span>
+
+<span class="cm">--[[
+     Adding two ['s and ]'s makes it a
+     multi-line comment.
+--]]</span>
+
+<span class="c1">----------------------------------------------------</span>
+<span class="c1">-- 1. Variables and flow control.</span>
+<span class="c1">----------------------------------------------------</span>
+
+<span class="n">num</span> <span class="o">=</span> <span class="mi">42</span>  <span class="c1">-- Numbers can be integer or floating point.</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="s1">'walternate'</span>  <span class="c1">-- Immutable strings like Python.</span>
+<span class="n">t</span> <span class="o">=</span> <span class="s2">"double-quotes are also fine"</span>
+<span class="n">u</span> <span class="o">=</span> <span class="s">[[ Double brackets
+       start and end
+       multi-line strings.]]</span>
+<span class="n">t</span> <span class="o">=</span> <span class="kc">nil</span>  <span class="c1">-- Undefines t; Lua has garbage collection.</span>
+
+<span class="c1">-- Blocks are denoted with keywords like do/end:</span>
+<span class="k">while</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="mi">50</span> <span class="k">do</span>
+  <span class="n">num</span> <span class="o">=</span> <span class="n">num</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1">-- No ++ or += type operators.</span>
+<span class="k">end</span>
+
+<span class="c1">-- If clauses:</span>
+<span class="k">if</span> <span class="n">num</span> <span class="o">&gt;</span> <span class="mi">40</span> <span class="k">then</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">'over 40'</span><span class="p">)</span>
+<span class="k">elseif</span> <span class="n">s</span> <span class="o">~=</span> <span class="s1">'walternate'</span> <span class="k">then</span>  <span class="c1">-- ~= is not equals.</span>
+  <span class="c1">-- Equality check is == like Python; ok for strs.</span>
+  <span class="nb">io.write</span><span class="p">(</span><span class="s1">'not over 40\n'</span><span class="p">)</span>  <span class="c1">-- Defaults to stdout.</span>
+<span class="k">else</span>
+  <span class="c1">-- Variables are global by default.</span>
+  <span class="n">thisIsGlobal</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1">-- Camel case is common.</span>
+
+  <span class="c1">-- How to make a variable local:</span>
+  <span class="kd">local</span> <span class="n">line</span> <span class="o">=</span> <span class="nb">io.read</span><span class="p">()</span>  <span class="c1">-- Reads next stdin line.</span>
+
+  <span class="c1">-- String concatenation uses the .. operator:</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">'Winter is coming, '</span> <span class="o">..</span> <span class="n">line</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1">-- Undefined variables return nil.</span>
+<span class="c1">-- This is not an error:</span>
+<span class="n">foo</span> <span class="o">=</span> <span class="n">anUnknownVariable</span>  <span class="c1">-- Now foo = nil.</span>
+
+<span class="n">aBoolValue</span> <span class="o">=</span> <span class="kc">false</span>
+
+<span class="c1">-- Only nil and false are falsy; 0 and '' are true!</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">aBoolValue</span> <span class="k">then</span> <span class="nb">print</span><span class="p">(</span><span class="s1">'it was false'</span><span class="p">)</span> <span class="k">end</span>
+
+<span class="c1">-- 'or' and 'and' are short-circuited.</span>
+<span class="c1">-- This is similar to the a?b:c operator in C/js:</span>
+<span class="n">ans</span> <span class="o">=</span> <span class="n">aBoolValue</span> <span class="ow">and</span> <span class="s1">'yes'</span> <span class="ow">or</span> <span class="s1">'no'</span>  <span class="c1">--&gt; 'no'</span>
+
+<span class="n">karlSum</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span> <span class="k">do</span>  <span class="c1">-- The range includes both ends.</span>
+  <span class="n">karlSum</span> <span class="o">=</span> <span class="n">karlSum</span> <span class="o">+</span> <span class="n">i</span>
+<span class="k">end</span>
+
+<span class="c1">-- Use "100, 1, -1" as the range to count down:</span>
+<span class="n">fredSum</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="k">do</span> <span class="n">fredSum</span> <span class="o">=</span> <span class="n">fredSum</span> <span class="o">+</span> <span class="n">j</span> <span class="k">end</span>
+
+<span class="c1">-- In general, the range is begin, end[, step].</span>
+
+<span class="c1">-- Another loop construct:</span>
+<span class="k">repeat</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">'the way of the future'</span><span class="p">)</span>
+  <span class="n">num</span> <span class="o">=</span> <span class="n">num</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="k">until</span> <span class="n">num</span> <span class="o">==</span> <span class="mi">0</span>
+
+
+<span class="c1">----------------------------------------------------</span>
+<span class="c1">-- 2. Functions.</span>
+<span class="c1">----------------------------------------------------</span>
+
+<span class="k">function</span> <span class="nf">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+  <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">then</span> <span class="k">return</span> <span class="mi">1</span> <span class="k">end</span>
+  <span class="k">return</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1">-- Closures and anonymous functions are ok:</span>
+<span class="k">function</span> <span class="nf">adder</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+  <span class="c1">-- The returned function is created when adder is</span>
+  <span class="c1">-- called, and remembers the value of x:</span>
+  <span class="k">return</span> <span class="k">function</span> <span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="k">end</span>
+<span class="k">end</span>
+<span class="n">a1</span> <span class="o">=</span> <span class="n">adder</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">a2</span> <span class="o">=</span> <span class="n">adder</span><span class="p">(</span><span class="mi">36</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a1</span><span class="p">(</span><span class="mi">16</span><span class="p">))</span>  <span class="c1">--&gt; 25</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a2</span><span class="p">(</span><span class="mi">64</span><span class="p">))</span>  <span class="c1">--&gt; 100</span>
+
+<span class="c1">-- Returns, func calls, and assignments all work</span>
+<span class="c1">-- with lists that may be mismatched in length.</span>
+<span class="c1">-- Unmatched receivers are nil;</span>
+<span class="c1">-- unmatched senders are discarded.</span>
+
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span>
+<span class="c1">-- Now x = 1, y = 2, z = 3, and 4 is thrown away.</span>
+
+<span class="k">function</span> <span class="nf">bar</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+  <span class="k">return</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">42</span>
+<span class="k">end</span>
+
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">bar</span><span class="p">(</span><span class="s1">'zaphod'</span><span class="p">)</span>  <span class="c1">--&gt; prints "zaphod  nil nil"</span>
+<span class="c1">-- Now x = 4, y = 8, values 15...42 are discarded.</span>
+
+<span class="c1">-- Functions are first-class, may be local/global.</span>
+<span class="c1">-- These are the same:</span>
+<span class="k">function</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="k">end</span>
+<span class="n">f</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="k">end</span>
+
+<span class="c1">-- And so are these:</span>
+<span class="kd">local</span> <span class="k">function</span> <span class="nf">g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">return</span> <span class="nb">math.sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">end</span>
+<span class="kd">local</span> <span class="n">g</span><span class="p">;</span> <span class="n">g</span>  <span class="o">=</span> <span class="k">function</span> <span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">return</span> <span class="nb">math.sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">end</span>
+<span class="c1">-- the 'local g' decl makes g-self-references ok.</span>
+
+<span class="c1">-- Trig funcs work in radians, by the way.</span>
+
+<span class="c1">-- Calls with one string param don't need parens:</span>
+<span class="nb">print</span> <span class="s1">'hello'</span>  <span class="c1">-- Works fine.</span>
+
+
+<span class="c1">----------------------------------------------------</span>
+<span class="c1">-- 3. Tables.</span>
+<span class="c1">----------------------------------------------------</span>
+
+<span class="c1">-- Tables = Lua's only compound data structure;</span>
+<span class="c1">--          they are associative arrays.</span>
+<span class="c1">-- Similar to php arrays or js objects, they are</span>
+<span class="c1">-- hash-lookup dicts that can also be used as lists.</span>
+
+<span class="c1">-- Using tables as dictionaries / maps:</span>
+
+<span class="c1">-- Dict literals have string keys by default:</span>
+<span class="n">t</span> <span class="o">=</span> <span class="p">{</span><span class="n">key1</span> <span class="o">=</span> <span class="s1">'value1'</span><span class="p">,</span> <span class="n">key2</span> <span class="o">=</span> <span class="kc">false</span><span class="p">}</span>
+
+<span class="c1">-- String keys can use js-like dot notation:</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="n">key1</span><span class="p">)</span>  <span class="c1">-- Prints 'value1'.</span>
+<span class="n">t</span><span class="p">.</span><span class="n">newKey</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1">-- Adds a new key/value pair.</span>
+<span class="n">t</span><span class="p">.</span><span class="n">key2</span> <span class="o">=</span> <span class="kc">nil</span>   <span class="c1">-- Removes key2 from the table.</span>
+
+<span class="c1">-- Literal notation for any (non-nil) value as key:</span>
+<span class="n">u</span> <span class="o">=</span> <span class="p">{[</span><span class="s1">'@!#'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'qbert'</span><span class="p">,</span> <span class="p">[{}]</span> <span class="o">=</span> <span class="mi">1729</span><span class="p">,</span> <span class="p">[</span><span class="mi">6</span><span class="p">.</span><span class="mi">28</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'tau'</span><span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="mi">6</span><span class="p">.</span><span class="mi">28</span><span class="p">])</span>  <span class="c1">-- prints "tau"</span>
+
+<span class="c1">-- Key matching is basically by value for numbers</span>
+<span class="c1">-- and strings, but by identity for tables.</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="s1">'@!#'</span><span class="p">]</span>  <span class="c1">-- Now a = 'qbert'.</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">u</span><span class="p">[{}]</span>     <span class="c1">-- We might expect 1729, but it's nil:</span>
+<span class="c1">-- b = nil since the lookup fails. It fails</span>
+<span class="c1">-- because the key we used is not the same object</span>
+<span class="c1">-- as the one used to store the original value. So</span>
+<span class="c1">-- strings &amp; numbers are more portable keys.</span>
+
+<span class="c1">-- A one-table-param function call needs no parens:</span>
+<span class="k">function</span> <span class="nf">h</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">key1</span><span class="p">)</span> <span class="k">end</span>
+<span class="n">h</span><span class="p">{</span><span class="n">key1</span> <span class="o">=</span> <span class="s1">'Sonmi~451'</span><span class="p">}</span>  <span class="c1">-- Prints 'Sonmi~451'.</span>
+
+<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="k">do</span>  <span class="c1">-- Table iteration.</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1">-- _G is a special table of all globals.</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">_G</span><span class="p">[</span><span class="s1">'_G'</span><span class="p">]</span> <span class="o">==</span> <span class="n">_G</span><span class="p">)</span>  <span class="c1">-- Prints 'true'.</span>
+
+<span class="c1">-- Using tables as lists / arrays:</span>
+
+<span class="c1">-- List literals implicitly set up int keys:</span>
+<span class="n">v</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'value1'</span><span class="p">,</span> <span class="s1">'value2'</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">21</span><span class="p">,</span> <span class="s1">'gigawatts'</span><span class="p">}</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">#</span><span class="n">v</span> <span class="k">do</span>  <span class="c1">-- #v is the size of v for lists.</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>  <span class="c1">-- Indices start at 1 !! SO CRAZY!</span>
+<span class="k">end</span>
+<span class="c1">-- A 'list' is not a real type. v is just a table</span>
+<span class="c1">-- with consecutive integer keys, treated as a list.</span>
+
+<span class="c1">----------------------------------------------------</span>
+<span class="c1">-- 3.1 Metatables and metamethods.</span>
+<span class="c1">----------------------------------------------------</span>
+
+<span class="c1">-- A table can have a metatable that gives the table</span>
+<span class="c1">-- operator-overloadish behavior. Later we'll see</span>
+<span class="c1">-- how metatables support js-prototype behavior.</span>
+
+<span class="n">f1</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">2</span><span class="p">}</span>  <span class="c1">-- Represents the fraction a/b.</span>
+<span class="n">f2</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">3</span><span class="p">}</span>
+
+<span class="c1">-- This would fail:</span>
+<span class="c1">-- s = f1 + f2</span>
+
+<span class="n">metafraction</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">function</span> <span class="nc">metafraction</span><span class="p">.</span><span class="nf">__add</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
+  <span class="n">sum</span> <span class="o">=</span> <span class="p">{}</span>
+  <span class="n">sum</span><span class="p">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">f1</span><span class="p">.</span><span class="n">b</span> <span class="o">*</span> <span class="n">f2</span><span class="p">.</span><span class="n">b</span>
+  <span class="n">sum</span><span class="p">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">f1</span><span class="p">.</span><span class="n">a</span> <span class="o">*</span> <span class="n">f2</span><span class="p">.</span><span class="n">b</span> <span class="o">+</span> <span class="n">f2</span><span class="p">.</span><span class="n">a</span> <span class="o">*</span> <span class="n">f1</span><span class="p">.</span><span class="n">b</span>
+  <span class="k">return</span> <span class="n">sum</span>
+<span class="k">end</span>
+
+<span class="nb">setmetatable</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">metafraction</span><span class="p">)</span>
+<span class="nb">setmetatable</span><span class="p">(</span><span class="n">f2</span><span class="p">,</span> <span class="n">metafraction</span><span class="p">)</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">f1</span> <span class="o">+</span> <span class="n">f2</span>  <span class="c1">-- call __add(f1, f2) on f1's metatable</span>
+
+<span class="c1">-- f1, f2 have no key for their metatable, unlike</span>
+<span class="c1">-- prototypes in js, so you must retrieve it as in</span>
+<span class="c1">-- getmetatable(f1). The metatable is a normal table</span>
+<span class="c1">-- with keys that Lua knows about, like __add.</span>
+
+<span class="c1">-- But the next line fails since s has no metatable:</span>
+<span class="c1">-- t = s + s</span>
+<span class="c1">-- Class-like patterns given below would fix this.</span>
+
+<span class="c1">-- An __index on a metatable overloads dot lookups:</span>
+<span class="n">defaultFavs</span> <span class="o">=</span> <span class="p">{</span><span class="n">animal</span> <span class="o">=</span> <span class="s1">'gru'</span><span class="p">,</span> <span class="n">food</span> <span class="o">=</span> <span class="s1">'donuts'</span><span class="p">}</span>
+<span class="n">myFavs</span> <span class="o">=</span> <span class="p">{</span><span class="n">food</span> <span class="o">=</span> <span class="s1">'pizza'</span><span class="p">}</span>
+<span class="nb">setmetatable</span><span class="p">(</span><span class="n">myFavs</span><span class="p">,</span> <span class="p">{</span><span class="n">__index</span> <span class="o">=</span> <span class="n">defaultFavs</span><span class="p">})</span>
+<span class="n">eatenBy</span> <span class="o">=</span> <span class="n">myFavs</span><span class="p">.</span><span class="n">animal</span>  <span class="c1">-- works! thanks, metatable</span>
+
+<span class="c1">-- Direct table lookups that fail will retry using</span>
+<span class="c1">-- the metatable's __index value, and this recurses.</span>
+
+<span class="c1">-- An __index value can also be a function(tbl, key)</span>
+<span class="c1">-- for more customized lookups.</span>
+
+<span class="c1">-- Values of __index,add, .. are called metamethods.</span>
+<span class="c1">-- Full list. Here a is a table with the metamethod.</span>
+
+<span class="c1">-- __add(a, b)                     for a + b</span>
+<span class="c1">-- __sub(a, b)                     for a - b</span>
+<span class="c1">-- __mul(a, b)                     for a * b</span>
+<span class="c1">-- __div(a, b)                     for a / b</span>
+<span class="c1">-- __mod(a, b)                     for a % b</span>
+<span class="c1">-- __pow(a, b)                     for a ^ b</span>
+<span class="c1">-- __unm(a)                        for -a</span>
+<span class="c1">-- __concat(a, b)                  for a .. b</span>
+<span class="c1">-- __len(a)                        for #a</span>
+<span class="c1">-- __eq(a, b)                      for a == b</span>
+<span class="c1">-- __lt(a, b)                      for a &lt; b</span>
+<span class="c1">-- __le(a, b)                      for a &lt;= b</span>
+<span class="c1">-- __index(a, b)  &lt;fn or a table&gt;  for a.b</span>
+<span class="c1">-- __newindex(a, b, c)             for a.b = c</span>
+<span class="c1">-- __call(a, ...)                  for a(...)</span>
+
+<span class="c1">----------------------------------------------------</span>
+<span class="c1">-- 3.2 Class-like tables and inheritance.</span>
+<span class="c1">----------------------------------------------------</span>
+
+<span class="c1">-- Classes aren't built in; there are different ways</span>
+<span class="c1">-- to make them using tables and metatables.</span>
+
+<span class="c1">-- Explanation for this example is below it.</span>
+
+<span class="n">Dog</span> <span class="o">=</span> <span class="p">{}</span>                                   <span class="c1">-- 1.</span>
+
+<span class="k">function</span> <span class="nf">Dog</span><span class="p">:</span><span class="n">new</span><span class="p">()</span>                         <span class="c1">-- 2.</span>
+  <span class="n">newObj</span> <span class="o">=</span> <span class="p">{</span><span class="n">sound</span> <span class="o">=</span> <span class="s1">'woof'</span><span class="p">}</span>                <span class="c1">-- 3.</span>
+  <span class="n">self</span><span class="p">.</span><span class="n">__index</span> <span class="o">=</span> <span class="n">self</span>                      <span class="c1">-- 4.</span>
+  <span class="k">return</span> <span class="nb">setmetatable</span><span class="p">(</span><span class="n">newObj</span><span class="p">,</span> <span class="n">self</span><span class="p">)</span>        <span class="c1">-- 5.</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">Dog</span><span class="p">:</span><span class="n">makeSound</span><span class="p">()</span>                   <span class="c1">-- 6.</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">'I say '</span> <span class="o">..</span> <span class="n">self</span><span class="p">.</span><span class="n">sound</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">mrDog</span> <span class="o">=</span> <span class="n">Dog</span><span class="p">:</span><span class="n">new</span><span class="p">()</span>                          <span class="c1">-- 7.</span>
+<span class="n">mrDog</span><span class="p">:</span><span class="n">makeSound</span><span class="p">()</span>  <span class="c1">-- 'I say woof'         -- 8.</span>
+
+<span class="c1">-- 1. Dog acts like a class; it's really a table.</span>
+<span class="c1">-- 2. function tablename:fn(...) is the same as</span>
+<span class="c1">--    function tablename.fn(self, ...)</span>
+<span class="c1">--    The : just adds a first arg called self.</span>
+<span class="c1">--    Read 7 &amp; 8 below for how self gets its value.</span>
+<span class="c1">-- 3. newObj will be an instance of class Dog.</span>
+<span class="c1">-- 4. self = the class being instantiated. Often</span>
+<span class="c1">--    self = Dog, but inheritance can change it.</span>
+<span class="c1">--    newObj gets self's functions when we set both</span>
+<span class="c1">--    newObj's metatable and self's __index to self.</span>
+<span class="c1">-- 5. Reminder: setmetatable returns its first arg.</span>
+<span class="c1">-- 6. The : works as in 2, but this time we expect</span>
+<span class="c1">--    self to be an instance instead of a class.</span>
+<span class="c1">-- 7. Same as Dog.new(Dog), so self = Dog in new().</span>
+<span class="c1">-- 8. Same as mrDog.makeSound(mrDog); self = mrDog.</span>
+
+<span class="c1">----------------------------------------------------</span>
+
+<span class="c1">-- Inheritance example:</span>
+
+<span class="n">LoudDog</span> <span class="o">=</span> <span class="n">Dog</span><span class="p">:</span><span class="n">new</span><span class="p">()</span>                           <span class="c1">-- 1.</span>
+
+<span class="k">function</span> <span class="nf">LoudDog</span><span class="p">:</span><span class="n">makeSound</span><span class="p">()</span>
+  <span class="n">s</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">sound</span> <span class="o">..</span> <span class="s1">' '</span>                       <span class="c1">-- 2.</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">s</span> <span class="o">..</span> <span class="n">s</span> <span class="o">..</span> <span class="n">s</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">seymour</span> <span class="o">=</span> <span class="n">LoudDog</span><span class="p">:</span><span class="n">new</span><span class="p">()</span>                       <span class="c1">-- 3.</span>
+<span class="n">seymour</span><span class="p">:</span><span class="n">makeSound</span><span class="p">()</span>  <span class="c1">-- 'woof woof woof'      -- 4.</span>
+
+<span class="c1">-- 1. LoudDog gets Dog's methods and variables.</span>
+<span class="c1">-- 2. self has a 'sound' key from new(), see 3.</span>
+<span class="c1">-- 3. Same as LoudDog.new(LoudDog), and converted to</span>
+<span class="c1">--    Dog.new(LoudDog) as LoudDog has no 'new' key,</span>
+<span class="c1">--    but does have __index = Dog on its metatable.</span>
+<span class="c1">--    Result: seymour's metatable is LoudDog, and</span>
+<span class="c1">--    LoudDog.__index = LoudDog. So seymour.key will</span>
+<span class="c1">--    = seymour.key, LoudDog.key, Dog.key, whichever</span>
+<span class="c1">--    table is the first with the given key.</span>
+<span class="c1">-- 4. The 'makeSound' key is found in LoudDog; this</span>
+<span class="c1">--    is the same as LoudDog.makeSound(seymour).</span>
+
+<span class="c1">-- If needed, a subclass's new() is like the base's:</span>
+<span class="k">function</span> <span class="nf">LoudDog</span><span class="p">:</span><span class="n">new</span><span class="p">()</span>
+  <span class="n">newObj</span> <span class="o">=</span> <span class="p">{}</span>
+  <span class="c1">-- set up newObj</span>
+  <span class="n">self</span><span class="p">.</span><span class="n">__index</span> <span class="o">=</span> <span class="n">self</span>
+  <span class="k">return</span> <span class="nb">setmetatable</span><span class="p">(</span><span class="n">newObj</span><span class="p">,</span> <span class="n">self</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1">----------------------------------------------------</span>
+<span class="c1">-- 4. Modules.</span>
+<span class="c1">----------------------------------------------------</span>
+
+
+<span class="c1">--[[ I'm commenting out this section so the rest of</span>
+<span class="c1">--   this script remains runnable.</span>
+</code></pre></div><div class="highlight"><pre class="highlight lua"><code><span class="c1">-- Suppose the file mod.lua looks like this:</span>
+<span class="kd">local</span> <span class="n">M</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="kd">local</span> <span class="k">function</span> <span class="nf">sayMyName</span><span class="p">()</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">'Hrunkner'</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nc">M</span><span class="p">.</span><span class="nf">sayHello</span><span class="p">()</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s1">'Why hello there'</span><span class="p">)</span>
+  <span class="n">sayMyName</span><span class="p">()</span>
+<span class="k">end</span>
+
+<span class="k">return</span> <span class="n">M</span>
+
+<span class="c1">-- Another file can use mod.lua's functionality:</span>
+<span class="kd">local</span> <span class="n">mod</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'mod'</span><span class="p">)</span>  <span class="c1">-- Run the file mod.lua.</span>
+
+<span class="c1">-- require is the standard way to include modules.</span>
+<span class="c1">-- require acts like:     (if not cached; see below)</span>
+<span class="kd">local</span> <span class="n">mod</span> <span class="o">=</span> <span class="p">(</span><span class="k">function</span> <span class="p">()</span>
+  <span class="o">&lt;</span><span class="n">contents</span> <span class="n">of</span> <span class="n">mod</span><span class="p">.</span><span class="n">lua</span><span class="o">&gt;</span>
+<span class="k">end</span><span class="p">)()</span>
+<span class="c1">-- It's like mod.lua is a function body, so that</span>
+<span class="c1">-- locals inside mod.lua are invisible outside it.</span>
+
+<span class="c1">-- This works because mod here = M in mod.lua:</span>
+<span class="n">mod</span><span class="p">.</span><span class="n">sayHello</span><span class="p">()</span> <span class="c1">-- Prints: Why hello there Hrunkner</span>
+
+<span class="c1">-- This is wrong; sayMyName only exists in mod.lua:</span>
+<span class="n">mod</span><span class="p">.</span><span class="n">sayMyName</span><span class="p">()</span>  <span class="c1">-- error</span>
+
+<span class="c1">-- require's return values are cached so a file is</span>
+<span class="c1">-- run at most once, even when require'd many times.</span>
+
+<span class="c1">-- Suppose mod2.lua contains "print('Hi!')".</span>
+<span class="kd">local</span> <span class="n">a</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'mod2'</span><span class="p">)</span>  <span class="c1">-- Prints Hi!</span>
+<span class="kd">local</span> <span class="n">b</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'mod2'</span><span class="p">)</span>  <span class="c1">-- Doesn't print; a=b.</span>
+
+<span class="c1">-- dofile is like require without caching:</span>
+<span class="nb">dofile</span><span class="p">(</span><span class="s1">'mod2.lua'</span><span class="p">)</span>  <span class="c1">--&gt; Hi!</span>
+<span class="nb">dofile</span><span class="p">(</span><span class="s1">'mod2.lua'</span><span class="p">)</span>  <span class="c1">--&gt; Hi! (runs it again)</span>
+
+<span class="c1">-- loadfile loads a lua file but doesn't run it yet.</span>
+<span class="n">f</span> <span class="o">=</span> <span class="nb">loadfile</span><span class="p">(</span><span class="s1">'mod2.lua'</span><span class="p">)</span>  <span class="c1">-- Call f() to run it.</span>
+
+<span class="c1">-- load is loadfile for strings.</span>
+<span class="c1">-- (loadstring is deprecated, use load instead)</span>
+<span class="n">g</span> <span class="o">=</span> <span class="nb">load</span><span class="p">(</span><span class="s1">'print(343)'</span><span class="p">)</span>  <span class="c1">-- Returns a function.</span>
+<span class="n">g</span><span class="p">()</span>  <span class="c1">-- Prints out 343; nothing printed before now.</span>
+
+<span class="c1">--]]</span>
+</code></pre></div>
+<h2>Community</h2>
+
+<p>If you need support join the official Lua <a href="https://www.lua.org/lua-l.html">mailing list</a>, <a href="http://lua-users.org/wiki/IrcChannel">irc channel</a>, or <a href="https://luaforum.com">forum</a>.</p>
+
+<h2>References</h2>
+
+<p>I was excited to learn Lua so I could make games
+with the <a href="http://love2d.org/">Love 2D game engine</a>. That&rsquo;s the why.</p>
+
+<p>I started with <a href="https://ebens.me/posts/lua-for-programmers-part-1/">BlackBulletIV&rsquo;s Lua for programmers</a>.
+Next I read the official <a href="http://www.lua.org/pil/contents.html">Programming in Lua</a> book.
+That&rsquo;s the how.</p>
+
+<p>It might be helpful to check out the <a href="http://lua-users.org/wiki/LuaShortReference">Lua short
+reference</a> on lua-users.org.</p>
+
+<p>The main topics not covered are standard libraries:</p>
+
+<ul>
+<li><a href="http://lua-users.org/wiki/StringLibraryTutorial">string library</a></li>
+<li><a href="http://lua-users.org/wiki/TableLibraryTutorial">table library</a></li>
+<li><a href="http://lua-users.org/wiki/MathLibraryTutorial">math library</a></li>
+<li><a href="http://lua-users.org/wiki/IoLibraryTutorial">io library</a></li>
+<li><a href="http://lua-users.org/wiki/OsLibraryTutorial">os library</a></li>
+</ul>
+
+<p>By the way, the entire file is valid Lua; save it
+as learn.lua and run it with &ldquo;lua learn.lua&rdquo; !</p>
+
+<p>This was first written for tylerneylon.com, and is
+also available as a <a href="https://gist.github.com/tylerneylon/5853042">github gist</a>. Have fun with Lua!</p>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/lua.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Tyler Neylon, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/lua.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://tylerneylon.com/">Tyler Neylon</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

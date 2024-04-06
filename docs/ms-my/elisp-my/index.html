@@ -1,0 +1,449 @@
+<!DOCTYPE html lang="ms-my" xml:lang="ms-my" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="ms-my">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn elisp in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/ms-my/elisp-my/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fms-my%2Felisp-my%2F&text=Learn+X+in+Y+minutes%2C+where+X%3Delisp">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=elisp</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/learn-emacs-lisp-ms.el">learn-emacs-lisp-ms.el</a>
+    </p>
+  <div id="doc">
+    <div class="highlight"><pre class="highlight scheme"><code><span class="c1">;; Ini adalah pengenalan kepada Emacs Lisp dalam masa 15 minit (v0.2d)</span>
+<span class="c1">;;</span>
+<span class="c1">;; Mula-mula pastikan anda sudah membaca artikel daripada Peter Norvig ini:</span>
+<span class="c1">;; http://norvig.com/21-days.html</span>
+<span class="c1">;;</span>
+<span class="c1">;; Kemudian install GNU Emacs 24.3:</span>
+<span class="c1">;;</span>
+<span class="c1">;; Debian: apt-get install emacs (atau lihat arahan untuk distro anda)</span>
+<span class="c1">;; OSX: http://emacsformacosx.com/emacs-builds/Emacs-24.3-universal-10.6.8.dmg</span>
+<span class="c1">;; Windows: http://ftp.gnu.org/gnu/windows/emacs/emacs-24.3-bin-i386.zip</span>
+<span class="c1">;;</span>
+<span class="c1">;; Maklumat lanjut boleh didapati di:</span>
+<span class="c1">;; http://www.gnu.org/software/emacs/#Obtaining</span>
+
+<span class="c1">;; Amaran penting:</span>
+<span class="c1">;;</span>
+<span class="c1">;; Tutorial ini tidak akan merosakkan komputer anda melainkan jika anda berasa</span>
+<span class="c1">;; terlalu marah sehingga anda menghempap komputer anda ke lantai. Kalau begitu,</span>
+<span class="c1">;; saya dengan ini tidak akan bertanggungjawab terhadap apa-apa. Berseronoklah ya!</span>
+
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+<span class="c1">;;</span>
+<span class="c1">;; Buka Emacs.</span>
+<span class="c1">;;</span>
+<span class="c1">;; Tekan `q' untuk tutup mesej selamat datang.</span>
+<span class="c1">;;</span>
+<span class="c1">;; Sekarang lihat garis kelabu di bahagian bawah window:</span>
+<span class="c1">;;</span>
+<span class="c1">;; "*scratch*" ialah nama ruangan untuk anda edit.</span>
+<span class="c1">;; Ruangan ini disebut sebagai "buffer".</span>
+<span class="c1">;;</span>
+<span class="c1">;; Buffer scratch ialah buffer yang default setiap kali Emacs dibuka.</span>
+<span class="c1">;; Anda bukannya edit file: anda edit buffer yang kemudiannya</span>
+<span class="c1">;; boleh save ke file.</span>
+<span class="c1">;;</span>
+<span class="c1">;; "Lisp interaction (interaksi)" merujuk kepada command yang wujud di sini.</span>
+<span class="c1">;;</span>
+<span class="c1">;; Emacs mempunyai beberapa command yang sedia ada dalam setiap buffer,</span>
+<span class="c1">;; dan sesetengah command yang lain boleh didapati jika sesetengah mode</span>
+<span class="c1">;; diaktifkan.  Di sini kita menggunakan `lisp-interaction-mode', yang</span>
+<span class="c1">;; mempunyai command untuk menjalankan dan mengendalikan code Elisp.</span>
+
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+<span class="c1">;;</span>
+<span class="c1">;; Semicolon akan menjadikan comment sepanjang baris tersebut.</span>
+<span class="c1">;;</span>
+<span class="c1">;; Program Elisp mengandungi symbolic expressions ("sexps"):</span>
+<span class="p">(</span><span class="nb">+</span> <span class="mi">2</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="c1">;; Symbolic expression di atas dibaca begini "Tambah 2 pada 2".</span>
+
+<span class="c1">;; Sexps dilitupi oleh parentheses, dan boleh dalam bentuk nested (parentheses</span>
+<span class="c1">;; dalam parentheses):</span>
+<span class="p">(</span><span class="nb">+</span> <span class="mi">2</span> <span class="p">(</span><span class="nb">+</span> <span class="mi">1</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="c1">;; Symbolic expression mengandungi atom atau symbolic expression</span>
+<span class="c1">;; yang lain.  Untuk contoh di atas, 1 dan 2 ialah atom,</span>
+<span class="c1">;; (+ 2 (+ 1 1)) dan (+ 1 1) ialah symbolic expression.</span>
+
+<span class="c1">;; Dengan menggunakan `lisp-interaction-mode', anda boleh evaluate</span>
+<span class="c1">;; (mendapatkan hasil pengiraan) sexps. Letak cursor selepas parenthesis penutup</span>
+<span class="c1">;; kemudian tekan control dan j ("C-j").</span>
+
+<span class="p">(</span><span class="nb">+</span> <span class="mi">3</span> <span class="p">(</span><span class="nb">+</span> <span class="mi">1</span> <span class="mi">2</span><span class="p">))</span>
+<span class="c1">;;           ^ cursor di sini</span>
+<span class="c1">;; `C-j' =&gt; 6</span>
+
+<span class="c1">;; `C-j' memasukkan jawapan pengiraan ke dalam buffer.</span>
+
+<span class="c1">;; `C-xC-e' memaparkan jawapan yang sama di bahagian bawah Emacs,</span>
+<span class="c1">;; yang dipanggil "minibuffer".  Secara umumnya kita akan menggunakan `C-xC-e',</span>
+<span class="c1">;; sebab kita tidak mahu memenuhi buffer dengan teks yang tidak penting.</span>
+
+<span class="c1">;; `setq' menyimpan value ke dalam variable:</span>
+<span class="p">(</span><span class="nf">setq</span> <span class="nv">my-name</span> <span class="s">"Bastien"</span><span class="p">)</span>
+<span class="c1">;; `C-xC-e' =&gt; "Bastien" (terpapar di mini-buffer)</span>
+
+<span class="c1">;; `insert' akan memasukkan "Hello!" di tempat di mana cursor berada:</span>
+<span class="p">(</span><span class="nf">insert</span> <span class="s">"Hello!"</span><span class="p">)</span>
+<span class="c1">;; `C-xC-e' =&gt; "Hello!"</span>
+
+<span class="c1">;; Di atas, kita menggunakan `insert' dengan satu argument "Hello!", tetapi</span>
+<span class="c1">;; kita boleh meletakkan beberapa argument -- di sini kita letak dua:</span>
+
+<span class="p">(</span><span class="nf">insert</span> <span class="s">"Hello"</span> <span class="s">" world!"</span><span class="p">)</span>
+<span class="c1">;; `C-xC-e' =&gt; "Hello world!"</span>
+
+<span class="c1">;; Anda boleh menggunakan variable selain string:</span>
+<span class="p">(</span><span class="nf">insert</span> <span class="s">"Hello, I am "</span> <span class="nv">my-name</span><span class="p">)</span>
+<span class="c1">;; `C-xC-e' =&gt; "Hello, I am Bastien"</span>
+
+<span class="c1">;; Anda boleh menggabungkan sexps untuk membuat function:</span>
+<span class="p">(</span><span class="nf">defun</span> <span class="nv">hello</span> <span class="p">()</span> <span class="p">(</span><span class="nf">insert</span> <span class="s">"Hello, I am "</span> <span class="nv">my-name</span><span class="p">))</span>
+<span class="c1">;; `C-xC-e' =&gt; hello</span>
+
+<span class="c1">;; Anda boleh evaluate function:</span>
+<span class="p">(</span><span class="nf">hello</span><span class="p">)</span>
+<span class="c1">;; `C-xC-e' =&gt; Hello, I am Bastien</span>
+
+<span class="c1">;; Parentheses kosong di dalam function bermaksud function tersebut tidak</span>
+<span class="c1">;; terima argument.  Sekarang kita tukar function untuk menerima satu argument.</span>
+<span class="c1">;; Di sini, argument tersebut dinamakan "name":</span>
+
+<span class="p">(</span><span class="nf">defun</span> <span class="nv">hello</span> <span class="p">(</span><span class="nf">name</span><span class="p">)</span> <span class="p">(</span><span class="nf">insert</span> <span class="s">"Hello "</span> <span class="nv">name</span><span class="p">))</span>
+<span class="c1">;; `C-xC-e' =&gt; hello</span>
+
+<span class="c1">;; Sekarang panggil function tersebut dengan string "you" sebagai value</span>
+<span class="c1">;; untuk argument:</span>
+<span class="p">(</span><span class="nf">hello</span> <span class="s">"you"</span><span class="p">)</span>
+<span class="c1">;; `C-xC-e' =&gt; "Hello you"</span>
+
+<span class="c1">;; Yay!</span>
+
+<span class="c1">;; Tarik nafas.</span>
+
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+<span class="c1">;;</span>
+<span class="c1">;; Sekarang tukar ke buffer baru dengan nama "*test*" di window yang lain:</span>
+
+<span class="p">(</span><span class="nf">switch-to-buffer-other-window</span> <span class="s">"*test*"</span><span class="p">)</span>
+<span class="c1">;; `C-xC-e'</span>
+<span class="c1">;; =&gt; [The screen has two windows and cursor is in the *test* buffer]</span>
+
+<span class="c1">;; Gerakkan mouse ke window atas dan klik kiri untuk pergi balik ke buffer scratch.</span>
+<span class="c1">;; Cara lain adalah dengan menggunakan `C-xo' (i.e. tekan control-x kemudian</span>
+<span class="c1">;; tekan o) untuk pergi ke window yang lain.</span>
+
+<span class="c1">;; Anda boleh menggabungkan beberapa sexps menggunakan `progn':</span>
+<span class="p">(</span><span class="nf">progn</span>
+  <span class="p">(</span><span class="nf">switch-to-buffer-other-window</span> <span class="s">"*test*"</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">hello</span> <span class="s">"you"</span><span class="p">))</span>
+<span class="c1">;; `C-xC-e'</span>
+<span class="c1">;; =&gt; [The screen has two windows and cursor is in the *test* buffer]</span>
+
+<span class="c1">;; Mulai dari sekarang saya tidak akan beritahu anda untuk tekan `C-xC-e' lagi:</span>
+<span class="c1">;; buat untuk setiap sexp yang akan datang.</span>
+
+<span class="c1">;; Pergi balik ke buffer *scratch* menggunakan mouse atau `C-xo'.</span>
+
+<span class="c1">;; Seelok-eloknya padam buffer tersebut:</span>
+<span class="p">(</span><span class="nf">progn</span>
+  <span class="p">(</span><span class="nf">switch-to-buffer-other-window</span> <span class="s">"*test*"</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">erase-buffer</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">hello</span> <span class="s">"there"</span><span class="p">))</span>
+
+<span class="c1">;; Atau pergi balik ke window lain:</span>
+<span class="p">(</span><span class="nf">progn</span>
+  <span class="p">(</span><span class="nf">switch-to-buffer-other-window</span> <span class="s">"*test*"</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">erase-buffer</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">hello</span> <span class="s">"you"</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">other-window</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="c1">;; Anda boleh menetapkan value dengan local variable menggunakan `let':</span>
+<span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nf">local-name</span> <span class="s">"you"</span><span class="p">))</span>
+  <span class="p">(</span><span class="nf">switch-to-buffer-other-window</span> <span class="s">"*test*"</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">erase-buffer</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">hello</span> <span class="nv">local-name</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">other-window</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="c1">;; Tidak perlu menggunakan `progn', sebab `let' juga menggabungkan</span>
+<span class="c1">;; beberapa sexps.</span>
+
+<span class="c1">;; Jom format string:</span>
+<span class="p">(</span><span class="nf">format</span> <span class="s">"Hello %s!\n"</span> <span class="s">"visitor"</span><span class="p">)</span>
+
+<span class="c1">;; %s ialah tempat untuk meletakkan string, digantikan dengan "visitor".</span>
+<span class="c1">;; \n ialah character untuk membuat baris baru.</span>
+
+<span class="c1">;; Jom tukar function kita menggunakan format:</span>
+<span class="p">(</span><span class="nf">defun</span> <span class="nv">hello</span> <span class="p">(</span><span class="nf">name</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">insert</span> <span class="p">(</span><span class="nf">format</span> <span class="s">"Hello %s!\n"</span> <span class="nv">name</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="nf">hello</span> <span class="s">"you"</span><span class="p">)</span>
+
+<span class="c1">;; Jom buat function lain menggunakan `let':</span>
+<span class="p">(</span><span class="nf">defun</span> <span class="nv">greeting</span> <span class="p">(</span><span class="nf">name</span><span class="p">)</span>
+  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nf">your-name</span> <span class="s">"Bastien"</span><span class="p">))</span>
+    <span class="p">(</span><span class="nf">insert</span> <span class="p">(</span><span class="nf">format</span> <span class="s">"Hello %s!\n\nI am %s."</span>
+                    <span class="nv">name</span>       <span class="c1">; argument untuk function</span>
+                    <span class="nv">your-name</span>  <span class="c1">; variable "Bastien" daripada let</span>
+                    <span class="p">))))</span>
+
+<span class="c1">;; Kemudian evaluate:</span>
+<span class="p">(</span><span class="nf">greeting</span> <span class="s">"you"</span><span class="p">)</span>
+
+<span class="c1">;; Sesetengah function adalah interaktif:</span>
+<span class="p">(</span><span class="nf">read-from-minibuffer</span> <span class="s">"Enter your name: "</span><span class="p">)</span>
+
+<span class="c1">;; Function tersebut akan memulangkan kembali apa yang anda masukkan ke prompt.</span>
+
+<span class="c1">;; Jom jadikan function `greeting' untuk prompt nama anda:</span>
+<span class="p">(</span><span class="nf">defun</span> <span class="nv">greeting</span> <span class="p">(</span><span class="nf">from-name</span><span class="p">)</span>
+  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nf">your-name</span> <span class="p">(</span><span class="nf">read-from-minibuffer</span> <span class="s">"Enter your name: "</span><span class="p">)))</span>
+    <span class="p">(</span><span class="nf">insert</span> <span class="p">(</span><span class="nf">format</span> <span class="s">"Hello!\n\nI am %s and you are %s."</span>
+                    <span class="nv">from-name</span> <span class="c1">; argument untuk function</span>
+                    <span class="nv">your-name</span> <span class="c1">; variable daripada let, yang dimasukkan dari prompt</span>
+                    <span class="p">))))</span>
+
+<span class="p">(</span><span class="nf">greeting</span> <span class="s">"Bastien"</span><span class="p">)</span>
+
+<span class="c1">;; Jom siapkan function dengan memaparkan result di window yang lain:</span>
+<span class="p">(</span><span class="nf">defun</span> <span class="nv">greeting</span> <span class="p">(</span><span class="nf">from-name</span><span class="p">)</span>
+  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nf">your-name</span> <span class="p">(</span><span class="nf">read-from-minibuffer</span> <span class="s">"Enter your name: "</span><span class="p">)))</span>
+    <span class="p">(</span><span class="nf">switch-to-buffer-other-window</span> <span class="s">"*test*"</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">erase-buffer</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">insert</span> <span class="p">(</span><span class="nf">format</span> <span class="s">"Hello %s!\n\nI am %s."</span> <span class="nv">your-name</span> <span class="nv">from-name</span><span class="p">))</span>
+    <span class="p">(</span><span class="nf">other-window</span> <span class="mi">1</span><span class="p">)))</span>
+
+<span class="c1">;; Test function tersebut:</span>
+<span class="p">(</span><span class="nf">greeting</span> <span class="s">"Bastien"</span><span class="p">)</span>
+
+<span class="c1">;; Tarik nafas.</span>
+
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+<span class="c1">;;</span>
+<span class="c1">;; Jom simpan senarai nama:</span>
+<span class="c1">;; Jika anda ingin membuat list(senarai) data, guna ' untuk elak</span>
+<span class="c1">;; daripada list tersebut evaluate.</span>
+<span class="p">(</span><span class="nf">setq</span> <span class="nv">list-of-names</span> <span class="o">'</span><span class="p">(</span><span class="s">"Sarah"</span> <span class="s">"Chloe"</span> <span class="s">"Mathilde"</span><span class="p">))</span>
+
+<span class="c1">;; Dapatkan elemen pertama daripada list menggunakan `car':</span>
+<span class="p">(</span><span class="nb">car</span> <span class="nv">list-of-names</span><span class="p">)</span>
+
+<span class="c1">;; Dapatkan semua elemen kecuali yang pertama menggunakan `cdr':</span>
+<span class="p">(</span><span class="nb">cdr</span> <span class="nv">list-of-names</span><span class="p">)</span>
+
+<span class="c1">;; Tambah elemen di awal list menggunakan `push':</span>
+<span class="p">(</span><span class="nf">push</span> <span class="s">"Stephanie"</span> <span class="nv">list-of-names</span><span class="p">)</span>
+
+<span class="c1">;; NOTA: `car' dan `cdr' tidak ubah suai list, tetapi `push' ya.</span>
+<span class="c1">;; Perbezaan ini penting: sesetengah function tiada side-effects (kesan sampingan)</span>
+<span class="c1">;; (seperti `car') dan yang lain ada side-effect (seperti `push').</span>
+
+<span class="c1">;; Jom panggil `hello' untuk setiap elemen dalam `list-of-names':</span>
+<span class="p">(</span><span class="nf">mapcar</span> <span class="ss">'hello</span> <span class="nv">list-of-names</span><span class="p">)</span>
+
+<span class="c1">;; Tukar `greeting' supaya ucapkan hello kepada semua orang dalam `list-of-names':</span>
+<span class="p">(</span><span class="nf">defun</span> <span class="nv">greeting</span> <span class="p">()</span>
+    <span class="p">(</span><span class="nf">switch-to-buffer-other-window</span> <span class="s">"*test*"</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">erase-buffer</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">mapcar</span> <span class="ss">'hello</span> <span class="nv">list-of-names</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">other-window</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nf">greeting</span><span class="p">)</span>
+
+<span class="c1">;; Ingat lagi function `hello' di atas? Function tersebut mengambil satu</span>
+<span class="c1">;; argument, iaitu nama.  `mapcar' memanggil `hello', kemudian menggunakan setiap</span>
+<span class="c1">;; nama dalam `list-of-names' sebagai argument untuk function `hello'.</span>
+
+<span class="c1">;; Sekarang kita susun sedikit untuk apa yang terpapar di buffer:</span>
+
+<span class="p">(</span><span class="nf">defun</span> <span class="nv">replace-hello-by-bonjour</span> <span class="p">()</span>
+    <span class="p">(</span><span class="nf">switch-to-buffer-other-window</span> <span class="s">"*test*"</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">goto-char</span> <span class="p">(</span><span class="nf">point-min</span><span class="p">))</span>
+    <span class="p">(</span><span class="nf">while</span> <span class="p">(</span><span class="nf">search-forward</span> <span class="s">"Hello"</span><span class="p">)</span>
+      <span class="p">(</span><span class="nf">replace-match</span> <span class="s">"Bonjour"</span><span class="p">))</span>
+    <span class="p">(</span><span class="nf">other-window</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="c1">;; (goto-char (point-min)) akan pergi ke permulaan buffer.</span>
+<span class="c1">;; (search-forward "Hello") akan mencari string "Hello".</span>
+<span class="c1">;; (while x y) evaluate sexp(s) y selagi x masih pulangkan sesuatu.</span>
+<span class="c1">;; Jika x pulangkan `nil', kita akan keluar daripada while loop.</span>
+
+<span class="p">(</span><span class="nf">replace-hello-by-bonjour</span><span class="p">)</span>
+
+<span class="c1">;; Anda akan dapat melihat semua "Hello" dalam buffer *test*</span>
+<span class="c1">;; ditukarkan dengan "Bonjour".</span>
+
+<span class="c1">;; Anda juga akan dapat error: "Search failed: Hello".</span>
+<span class="c1">;;</span>
+<span class="c1">;; Bagi mengelakkan error tersebut, anda perlu beritahu `search-forward' sama ada</span>
+<span class="c1">;; perlu berhenti mencari pada suatu ketika, dan sama ada perlu diam jika</span>
+<span class="c1">;; tidak jumpa apa yang dicari:</span>
+
+<span class="c1">;; (search-forward "Hello" nil 't) selesai masalah:</span>
+
+<span class="c1">;; Argument `nil' cakap: carian tidak mengikut kedudukan.</span>
+<span class="c1">;; Argument `'t'  cakap: diam saja jika tidak jumpa apa yang dicari.</span>
+
+<span class="c1">;; Kita guna sexp ini di function berikut, barulah tidak keluar error:</span>
+
+<span class="p">(</span><span class="nf">defun</span> <span class="nv">hello-to-bonjour</span> <span class="p">()</span>
+    <span class="p">(</span><span class="nf">switch-to-buffer-other-window</span> <span class="s">"*test*"</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">erase-buffer</span><span class="p">)</span>
+    <span class="c1">;; Ucap hello pada nama-nama dalam `list-of-names'</span>
+    <span class="p">(</span><span class="nf">mapcar</span> <span class="ss">'hello</span> <span class="nv">list-of-names</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">goto-char</span> <span class="p">(</span><span class="nf">point-min</span><span class="p">))</span>
+    <span class="c1">;; Ganti "Hello" dengan "Bonjour"</span>
+    <span class="p">(</span><span class="nf">while</span> <span class="p">(</span><span class="nf">search-forward</span> <span class="s">"Hello"</span> <span class="nv">nil</span> <span class="ss">'t</span><span class="p">)</span>
+      <span class="p">(</span><span class="nf">replace-match</span> <span class="s">"Bonjour"</span><span class="p">))</span>
+    <span class="p">(</span><span class="nf">other-window</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nf">hello-to-bonjour</span><span class="p">)</span>
+
+<span class="c1">;; Jom jadikan nama-nama tersebut bold:</span>
+
+<span class="p">(</span><span class="nf">defun</span> <span class="nv">boldify-names</span> <span class="p">()</span>
+    <span class="p">(</span><span class="nf">switch-to-buffer-other-window</span> <span class="s">"*test*"</span><span class="p">)</span>
+    <span class="p">(</span><span class="nf">goto-char</span> <span class="p">(</span><span class="nf">point-min</span><span class="p">))</span>
+    <span class="p">(</span><span class="nf">while</span> <span class="p">(</span><span class="nf">re-search-forward</span> <span class="s">"Bonjour \\(.+\\)!"</span> <span class="nv">nil</span> <span class="ss">'t</span><span class="p">)</span>
+      <span class="p">(</span><span class="nf">add-text-properties</span> <span class="p">(</span><span class="nf">match-beginning</span> <span class="mi">1</span><span class="p">)</span>
+                           <span class="p">(</span><span class="nf">match-end</span> <span class="mi">1</span><span class="p">)</span>
+                           <span class="p">(</span><span class="nb">list</span> <span class="ss">'face</span> <span class="ss">'bold</span><span class="p">)))</span>
+    <span class="p">(</span><span class="nf">other-window</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="c1">;; Function ini memperkenalkan `re-search-forward': anda mencari menggunakan</span>
+<span class="c1">;; pattern iaitu "regular expression", bukannya mencari string "Bonjour".</span>
+
+<span class="c1">;; Regular expression tersebut ialah "Bonjour \\(.+\\)!" dan dibaca begini:</span>
+<span class="c1">;; string "Bonjour ", dan</span>
+<span class="c1">;; kumpulan                | ini ialah \\( ... \\)</span>
+<span class="c1">;;   mana-mana character   | ini ialah .</span>
+<span class="c1">;;   yang boleh berulang   | ini ialah +</span>
+<span class="c1">;; dan string "!".</span>
+
+<span class="c1">;; Dah sedia?  Test function tersebut!</span>
+
+<span class="p">(</span><span class="nf">boldify-names</span><span class="p">)</span>
+
+<span class="c1">;; `add-text-properties' tambah... ciri-ciri teks, seperti face.</span>
+
+<span class="c1">;; OK, kita sudah selesai.  Selamat ber-hacking!</span>
+
+<span class="c1">;; Jika anda ingin tahu lebih mengenai variable atau function:</span>
+<span class="c1">;;</span>
+<span class="c1">;; C-h v a-variable RET</span>
+<span class="c1">;; C-h f a-function RET</span>
+<span class="c1">;;</span>
+<span class="c1">;; Jika anda ingin membaca manual Emacs Lisp menggunakan Emacs:</span>
+<span class="c1">;;</span>
+<span class="c1">;; C-h i m elisp RET</span>
+<span class="c1">;;</span>
+<span class="c1">;; Jika ingin membaca pengenalan kepada Emacs Lisp secara online:</span>
+<span class="c1">;; https://www.gnu.org/software/emacs/manual/html_node/eintr/index.html</span>
+</code></pre></div>
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/ms-my/elisp-my.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Bastien Guerry, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/ms-my/elisp-my.html.markdown">1 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="https://bzg.fr">Bastien Guerry</a>,
+        <a href="http://github.com/SaurabhSandav">Saurabh Sandav</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/burhanloey">Burhanuddin Baharuddin</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>

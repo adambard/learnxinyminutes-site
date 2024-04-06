@@ -1,0 +1,329 @@
+<!DOCTYPE html lang="en-us" xml:lang="en-us" xmlns="http://www.w3.org/1999/xhtml">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn forth in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/forth/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fforth%2F&text=Learn+X+in+Y+minutes%2C+where+X%3Dforth">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=forth</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/learnforth.fs">learnforth.fs</a>
+    </p>
+  <div id="doc">
+    <p>Forth was created by Charles H. Moore in the 70s. It is an imperative,
+stack-based language and programming environment, being used in projects
+such as Open Firmware. It&rsquo;s also used by NASA.</p>
+
+<p>Note: This article focuses predominantly on the Gforth implementation of
+Forth, but most of what is written here should work elsewhere.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>\ This is a comment
+( This is also a comment but it's only used when defining words )
+
+\ --------------------------------- Precursor ----------------------------------
+
+\ All programming in Forth is done by manipulating the parameter stack (more
+\ commonly just referred to as "the stack").
+5 2 3 56 76 23 65    \ ok
+
+\ Those numbers get added to the stack, from left to right.
+.s    \ &lt;7&gt; 5 2 3 56 76 23 65 ok
+
+\ In Forth, everything is either a word or a number.
+
+\ ------------------------------ Basic Arithmetic ------------------------------
+
+\ Arithmetic (in fact most words requiring data) works by manipulating data on
+\ the stack.
+5 4 +    \ ok
+
+\ `.` pops the top result from the stack:
+.    \ 9 ok
+
+\ More examples of arithmetic:
+6 7 * .        \ 42 ok
+1360 23 - .    \ 1337 ok
+12 12 / .      \ 1 ok
+13 2 mod .     \ 1 ok
+
+99 negate .    \ -99 ok
+-99 abs .      \ 99 ok
+52 23 max .    \ 52 ok
+52 23 min .    \ 23 ok
+
+\ ----------------------------- Stack Manipulation -----------------------------
+
+\ Naturally, as we work with the stack, we'll want some useful methods:
+
+3 dup -          \ duplicate the top item (1st now equals 2nd): 3 - 3
+2 5 swap /       \ swap the top with the second element:        5 / 2
+6 4 5 rot .s     \ rotate the top 3 elements:                   4 5 6
+4 0 drop 2 /     \ remove the top item (don't print to screen):  4 / 2
+1 2 3 nip .s     \ remove the second item (similar to drop):    1 3
+
+\ ---------------------- More Advanced Stack Manipulation ----------------------
+
+1 2 3 4 tuck   \ duplicate the top item below the second slot:      1 2 4 3 4 ok
+1 2 3 4 over   \ duplicate the second item to the top:             1 2 3 4 3 ok
+1 2 3 4 2 roll \ *move* the item at that position to the top:      1 3 4 2 ok
+1 2 3 4 2 pick \ *duplicate* the item at that position to the top: 1 2 3 4 2 ok
+
+\ When referring to stack indexes, they are zero-based.
+
+\ ------------------------------ Creating Words --------------------------------
+
+\ The `:` word sets Forth into compile mode until it sees the `;` word.
+: square ( n -- n ) dup * ;    \ ok
+5 square .                     \ 25 ok
+
+\ We can view what a word does too:
+see square     \ : square dup * ; ok
+
+\ -------------------------------- Conditionals --------------------------------
+
+\ -1 == true, 0 == false. However, any non-zero value is usually treated as
+\ being true:
+42 42 =    \ -1 ok
+12 53 =    \ 0 ok
+
+\ `if` is a compile-only word. `if` &lt;stuff to do&gt; `then` &lt;rest of program&gt;.
+: ?&gt;64 ( n -- n ) dup 64 &gt; if ." Greater than 64!" then ; \ ok
+100 ?&gt;64                                                  \ Greater than 64! ok
+
+\ Else:
+: ?&gt;64 ( n -- n ) dup 64 &gt; if ." Greater than 64!" else ." Less than 64!" then ;
+100 ?&gt;64    \ Greater than 64! ok
+20 ?&gt;64     \ Less than 64! ok
+
+\ ------------------------------------ Loops -----------------------------------
+
+\ `?do` is also a compile-only word.
+: myloop ( -- ) 5 0 ?do cr ." Hello!" loop ; \ ok
+myloop
+\ Hello!
+\ Hello!
+\ Hello!
+\ Hello!
+\ Hello! ok
+
+\ `?do` expects two numbers on the stack: the end number (exclusive) and the
+\ start number (inclusive).
+
+\ We can get the value of the index as we loop with `i`:
+: one-to-12 ( -- ) 12 0 do i . loop ;     \ ok
+one-to-12                                 \ 0 1 2 3 4 5 6 7 8 9 10 11 ok
+
+\ `do` works similarly, except if start and end are exactly the same it will
+\ loop forever (until arithmetic underflow).
+: loop-forever 1 1 do i square . loop ;     \ ok
+loop-forever                                \ 1 4 9 16 25 36 49 64 81 100 ...
+
+\ Change the "step" with `+loop`:
+: threes ( n n -- ) ?do i . 3 +loop ;    \ ok
+15 0 threes                             \ 0 3 6 9 12 ok
+
+\ Indefinite loops with `begin` &lt;stuff to do&gt; &lt;flag&gt; `until`:
+: death ( -- ) begin ." Are we there yet?" 0 until ;    \ ok
+
+\ ---------------------------- Variables and Memory ----------------------------
+
+\ Use `variable` to declare `age` to be a variable.
+variable age    \ ok
+
+\ Then we write 21 to age with the word `!`.
+21 age !    \ ok
+
+\ Finally we can print our variable using the "read" word `@`, which adds the
+\ value to the stack, or use `?` that reads and prints it in one go.
+age @ .    \ 21 ok
+age ?      \ 21 ok
+
+\ Constants are quite similar, except we don't bother with memory addresses:
+100 constant WATER-BOILING-POINT    \ ok
+WATER-BOILING-POINT .               \ 100 ok
+
+\ ----------------------------------- Arrays -----------------------------------
+
+\ Creating arrays is similar to variables, except we need to allocate more
+\ memory to them.
+
+\ You can use `2 cells allot` to create an array that's 3 cells long:
+variable mynumbers 2 cells allot    \ ok
+
+\ Initialize all the values to 0
+mynumbers 3 cells erase    \ ok
+
+\ Alternatively we could use `fill`:
+mynumbers 3 cells 0 fill
+
+\ or we can just skip all the above and initialize with specific values:
+create mynumbers 64 , 9001 , 1337 , \ ok (the last `,` is important!)
+
+\ ...which is equivalent to:
+
+\ Manually writing values to each index:
+64 mynumbers 0 cells + !      \ ok
+9001 mynumbers 1 cells + !    \ ok
+1337 mynumbers 2 cells + !    \ ok
+
+\ Reading values at certain array indexes:
+0 cells mynumbers + ?    \ 64 ok
+1 cells mynumbers + ?    \ 9001 ok
+
+\ We can simplify it a little by making a helper word for manipulating arrays:
+: of-arr ( n n -- n ) cells + ;    \ ok
+mynumbers 2 of-arr ?               \ 1337 ok
+
+\ Which we can use for writing too:
+20 mynumbers 1 of-arr !    \ ok
+mynumbers 1 of-arr ?       \ 20 ok
+
+\ ------------------------------ The Return Stack ------------------------------
+
+\ The return stack is used to the hold pointers to things when words are
+\ executing other words, e.g. loops.
+
+\ We've already seen one use of it: `i`, which duplicates the top of the return
+\ stack. `i` is equivalent to `r@`.
+: myloop ( -- ) 5 0 do r@ . loop ;    \ ok
+
+\ As well as reading, we can add to the return stack and remove from it:
+5 6 4 &gt;r swap r&gt; .s    \ 6 5 4 ok
+
+\ NOTE: Because Forth uses the return stack for word pointers,  `&gt;r` should
+\ always be followed by `r&gt;`.
+
+\ ------------------------- Floating Point Operations --------------------------
+
+\ Most Forths tend to eschew the use of floating point operations.
+8.3e 0.8e f+ f.    \ 9.1 ok
+
+\ Usually we simply prepend words with 'f' when dealing with floats:
+variable myfloatingvar    \ ok
+4.4e myfloatingvar f!     \ ok
+myfloatingvar f@ f.       \ 4.4 ok
+
+\ --------------------------------- Final Notes --------------------------------
+
+\ Typing a non-existent word will empty the stack. However, there's also a word
+\ specifically for that:
+clearstack
+
+\ Clear the screen:
+page
+
+\ Loading Forth files:
+\ s" forthfile.fs" included
+
+\ You can list every word that's in Forth's dictionary (but it's a huge list!):
+\ words
+
+\ Exiting Gforth:
+\ bye
+</code></pre></div>
+<h2>Ready For More?</h2>
+
+<ul>
+<li><a href="http://www.forth.com/starting-forth/">Starting Forth</a></li>
+<li><a href="http://www.murphywong.net/hello/simple.htm">Simple Forth</a></li>
+<li><a href="http://thinking-forth.sourceforge.net/">Thinking Forth</a></li>
+</ul>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/forth.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Horse M.D., and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/forth.html.markdown">0 contributor(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://github.com/HorseMD/">Horse M.D.</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-3525624-21'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+    </body>
+</html>
