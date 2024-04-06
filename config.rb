@@ -141,8 +141,7 @@ IGNORED = [
   "docs/tests/encoding.rb",
   "docs/tests/yaml",
   "docs/tests/encoding",
-  "docs/file.erb",
-  "docs/file",
+  "docs/file.html.erb",
   "docs/.github/PULL_REQUEST_TEMPLATE.md",
   "docs/.github/ISSUE_TEMPLATE.md",
   "docs/.github/PULL_REQUEST_TEMPLATE",
@@ -366,9 +365,9 @@ ready do
   articles = ArticleManager.new(sitemap)
   set :articles, articles
   set :i18n, I18N.new(articles)
-  #
-  # articles.articles.select{|a| not a.filename.nil?}.each{|a|
-  #   proxy "/docs/files/#{a.filename}", "/docs/file.html", :locals => {:rawcode => a.rawcode}, :ignore => true, :layout => false
-  # }
+
+  articles.articles.select{|a| not a.filename.nil?}.each{|a|
+    proxy "/docs/files/#{a.filename}", "/docs/file.html", :locals => {:rawcode => a.rawcode}, :ignore => true, :layout => false
+  }
 end
 
