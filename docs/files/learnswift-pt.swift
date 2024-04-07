@@ -1,235 +1,212 @@
 
-// importar um módulo
+// importa um módulo
 import UIKit
 
 //
-// MARK: Básico
+// MARK: Noções básicas
 //
 
-// O Xcode suporta landmarks para anotação de código e lista-as na jump bar
-// MARK: Marco de secção (MARK)
-// TODO: Algo a fazer em breve
-// FIXME: Reparar este código
+// Xcode supporta anotações para seu código e lista elas na barra de atalhos
+// MARK: Marca uma sessão
+// TODO: Faça algo logo
+// FIXME: Conserte esse código
 
-// Em Swift 2, println e print foram unidos num só método print. O print automaticamente acrescenta uma nova linha.
-print("Hello, world") // println mudou para print
-print("Hello, world", appendNewLine: false) // imprimir sem acrescentar uma nova linha
+println("Hello, world")
 
-// variáveis (var) podem ser modificadas depois de inicializadas
-// constantes (let) NÂO podem ser modificadas depois de inicializadas
+// Valores em variáveis (var) podem ter seu valor alterado depois de declarados.
+// Valores em constantes (let) NÃO podem ser alterados depois de declarados.
 
 var myVariable = 42
 let øπΩ = "value" // nomes de variáveis em unicode
 let π = 3.1415926
 let convenience = "keyword" // nome de variável contextual
-let weak = "keyword"; let override = "another keyword" // expressões podem ser separadas com ';'
-let `class` = "keyword" // plicals permitem que keywords sejam usadas como nomes de vartiáveis
+let weak = "keyword"; let override = "another keyword" // comandos podem ser separados por uma ponto e vírgula
+let `class` = "keyword" // Crases permitem que palavras-chave seja usadas como nome de variáveis
 let explicitDouble: Double = 70
 let intValue = 0007 // 7
 let largeIntValue = 77_000 // 77000
-let label = "some text " + String(myVariable) // Casting
-let piText = "Pi = \(π), Pi 2 = \(π * 2)" // interpolação de Strings
+let label = "some text " + String(myVariable) // Coerção
+let piText = "Pi = \(π), Pi 2 = \(π * 2)" // Interpolação de strings
 
-// Valores especificos à build
-// usam a configuração de build -D
+// Constrói valores específicos
+// Utiliza configuração de build -D
 #if false
-    print("Not printed")
+    println("Not printed")
     let buildValue = 3
 #else
     let buildValue = 7
 #endif
-print("Build value: \(buildValue)") // Build value: 7
+println("Build value: \(buildValue)") // Build value: 7
 
 /*
-    Optionals são um dos recursos de Swift, Optionals tanto podem conter
-    um valor ou conter nil (sem valor) que indica que não existe um valor.
-    Adicionar um ponto de exclamção (?) após definir o tipo declara
-    esse valor como um Optional.
+    Optionals fazem parte da linguagem e permitem que você armazene um
+    valor `Some` (algo) ou `None` (nada).
 
-    Como Swift requere que todas as propriedades tenham um valor, até nil
-    tem que ser explicitamente guardado como um valor Optional.
+    Como Swift requer que todas as propriedades tenham valores, até mesmo nil deve
+    ser explicitamente armazenado como um valor Optional.
 
-    Optional<T> é uma enumeração.
+    Optional<T> é uma enum.
 */
-var someOptionalString: String? = "optional" // Pode assumir o valor nil
-// Igual ao de cima, mas ? é um operando pósfixo (açúcar sintático)
+var someOptionalString: String? = "optional" // Pode ser nil
+// o mesmo acima, mas ? é um operador pós-fixado (açúcar sintático)
 var someOptionalString2: Optional<String> = "optional"
 
 if someOptionalString != nil {
-    // Não sou nil
+    // Eu não sou nil
     if someOptionalString!.hasPrefix("opt") {
-        print("has the prefix")
+        println("has the prefix")
     }
 
     let empty = someOptionalString?.isEmpty
 }
 someOptionalString = nil
 
-/*
-    Tentar usar ! para aceder a Optional com valor não existente, ou seja, nil,
-    causa em erro de execução.
-    É necessário ter sempre a certeza que um Optional não tem valor nil
-    antes de usar ! para fazer 'force-unwrap' ao seu valor.
-*/
-
-// Optional implicitamente desembrulhado
-var unwrappedString: String! = "Value is expected."
-// O mesmo de cima, mas ! é um operando pósfixo (mais açúcar sintático)
-var unwrappedString2: ImplicitlyUnwrappedOptional<String> = "Value is expected."
+// Optional implicitamente desempacotado (unwrapped)
+var unwrappedString: String! = "Valor é esperado."
+// o mesmo acima, mas ? é um operador pósfixado (açúcar sintático)
+var unwrappedString2: ImplicitlyUnwrappedOptional<String> = "Valor é esperado."
 
 if let someOptionalStringConstant = someOptionalString {
-    // Tem um valor diferente de nil
+    // Tem `Some` (algum) valor, não nil
     if !someOptionalStringConstant.hasPrefix("ok") {
-        // Não tem o prefixo
+        // não possui o prefixo
     }
 }
 
-// Swift tem suporte para guardar valores de qualquer tipo.
+// Swift tem suporte para armazenar um valor de qualquer tipo.
 // AnyObject == id
-// Ao contrátio do `id` de Objective-C, AnyObject funciona com qualquer valor (Class, Int, struct, etc.)
+// Ao contrário de Objective-C `id`, AnyObject funciona com qualquer valor (Class, Int, struct, etc)
 var anyObjectVar: AnyObject = 7
-anyObjectVar = "Changed value to a string, not good practice, but possible."
+anyObjectVar = "Mudou o valor para string, não é uma boa prática, mas é possível."
 
 /*
-    Comentar aqui
-
+Comentário aqui
     /*
-        Também é possível fazer comentários aninhados
+        Comentários aninhados também são suportados
     */
 */
 
 //
-// MARK: Coleções (Collections)
+// MARK: Coleções
 //
 
 /*
-    Os tipos Array e Dictionary são structs e, portanto, `let` e `var`
-    também indicam se eles são mutáveis (var) or imutáveis (let)
-    na altura em que se declaram estes tipos.
+    Tipos Array e Dicionário são structs. Portanto `let` e `var`
+    também indicam se são mutáveis (var) ou imutáveis (let) quando declarados
+    com esses tipos.
 */
 
 // Array
 var shoppingList = ["catfish", "water", "lemons"]
 shoppingList[1] = "bottle of water"
-let emptyArray = [String]() // let == imutável
-let emptyArray2 = Array<String>() // mesmo de cima
-var emptyMutableArray = [String]() // var == mutável
+let emptyArray = [String]() // imutável
+var emptyMutableArray = [String]() // mutável
 
 
-// Dictionary
+// Dicionário
 var occupations = [
     "Malcolm": "Captain",
     "kaylee": "Mechanic"
 ]
 occupations["Jayne"] = "Public Relations"
-let emptyDictionary = [String: Float]() // let == imutável
-let emptyDictionary2 = Dictionary<String, Float>() // mesmo de cima
-var emptyMutableDictionary = [String: Float]() // var == mutável
+let emptyDictionary = [String: Float]() // imutável
+var emptyMutableDictionary = [String: Float]() // mutável
 
 
 //
-// MARK: Controlo de Fluxo (Control Flow)
+// MARK: Controle de fluxo
 //
 
-// for loop (array)
+// laço for (array)
 let myArray = [1, 1, 2, 3, 5]
 for value in myArray {
     if value == 1 {
-        print("One!")
+        println("One!")
     } else {
-        print("Not one!")
+        println("Not one!")
     }
 }
 
-// for loop (dictionary)
+// laço for (dicionário)
 var dict = ["one": 1, "two": 2]
 for (key, value) in dict {
-    print("\(key): \(value)")
+    println("\(key): \(value)")
 }
 
-// ciclo for (limite)
+// laço for (alcance)
 for i in -1...shoppingList.count {
-    print(i)
+    println(i)
 }
 shoppingList[1...2] = ["steak", "peacons"]
-// usar ..< para excluir o último número
+// use ..< para excluir o último número
 
-// ciclo while
+// laço while (enquanto)
 var i = 1
 while i < 1000 {
     i *= 2
 }
 
-// ciclo do-whie
+// laço do-while
 do {
-    print("hello")
+    println("hello")
 } while 1 == 2
 
 // Switch
-// Muito poderoso, imagine `if`s com açúcar sintático
-// Funciona para String, instâncias de objectos e primitivas (Int, Double, etc.)
 let vegetable = "red pepper"
 switch vegetable {
 case "celery":
     let vegetableComment = "Add some raisins and make ants on a log."
 case "cucumber", "watercress":
     let vegetableComment = "That would make a good tea sandwich."
-case let localScopeValue where localScopeValue.hasSuffix("pepper"):
-    let vegetableComment = "Is it a spicy \(localScopeValue)?"
-default: // obrigatório (de forma a cobrir todos os possíveis inputs)
+case let x where x.hasSuffix("pepper"):
+    let vegetableComment = "Is it a spicy \(x)?"
+default: // required (in order to cover all possible input)
     let vegetableComment = "Everything tastes good in soup."
 }
 
 
 //
-// MARK: Funções (Functions)
+// MARK: Funções
 //
 
-// Funções são tipos de primeira classe, o que significa que podem ser
-// aninhadas dentro de outras funções e passadas como argumento
+// Funções são tipos de primeira classe, o que significa que eles podem ser aninhados
+// em funções e podem ser passados como parâmetros
 
-// Função em Swift com documentação no header
-
+// Funções Swift com cabeçalhos doc (formato como reStructedText)
 /**
-    Função de cumprimento.
+Uma operação de saudação
 
-    - Um ponto em documentação
-    - Outro ponto na documentação
+- Um bullet em documentos
+- Outro bullet
 
-    :param: nome Um nome
-    :param: dia Um dia
-    :returns: Uma string com um cumprimento contendo o nome e o dia.
+:param: nome A nome
+:param: dia A dia
+:returns: Uma string contendo o nome e o dia.
 */
-func greet(nome: String, dia: String) -> String {
-    return "Hello \(nome), today is \(dia)."
+func greet(name: String, day: String) -> String {
+    return "Hello \(name), today is \(day)."
 }
 greet("Bob", "Tuesday")
 
-// Semelhante ao método de cima excepto ao comportamento dos argumentos
-func greet2(#nomeObrigatório: String, nomeArgumentoExterno nomeArgumentoLocal: String) -> String {
-    return "Hello \(nomeObrigatório), the day is \(nomeArgumentoLocal)"
-}
-greet2(nomeObrigatório:"John", nomeArgumentoExterno: "Sunday")
-
-// Função que devolve vários itens num tuplo
+// Função que retorna múltiplos items em uma tupla
 func getGasPrices() -> (Double, Double, Double) {
     return (3.59, 3.69, 3.79)
 }
 let pricesTuple = getGasPrices()
 let price = pricesTuple.2 // 3.79
-// Ignorar tuplos ou outros valores usando _ (underscore)
+// Ignore valores de Tuplas (ou outros valores) usando _ (underscore)
 let (_, price1, _) = pricesTuple // price1 == 3.69
-print(price1 == pricesTuple.1) // true
-print("Gas price: \(price)")
+println(price1 == pricesTuple.1) // true
+println("Gas price: \(price)")
 
-// Argumentos variáveis
+// Número variável de argumentos
 func setup(numbers: Int...) {
     // é um array
     let number = numbers[0]
     let argCount = numbers.count
 }
 
-// Passar e devolver funções
+// Passando e retornando funções
 func makeIncrementer() -> (Int -> Int) {
     func addOne(number: Int) -> Int {
         return 1 + number
@@ -239,7 +216,7 @@ func makeIncrementer() -> (Int -> Int) {
 var increment = makeIncrementer()
 increment(7)
 
-// Passar por referência (inout)
+// passagem por referência
 func swapTwoInts(inout a: Int, inout b: Int) {
     let tempA = a
     a = b
@@ -248,7 +225,7 @@ func swapTwoInts(inout a: Int, inout b: Int) {
 var someIntA = 7
 var someIntB = 3
 swapTwoInts(&someIntA, &someIntB)
-print(someIntB) // 7
+println(someIntB) // 7
 
 
 //
@@ -258,40 +235,40 @@ var numbers = [1, 2, 6]
 
 // Funções são casos especiais de closures ({})
 
-// Exemplo de um Closure.
-// `->` separa o argumento e o tipo de retorno.
-// `in` separa o cabeçalho do closure do corpo do closure.
+// Exemplo de closure.
+// `->` separa argumentos e tipo de retorno
+// `in` separa o cabeçalho do closure do seu corpo
 numbers.map({
     (number: Int) -> Int in
     let result = 3 * number
     return result
 })
 
-// Quando o tipo é conhecido, como em cima, podemos fazer o seguinte
+// Quando o tipo é conhecido, como abaixo, nós podemos fazer o seguinte
 numbers = numbers.map({ number in 3 * number })
-// Ou até mesmo isto
+// Ou até mesmo isso
 //numbers = numbers.map({ $0 * 3 })
 
 print(numbers) // [3, 6, 18]
 
-// Closure à direita (Trailing closure)
+// Closure restante
 numbers = sorted(numbers) { $0 > $1 }
 
 print(numbers) // [18, 6, 3]
 
-// Super curto, pois o operador < consegue inferir o tipo
+// Super atalho, já que o operador < infere os tipos
 
 numbers = sorted(numbers, < )
 
 print(numbers) // [3, 6, 18]
 
 //
-// MARK: Estruturas (Structures)
+// MARK: Estruturas
 //
 
-// Estruturas (struct) e classes (class) têm capacidades muito semelhantes
+// Estruturas e classes tem funcionalidades muito similares
 struct NamesTable {
-    let names = [String]()
+    let names: [String]
 
     // Custom subscript
     subscript(index: Int) -> String {
@@ -299,17 +276,17 @@ struct NamesTable {
     }
 }
 
-// Estruturas têm um inicializador implicito que é automaticamente gerado
+// Estruturas possuem um inicializador auto-gerado automático (implícito)
 let namesTable = NamesTable(names: ["Me", "Them"])
-let name = namesTable[1]
-print("Name is \(name)") // Name is Them
+//let name = namesTable[2]
+//println("Name is \(name)") // Name is Them
 
 //
 // MARK: Classes
 //
 
-// Classes, estruturas e os seus membros têm três níveis de controlo de acesso
-// Nomeadamente: interno (predefinição)(internal) , público (public), privado (private)
+// Classes, Estruturas e seus membros possuem três níveis de modificadores de acesso
+// Eles são: internal (default), public, private
 
 public class Shape {
     public func getArea() -> Int {
@@ -318,32 +295,31 @@ public class Shape {
 }
 
 // Todos os métodos e propriedades de uma classe são públicos.
-// Se só for necessário guarda dados num
-// objecto estruturado, então é melhor usar uma `struct`
+// Se você só precisa armazenar dados em um objeto estruturado, use `struct`
 
 internal class Rect: Shape {
     var sideLength: Int = 1
 
-    // Propriedade getter e setter personalizado
+    // Getter e setter personalizado
     private var perimeter: Int {
         get {
             return 4 * sideLength
         }
         set {
-            // `newValue` é uma variável implicita disponível aos setters
+            // `newValue` é uma variável implicita disponível para os setters
             sideLength = newValue / 4
         }
     }
 
-    // Carregar preguiçosamente uma propriedade
-    // subShape permanece a nil (unintialized) até o getter ser invocado
+    // Carregue uma propriedade sob demanda (lazy)
+    // subShape permanece nil (não inicializado) até seu getter ser chamado
     lazy var subShape = Rect(sideLength: 4)
 
-    // Se não for necessário um getter e setter personalizado,
-    // mas se quiser correr o código antes e depois de modificar ou aceder
-    // uma propriedade, é possível usar `willSet` e `didSet`
+    // Se você não precisa de um getter e setter personalizado,
+    // mas ainda quer roda código antes e depois de configurar
+    // uma propriedade, você  pode usar `willSet` e `didSet`
     var identifier: String = "defaultID" {
-        // o argumento de `willSet` é o nome da variável para o novo valor
+        // o argumento `willSet` será o nome da variável para o novo valor
         willSet(someIdentifier) {
             print(someIdentifier)
         }
@@ -351,7 +327,7 @@ internal class Rect: Shape {
 
     init(sideLength: Int) {
         self.sideLength = sideLength
-        // invocar super.init no final do método de inicialização
+         // sempre chame super.init por último quand inicializar propriedades personalizadas (custom)
         super.init()
     }
 
@@ -366,7 +342,7 @@ internal class Rect: Shape {
     }
 }
 
-// A class `Square` estende (extends) a classe `Rect` (hierarquia)
+// Uma classe básica `Square` que estende `Rect`
 class Square: Rect {
     convenience init() {
         self.init(sideLength: 5)
@@ -378,52 +354,20 @@ print(mySquare.getArea()) // 25
 mySquare.shrink()
 print(mySquare.sideLength) // 4
 
-// Cast de uma instância de `Square` para `Shape`
-let aShape = mySquare as Shape
-
-// Compara instâncias, não é igual a == , visto que == compara objects (igual a)
+// Compara instâncias, não é o mesmo que == o qual compara objetos
 if mySquare === mySquare {
-    print("Yep, it's mySquare")
-}
-
-// Inicializador (init) com Optional
-class Circle: Shape {
-    var radius: Int
-    override func getArea() -> Int {
-        return 3 * radius * radius
-    }
-
-    // Colocar um ponto de interrpgação depois de `init` cria um inicializador
-    // Optional, o qual pode retornar nil
-    init?(radius: Int) {
-        self.radius = radius
-        super.init()
-
-        if radius <= 0 {
-            return nil
-        }
-    }
-}
-
-var myCircle = Circle(radius: 1)
-print(myCircle?.getArea())    // Optional(3)
-print(myCircle!.getArea())    // 3
-var myEmptyCircle = Circle(radius: -1)
-print(myEmptyCircle?.getArea())    // "nil"
-if let circle = myEmptyCircle {
-    // Não vai executar pois a variável myEmptyCircle é igual a nil
-    print("circle is not nil")
+    println("Yep, it's mySquare")
 }
 
 
 //
-// MARK: Enumerações (Enums)
+// MARK: Enums
 //
 
-// Enums pode opcionalmente ser um tipo especifico ou não.
-// Enums podem conter métodos tal como as classes.
+// Enums podem opcionalmente ser de um tipo específico ou não.
+// Podem conter métodos do mesmo jeito que classes.
 
-enum suit {
+enum Suit {
     case spades, hearts, diamonds, clubs
     func getIcon() -> String {
         switch self {
@@ -435,55 +379,20 @@ enum suit {
     }
 }
 
-// Os valores de Enum permitem syntax reduzida, não é preciso escrever o tipo do enum
-// quando a variável é explicitamente definida.
-var suitValue: Suit = .hearts
-
-// Enums que não sejam inteiros obrigam a atribuições valor bruto (raw value) diretas
-enum BookName: String {
-    case john = "John"
-    case luke = "Luke"
-}
-print("Name: \(BookName.john.rawValue)")
-
-// Enum com valores associados
-enum Furniture {
-    // Associar com um inteiro (Int)
-    case desk(height: Int)
-    // Associar com uma String e um Int
-    case chair(String, Int)
-
-    func description() -> String {
-        switch self {
-        case .desk(let height):
-            return "Desk with \(height) cm"
-        case .chair(let brand, let height):
-            return "Chair of \(brand) with \(height) cm"
-        }
-    }
-}
-
-var desk: Furniture = .desk(height: 80)
-print(desk.description())     // "Desk with 80 cm"
-var chair = Furniture.chair("Foo", 40)
-print(chair.description())    // "Chair of Foo with 40 cm"
-
 
 //
-// MARK: Protocolos (Protocols)
+// MARK: Protocolos
 //
 
-// Protocolos (`protcol`s) obrigam a que os tipos tenham
-// propriedades de instância, métodos de instância, métodos de tipo,
-// operadores e subscripts específicos.
-
+// `protocol` pode requerer que os tipos que se adequam tenham
+// propriedades de instância, métodos, operadores e subscripts.
 protocol ShapeGenerator {
     var enabled: Bool { get set }
     func buildShape() -> Shape
 }
 
-// Protocolos definidos com @objc permitem funções com optional
-// que permitem verificar se existem conformidade
+// Protocolos declarados com @objc permitem funções opcionais,
+// que permitem verificar a confomidade
 @objc protocol TransformShape {
     optional func reshaped()
     optional func canReshape() -> Bool
@@ -495,11 +404,9 @@ class MyShape: Rect {
     func grow() {
         sideLength += 2
 
-        // Coloca um ponto de interrogação após uma propriedade opcional, método
-        // ou subscript para graciosamente ignorar um valor nil e retornar nil
-        // em vez de provoar um erro em tempo de execução ("optional chaining").
         if let allow = self.delegate?.canReshape?() {
-            // testar o delegate e depois o método
+            // test for delegate then for method
+            // testa por delegação e então por método
             self.delegate?.reshaped?()
         }
     }
@@ -507,21 +414,21 @@ class MyShape: Rect {
 
 
 //
-// MARK: Outro
+// MARK: Outros
 //
 
-// extensões (`extension`s): Adiciona funcionalidade extra a um tipo já existente.
+// `extension`s: Adicionam uma funcionalidade extra para um tipo já existente.
 
-// Square agora "conforma" com o protocolo `Printable`
+// Square agora "segue" o protocolo `Printable`
 extension Square: Printable {
     var description: String {
         return "Area: \(self.getArea()) - ID: \(self.identifier)"
     }
 }
 
-print("Square: \(mySquare)")
+println("Square: \(mySquare)")
 
-// Também é possível extender tipos já embutidos
+// Você pode também estender tipos embutidos (built-in)
 extension Int {
     var customProperty: String {
         return "This is \(self)"
@@ -532,11 +439,11 @@ extension Int {
     }
 }
 
-print(7.customProperty) // "This is 7"
-print(14.multiplyBy(3)) // 42
+println(7.customProperty) // "This is 7"
+println(14.multiplyBy(2)) // 42
 
-// Generics: Semelhante a Java e C#. Usa a palavra-chave `where` para
-// especificar requisitos do `generics`.
+// Generics: Similar com Java e C#. Use a palavra-chave `where` para
+// especificar os requisitos do generics.
 
 func findIndex<T: Equatable>(array: [T], valueToFind: T) -> Int? {
     for (index, value) in enumerate(array) {
@@ -547,41 +454,26 @@ func findIndex<T: Equatable>(array: [T], valueToFind: T) -> Int? {
     return nil
 }
 let foundAtIndex = findIndex([1, 2, 3, 4], 3)
-print(foundAtIndex == 2) // true
+println(foundAtIndex == 2) // true
 
 // Operadores:
-// Operadores personalizados podem começar com caracteres:
+// Operadores personalizados (custom) podem começar com os seguintes caracteres:
 //      / = - + * % < > ! & | ^ . ~
 // ou
-// Caracteres Unicode matemáticos, símbolos, setas, dingbat e
-// caracteres de desenho linha/caixa.
-operador prefixo !!! {}
+// Unicode math, símbolo, seta, e caracteres tipográficos ou de desenho.
+prefix operator !!! {}
 
-// Um operador prefixo que triplica o comprimento do lado quando usado
+// Um operador de prefixo que triplica o comprimento do lado do quadrado
+// quando usado
 prefix func !!! (inout shape: Square) -> Square {
     shape.sideLength *= 3
     return shape
 }
 
 // valor atual
-print(mySquare.sideLength) // 4
+println(mySquare.sideLength) // 4
 
-// muda o comprimento deste lado usando o operador personalizado !!!, aumenta
-// o comprimento 3x
+// Troca o comprimento do lado usando um operador personalizado !!!, aumenta o lado por 3
 !!!mySquare
-print(mySquare.sideLength) // 12
-
-// Operadores também podem ser generics
-infix operator <-> {}
-func <-><T: Equatable> (inout a: T, inout b: T) {
-    let c = a
-    a = b
-    b = c
-}
-
-var foo: Float = 10
-var bar: Float = 20
-
-foo <-> bar
-print("foo is \(foo), bar is \(bar)") // "foo is 20.0, bar is 10.0"
+println(mySquare.sideLength) // 12
 

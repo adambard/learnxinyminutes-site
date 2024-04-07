@@ -1,89 +1,89 @@
 
-# OpenCV读取图片
+# Reading image in OpenCV
 import cv2
 img = cv2.imread('cat.jpg')
 
-# 显示图片
-# imshow() 函数被用来显示图片
+# Displaying the image
+# imshow() function is used to display the image
 cv2.imshow('Image',img)
-# 第一个参数是窗口的标题，第二个参数是image
-# 如果你得到错误，对象类型为None，你的图像路径可能是错误的。请重新检查图像包
+# Your first arguement is the title of the window and second parameter is image
+# If you are getting error, Object Type None, your image path may be wrong. Please recheck the pack to the image
 cv2.waitKey(0)
-# waitKey() 是一个键盘绑定函数，参数以毫秒为单位。对于GUI事件，必须使用waitKey()函数。
+# waitKey() is a keyboard binding function and takes arguement in milliseconds. For GUI events you MUST use waitKey() function.
 
-# 保存图片
+# Writing an image
 cv2.imwrite('catgray.png',img)
-# 第一个参数是文件名，第二个参数是图像
+# first arguement is the file name and second is the image
 
-# 转换图像灰度
+# Convert image to grayscale
 gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-# 从摄像头捕捉视频
+# Capturing Video from Webcam
 cap = cv2.VideoCapture(0)
-#0 是你的相机，如果你有多台相机，你需要输入他们的id
+#0 is your camera, if you have multiple camera, you need to enter their id
 while(True):
-    # 一帧一帧地获取
+    # Capturing frame-by-frame
     _, frame = cap.read()
     cv2.imshow('Frame',frame)
-    # 当用户按下q ->退出
+    # When user presses q -> quit
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-# 相机必须释放
+# Camera must be released
 cap.release()
 
-# 在文件中播放视频
+# Playing Video from file
 cap = cv2.VideoCapture('movie.mp4')
 while(cap.isOpened()):
     _, frame = cap.read()
-    # 灰度播放视频
+    # Play the video in grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     cv2.imshow('frame',gray)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 cap.release()
 
-# 在OpenCV中画线
-# cv2.line(img,(x,y),(x1,y1),(color->r,g,b->0 to 255),thickness)(注 color颜色rgb参数 thickness粗细)
+# Drawing The Line in OpenCV
+# cv2.line(img,(x,y),(x1,y1),(color->r,g,b->0 to 255),thickness)
 cv2.line(img,(0,0),(511,511),(255,0,0),5)
 
-# 画矩形
+# Drawing Rectangle
 # cv2.rectangle(img,(x,y),(x1,y1),(color->r,g,b->0 to 255),thickness)
-# 粗细= -1用于填充矩形
+# thickness = -1 used for filling the rectangle
 cv2.rectangle(img,(384,0),(510,128),(0,255,0),3)
 
-# 画圆
+# Drawing Circle
 cv2.circle(img,(xCenter,yCenter), radius, (color->r,g,b->0 to 255), thickness)
 cv2.circle(img,(200,90), 100, (0,0,255), -1)
 
-# 画椭圆
+# Drawing Ellipse
 cv2.ellipse(img,(256,256),(100,50),0,0,180,255,-1)
 
-# 在图像上增加文字
+# Adding Text On Images
 cv2.putText(img,"Hello World!!!", (x,y), cv2.FONT_HERSHEY_SIMPLEX, 2, 255)
 
-# 合成图像
+# Blending Images
 img1 = cv2.imread('cat.png')
 img2 = cv2.imread('openCV.jpg')
 dst = cv2.addWeighted(img1,0.5,img2,0.5,0)
 
-# 阈值图像
-# 二进制阈值
+# Thresholding image
+# Binary Thresholding
 _,thresImg = cv2.threshold(img,127,255,cv2.THRESH_BINARY)
 # Adaptive Thresholding
 adapThres = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,11,2)
 
-# 模糊的形象
-# 高斯模糊
+# Blur Image
+# Gaussian Blur
 blur = cv2.GaussianBlur(img,(5,5),0)
-# 模糊中值
+# Median Blur
 medianBlur = cv2.medianBlur(img,5)
 
-# Canny 边缘检测
+# Canny Edge Detection
 img = cv2.imread('cat.jpg',0)
 edges = cv2.Canny(img,100,200)
 
-# 用Haar Cascades进行人脸检测
-# 下载 Haar Cascades 在 https://github.com/opencv/opencv/blob/master/data/haarcascades/
+# Face Detection using Haar Cascades
+# Download Haar Cascades from https://github.com/opencv/opencv/blob/master/data/haarcascades/
 import cv2
 import numpy as np
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
@@ -92,13 +92,15 @@ eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 img = cv2.imread('human.jpg')
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-aces = face_cascade.detectMultiScale(gray, 1.3, 5)
+faces = face_cascade.detectMultiScale(gray, 1.3, 5)
 for (x,y,w,h) in faces:
+    # Draw a rectangle around detected face
     cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
     roi_gray = gray[y:y+h, x:x+w]
     roi_color = img[y:y+h, x:x+w]
     eyes = eye_cascade.detectMultiScale(roi_gray)
     for (ex,ey,ew,eh) in eyes:
+        # Draw a rectangle around detected eyes
         cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
 
 cv2.imshow('img',img)
@@ -106,5 +108,5 @@ cv2.waitKey(0)
 
 cv2.destroyAllWindows()
 # destroyAllWindows() destroys all windows. 
-# 如果您希望销毁特定窗口，请传递您创建的窗口的确切名称。
+# If you wish to destroy specific window pass the exact name of window you created.
 
