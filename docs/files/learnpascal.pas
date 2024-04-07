@@ -1,159 +1,142 @@
 
-//โปรแกรมปาสกาล
-//คอมเม้นต์เขียนแบบนี้ ใช้สแลชสองครั้ง
+//Anatomy of a Pascal Program
+//this is a comment
 {
-    แต่ถ้าต้องการคอมเม้นหลาย ๆ บรรทัด
-    ให้ใช้ วงเล็บปีกกา (curly brackets)
-    เนื้อหาอยู่บรรทัดเดียวกันกับปีกกาได้
+    this is a 
+    multiline comment
 }
 
-//อย่างแรก ต้องประกาศ ชื่อโปรแกรม
-program learn_pascal; //<-- ห้ามลืม semicolon
+//name of the program
+program learn_pascal; //<-- don't forget a semicolon
 
 const
     {
-        ประกาศค่าคงที่ (constant) ในบล็อคนี้
+        this is where you should declare constant values
     }
 type
     {
-        ประกาศชนิดข้อมูลของเราเองที่นี่ ไม่ว่าจะเป็น ชนิดข้อมูลทั่วไป
-        หรือจะเป็นคลาส 
+        this is where you should declare custom
+        data-types
     }
 var
     {
-        ตัวแปร ในภาษาปาสกาล ไม่เหมือนกับภาษาอื่น ๆ 
-        เพราะต้องประกาศในบล็อค var ก่อนใช้งานเสมอ
+        this is where you should declare a variable
     }
 
-//มาถึงส่วนโปรแกรมหลัก หรือ main fucntion นั่นเอง
+//main program area
 begin
     {
-        โค้ดเราทำงานอะไร อย่างไร ก็เริ่มรันจากตรงนี้
+        area to declare your instruction
     }
-end. // จบการทำงานของ _โปรแกรม_ เราจะจบด้วย จุลภาค "."
+end. // End of a main program area should require a "." symbol
 
-//การประกาศตัวแปร ทำได้แบบนี้
-//var ชื่อตัวแปร : ชนิด ;
+//When declaring variables
+//you can do this
 var a:integer;
 var b:integer;
-
-//หรือแบบที่นิยมมากกว่า คือเอามาเก็บในบล็อค var ทั้งหมด
+//or this
 var 
     a : integer;
     b : integer;
-
-//ถ้าจะเอาแบบสั้น ๆ บรรทัดเดียว ก็ทำได้ ทำได้พร้อมกันหลาย ๆ ตัวแปรด้วย
+//or this
 var a,b : integer;
 
 program Learn_More;
-// มาต่อเรื่อง ชนิดของข้อมูล (data types) และ ตัวดำเนินการ (operators)
+//Let's learn about data types and their operations
 
 const
     PI = 3.141592654;
     GNU = 'GNU''s Not Unix';
-        // ค่าคงที่ ให้ตั้งชื่อเป็น ตัวพิมพ์ใหญ่ ทั้งหมด ใช้กับชนิดข้อมูลใดๆ ก็ได้
-        // ค่าคงที่ ก็ตามชื่อเลย กำหนดค่าแล้ว ไม่สามารถเปลี่ยนแปลงได้ขณะรัน
+        // constants are conventionally named using CAPS
+        // their values are fixed and cannot be changed during runtime
+        // holds any standard data type (integer, real, boolean, char, string)
 
-// การประกาศชนิดข้อมูลของเราเอง
-// "ชนิด" ของตัวแปรสองแบบนี้ จะนำไปใช้ด้านล่าง
 type
     ch_array : array [0..255] of char;
-        // อะเรย์ เป็นชนิดข้อมูลที่มี ความยาว/ช่องเก็บข้อมูล และ ชนิดข้อมูล
-        // โค้ดด้านบน เป็นการประกาศอะเรย์ของตัวอักษา 255 ตัวอักษา
-        // ซึ่งได้ ความยาว/ช่องเก็บข้อมูลในตัวแปรตัวนี้ 256 ช่องที่เป็นข้อความ 
+        // arrays are new 'types' specifying the length and data type
+        // this defines a new data type that contains 255 characters
+        // (this is functionally equivalent to a string[256] variable)
     md_array : array of array of integer;
-        // ด้านบนนี้ เป็นตัวอย่าง อะเรย์สองมิติของเลขจำนวนเต็ม
-        // อะเรย์ ยังซ้อนกับอะเรย์ได้อีกด้วย ทำให้สร้าง อะเรย์หลายมิติได้
-        // เรายังสามารถสร้าง อะเรย์ที่มีความยาวช่องเท่ากับศูนย์ (0) ได้อีกด้วย
-        // ซึ่งทำให้เกิด อะเรย์ที่จำนวนช่องยืดหยุ่นได้ (dymaically sized array)
+        // nested arrays are equivalent to multidimensional arrays
+        // can define zero (0) length arrays that are dynamically sized
+        // this is a 2-dimensional array of integers
 
-// การประกาศตัวแปร : ชื่อตัวแปรเหล่านี้จะนำไปใช้ด้านล่างต่อไป
+//Declaring variables
 var
     int, c, d  : integer;
-           // ประกาศในบล็อค var มีตัวแปรสามตัวเป็นอินทีเจอร์ 
-           // ชนิดจำนวนเต็ม แบบ 16 bit มีช่วงข้อมูล [-32,768.. 32,767]
-           // »int« ในที่นี้เป็น "ชื่อตัวแปร" ที่ต้นฉบับตั้งให้สอดคล้องกับชนิดข้อมูล
-           // อย่าสับสนกับบางภาษาที่มีชนิด int ประกาศหน้าชื่อตัวแปร
+           // three variables that contain integer numbers
+           // integers are 16-bits and limited to the range [-32,768..32,767]
     r    : real;
-           // ตัวแปร r เป็นชนิดเรียล (real) หรือเลขทศนิยม 
-           // real มีช่วงข้อมูล [3.4E-38..3.4E38]
+           // a variable that contains a real number data types
+           // reals can range between [3.4E-38..3.4E38]
     bool : boolean;
-           // ข้อมูลชนิดบูเลียน (boolean) มีค่าได้สองแบบ คือ True/False
+           // a variable that contains a Boolean(True/False) value
     ch   : char;
-           // ตัวแปร ch เป็นชนิดตัวอักษร (ชาร์? คาร์?) หรือคาแรกเตอร์
-           // ตัวอักษรเป็นแบบ ASCII 8 bit ดังนั้นจะไม่ใช่ UTF, Unicode 
+           // a variable that contains a character value
+           // char variables are stored as 8-bit data types so no UTF
     str  : string;
-           // ตัวแปรสตริงจะเก็บข้อความ หรือ char หลาย ๆ ตัว
-           // ชนิดข้อมูลนี้ไม่เป็นมาตรฐานภาษาแต่คอมไพเลอร์ปาสกาลก็มักจะมีให้
-           // ทั่ว ๆ ไปแล้ว จะเป็นอะเรย์ของ char ความยาวตั้งต้น 255 
+           // a non-standard variable that contains a string value
+           // strings are an extension included in most Pascal compilers
+           // they are stored as an array of char with default length of 255.
     s    : string[50];
-           // แบบนี้คือ กำหนดความยาว string เอง ให้เก็บ char 50 ตัว
-           // แบบนี้ก็ทำให้ประหยัดหน่วยความจำมากขึ้นนั่นเอง
+           // a string with maximum length of 50 chars.
+           // you can specify the length of the string to minimize memory usage
     my_str: ch_array;
-           // ชนิดตัวแปร ใช้เป็นชนิดที่เรากำหนดเองก็ได้ อย่างตอนนี้
-           // ch_array เป็น "ชนิดข้อมูล" ที่เราสร้างขึ้นมาในบล็อค type
+           // you can declare variables of custom types
     my_2d : md_array;
-           // ตัวแปรแบบอะเรย์ที่ไม่ประกาศขนาด (dynamically sized array)
-           // ก่อนเอาไปใช้จริงต้องระบุขนาดก่อนใช้เสมอ
+           // dynamically sized arrays need to be sized before they can be used.
 
-    // ชนิดข้อมูลแบบ integer เพิ่มเติม
-    b    : byte;     // มีช่วงข้อมูล [0..255]
-    shi  : shortint; // มีช่วงข้อมูล [-128..127]
-    smi  : smallint; // มีช่วงข้อมูล [-32,768..32,767] (standard Integer)
-    w    : word;     // มีช่วงข้อมูล [0..65,535]
-    li   : longint;  // มีช่วงข้อมูล [-2,147,483,648..2,147,483,647]
-    lw   : longword; // มีช่วงข้อมูล [0..4,294,967,295]
-    c    : cardinal; // ก็คือ longword
-    i64  : int64;    // มีช่วงข้อมูล 
-                     // [-9223372036854775808..9223372036854775807]
-    qw   : qword;    // มีช่วงข้อมูล [0..18,446,744,073,709,551,615]
+    // additional integer data types
+    b    : byte;     // range [0..255]
+    shi  : shortint; // range [-128..127]
+    smi  : smallint; // range [-32,768..32,767] (standard Integer)
+    w    : word;     // range [0..65,535]
+    li   : longint;  // range [-2,147,483,648..2,147,483,647]
+    lw   : longword; // range [0..4,294,967,295]
+    c    : cardinal; // longword
+    i64  : int64;    // range [-9223372036854775808..9223372036854775807]
+    qw   : qword;    // range [0..18,446,744,073,709,551,615]
 
-    // ชนิดข้อมูลแบบ real เพิ่มเติม
-    rr   : real;     // มีช่วงข้อมูลที่ขึ้นกับระบบปฏิบัติการ 
-                     // (เช่นเป็นแบบ 8-bit, 16-bit, ฯลฯ)
-    rs   : single;   // มีช่วงข้อมูล [1.5E-45..3.4E38]
-    rd   : double;   // มีช่วงข้อมูล [5.0E-324 .. 1.7E308]
-    re   : extended; // มีช่วงข้อมูล [1.9E-4932..1.1E4932]
-    rc   : comp;     // มีช่วงข้อมูล [-2E64+1 .. 2E63-1]
+    // additional real types
+    rr   : real;     // range depends on platform (i.e., 8-bit, 16-bit, etc.)
+    rs   : single;   // range [1.5E-45..3.4E38]
+    rd   : double;   // range [5.0E-324 .. 1.7E308]
+    re   : extended; // range [1.9E-4932..1.1E4932]
+    rc   : comp;     // range [-2E64+1 .. 2E63-1]
 
 Begin
-    // การกำหนดค่าตัวแปรให้ขณะประกาศ
-    int  := 1;
-    r    := 3.14;
-    ch   := 'a';  // ใช้ single quote เหมือนกันทั้ง char และ string
-    str  := 'apple';  
+    int := 1;// how to assign a value to a variable
+    r   := 3.14;
+    ch  := 'a';
+    str := 'apple';
     bool := true;
-    // ภาษาปาสกาล มอง "ชื่อเฉพาะ" แบบไม่สนพิมพ์ใหญ่พิมพ์เล็ก
-    // (case-insensitive language)
-    // ตัวดำเนินการแบบคณิตศาสตร์ (arithmethic operation)
-    int := 1 + 1;   // int = 2 ซึ่งจะกำหนดทับค่าเดิมด้านบนที่เคยประกาศ
-    int := int + 1; // int = 2 + 1 = 3 นำค่าตอนนี้ (2) มา +1 ได้ 3
-    int := 4 div 2; // int = 2 หารด้วย div จะได้ผลเป็น integer เสมอ
-    int := 3 div 2; // int = 1
-    int := 1 div 2; // int = 0
+    //pascal is not a case-sensitive language
+    //arithmetic operation
+    int := 1 + 1; // int = 2 overwriting the previous assignment
+    int := int + 1; // int = 2 + 1 = 3;
+    int := 4 div 2; //int = 2 division operation where result will be floored
+    int := 3 div 2; //int = 1
+    int := 1 div 2; //int = 0
 
-    bool := true or false;  // bool = true
+    bool := true or false; // bool = true
     bool := false and true; // bool = false
-    bool := true xor true;  // bool = false
+    bool := true xor true; // bool = false
 
-    r := 3 / 2;  // หารด้วย / จะได้ผลเป็น real เสมอ
-    r := int;    // เรากำหนดค่า integer ให้ตัวแปร real ได้
-                 // แต่ทำกลับกัน โดยกำหนด real ให้ integer ไม่ได้
+    r := 3 / 2; // a division operator for real
+    r := int; // can assign an integer to a real variable but not the reverse
 
-    c := str[1]; // กำหนดค่าแรกใน array str ให้ตัวแปร c ที่เป็น char
-    str := 'hello' + 'world'; // เรารวม string เข้าด้วยกันด้วย + 
+    c := str[1]; // assign the first letter of str to c
+    str := 'hello' + 'world'; //combining strings
 
-    my_str[0] := 'a'; // กำหนดค่าให้ string เฉพาะตำแหน่งแบบอะเรย์ทั่วไป
+    my_str[0] := 'a'; // array assignment needs an index
 
-    setlength(my_2d,10,10); // ปรับขนาดอะเรย์ 2 มิติให้เป็นขนาด 10x10
-                            // โดยตัวแปร my_2d นี้สร้างแล้วด้านบน
-    for c := 0 to 9 do      // อะเรย์เริ่มจาก 0 และจบที่ ความยาว-1
-        for d := 0 to 9 do  // ตัวนับ (counter) จำเป็นต้องประกาศก่อนใช้
+    setlength(my_2d,10,10); // initialize dynamically sized arrays: 10×10 array
+    for c := 0 to 9 do // arrays begin at 0 and end at length-1
+        for d := 0 to 9 do // for loop counters need to be declared variables
         my_2d[c,d] := c * d;
-          // กำหนดอะเรย์หลายมิติ ด้วยการใช้วงเล็บก้ามปู (square brackets)
+          // address multidimensional arrays with a single set of brackets
 
 End.
-// จบโปรแกรมบริบูรณ์ ด้วย "."
 
 program Functional_Programming;
 
@@ -161,43 +144,39 @@ Var
     i, dummy : integer;
 
 function factorial_recursion(const a: integer) : integer;
-{  ทำการคำนวณแฟคทอเรียลซ้ำ ๆ ของเลขจำนวนเต็ม โดยผ่านพารามิเตอร์ a
-   ถ้าจะประกาศตัวแปรโลคอลในฟังก์ชั่น ก็ทำได้ โดยการใช้บล็อค var ภายในฟังก์ชั่น
-   เช่น :
-   var
-      local_a : integer;
-}
+{ recursively calculates the factorial of integer parameter a }
+
+// Declare local variables within the function
+// e.g.:
+// Var
+//    local_a : integer;
+
 Begin
     If a >= 1 Then
-    { ฟังก์ชั่นนี้คืนค่ากลับ โดยการกำหนดค่าที่ผ่านทางพารามิเตอร์ a
-     นำมาคูณกับฟังก์ชั่นที่ผ่าน a-1 สุดท้ายก็กำหนดค่าลงไปให้กับฟังก์ชั่นตรงๆ }
+    // return values from functions by assigning a value to the function name
         factorial_recursion := a * factorial_recursion(a-1)
     Else
         factorial_recursion := 1;
-End; // จบ ฟังก์ชั่น ด้วย ";" หลัง End ไม่เหมือนกับจบ โปรแกรม ที่จะใช้ "."
+End; // terminate a function using a semicolon after the End statement.
 
 procedure get_integer(var i : integer; dummy : integer);
-{ เรารับ input จากผู้ใช้มาเก็บใน parameter i ที่เป็น integer ที่ตั้งขึ้นใน
-  พารามิเตอร์ โดยใช้ var ประกาศ ทำให้ค่าที่รับเข้ามาจะเปลี่ยนปรับได้จาก
-  ภายนอกการประกาศพารามิเตอร์นี้ ส่วน dummy เป็นตัวแปรที่ปรับเปลี่ยนได้
-  "เฉพาะจากภายในฟังก์ชั่น,โพรซีเยอร์นั้น ๆ }
+{ get user input and store it in the integer parameter i.
+  parameters prefaced with 'var' are variable, meaning their value can change
+  outside of the parameter. Value parameters (without 'var') like 'dummy' are
+  static and changes made within the scope of the function/procedure do not
+  affect the variable passed as a parameter }
+
 Begin
     write('Enter an integer: ');
     readln(i);
-    dummy := 4; // dummy จะไม่ทำให้ค่าที่ได้รับมาครั้งแรกใน main block เปลี่ยน
+    dummy := 4; // dummy will not change value outside of the procedure
 End;
 
-//--------------------//
-// main program block
-//--------------------//
-Begin 
+Begin // main program block
     dummy := 3;
     get_integer(i, dummy);
     writeln(i, '! = ', factorial_recursion(i));
-    // พิมพ์ค่า i!
-    writeln('dummy = ', dummy); // จะให้ค่าเป็น '3' เสมอ 
-                                // เพราะจะไม่เปลี่ยนเนื่องด้วย
-                                // การประกาศพารามิเตอร์ใน
-                                // โพรซีเยอร์ get_integer ด้านบน
+    // outputs i!
+    writeln('dummy = ', dummy); // always outputs '3' since dummy is unchanged.
 End.
 
