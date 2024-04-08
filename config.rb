@@ -1,10 +1,17 @@
+require 'pygments'
 require 'open3'
 
 activate :directory_indexes
+
 activate :syntax
+module ::Middleman::Syntax::Highlighter
+  def self.highlight(code, language=nil, opts={})
+    Pygments.highlight(code, lexer: language)
+  end
+end
 
 set :markdown_engine, :redcarpet
-set :markdown, :fenced_code_blocks => true, :smartypants => true, :tables => true
+set :markdown, :fenced_code_blocks => true, :smartypants => true, :tables => true, :strikethrough => true
 
 set :css_dir, 'css'
 set :js_dir, 'js'
