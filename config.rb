@@ -364,7 +364,18 @@ class I18N
   def t(data, page, key)
     language = @articles.get(page).language.sub('-', '_')
     translations = data.i18n[language] || data.i18n['default']
-    translations[key]
+    translations[key] || data.i18n['default'][key]
+  end
+
+  def p(data, page, key, num)
+    language = @articles.get(page).language.sub('-', '_')
+    newkey = key
+    if num == 1
+      newkey += '-one'
+    else
+      newkey += '-other'
+    end
+    data.i18n.dig(language, newkey) || data.i18n.dig(language, key) || data.i18n.dig('default', newkey) || data.i18n.dig('default', key)
   end
 end
 
