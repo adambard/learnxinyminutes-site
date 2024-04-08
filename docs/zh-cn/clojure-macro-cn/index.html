@@ -91,130 +91,130 @@
 <p>小心！可以用函数完成的事用宏去实现可不是什么好事。你应该仅在需要控制参数是否或者何时eval的时候使用宏。</p>
 
 <p>你应该熟悉Clojure.确保你了解<a href="http://learnxinyminutes.com/docs/zh-cn/clojure-cn/">Y分钟学Clojure</a>中的所有内容。</p>
-<div class="highlight"><pre class="highlight clojure"><code><span class="c1">;; 使用defmacro定义宏。宏应该输出一个可以作为clojure代码演算的列表。</span><span class="w">
-</span><span class="c1">;;</span><span class="w">
-</span><span class="c1">;; 以下宏的效果和直接写(reverse "Hello World")一致。</span><span class="w">
+<div class="highlight"><pre><span></span><span class="c1">;; 使用defmacro定义宏。宏应该输出一个可以作为clojure代码演算的列表。</span>
+<span class="c1">;;</span>
+<span class="c1">;; 以下宏的效果和直接写(reverse &quot;Hello World&quot;)一致。</span>
 
-</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">my-first-macro</span><span class="w"> </span><span class="p">[]</span><span class="w">
-  </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="nb">reverse</span><span class="w"> </span><span class="s">"Hello World"</span><span class="p">))</span><span class="w">
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">my-first-macro</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">list reverse </span><span class="s">&quot;Hello World&quot;</span><span class="p">))</span>
 
-</span><span class="c1">;; 使用macroexpand或macroexpand-1查看宏的结果。</span><span class="w">
-</span><span class="c1">;;</span><span class="w">
-</span><span class="c1">;; 注意，调用需要引用。</span><span class="w">
-</span><span class="p">(</span><span class="nb">macroexpand</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">my-first-macro</span><span class="p">))</span><span class="w">
-</span><span class="c1">;; -&gt; (#&lt;core$reverse clojure.core$reverse@xxxxxxxx&gt; "Hello World")</span><span class="w">
+<span class="c1">;; 使用macroexpand或macroexpand-1查看宏的结果。</span>
+<span class="c1">;;</span>
+<span class="c1">;; 注意，调用需要引用。</span>
+<span class="p">(</span><span class="nb">macroexpand </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">my-first-macro</span><span class="p">))</span>
+<span class="c1">;; -&gt; (#&lt;core$reverse clojure.core$reverse@xxxxxxxx&gt; &quot;Hello World&quot;)</span>
 
-</span><span class="c1">;; 你可以直接eval macroexpand的结果</span><span class="w">
-</span><span class="p">(</span><span class="nb">eval</span><span class="w"> </span><span class="p">(</span><span class="nb">macroexpand</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">my-first-macro</span><span class="p">)))</span><span class="w">
-</span><span class="c1">; -&gt; (\d \l \o \r \W \space \o \l \l \e \H)</span><span class="w">
+<span class="c1">;; 你可以直接eval macroexpand的结果</span>
+<span class="p">(</span><span class="nb">eval </span><span class="p">(</span><span class="nb">macroexpand </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">my-first-macro</span><span class="p">)))</span>
+<span class="c1">; -&gt; (\d \l \o \r \W \space \o \l \l \e \H)</span>
 
-</span><span class="c1">;; 不过一般使用以下形式，更简短，更像函数：</span><span class="w">
-</span><span class="p">(</span><span class="nf">my-first-macro</span><span class="p">)</span><span class="w">  </span><span class="c1">; -&gt; (\d \l \o \r \W \space \o \l \l \e \H)</span><span class="w">
+<span class="c1">;; 不过一般使用以下形式，更简短，更像函数：</span>
+<span class="p">(</span><span class="nf">my-first-macro</span><span class="p">)</span><span class="w">  </span><span class="c1">; -&gt; (\d \l \o \r \W \space \o \l \l \e \H)</span>
 
-</span><span class="c1">;; 创建宏的时候可以使用更简短的引用形式来创建列表</span><span class="w">
-</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">my-first-quoted-macro</span><span class="w"> </span><span class="p">[]</span><span class="w">
-  </span><span class="o">'</span><span class="p">(</span><span class="nb">reverse</span><span class="w"> </span><span class="s">"Hello World"</span><span class="p">))</span><span class="w">
+<span class="c1">;; 创建宏的时候可以使用更简短的引用形式来创建列表</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">my-first-quoted-macro</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="o">&#39;</span><span class="p">(</span><span class="nb">reverse </span><span class="s">&quot;Hello World&quot;</span><span class="p">))</span>
 
-</span><span class="p">(</span><span class="nb">macroexpand</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">my-first-quoted-macro</span><span class="p">))</span><span class="w">
-</span><span class="c1">;; -&gt; (reverse "Hello World")</span><span class="w">
-</span><span class="c1">;; 注意reverse不再是一个函数对象，而是一个符号。</span><span class="w">
+<span class="p">(</span><span class="nb">macroexpand </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">my-first-quoted-macro</span><span class="p">))</span>
+<span class="c1">;; -&gt; (reverse &quot;Hello World&quot;)</span>
+<span class="c1">;; 注意reverse不再是一个函数对象，而是一个符号。</span>
 
-</span><span class="c1">;; 宏可以传入参数。</span><span class="w">
-</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">inc2</span><span class="w"> </span><span class="p">[</span><span class="n">arg</span><span class="p">]</span><span class="w">
-  </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="nb">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="n">arg</span><span class="p">))</span><span class="w">
+<span class="c1">;; 宏可以传入参数。</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">inc2</span><span class="w"> </span><span class="p">[</span><span class="nv">arg</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">list + </span><span class="mi">2</span><span class="w"> </span><span class="nv">arg</span><span class="p">))</span>
 
-</span><span class="p">(</span><span class="nf">inc2</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; 4</span><span class="w">
+<span class="p">(</span><span class="nf">inc2</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; 4</span>
 
-</span><span class="c1">;; 不过，如果你尝试配合使用引用列表，会导致错误，</span><span class="w">
-</span><span class="c1">;; 因为参数也会被引用。</span><span class="w">
-</span><span class="c1">;; 为了避免这个问题，clojure提供了引用宏的另一种方式：`</span><span class="w">
-</span><span class="c1">;; 在`之内，你可以使用~获得外圈作用域的变量。</span><span class="w">
-</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">inc2-quoted</span><span class="w"> </span><span class="p">[</span><span class="n">arg</span><span class="p">]</span><span class="w">
-  </span><span class="o">`</span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">~</span><span class="n">arg</span><span class="p">))</span><span class="w">
+<span class="c1">;; 不过，如果你尝试配合使用引用列表，会导致错误，</span>
+<span class="c1">;; 因为参数也会被引用。</span>
+<span class="c1">;; 为了避免这个问题，clojure提供了引用宏的另一种方式：`</span>
+<span class="c1">;; 在`之内，你可以使用~获得外圈作用域的变量。</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">inc2-quoted</span><span class="w"> </span><span class="p">[</span><span class="nv">arg</span><span class="p">]</span>
+<span class="w">  </span><span class="o">`</span><span class="p">(</span><span class="nb">+ </span><span class="mi">2</span><span class="w"> </span><span class="o">~</span><span class="nv">arg</span><span class="p">))</span>
 
-</span><span class="p">(</span><span class="nf">inc2-quoted</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">
+<span class="p">(</span><span class="nf">inc2-quoted</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
 
-</span><span class="c1">;; 你可以使用通常的析构参数。用~@展开列表中的变量。</span><span class="w">
-</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">unless</span><span class="w"> </span><span class="p">[</span><span class="n">arg</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">body</span><span class="p">]</span><span class="w">
-  </span><span class="o">`</span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">not</span><span class="w"> </span><span class="o">~</span><span class="n">arg</span><span class="p">)</span><span class="w">
-     </span><span class="p">(</span><span class="nf">do</span><span class="w"> </span><span class="o">~@</span><span class="n">body</span><span class="p">)))</span><span class="w"> </span><span class="c1">; 别忘了 do!</span><span class="w">
+<span class="c1">;; 你可以使用通常的析构参数。用~@展开列表中的变量。</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">unless</span><span class="w"> </span><span class="p">[</span><span class="nv">arg</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nv">body</span><span class="p">]</span>
+<span class="w">  </span><span class="o">`</span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">not </span><span class="o">~</span><span class="nv">arg</span><span class="p">)</span>
+<span class="w">     </span><span class="p">(</span><span class="k">do </span><span class="o">~@</span><span class="nv">body</span><span class="p">)))</span><span class="w"> </span><span class="c1">; 别忘了 do!</span>
 
-</span><span class="p">(</span><span class="nb">macroexpand</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">unless</span><span class="w"> </span><span class="n">true</span><span class="w"> </span><span class="p">(</span><span class="nb">reverse</span><span class="w"> </span><span class="s">"Hello World"</span><span class="p">)))</span><span class="w">
+<span class="p">(</span><span class="nb">macroexpand </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">unless</span><span class="w"> </span><span class="nv">true</span><span class="w"> </span><span class="p">(</span><span class="nb">reverse </span><span class="s">&quot;Hello World&quot;</span><span class="p">)))</span>
 
-</span><span class="c1">;; -&gt;</span><span class="w">
-</span><span class="c1">;; (if (clojure.core/not true) (do (reverse "Hello World")))</span><span class="w">
+<span class="c1">;; -&gt;</span>
+<span class="c1">;; (if (clojure.core/not true) (do (reverse &quot;Hello World&quot;)))</span>
 
-</span><span class="c1">;; 当第一个参数为假时，(unless)会演算、返回主体。 </span><span class="w">
-</span><span class="c1">;; 否则返回nil。</span><span class="w">
+<span class="c1">;; 当第一个参数为假时，(unless)会演算、返回主体。 </span>
+<span class="c1">;; 否则返回nil。</span>
 
-</span><span class="p">(</span><span class="nf">unless</span><span class="w"> </span><span class="n">true</span><span class="w"> </span><span class="s">"Hello"</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; nil</span><span class="w">
-</span><span class="p">(</span><span class="nf">unless</span><span class="w"> </span><span class="n">false</span><span class="w"> </span><span class="s">"Hello"</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; "Hello"</span><span class="w">
+<span class="p">(</span><span class="nf">unless</span><span class="w"> </span><span class="nv">true</span><span class="w"> </span><span class="s">&quot;Hello&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; nil</span>
+<span class="p">(</span><span class="nf">unless</span><span class="w"> </span><span class="nv">false</span><span class="w"> </span><span class="s">&quot;Hello&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; &quot;Hello&quot;</span>
 
-</span><span class="c1">;; 需要小心，宏会搞乱你的变量</span><span class="w">
-</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">define-x</span><span class="w"> </span><span class="p">[]</span><span class="w">
-  </span><span class="o">'</span><span class="p">(</span><span class="nf">do</span><span class="w">
-     </span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">
-     </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="n">x</span><span class="p">)))</span><span class="w">
+<span class="c1">;; 需要小心，宏会搞乱你的变量</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">define-x</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">do</span>
+<span class="w">     </span><span class="p">(</span><span class="k">def </span><span class="nv">x</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">     </span><span class="p">(</span><span class="nb">list </span><span class="nv">x</span><span class="p">)))</span>
 
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="nf">define-x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span><span class="w">
-</span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span><span class="w">
+<span class="p">(</span><span class="k">def </span><span class="nv">x</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">define-x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span>
+<span class="p">(</span><span class="nb">list </span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span>
 
-</span><span class="c1">;; 使用gensym来获得独有的标识符</span><span class="w">
-</span><span class="p">(</span><span class="nb">gensym</span><span class="w"> </span><span class="ss">'x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; x1281 (or some such thing)</span><span class="w">
+<span class="c1">;; 使用gensym来获得独有的标识符</span>
+<span class="p">(</span><span class="nb">gensym </span><span class="ss">&#39;x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; x1281 (or some such thing)</span>
 
-</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">define-x-safely</span><span class="w"> </span><span class="p">[]</span><span class="w">
-  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[</span><span class="n">sym</span><span class="w"> </span><span class="p">(</span><span class="nb">gensym</span><span class="w"> </span><span class="ss">'x</span><span class="p">)]</span><span class="w">
-    </span><span class="o">`</span><span class="p">(</span><span class="nf">do</span><span class="w">
-       </span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="o">~</span><span class="n">sym</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">
-       </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="o">~</span><span class="n">sym</span><span class="p">))))</span><span class="w">
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">define-x-safely</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sym</span><span class="w"> </span><span class="p">(</span><span class="nb">gensym </span><span class="ss">&#39;x</span><span class="p">)]</span>
+<span class="w">    </span><span class="o">`</span><span class="p">(</span><span class="nf">do</span>
+<span class="w">       </span><span class="p">(</span><span class="k">def </span><span class="o">~</span><span class="nv">sym</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">       </span><span class="p">(</span><span class="nb">list </span><span class="o">~</span><span class="nv">sym</span><span class="p">))))</span>
 
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="nf">define-x-safely</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span><span class="w">
-</span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (4)</span><span class="w">
+<span class="p">(</span><span class="k">def </span><span class="nv">x</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">define-x-safely</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span>
+<span class="p">(</span><span class="nb">list </span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (4)</span>
 
-</span><span class="c1">;; 你可以在 ` 中使用 # 为每个符号自动生成gensym</span><span class="w">
-</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">define-x-hygenically</span><span class="w"> </span><span class="p">[]</span><span class="w">
-  </span><span class="o">`</span><span class="p">(</span><span class="nf">do</span><span class="w">
-     </span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">x</span><span class="o">#</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">
-     </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="n">x</span><span class="o">#</span><span class="p">)))</span><span class="w">
+<span class="c1">;; 你可以在 ` 中使用 # 为每个符号自动生成gensym</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">define-x-hygenically</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="o">`</span><span class="p">(</span><span class="nf">do</span>
+<span class="w">     </span><span class="p">(</span><span class="k">def </span><span class="nv">x#</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">     </span><span class="p">(</span><span class="nb">list </span><span class="nv">x#</span><span class="p">)))</span>
 
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="nf">define-x-hygenically</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span><span class="w">
-</span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (4)</span><span class="w">
+<span class="p">(</span><span class="k">def </span><span class="nv">x</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">define-x-hygenically</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span>
+<span class="p">(</span><span class="nb">list </span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (4)</span>
 
-</span><span class="c1">;; 通常会配合宏使用帮助函数。</span><span class="w">
-</span><span class="c1">;; 让我们创建一些帮助函数来支持（无聊的）算术语法：</span><span class="w">
+<span class="c1">;; 通常会配合宏使用帮助函数。</span>
+<span class="c1">;; 让我们创建一些帮助函数来支持（无聊的）算术语法：</span>
 
-</span><span class="p">(</span><span class="nf">declare</span><span class="w"> </span><span class="n">inline-2-helper</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">clean-arg</span><span class="w"> </span><span class="p">[</span><span class="n">arg</span><span class="p">]</span><span class="w">
-  </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">seq?</span><span class="w"> </span><span class="n">arg</span><span class="p">)</span><span class="w">
-    </span><span class="p">(</span><span class="nf">inline-2-helper</span><span class="w"> </span><span class="n">arg</span><span class="p">)</span><span class="w">
-    </span><span class="n">arg</span><span class="p">))</span><span class="w">
+<span class="p">(</span><span class="kd">declare </span><span class="nv">inline-2-helper</span><span class="p">)</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">clean-arg</span><span class="w"> </span><span class="p">[</span><span class="nv">arg</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">seq? </span><span class="nv">arg</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">inline-2-helper</span><span class="w"> </span><span class="nv">arg</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">arg</span><span class="p">))</span>
 
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">apply-arg</span><span class="w">
-  </span><span class="s">"Given args [x (+ y)], return (+ x y)"</span><span class="w">
-  </span><span class="p">[</span><span class="nb">val</span><span class="w"> </span><span class="p">[</span><span class="n">op</span><span class="w"> </span><span class="n">arg</span><span class="p">]]</span><span class="w">
-  </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="nb">val</span><span class="w"> </span><span class="p">(</span><span class="nf">clean-arg</span><span class="w"> </span><span class="n">arg</span><span class="p">)))</span><span class="w">
+<span class="p">(</span><span class="kd">defn </span><span class="nv">apply-arg</span>
+<span class="w">  </span><span class="s">&quot;Given args [x (+ y)], return (+ x y)&quot;</span>
+<span class="w">  </span><span class="p">[</span><span class="nb">val </span><span class="p">[</span><span class="nv">op</span><span class="w"> </span><span class="nv">arg</span><span class="p">]]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">list </span><span class="nv">op</span><span class="w"> </span><span class="nb">val </span><span class="p">(</span><span class="nf">clean-arg</span><span class="w"> </span><span class="nv">arg</span><span class="p">)))</span>
 
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">inline-2-helper</span><span class="w">
-  </span><span class="p">[[</span><span class="n">arg1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">ops-and-args</span><span class="p">]]</span><span class="w">
-  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[</span><span class="n">ops</span><span class="w"> </span><span class="p">(</span><span class="nf">partition</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="n">ops-and-args</span><span class="p">)]</span><span class="w">
-    </span><span class="p">(</span><span class="nb">reduce</span><span class="w"> </span><span class="n">apply-arg</span><span class="w"> </span><span class="p">(</span><span class="nf">clean-arg</span><span class="w"> </span><span class="n">arg1</span><span class="p">)</span><span class="w"> </span><span class="n">ops</span><span class="p">)))</span><span class="w">
+<span class="p">(</span><span class="kd">defn </span><span class="nv">inline-2-helper</span>
+<span class="w">  </span><span class="p">[[</span><span class="nv">arg1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nv">ops-and-args</span><span class="p">]]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">ops</span><span class="w"> </span><span class="p">(</span><span class="nf">partition</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="nv">ops-and-args</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">reduce </span><span class="nv">apply-arg</span><span class="w"> </span><span class="p">(</span><span class="nf">clean-arg</span><span class="w"> </span><span class="nv">arg1</span><span class="p">)</span><span class="w"> </span><span class="nv">ops</span><span class="p">)))</span>
 
-</span><span class="c1">;; 在创建宏前，我们可以先测试</span><span class="w">
-</span><span class="p">(</span><span class="nf">inline-2-helper</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">a</span><span class="w"> </span><span class="nb">+</span><span class="w"> </span><span class="p">(</span><span class="nf">b</span><span class="w"> </span><span class="nb">-</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">-</span><span class="w"> </span><span class="p">(</span><span class="nf">c</span><span class="w"> </span><span class="nb">*</span><span class="w"> </span><span class="mi">5</span><span class="p">)))</span><span class="w"> </span><span class="c1">; -&gt; (- (+ a (- b 2)) (* c 5))</span><span class="w">
+<span class="c1">;; 在创建宏前，我们可以先测试</span>
+<span class="p">(</span><span class="nf">inline-2-helper</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">a</span><span class="w"> </span><span class="nb">+ </span><span class="p">(</span><span class="nf">b</span><span class="w"> </span><span class="nb">- </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">- </span><span class="p">(</span><span class="nf">c</span><span class="w"> </span><span class="nb">* </span><span class="mi">5</span><span class="p">)))</span><span class="w"> </span><span class="c1">; -&gt; (- (+ a (- b 2)) (* c 5))</span>
 
-</span><span class="c1">; 然而，如果我们希望它在编译期执行，就需要创建宏</span><span class="w">
-</span><span class="p">(</span><span class="k">defmacro</span><span class="w"> </span><span class="n">inline-2</span><span class="w"> </span><span class="p">[</span><span class="n">form</span><span class="p">]</span><span class="w">
-  </span><span class="p">(</span><span class="nf">inline-2-helper</span><span class="w"> </span><span class="n">form</span><span class="p">))</span><span class="w">
+<span class="c1">; 然而，如果我们希望它在编译期执行，就需要创建宏</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">inline-2</span><span class="w"> </span><span class="p">[</span><span class="nv">form</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">inline-2-helper</span><span class="w"> </span><span class="nv">form</span><span class="p">))</span>
 
-</span><span class="p">(</span><span class="nb">macroexpand</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">inline-2</span><span class="w"> </span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="nb">+</span><span class="w"> </span><span class="p">(</span><span class="nf">3</span><span class="w"> </span><span class="nb">/</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">-</span><span class="w"> </span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="nb">/</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)))</span><span class="w">
-</span><span class="c1">; -&gt; (+ (- (+ 1 (/ 3 2)) (/ 1 2)) 1)</span><span class="w">
+<span class="p">(</span><span class="nb">macroexpand </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">inline-2</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="nb">+ </span><span class="p">(</span><span class="mi">3</span><span class="w"> </span><span class="nb">/ </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">- </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="nb">/ </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">+ </span><span class="mi">1</span><span class="p">)))</span>
+<span class="c1">; -&gt; (+ (- (+ 1 (/ 3 2)) (/ 1 2)) 1)</span>
 
-</span><span class="p">(</span><span class="nf">inline-2</span><span class="w"> </span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="nb">+</span><span class="w"> </span><span class="p">(</span><span class="nf">3</span><span class="w"> </span><span class="nb">/</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">-</span><span class="w"> </span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="nb">/</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w">
-</span><span class="c1">; -&gt; 3 (事实上，结果是3N, 因为数字被转化为带/的有理分数）</span><span class="w">
-</span></code></pre></div>
+<span class="p">(</span><span class="nf">inline-2</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="nb">+ </span><span class="p">(</span><span class="mi">3</span><span class="w"> </span><span class="nb">/ </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">- </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="nb">/ </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">+ </span><span class="mi">1</span><span class="p">))</span>
+<span class="c1">; -&gt; 3 (事实上，结果是3N, 因为数字被转化为带/的有理分数）</span>
+</pre></div>
 <h2>扩展阅读</h2>
 
 <p><a href="http://www.braveclojure.com/">Clojure for the Brave and True</a>

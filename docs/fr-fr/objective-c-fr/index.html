@@ -87,509 +87,509 @@
     </p>
   <div id="doc">
     <p>L&#39;Objective-C est un langage de programmation orienté objet réflexif principalement utilisé par Apple pour les systèmes d&#39;exploitations macOS et iOS et leurs frameworks respectifs, Cocoa et Cocoa Touch.</p>
-<div class="highlight"><pre class="highlight plaintext"><code>// Les commentaires sur une seule ligne commencent par //
-
-/*
-Les
-commentaires
-multi-lignes
-ressemblent
-à
-ceci
-*/
-
-// #import permet d'importer les en-têtes d'autres fichiers
-// Utilisez &lt;&gt; pour importer des fichiers globaux (en général des frameworks)
-// Utilisez "" pour importer des fichiers locaux (du projet)
-#import &lt;Foundation/Foundation.h&gt;
-#import "MaClasse.h"
-
-// Si vous activez les modules dans les projets iOS &gt;= 7 ou OS X &gt;= 10.9
-// dans Xcode 5, vous pouvez importer les frameworks comme cela :
-@import Foundation;
-
-// Le point d'entrée de votre programme est une fonction qui s'appelle main
-// et qui retourne un entier comme type
-int main (int argc, const char * argv[])
-{
-    // Créer un groupe de libération automatique de la mémoire pour l'ensemble
-    // du programme
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-    // Si vous utilisez le comptage de référence automatique (ARC), utilisez
-    // @autoreleasepool à la place :
-    @autoreleasepool {
-
-    // NSLog() permet d'afficher une chaine de caractères dans la console
-    // Affiche la chaine de caractères "Bonjour Tous Le Monde !"
-    NSLog(@"Bonjour tous le Monde !"); 
-
-    ///////////////////////////////////////
-    // Les Types &amp; Les Variables
-    ///////////////////////////////////////
-
-    // La déclaration de primitive
-    int maPrimitive1  = 1;
-    long maPrimitive2 = 234554664565;
-
-    // La déclaration d'objet
-    // Il faut mettre un astérisque devant la déclaration d'objet fortement typé
-    MaClasse *monObject1 = nil;  // Typage fort
-    id       monObject2  = nil;  // Typage faible
-    // 'description' est une méthode qui permet de retourner un aperçut de l'objet sous forme textuelle
-    // La méthode 'description' est appelée par défaut quand on utilise le paramètre '%@'
-    NSLog(@"%@ and %@", monObject1, [monObject2 description]); // Affiche "(null) et (null)"
-
-    // Les chaines de caractères
-    NSString *chaineMonde = @"Monde";
-    NSLog(@"Bonjour tous le %@ !", chaineMonde); // affiche =&gt; "Bonjour Tous Le Monde !" 
-    // NSMutableString est une chaine mutable
-    NSMutableString *chaineMutable = [NSMutableString stringWithString:@"Bonjour tous le"];
-    [chaineMutable appendString:@" Monde !"];
-    NSLog(@"%@", chaineMutable); // affiche =&gt; "Bonjour Tous Le Monde !"
-
-    // Les caractères
-    NSNumber *laLettreZSousFormeDeNombre = @'Z';
-    char laLettreZ                       = [laLettreZSousFormeDeNombre charValue]; // ou 'Z'
-    NSLog(@"%c", laLettreZ);
-
-    // Les nombres
-    NSNumber *nombreQuaranteDeux = @42;
-    int quaranteDeux             = [nombreQuaranteDeux intValue]; // ou 42
-    NSLog(@"%i", quaranteDeux);
-
-    NSNumber *nombreQuaranteDeuxnonSigne = @42U;
-    unsigned int quaranteDeuxnonSigne    = [nombreQuaranteDeuxnonSigne unsignedIntValue];
-    NSLog(@"%u", fortyTwoUnsigned);
-
-    NSNumber *nombreQuaranteDeuxCourt = [NSNumber numberWithShort:42];
-    short quaranteDeuxCourt           = [nombreQuaranteDeuxCourt shortValue]; // ou 42
-    NSLog(@"%hi", fortyTwoShort);
-
-    NSNumber *nombreQuaranteDeuxLong = @42L;
-    long quaranteDeuxLong            = [nombreQuaranteDeuxLong longValue]; // ou 42
-    NSLog(@"%li", fortyTwoLong);
-
-    // Les nombres flottants
-    NSNumber *nombrePiFlottant = @3.141592654F;
-    float piFlottant           = [nombrePiFlottant floatValue]; // ou 3.141592654f
-    NSLog(@"%f", piFlottant); // affiche =&gt; 3.141592654
-    NSLog(@"%5.2f", piFlottant); // affiche =&gt; " 3.14"
-
-    NSNumber *nombrePiDouble = @3.1415926535;
-    double piDouble          = [nombrePiDouble doubleValue]; // ou 3.1415926535
-    NSLog(@"%f", piDouble);
-    NSLog(@"%4.2f", piDouble); // affiche =&gt; "3.14"
-
-    // NSDecimalNumber est une classe pour avoir plus de précision sur les nombres
-    // flottants et les doubles
-    NSDecimalNumber *decNumUn   = [NSDecimalNumber decimalNumberWithString:@"10.99"];
-    NSDecimalNumber *decNumDeux = [NSDecimalNumber decimalNumberWithString:@"5.002"];
-    // NSDecimalNumber ne permet pas d'utiliser les opérations standards (+, -, *, /)
-    // Il faut utiliser les méthodes suivantes à la place :
-    [decNumUn decimalNumberByAdding:decNumDeux]; 
-    [decNumUn decimalNumberBySubtracting:decNumDeux];
-    [decNumUn decimalNumberByMultiplyingBy:decNumDeux];
-    [decNumUn decimalNumberByDividingBy:decNumDeux];
-    NSLog(@"%@", decNumUn); // affiche =&gt; 10.99 comme NSDecimalNumber est immuable
-
-    // Les booléens
-    NSNumber *ouiNumber = @YES;
-    NSNumber *nonNumber = @NO;
-    // ou
-    BOOL ouiBool = YES;
-    BOOL nonBool  = NO;
-    NSLog(@"%i", ouiBool); // affiche =&gt; 1
-
-    // Les listes
-    // Une liste peut contenir uniquement des objets
-    NSArray *uneListe         = @[@1, @2, @3, @4];
-    NSNumber *troisiemeNombre = uneListe[2];
-    NSLog(@"Troisième nombre = %@", troisiemeNombre); // affiche "Troisième nombre = 3"
-    // NSMutableArray est une version mutable de NSArray
-    // Cela permet de modifier la liste en ajoutant de nouveaux éléments et en supprimant ou
-    // changeant de place des objets déjà présent
-    // C'est très pratique, mais pas aussi performant que l'utilisation de la classe NSArray
-    NSMutableArray *listeMutable = [NSMutableArray arrayWithCapacity:2];
-    [listeMutable addObject:@"Bonjour tous le"];
-    [listeMutable addObject:@"Monde"];
-    [listeMutable removeObjectAtIndex:0];
-    NSLog(@"%@", [listeMutable objectAtIndex:0]); // affiche =&gt; "Monde"
-
-    // Les dictionnaires
-    // Un dictionnaire est un ensemble de clés : valeurs
-    NSDictionary *unDictionnaire = @{ @"cle1" : @"valeur1", @"cle2" : @"valeur2" };
-    NSObject *valeur             = unDictionnaire[@"Une clé"];
-    NSLog(@"Objet = %@", valeur); // affiche "Objet = (null)"
-    // NSMutableDictionary est un dictionnaire mutable, c-à-d que l'on peut modifier
-    NSMutableDictionary *dictionnaireMutable = [NSMutableDictionary dictionaryWithCapacity:2];
-    [dictionnaireMutable setObject:@"valeur1" forKey:@"cle1"];
-    [dictionnaireMutable setObject:@"valeur2" forKey:@"cle2"];
-    [dictionnaireMutable removeObjectForKey:@"cle1"];
-
-    // Les ensembles
-    // Un ensemble ne peut contenir de duplicatas contrairement aux NSArray
-    NSSet *ensemble = [NSSet setWithObjects:@"Salut", @"Salut", @"Monde", nil];
-    NSLog(@"%@", ensemble); // affiche =&gt; {(Salut, Monde)} (Pas forcément dans le même ordre)
-    // NSMutableSet est un ensemble mutable 
-    NSMutableSet *ensembleMutable = [NSMutableSet setWithCapacity:2];
-    [ensembleMutable addObject:@"Salut"];
-    [ensembleMutable addObject:@"Salut"];
-    NSLog(@"%@", ensembleMutable); // affiche =&gt; {(Salut)}
-
-    ///////////////////////////////////////
-    // Les Operateurs
-    ///////////////////////////////////////
-
-    // Les opérateurs sont pareil qu'en C
-    // Par exemple :
-    2 + 5; // =&gt; 7
-    4.2f + 5.1f; // =&gt; 9.3f
-    3 == 2; // =&gt; 0 (NO)
-    3 != 2; // =&gt; 1 (YES)
-    1 &amp;&amp; 1; // =&gt; 1 (et logique)
-    0 || 1; // =&gt; 1 (ou logique)
-    ~0x0F; // =&gt; 0xF0 (négation bit à bit)
-    0x0F &amp; 0xF0; // =&gt; 0x00 (et bit à bit)
-    0x01 &lt;&lt; 1; // =&gt; 0x02 (décalage à gauche (par 1))
-
-    ///////////////////////////////////////
-    // Les Structures de Contrôle
-    ///////////////////////////////////////
-
-    // Structure "Si-Sinon" (If-Else) 
-    if (NO)
-    {
-        NSLog(@"Je ne suis jamais affiché");
-    } else if (0)
-    {
-        NSLog(@"Je ne suis jamais affiché aussi");
-    } else
-    {
-        NSLog(@"Je suis affiché");
-    }
-
-    // Structure "Selon" (Switch)
-    switch (2)
-    {
-        case 0:
-        {
-            NSLog(@"Je ne suis jamais affiché");
-        } break;
-        case 1:
-        {
-            NSLog(@"Je ne suis jamais affiché aussi");
-        } break;
-        default:
-        {
-            NSLog(@"Je suis affiché");
-        } break;
-    }
-
-    // Structure de boucle "Tant Que" (While)
-    int ii = 0;
-    while (ii &lt; 4)
-    {
-        NSLog(@"%d,", ii++); // ii++ incrémente ii après avoir utilisé sa valeur
-    } // =&gt; affiche "0," 
-      //            "1,"
-      //            "2,"
-      //            "3,"
-
-    // Structure de boucle "Pour" (For)
-    int jj;
-    for (jj=0; jj &lt; 4; jj++)
-    {
-        NSLog(@"%d,", jj);
-    } // =&gt; affiche "0," 
-      //            "1,"
-      //            "2,"
-      //            "3,"
-
-    // Structure de boucle "Pour Chaque" (Foreach)
-    NSArray *valeurs = @[@0, @1, @2, @3];
-    for (NSNumber *valeur in valeurs)
-    {
-        NSLog(@"%@,", valeur);
-    } // =&gt; affiche "0," 
-      //            "1,"
-      //            "2,"
-      //            "3,"
-
-    // Structure "Essayer-Attraper-Finalement" (Try-Catch-Finally)
-    @try
-    {
-        @throw [NSException exceptionWithName:@"FileNotFoundException"
-                            reason:@"Fichier non trouvé" userInfo:nil];
-    } @catch (NSException * e)
-    {
-        NSLog(@"Une exception est survenue : %@", e);
-    } @finally
-    {
-        NSLog(@"Finalement");
-    } // =&gt; affiche "Une exception est survenue : Fichier non trouvé"
-      //            "Finalement"
-
-    ///////////////////////////////////////
-    // Les Objets
-    ///////////////////////////////////////
-
-    // Définis et créé une instance d'objet en allouant un espace mémoire puis en
-    // l'initialisant. Un objet n'est pas complétement fonctionnel tant que les deux
-    // étapes précédentes ne sont pas terminées
-    MaClass *monObjet = [[MaClass alloc] init];
-
-    // L'Objet en Objective-C est basé sur le principe d'envoie de message et non sur
-    // celui d'appel de méthode comme la plupart des autres langages
-    // C'est un détail important car cela veut dire que l'on peut envoyer un message
-    // à un objet qui ne possède pas la méthode demandée sans aucune incidence sur le
-    // fonctionnement du programme (aucune exception ne sera levée)
-    [myObject instanceMethodWithParameter:@"Steve Jobs"];
-
-    // Nettoie la mémoire qui a été utilisée dans le programme
-    [pool drain];
-
-    // Fin de l'@autoreleasepool
-    }
-
-    // Fin du programme
-    return 0;
-}
-
-///////////////////////////////////////
-// Les Classes et Les Fonctions
-///////////////////////////////////////
-
-// Déclaration d'une classe dans un en-tête de fichier (MaClasse.h) :
-// La déclaration d'une classe en Objective-C commence par la déclaration de son interface :
-// @interface NomDeLaClasse : NomDeLaClasseParent &lt;ListeDesProtocoles&gt;
-// {
-//    type nom; // Déclaration d'une variable;
-// }
-// @property type nom; // Déclaration d'une propriété
-// -/+ (type)nomDeLaMethode; // Déclaration d'une methode
-// @end // Termine la déclaration
-// NSObject est la classe de base (super classe) en Objective-C
-@interface MaClasse : NSObject &lt;MonProtocole&gt;
-{
-    int nombre; // Accès protégé par défaut (équivalent à '@protected int nombre;')
-    @private id donnee; // Accès privé (il est plus pratique de le faire dans l'implémentation)
-    NSString *nom; 
-}
-// Les propriétés permettent de générer les accésseurs/affecteurs publiques à la compilation
-// Par défaut, le nom de l'affecteur est la chaine 'set' suivi par le nom de la @property
-@property int propInt; // Nom de l'affecteur = 'setPropInt'
-@property (copy) id copyId; // (copy) =&gt; Copie l'objet pendant l'affectation
-// (readonly) =&gt; Ne peut pas affecté la variable en dehors de l'@interface
-// Il faut utiliser le mot clé '@synthesize' dans l'@implementation pour créer l'accésseur
-@property (readonly) NSString *roString;
-// Vous pouvez aussi personnaliser les noms des accésseurs ou des affecteurs
-@property (getter=longeurGet, setter=longeurSet:) int longeur;
-
-// Methodes
-+/- (TypeDeRetour)signatureDeLaMethode:(TypeDuParametre *)nomDuParametre;
-
-// '+' signifie que c'est une méthode de classe (statique) :
-+ (NSString *)methodeDeClasse;
-+ (MaClasse *)maClasseDepuisLaHauteur:(NSNumber *)hauteurParDefaut;
-
-// '-' pour les méthodes d'instances :
-- (NSString *)methodeInstanceAvecUnParametre:(NSString *)string;
-- (NSNumber *)methodeInstanceAvecUnParametre:(NSString*)string puisUnDeuxieme:(NSNumber *)number;
-
-// Contructeur avec des arguments :
-- (id)initAvecDistance:(int)distanceParDefault;
-// Les méthodes en Objective-C sont très descriptives
-
-@end // Fin de l'interface
-
-
-// Voici un exemple d'utilisation de MaClasse
-MaClasse *maClasse = [[MaClasse alloc] init]; // créer une instance de MaClasse
-[maClasse setNombre:10]; 
-NSLog(@"%d", [maClasse nombre]); // affiche =&gt; 10
-[myClass longeurSet:32];
-NSLog(@"%i", [maClasse longeurGet]); // affiche =&gt; 32
-// Pour des raisons pratiques vous pouvez aussi utiliser la notation en point pour accéder aux 
-// variables d'instances :
-maClasse.nombre = 45;
-NSLog(@"%i", maClasse.nombre); // maClasse =&gt; 45
-
-// Pour appeler une méthode de classe :
-NSString *s1 = [MaClasse methodeDeClasse];
-MaClasse *m2 = [MaClasse maClasseDepuisLaHauteur:38];
-
-// Pour appeler une méthode d'instance :
-MaClasse *maClasse = [[MaClasse alloc] init]; // Créer une instance de MaClasse
-NSString *stringDepuisUneInstanceDeMethode = [maClasse methodeInstanceAvecUnParametre:@"Salut"];
-
-// Les sélecteurs sont un moyen de décrire les méthodes dynamiquement
-// Ils sont utilisés pour appeler des méthodes de classe et avoir des pointeurs de fonctions
-// facilement manipulable
-// SEL est un type de donnée et @selector retourne un selecteur à partir d'un nom de methode
-SEL selecteur = @selector(methodeInstanceAvecUnParametre:puisUnDeuxieme:); 
-if ([maClasse respondsToSelector:selecteur]) { // Vérifie si la classe possède la méthode
-    // Met les arguments de la méthode dans un seul objet pour l'envoyer via la fonction
-    // performSelector:withObject: 
-    NSArray *arguments = [NSArray arrayWithObjects:@"Hello", @4, nil];
-    [myClass performSelector:selectorVar withObject:arguments]; // Appele la méthode via le sélecteur
-}
-else {
-    // NSStringFromSelector() retourne une chaine de caractères à partir d'un sélecteur
-    NSLog(@"MaClasse ne possède pas de méthode : %@", NSStringFromSelector(selecteur));
-}
-
-// Le fichier d'implémentation de la classe MaClasse (MaClasse.m) doit commencer comme ceci :
-@implementation MaClasse {
-    long distance; // Variable d'instance privée (équivalent à @private dans l'interface)
-    NSNumber hauteur;
-}
-
-// Pour accéder à une variable depuis l'implémentation on peut utiliser le _ (tiret bas) devant le nom
-// de la variable :
-_nombre = 5;
-// Accès d'une variable définie dans le fichier d'implémentation :
-distance = 18;
-// Pour utiliser la variable définie par l'intermédiaire de @property, il faut utiliser @synthesize 
-// qui permet de créer les affecteurs et les accésseurs correspondants :
-@synthesize roString = _roString; // _roString est maintenant disponible dans l'implementation
-
-// A l'inverse dela méthode 'init' qui est appelée lors de la création d'un objet, la fonction 
-// 'dealloc' est appelée quand l'objet est supprimé
-- (void)dealloc
-{
-    [hauteur release]; // Si vous n'utilisez pas ARC, pensez bien à supprimer l'objet 
-    [super dealloc];   // et à appeler la méthode 'dealloc' de la classe parent 
-}
-
-// Les constructeurs sont des fonctions qui permettent d'instancier un objet
-// 'init' est le constructeur par défaut en Objective-C
-- (id)init
-{
-    if ((self = [super init])) // 'super' est utilisé pour appeler la méthode de la classe parent
-    {
-        self.count = 1; // 'self' permet d'appeler la méthode de l'instance courante
-    }
-    return self;
-}
-
-// Vous pouvez aussi créer des constructeurs avec des arguments
-// Attention : chaque nom de constructeur doit absolument commencer par 'init'
-- (id)initAvecUneDistance:(int)distanceParDefault 
-{
-    if ((self = [super init]))
-    {
-        distance = distanceParDefault;
-        return self;
-    }
-}
-
-// Implémentation d'une méthode de classe
-+ (NSString *)methodDeClasse
-{
-    return [[self alloc] init];
-}
-
-+ (MaClasse *)maClasseDepuisUneHauteur:(NSNumber *)hauteurParDefaut
-{
-    hauteur = hauteurParDefaut;
-    return [[self alloc] init];
-}
-
-// Implémentation d'une méthode d'instance
-- (NSString *)methodeInstanceAvecUnParametre:(NSString *)string
-{
-    return @"Ma chaine de caractère";
-}
-
-- (NSNumber *)methodeInstanceAvecUnParametre:(NSString*)string puisUnDeuxieme:(NSNumber *)number
-{
-    return @42;
-}
-
-// Pour créer une méthode privée, il faut la définir dans l'implementation et non pas dans 
-// l'interface
-- (NSNumber *)methodePrivee
-{
-    return @72;
-}
-
-[self methodePrivee]; // Appel de la méthode privée
-
-// Implémentation d'une méthode qui est déclarée dans &lt;MonProtocole&gt;
-- (void)methodeDuProtocole
-{
-    // expressions
-}
-
-@end // Fin de l'implémentation
-
-/*
- * Un protocole déclare des méthodes et propriétés que chaque implémentation doit avoir afin de se
- * conformer à celui-ci
- * Un protocole n'est pas une classe, c'est juste une interface
- */
-@protocol MonProtocole
-    - (void)methodeDuProtocole;
-@end
-
-
-///////////////////////////////////////
-// Gestion de la mémoire
-///////////////////////////////////////
-/* 
-À chaque fois qu'un objet est créé dans l'application, un bloc mémoire doit être alloué.
-Quand l'application en a fini avec cet objet, la mémoire doit être libérée afin d'éviter les fuites
-mémoires
-Il n'y a pas de ramasse-miettes en Objective-C contrairement à Java par exemple. La gestion de la
-mémoire repose sur le comptage de référence qui, pour chaque objet, assigne un compteur qui permet
-de connaitre le nombre de référence qui l'utilise.
-
-Le principe est le suivant :
-Lorsque l'objet est créé, le compteur est initialisé à 1. Quand une instance détient un objet, le
-compteur est incrémenté de un. Quand l'objet est libéré, le compteur est décrémenté de un.  Au moment
-où le compteur arrive à zéro, l'objet est supprimé de la mémoire
-
-Une bonne pratique à suivre quand on travaille avec des objets est la suivante :
-(1) créer un objet, (2) utiliser l'objet, (3) supprimer l'objet de la mémoire
-*/
-
-MaClasse *classeVar = [MyClass alloc]; // 'alloc' incrémente le compteur de référence
-[classeVar release]; // Décrémente le compteur de rérence
-// 'retain' incrémente le compteur de référence
-// Si 'classeVar' est libéré, l'objet reste en mémoire car le compteur de référence est non nul
-MaClasse *nouvelleVar = [classVar retain];
-[classeVar autorelease]; // Supprime l'appartenance de l'objet à la fin du bloc
-
-// Les @property peuvent utiliser 'retain' et 'assign' 
-@property (retain) MaClasse *instance; // Libère l'ancienne valeur et retient la nouvelle
-@property (assign) NSSet *set; // Pointeur vers la valeur sans retenir/libérer l'ancienne valeur
-
-// Automatic Reference Counting (ARC)
-// La gestion de la mémoire étant pénible, depuis iOS 4 et Xcode 4.2, Apple a introduit le comptage de
-// référence automatique (Automatic Reference Counting en anglais)
-// ARC est une fonctionnalité du compilateur qui permet d'ajouter les 'retain', 'release' et 'autorelease'
-// automatiquement. Cela veut dire que lorsque vous utilisez ARC vous ne devez plus utiliser ces mot-clés
-MaClasse *arcMaClasse = [[MaClasse alloc] init]; 
-// ... code utilisant arcMaClasse
-// Sans ARC, vous auriez dû appeler [arcMaClasse release] après avoir utilisé l'objet. Mais avec ARC
-// activé il n'est plus nécessaire de le faire car le compilateur ajoutera l'expréssion automatiquement
-// pour vous
-
-// Les mots clés 'assign' et 'retain', avec ARC sont respectivement remplacé par 'weak' et 'strong'
-@property (weak) MaClasse *weakVar; // 'weak' ne retient pas l'objet. Si le compteur de référence
-// descend à zero, weakVar sera automatiquement mis à nil
-@property (strong) MaClasse *strongVar; // 'strong' prend possession de l'objet comme le ferait avec
-// le mot-clé 'retain'
-
-// Pour l'instanciation des variables (en dehors de @property), vous pouvez utiliser les instructions
-// suivantes :
-__strong NSString *strongString; // Par défaut. La variable est retenue en mémoire jusqu'à la fin
-//  de sa portée
-__weak NSSet *weakSet; // Maintient une référence vers l'objet sans incrémenter son compteur de référence :
-// Lorsque l'objet sera supprimé, weakSet sera mis à nil automatiquement
-__unsafe_unretained NSArray *unsafeArray; // Comme __weak, mais la variable n'est pas mis à nil quand
-// l'objet est supprimé
-</code></pre></div>
+<div class="highlight"><pre><span></span><span class="c1">// Les commentaires sur une seule ligne commencent par //</span>
+
+<span class="cm">/*</span>
+<span class="cm">Les</span>
+<span class="cm">commentaires</span>
+<span class="cm">multi-lignes</span>
+<span class="cm">ressemblent</span>
+<span class="cm">à</span>
+<span class="cm">ceci</span>
+<span class="cm">*/</span>
+
+<span class="c1">// #import permet d&#39;importer les en-têtes d&#39;autres fichiers</span>
+<span class="c1">// Utilisez &lt;&gt; pour importer des fichiers globaux (en général des frameworks)</span>
+<span class="c1">// Utilisez &quot;&quot; pour importer des fichiers locaux (du projet)</span>
+<span class="cp">#import &lt;Foundation/Foundation.h&gt;</span>
+<span class="cp">#import &quot;MaClasse.h&quot;</span>
+
+<span class="c1">// Si vous activez les modules dans les projets iOS &gt;= 7 ou OS X &gt;= 10.9</span>
+<span class="c1">// dans Xcode 5, vous pouvez importer les frameworks comme cela :</span>
+<span class="k">@import</span><span class="w"> </span><span class="n">Foundation</span><span class="p">;</span>
+
+<span class="c1">// Le point d&#39;entrée de votre programme est une fonction qui s&#39;appelle main</span>
+<span class="c1">// et qui retourne un entier comme type</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Créer un groupe de libération automatique de la mémoire pour l&#39;ensemble</span>
+<span class="w">    </span><span class="c1">// du programme</span>
+<span class="w">    </span><span class="bp">NSAutoreleasePool</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">pool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[[</span><span class="bp">NSAutoreleasePool</span><span class="w"> </span><span class="n">alloc</span><span class="p">]</span><span class="w"> </span><span class="n">init</span><span class="p">];</span>
+<span class="w">    </span><span class="c1">// Si vous utilisez le comptage de référence automatique (ARC), utilisez</span>
+<span class="w">    </span><span class="c1">// @autoreleasepool à la place :</span>
+<span class="w">    </span><span class="k">@autoreleasepool</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="c1">// NSLog() permet d&#39;afficher une chaine de caractères dans la console</span>
+<span class="w">    </span><span class="c1">// Affiche la chaine de caractères &quot;Bonjour Tous Le Monde !&quot;</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Bonjour tous le Monde !&quot;</span><span class="p">);</span><span class="w"> </span>
+
+<span class="w">    </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">    </span><span class="c1">// Les Types &amp; Les Variables</span>
+<span class="w">    </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">    </span><span class="c1">// La déclaration de primitive</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">maPrimitive1</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">maPrimitive2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">234554664565</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// La déclaration d&#39;objet</span>
+<span class="w">    </span><span class="c1">// Il faut mettre un astérisque devant la déclaration d&#39;objet fortement typé</span>
+<span class="w">    </span><span class="n">MaClasse</span><span class="w"> </span><span class="o">*</span><span class="n">monObject1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">nil</span><span class="p">;</span><span class="w">  </span><span class="c1">// Typage fort</span>
+<span class="w">    </span><span class="kt">id</span><span class="w">       </span><span class="n">monObject2</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nb">nil</span><span class="p">;</span><span class="w">  </span><span class="c1">// Typage faible</span>
+<span class="w">    </span><span class="c1">// &#39;description&#39; est une méthode qui permet de retourner un aperçut de l&#39;objet sous forme textuelle</span>
+<span class="w">    </span><span class="c1">// La méthode &#39;description&#39; est appelée par défaut quand on utilise le paramètre &#39;%@&#39;</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@ and %@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">monObject1</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">monObject2</span><span class="w"> </span><span class="n">description</span><span class="p">]);</span><span class="w"> </span><span class="c1">// Affiche &quot;(null) et (null)&quot;</span>
+
+<span class="w">    </span><span class="c1">// Les chaines de caractères</span>
+<span class="w">    </span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="n">chaineMonde</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">@&quot;Monde&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Bonjour tous le %@ !&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">chaineMonde</span><span class="p">);</span><span class="w"> </span><span class="c1">// affiche =&gt; &quot;Bonjour Tous Le Monde !&quot; </span>
+<span class="w">    </span><span class="c1">// NSMutableString est une chaine mutable</span>
+<span class="w">    </span><span class="bp">NSMutableString</span><span class="w"> </span><span class="o">*</span><span class="n">chaineMutable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSMutableString</span><span class="w"> </span><span class="n">stringWithString</span><span class="o">:</span><span class="s">@&quot;Bonjour tous le&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">chaineMutable</span><span class="w"> </span><span class="n">appendString</span><span class="o">:</span><span class="s">@&quot; Monde !&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">chaineMutable</span><span class="p">);</span><span class="w"> </span><span class="c1">// affiche =&gt; &quot;Bonjour Tous Le Monde !&quot;</span>
+
+<span class="w">    </span><span class="c1">// Les caractères</span>
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">laLettreZSousFormeDeNombre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">@&#39;Z&#39;</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">laLettreZ</span><span class="w">                       </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">laLettreZSousFormeDeNombre</span><span class="w"> </span><span class="n">charValue</span><span class="p">];</span><span class="w"> </span><span class="c1">// ou &#39;Z&#39;</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%c&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">laLettreZ</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Les nombres</span>
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">nombreQuaranteDeux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">@42</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">quaranteDeux</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">nombreQuaranteDeux</span><span class="w"> </span><span class="n">intValue</span><span class="p">];</span><span class="w"> </span><span class="c1">// ou 42</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">quaranteDeux</span><span class="p">);</span>
+
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">nombreQuaranteDeuxnonSigne</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">@42</span><span class="n">U</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">quaranteDeuxnonSigne</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">nombreQuaranteDeuxnonSigne</span><span class="w"> </span><span class="n">unsignedIntValue</span><span class="p">];</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%u&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fortyTwoUnsigned</span><span class="p">);</span>
+
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">nombreQuaranteDeuxCourt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSNumber</span><span class="w"> </span><span class="n">numberWithShort</span><span class="o">:</span><span class="mi">42</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">short</span><span class="w"> </span><span class="n">quaranteDeuxCourt</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">nombreQuaranteDeuxCourt</span><span class="w"> </span><span class="n">shortValue</span><span class="p">];</span><span class="w"> </span><span class="c1">// ou 42</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%hi&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fortyTwoShort</span><span class="p">);</span>
+
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">nombreQuaranteDeuxLong</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">@42L</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">quaranteDeuxLong</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">nombreQuaranteDeuxLong</span><span class="w"> </span><span class="n">longValue</span><span class="p">];</span><span class="w"> </span><span class="c1">// ou 42</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%li&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fortyTwoLong</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Les nombres flottants</span>
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">nombrePiFlottant</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">@3.141592654F</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">piFlottant</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">nombrePiFlottant</span><span class="w"> </span><span class="n">floatValue</span><span class="p">];</span><span class="w"> </span><span class="c1">// ou 3.141592654f</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%f&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">piFlottant</span><span class="p">);</span><span class="w"> </span><span class="c1">// affiche =&gt; 3.141592654</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%5.2f&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">piFlottant</span><span class="p">);</span><span class="w"> </span><span class="c1">// affiche =&gt; &quot; 3.14&quot;</span>
+
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">nombrePiDouble</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">@3.1415926535</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">piDouble</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">nombrePiDouble</span><span class="w"> </span><span class="n">doubleValue</span><span class="p">];</span><span class="w"> </span><span class="c1">// ou 3.1415926535</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%f&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">piDouble</span><span class="p">);</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%4.2f&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">piDouble</span><span class="p">);</span><span class="w"> </span><span class="c1">// affiche =&gt; &quot;3.14&quot;</span>
+
+<span class="w">    </span><span class="c1">// NSDecimalNumber est une classe pour avoir plus de précision sur les nombres</span>
+<span class="w">    </span><span class="c1">// flottants et les doubles</span>
+<span class="w">    </span><span class="bp">NSDecimalNumber</span><span class="w"> </span><span class="o">*</span><span class="n">decNumUn</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSDecimalNumber</span><span class="w"> </span><span class="n">decimalNumberWithString</span><span class="o">:</span><span class="s">@&quot;10.99&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="bp">NSDecimalNumber</span><span class="w"> </span><span class="o">*</span><span class="n">decNumDeux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSDecimalNumber</span><span class="w"> </span><span class="n">decimalNumberWithString</span><span class="o">:</span><span class="s">@&quot;5.002&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="c1">// NSDecimalNumber ne permet pas d&#39;utiliser les opérations standards (+, -, *, /)</span>
+<span class="w">    </span><span class="c1">// Il faut utiliser les méthodes suivantes à la place :</span>
+<span class="w">    </span><span class="p">[</span><span class="n">decNumUn</span><span class="w"> </span><span class="n">decimalNumberByAdding</span><span class="o">:</span><span class="n">decNumDeux</span><span class="p">];</span><span class="w"> </span>
+<span class="w">    </span><span class="p">[</span><span class="n">decNumUn</span><span class="w"> </span><span class="n">decimalNumberBySubtracting</span><span class="o">:</span><span class="n">decNumDeux</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">decNumUn</span><span class="w"> </span><span class="n">decimalNumberByMultiplyingBy</span><span class="o">:</span><span class="n">decNumDeux</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">decNumUn</span><span class="w"> </span><span class="n">decimalNumberByDividingBy</span><span class="o">:</span><span class="n">decNumDeux</span><span class="p">];</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">decNumUn</span><span class="p">);</span><span class="w"> </span><span class="c1">// affiche =&gt; 10.99 comme NSDecimalNumber est immuable</span>
+
+<span class="w">    </span><span class="c1">// Les booléens</span>
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">ouiNumber</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">@YES</span><span class="p">;</span>
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">nonNumber</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">@NO</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// ou</span>
+<span class="w">    </span><span class="kt">BOOL</span><span class="w"> </span><span class="n">ouiBool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">YES</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">BOOL</span><span class="w"> </span><span class="n">nonBool</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nb">NO</span><span class="p">;</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ouiBool</span><span class="p">);</span><span class="w"> </span><span class="c1">// affiche =&gt; 1</span>
+
+<span class="w">    </span><span class="c1">// Les listes</span>
+<span class="w">    </span><span class="c1">// Une liste peut contenir uniquement des objets</span>
+<span class="w">    </span><span class="bp">NSArray</span><span class="w"> </span><span class="o">*</span><span class="n">uneListe</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="l">@[</span><span class="mi">@1</span><span class="p">,</span><span class="w"> </span><span class="mi">@2</span><span class="p">,</span><span class="w"> </span><span class="mi">@3</span><span class="p">,</span><span class="w"> </span><span class="mi">@4</span><span class="l">]</span><span class="p">;</span>
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">troisiemeNombre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">uneListe</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Troisième nombre = %@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">troisiemeNombre</span><span class="p">);</span><span class="w"> </span><span class="c1">// affiche &quot;Troisième nombre = 3&quot;</span>
+<span class="w">    </span><span class="c1">// NSMutableArray est une version mutable de NSArray</span>
+<span class="w">    </span><span class="c1">// Cela permet de modifier la liste en ajoutant de nouveaux éléments et en supprimant ou</span>
+<span class="w">    </span><span class="c1">// changeant de place des objets déjà présent</span>
+<span class="w">    </span><span class="c1">// C&#39;est très pratique, mais pas aussi performant que l&#39;utilisation de la classe NSArray</span>
+<span class="w">    </span><span class="bp">NSMutableArray</span><span class="w"> </span><span class="o">*</span><span class="n">listeMutable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSMutableArray</span><span class="w"> </span><span class="n">arrayWithCapacity</span><span class="o">:</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">listeMutable</span><span class="w"> </span><span class="n">addObject</span><span class="o">:</span><span class="s">@&quot;Bonjour tous le&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">listeMutable</span><span class="w"> </span><span class="n">addObject</span><span class="o">:</span><span class="s">@&quot;Monde&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">listeMutable</span><span class="w"> </span><span class="n">removeObjectAtIndex</span><span class="o">:</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">listeMutable</span><span class="w"> </span><span class="n">objectAtIndex</span><span class="o">:</span><span class="mi">0</span><span class="p">]);</span><span class="w"> </span><span class="c1">// affiche =&gt; &quot;Monde&quot;</span>
+
+<span class="w">    </span><span class="c1">// Les dictionnaires</span>
+<span class="w">    </span><span class="c1">// Un dictionnaire est un ensemble de clés : valeurs</span>
+<span class="w">    </span><span class="bp">NSDictionary</span><span class="w"> </span><span class="o">*</span><span class="n">unDictionnaire</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="l">@{</span><span class="w"> </span><span class="s">@&quot;cle1&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">@&quot;valeur1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">@&quot;cle2&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">@&quot;valeur2&quot;</span><span class="w"> </span><span class="l">}</span><span class="p">;</span>
+<span class="w">    </span><span class="bp">NSObject</span><span class="w"> </span><span class="o">*</span><span class="n">valeur</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="n">unDictionnaire</span><span class="p">[</span><span class="s">@&quot;Une clé&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Objet = %@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">valeur</span><span class="p">);</span><span class="w"> </span><span class="c1">// affiche &quot;Objet = (null)&quot;</span>
+<span class="w">    </span><span class="c1">// NSMutableDictionary est un dictionnaire mutable, c-à-d que l&#39;on peut modifier</span>
+<span class="w">    </span><span class="bp">NSMutableDictionary</span><span class="w"> </span><span class="o">*</span><span class="n">dictionnaireMutable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSMutableDictionary</span><span class="w"> </span><span class="n">dictionaryWithCapacity</span><span class="o">:</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">dictionnaireMutable</span><span class="w"> </span><span class="n">setObject</span><span class="o">:</span><span class="s">@&quot;valeur1&quot;</span><span class="w"> </span><span class="n">forKey</span><span class="o">:</span><span class="s">@&quot;cle1&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">dictionnaireMutable</span><span class="w"> </span><span class="n">setObject</span><span class="o">:</span><span class="s">@&quot;valeur2&quot;</span><span class="w"> </span><span class="n">forKey</span><span class="o">:</span><span class="s">@&quot;cle2&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">dictionnaireMutable</span><span class="w"> </span><span class="n">removeObjectForKey</span><span class="o">:</span><span class="s">@&quot;cle1&quot;</span><span class="p">];</span>
+
+<span class="w">    </span><span class="c1">// Les ensembles</span>
+<span class="w">    </span><span class="c1">// Un ensemble ne peut contenir de duplicatas contrairement aux NSArray</span>
+<span class="w">    </span><span class="bp">NSSet</span><span class="w"> </span><span class="o">*</span><span class="n">ensemble</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSSet</span><span class="w"> </span><span class="n">setWithObjects</span><span class="o">:</span><span class="s">@&quot;Salut&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">@&quot;Salut&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">@&quot;Monde&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">nil</span><span class="p">];</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ensemble</span><span class="p">);</span><span class="w"> </span><span class="c1">// affiche =&gt; {(Salut, Monde)} (Pas forcément dans le même ordre)</span>
+<span class="w">    </span><span class="c1">// NSMutableSet est un ensemble mutable </span>
+<span class="w">    </span><span class="bp">NSMutableSet</span><span class="w"> </span><span class="o">*</span><span class="n">ensembleMutable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSMutableSet</span><span class="w"> </span><span class="n">setWithCapacity</span><span class="o">:</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">ensembleMutable</span><span class="w"> </span><span class="n">addObject</span><span class="o">:</span><span class="s">@&quot;Salut&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">ensembleMutable</span><span class="w"> </span><span class="n">addObject</span><span class="o">:</span><span class="s">@&quot;Salut&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ensembleMutable</span><span class="p">);</span><span class="w"> </span><span class="c1">// affiche =&gt; {(Salut)}</span>
+
+<span class="w">    </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">    </span><span class="c1">// Les Operateurs</span>
+<span class="w">    </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">    </span><span class="c1">// Les opérateurs sont pareil qu&#39;en C</span>
+<span class="w">    </span><span class="c1">// Par exemple :</span>
+<span class="w">    </span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 7</span>
+<span class="w">    </span><span class="mf">4.2f</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">5.1f</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 9.3f</span>
+<span class="w">    </span><span class="mi">3</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0 (NO)</span>
+<span class="w">    </span><span class="mi">3</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1 (YES)</span>
+<span class="w">    </span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1 (et logique)</span>
+<span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1 (ou logique)</span>
+<span class="w">    </span><span class="o">~</span><span class="mh">0x0F</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0xF0 (négation bit à bit)</span>
+<span class="w">    </span><span class="mh">0x0F</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xF0</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0x00 (et bit à bit)</span>
+<span class="w">    </span><span class="mh">0x01</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0x02 (décalage à gauche (par 1))</span>
+
+<span class="w">    </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">    </span><span class="c1">// Les Structures de Contrôle</span>
+<span class="w">    </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">    </span><span class="c1">// Structure &quot;Si-Sinon&quot; (If-Else) </span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">NO</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Je ne suis jamais affiché&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Je ne suis jamais affiché aussi&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Je suis affiché&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Structure &quot;Selon&quot; (Switch)</span>
+<span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Je ne suis jamais affiché&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">break</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">1</span><span class="p">:</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Je ne suis jamais affiché aussi&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">break</span><span class="p">;</span>
+<span class="w">        </span><span class="k">default</span><span class="o">:</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Je suis affiché&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Structure de boucle &quot;Tant Que&quot; (While)</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">ii</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">ii</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%d,&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ii</span><span class="o">++</span><span class="p">);</span><span class="w"> </span><span class="c1">// ii++ incrémente ii après avoir utilisé sa valeur</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="c1">// =&gt; affiche &quot;0,&quot; </span>
+<span class="w">      </span><span class="c1">//            &quot;1,&quot;</span>
+<span class="w">      </span><span class="c1">//            &quot;2,&quot;</span>
+<span class="w">      </span><span class="c1">//            &quot;3,&quot;</span>
+
+<span class="w">    </span><span class="c1">// Structure de boucle &quot;Pour&quot; (For)</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">jj</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">jj</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">jj</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="n">jj</span><span class="o">++</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%d,&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">jj</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="c1">// =&gt; affiche &quot;0,&quot; </span>
+<span class="w">      </span><span class="c1">//            &quot;1,&quot;</span>
+<span class="w">      </span><span class="c1">//            &quot;2,&quot;</span>
+<span class="w">      </span><span class="c1">//            &quot;3,&quot;</span>
+
+<span class="w">    </span><span class="c1">// Structure de boucle &quot;Pour Chaque&quot; (Foreach)</span>
+<span class="w">    </span><span class="bp">NSArray</span><span class="w"> </span><span class="o">*</span><span class="n">valeurs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="l">@[</span><span class="mi">@0</span><span class="p">,</span><span class="w"> </span><span class="mi">@1</span><span class="p">,</span><span class="w"> </span><span class="mi">@2</span><span class="p">,</span><span class="w"> </span><span class="mi">@3</span><span class="l">]</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">valeur</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">valeurs</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@,&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">valeur</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="c1">// =&gt; affiche &quot;0,&quot; </span>
+<span class="w">      </span><span class="c1">//            &quot;1,&quot;</span>
+<span class="w">      </span><span class="c1">//            &quot;2,&quot;</span>
+<span class="w">      </span><span class="c1">//            &quot;3,&quot;</span>
+
+<span class="w">    </span><span class="c1">// Structure &quot;Essayer-Attraper-Finalement&quot; (Try-Catch-Finally)</span>
+<span class="w">    </span><span class="k">@try</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">@throw</span><span class="w"> </span><span class="p">[</span><span class="bp">NSException</span><span class="w"> </span><span class="n">exceptionWithName</span><span class="o">:</span><span class="s">@&quot;FileNotFoundException&quot;</span>
+<span class="w">                            </span><span class="nl">reason</span><span class="p">:</span><span class="s">@&quot;Fichier non trouvé&quot;</span><span class="w"> </span><span class="n">userInfo</span><span class="o">:</span><span class="nb">nil</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">@catch</span><span class="w"> </span><span class="p">(</span><span class="bp">NSException</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">e</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Une exception est survenue : %@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">@finally</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Finalement&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="c1">// =&gt; affiche &quot;Une exception est survenue : Fichier non trouvé&quot;</span>
+<span class="w">      </span><span class="c1">//            &quot;Finalement&quot;</span>
+
+<span class="w">    </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">    </span><span class="c1">// Les Objets</span>
+<span class="w">    </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">    </span><span class="c1">// Définis et créé une instance d&#39;objet en allouant un espace mémoire puis en</span>
+<span class="w">    </span><span class="c1">// l&#39;initialisant. Un objet n&#39;est pas complétement fonctionnel tant que les deux</span>
+<span class="w">    </span><span class="c1">// étapes précédentes ne sont pas terminées</span>
+<span class="w">    </span><span class="n">MaClass</span><span class="w"> </span><span class="o">*</span><span class="n">monObjet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[[</span><span class="n">MaClass</span><span class="w"> </span><span class="n">alloc</span><span class="p">]</span><span class="w"> </span><span class="n">init</span><span class="p">];</span>
+
+<span class="w">    </span><span class="c1">// L&#39;Objet en Objective-C est basé sur le principe d&#39;envoie de message et non sur</span>
+<span class="w">    </span><span class="c1">// celui d&#39;appel de méthode comme la plupart des autres langages</span>
+<span class="w">    </span><span class="c1">// C&#39;est un détail important car cela veut dire que l&#39;on peut envoyer un message</span>
+<span class="w">    </span><span class="c1">// à un objet qui ne possède pas la méthode demandée sans aucune incidence sur le</span>
+<span class="w">    </span><span class="c1">// fonctionnement du programme (aucune exception ne sera levée)</span>
+<span class="w">    </span><span class="p">[</span><span class="n">myObject</span><span class="w"> </span><span class="n">instanceMethodWithParameter</span><span class="o">:</span><span class="s">@&quot;Steve Jobs&quot;</span><span class="p">];</span>
+
+<span class="w">    </span><span class="c1">// Nettoie la mémoire qui a été utilisée dans le programme</span>
+<span class="w">    </span><span class="p">[</span><span class="n">pool</span><span class="w"> </span><span class="n">drain</span><span class="p">];</span>
+
+<span class="w">    </span><span class="c1">// Fin de l&#39;@autoreleasepool</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Fin du programme</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Les Classes et Les Fonctions</span>
+<span class="c1">///////////////////////////////////////</span>
+
+<span class="c1">// Déclaration d&#39;une classe dans un en-tête de fichier (MaClasse.h) :</span>
+<span class="c1">// La déclaration d&#39;une classe en Objective-C commence par la déclaration de son interface :</span>
+<span class="c1">// @interface NomDeLaClasse : NomDeLaClasseParent &lt;ListeDesProtocoles&gt;</span>
+<span class="c1">// {</span>
+<span class="c1">//    type nom; // Déclaration d&#39;une variable;</span>
+<span class="c1">// }</span>
+<span class="c1">// @property type nom; // Déclaration d&#39;une propriété</span>
+<span class="c1">// -/+ (type)nomDeLaMethode; // Déclaration d&#39;une methode</span>
+<span class="c1">// @end // Termine la déclaration</span>
+<span class="c1">// NSObject est la classe de base (super classe) en Objective-C</span>
+<span class="k">@interface</span> <span class="nc">MaClasse</span> : <span class="bp">NSObject</span><span class="w"> </span><span class="o">&lt;</span><span class="n">MonProtocole</span><span class="o">&gt;</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">nombre</span><span class="p">;</span><span class="w"> </span><span class="c1">// Accès protégé par défaut (équivalent à &#39;@protected int nombre;&#39;)</span>
+<span class="w">    </span><span class="k">@private</span><span class="w"> </span><span class="kt">id</span><span class="w"> </span><span class="n">donnee</span><span class="p">;</span><span class="w"> </span><span class="c1">// Accès privé (il est plus pratique de le faire dans l&#39;implémentation)</span>
+<span class="w">    </span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="n">nom</span><span class="p">;</span><span class="w"> </span>
+<span class="p">}</span>
+<span class="c1">// Les propriétés permettent de générer les accésseurs/affecteurs publiques à la compilation</span>
+<span class="c1">// Par défaut, le nom de l&#39;affecteur est la chaine &#39;set&#39; suivi par le nom de la @property</span>
+<span class="k">@property</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">propInt</span><span class="p">;</span><span class="w"> </span><span class="c1">// Nom de l&#39;affecteur = &#39;setPropInt&#39;</span>
+<span class="k">@property</span><span class="w"> </span><span class="p">(</span><span class="k">copy</span><span class="p">)</span><span class="w"> </span><span class="kt">id</span><span class="w"> </span><span class="n">copyId</span><span class="p">;</span><span class="w"> </span><span class="c1">// (copy) =&gt; Copie l&#39;objet pendant l&#39;affectation</span>
+<span class="c1">// (readonly) =&gt; Ne peut pas affecté la variable en dehors de l&#39;@interface</span>
+<span class="c1">// Il faut utiliser le mot clé &#39;@synthesize&#39; dans l&#39;@implementation pour créer l&#39;accésseur</span>
+<span class="k">@property</span><span class="w"> </span><span class="p">(</span><span class="k">readonly</span><span class="p">)</span><span class="w"> </span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="n">roString</span><span class="p">;</span>
+<span class="c1">// Vous pouvez aussi personnaliser les noms des accésseurs ou des affecteurs</span>
+<span class="k">@property</span><span class="w"> </span><span class="p">(</span><span class="k">getter</span><span class="o">=</span><span class="n">longeurGet</span><span class="p">,</span><span class="w"> </span><span class="k">setter</span><span class="o">=</span><span class="n">longeurSet</span><span class="o">:</span><span class="p">)</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">longeur</span><span class="p">;</span>
+
+<span class="c1">// Methodes</span>
+<span class="o">+/-</span><span class="w"> </span><span class="p">(</span><span class="n">TypeDeRetour</span><span class="p">)</span><span class="n">signatureDeLaMethode</span><span class="o">:</span><span class="p">(</span><span class="n">TypeDuParametre</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">nomDuParametre</span><span class="p">;</span>
+
+<span class="c1">// &#39;+&#39; signifie que c&#39;est une méthode de classe (statique) :</span>
+<span class="p">+</span> <span class="p">(</span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">methodeDeClasse</span><span class="p">;</span>
+<span class="p">+</span> <span class="p">(</span><span class="n">MaClasse</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">maClasseDepuisLaHauteur:</span><span class="p">(</span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nv">hauteurParDefaut</span><span class="p">;</span>
+
+<span class="c1">// &#39;-&#39; pour les méthodes d&#39;instances :</span>
+<span class="p">-</span> <span class="p">(</span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">methodeInstanceAvecUnParametre:</span><span class="p">(</span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nv">string</span><span class="p">;</span>
+<span class="p">-</span> <span class="p">(</span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">methodeInstanceAvecUnParametre:</span><span class="p">(</span><span class="bp">NSString</span><span class="o">*</span><span class="p">)</span><span class="nv">string</span><span class="w"> </span><span class="nf">puisUnDeuxieme:</span><span class="p">(</span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nv">number</span><span class="p">;</span>
+
+<span class="c1">// Contructeur avec des arguments :</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">initAvecDistance:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">distanceParDefault</span><span class="p">;</span>
+<span class="c1">// Les méthodes en Objective-C sont très descriptives</span>
+
+<span class="k">@end</span><span class="w"> </span><span class="c1">// Fin de l&#39;interface</span>
+
+
+<span class="c1">// Voici un exemple d&#39;utilisation de MaClasse</span>
+<span class="n">MaClasse</span><span class="w"> </span><span class="o">*</span><span class="n">maClasse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[[</span><span class="n">MaClasse</span><span class="w"> </span><span class="n">alloc</span><span class="p">]</span><span class="w"> </span><span class="n">init</span><span class="p">];</span><span class="w"> </span><span class="c1">// créer une instance de MaClasse</span>
+<span class="p">[</span><span class="n">maClasse</span><span class="w"> </span><span class="n">setNombre</span><span class="o">:</span><span class="mi">10</span><span class="p">];</span><span class="w"> </span>
+<span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%d&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">maClasse</span><span class="w"> </span><span class="n">nombre</span><span class="p">]);</span><span class="w"> </span><span class="c1">// affiche =&gt; 10</span>
+<span class="p">[</span><span class="n">myClass</span><span class="w"> </span><span class="n">longeurSet</span><span class="o">:</span><span class="mi">32</span><span class="p">];</span>
+<span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">maClasse</span><span class="w"> </span><span class="n">longeurGet</span><span class="p">]);</span><span class="w"> </span><span class="c1">// affiche =&gt; 32</span>
+<span class="c1">// Pour des raisons pratiques vous pouvez aussi utiliser la notation en point pour accéder aux </span>
+<span class="c1">// variables d&#39;instances :</span>
+<span class="n">maClasse</span><span class="p">.</span><span class="n">nombre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">45</span><span class="p">;</span>
+<span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">maClasse</span><span class="p">.</span><span class="n">nombre</span><span class="p">);</span><span class="w"> </span><span class="c1">// maClasse =&gt; 45</span>
+
+<span class="c1">// Pour appeler une méthode de classe :</span>
+<span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="n">s1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">MaClasse</span><span class="w"> </span><span class="n">methodeDeClasse</span><span class="p">];</span>
+<span class="n">MaClasse</span><span class="w"> </span><span class="o">*</span><span class="n">m2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">MaClasse</span><span class="w"> </span><span class="n">maClasseDepuisLaHauteur</span><span class="o">:</span><span class="mi">38</span><span class="p">];</span>
+
+<span class="c1">// Pour appeler une méthode d&#39;instance :</span>
+<span class="n">MaClasse</span><span class="w"> </span><span class="o">*</span><span class="n">maClasse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[[</span><span class="n">MaClasse</span><span class="w"> </span><span class="n">alloc</span><span class="p">]</span><span class="w"> </span><span class="n">init</span><span class="p">];</span><span class="w"> </span><span class="c1">// Créer une instance de MaClasse</span>
+<span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="n">stringDepuisUneInstanceDeMethode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">maClasse</span><span class="w"> </span><span class="n">methodeInstanceAvecUnParametre</span><span class="o">:</span><span class="s">@&quot;Salut&quot;</span><span class="p">];</span>
+
+<span class="c1">// Les sélecteurs sont un moyen de décrire les méthodes dynamiquement</span>
+<span class="c1">// Ils sont utilisés pour appeler des méthodes de classe et avoir des pointeurs de fonctions</span>
+<span class="c1">// facilement manipulable</span>
+<span class="c1">// SEL est un type de donnée et @selector retourne un selecteur à partir d&#39;un nom de methode</span>
+<span class="kt">SEL</span><span class="w"> </span><span class="n">selecteur</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">@selector</span><span class="p">(</span><span class="n">methodeInstanceAvecUnParametre</span><span class="o">:</span><span class="n">puisUnDeuxieme</span><span class="o">:</span><span class="p">);</span><span class="w"> </span>
+<span class="k">if</span><span class="w"> </span><span class="p">([</span><span class="n">maClasse</span><span class="w"> </span><span class="n">respondsToSelector</span><span class="o">:</span><span class="n">selecteur</span><span class="p">])</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// Vérifie si la classe possède la méthode</span>
+<span class="w">    </span><span class="c1">// Met les arguments de la méthode dans un seul objet pour l&#39;envoyer via la fonction</span>
+<span class="w">    </span><span class="c1">// performSelector:withObject: </span>
+<span class="w">    </span><span class="bp">NSArray</span><span class="w"> </span><span class="o">*</span><span class="n">arguments</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSArray</span><span class="w"> </span><span class="n">arrayWithObjects</span><span class="o">:</span><span class="s">@&quot;Hello&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">@4</span><span class="p">,</span><span class="w"> </span><span class="nb">nil</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">myClass</span><span class="w"> </span><span class="n">performSelector</span><span class="o">:</span><span class="n">selectorVar</span><span class="w"> </span><span class="n">withObject</span><span class="o">:</span><span class="n">arguments</span><span class="p">];</span><span class="w"> </span><span class="c1">// Appele la méthode via le sélecteur</span>
+<span class="p">}</span>
+<span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// NSStringFromSelector() retourne une chaine de caractères à partir d&#39;un sélecteur</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;MaClasse ne possède pas de méthode : %@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">NSStringFromSelector</span><span class="p">(</span><span class="n">selecteur</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="c1">// Le fichier d&#39;implémentation de la classe MaClasse (MaClasse.m) doit commencer comme ceci :</span>
+<span class="k">@implementation</span> <span class="nc">MaClasse</span> <span class="p">{</span>
+<span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">distance</span><span class="p">;</span><span class="w"> </span><span class="c1">// Variable d&#39;instance privée (équivalent à @private dans l&#39;interface)</span>
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="n">hauteur</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Pour accéder à une variable depuis l&#39;implémentation on peut utiliser le _ (tiret bas) devant le nom</span>
+<span class="c1">// de la variable :</span>
+<span class="n">_nombre</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="c1">// Accès d&#39;une variable définie dans le fichier d&#39;implémentation :</span>
+<span class="n">distance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">18</span><span class="p">;</span>
+<span class="c1">// Pour utiliser la variable définie par l&#39;intermédiaire de @property, il faut utiliser @synthesize </span>
+<span class="c1">// qui permet de créer les affecteurs et les accésseurs correspondants :</span>
+<span class="k">@synthesize</span><span class="w"> </span><span class="n">roString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_roString</span><span class="p">;</span><span class="w"> </span><span class="c1">// _roString est maintenant disponible dans l&#39;implementation</span>
+
+<span class="c1">// A l&#39;inverse dela méthode &#39;init&#39; qui est appelée lors de la création d&#39;un objet, la fonction </span>
+<span class="c1">// &#39;dealloc&#39; est appelée quand l&#39;objet est supprimé</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">dealloc</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">[</span><span class="n">hauteur</span><span class="w"> </span><span class="k">release</span><span class="p">];</span><span class="w"> </span><span class="c1">// Si vous n&#39;utilisez pas ARC, pensez bien à supprimer l&#39;objet </span>
+<span class="w">    </span><span class="p">[</span><span class="nb">super</span><span class="w"> </span><span class="n">dealloc</span><span class="p">];</span><span class="w">   </span><span class="c1">// et à appeler la méthode &#39;dealloc&#39; de la classe parent </span>
+<span class="p">}</span>
+
+<span class="c1">// Les constructeurs sont des fonctions qui permettent d&#39;instancier un objet</span>
+<span class="c1">// &#39;init&#39; est le constructeur par défaut en Objective-C</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">init</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="nb">self</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="nb">super</span><span class="w"> </span><span class="n">init</span><span class="p">]))</span><span class="w"> </span><span class="c1">// &#39;super&#39; est utilisé pour appeler la méthode de la classe parent</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nb">self</span><span class="p">.</span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// &#39;self&#39; permet d&#39;appeler la méthode de l&#39;instance courante</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">self</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Vous pouvez aussi créer des constructeurs avec des arguments</span>
+<span class="c1">// Attention : chaque nom de constructeur doit absolument commencer par &#39;init&#39;</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">initAvecUneDistance:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">distanceParDefault</span><span class="w"> </span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="nb">self</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="nb">super</span><span class="w"> </span><span class="n">init</span><span class="p">]))</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">distance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">distanceParDefault</span><span class="p">;</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nb">self</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Implémentation d&#39;une méthode de classe</span>
+<span class="p">+</span> <span class="p">(</span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">methodDeClasse</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">[[</span><span class="nb">self</span><span class="w"> </span><span class="n">alloc</span><span class="p">]</span><span class="w"> </span><span class="n">init</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="p">+</span> <span class="p">(</span><span class="n">MaClasse</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">maClasseDepuisUneHauteur:</span><span class="p">(</span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nv">hauteurParDefaut</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">hauteur</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hauteurParDefaut</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">[[</span><span class="nb">self</span><span class="w"> </span><span class="n">alloc</span><span class="p">]</span><span class="w"> </span><span class="n">init</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="c1">// Implémentation d&#39;une méthode d&#39;instance</span>
+<span class="p">-</span> <span class="p">(</span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">methodeInstanceAvecUnParametre:</span><span class="p">(</span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nv">string</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s">@&quot;Ma chaine de caractère&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">-</span> <span class="p">(</span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">methodeInstanceAvecUnParametre:</span><span class="p">(</span><span class="bp">NSString</span><span class="o">*</span><span class="p">)</span><span class="nv">string</span><span class="w"> </span><span class="nf">puisUnDeuxieme:</span><span class="p">(</span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nv">number</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">@42</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Pour créer une méthode privée, il faut la définir dans l&#39;implementation et non pas dans </span>
+<span class="c1">// l&#39;interface</span>
+<span class="p">-</span> <span class="p">(</span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">methodePrivee</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">@72</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">[</span><span class="nb">self</span><span class="w"> </span><span class="n">methodePrivee</span><span class="p">];</span><span class="w"> </span><span class="c1">// Appel de la méthode privée</span>
+
+<span class="c1">// Implémentation d&#39;une méthode qui est déclarée dans &lt;MonProtocole&gt;</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">methodeDuProtocole</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// expressions</span>
+<span class="p">}</span>
+
+<span class="k">@end</span><span class="w"> </span><span class="c1">// Fin de l&#39;implémentation</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * Un protocole déclare des méthodes et propriétés que chaque implémentation doit avoir afin de se</span>
+<span class="cm"> * conformer à celui-ci</span>
+<span class="cm"> * Un protocole n&#39;est pas une classe, c&#39;est juste une interface</span>
+<span class="cm"> */</span>
+<span class="k">@protocol</span> <span class="nc">MonProtocole</span>
+    <span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">methodeDuProtocole</span><span class="p">;</span>
+<span class="k">@end</span>
+
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Gestion de la mémoire</span>
+<span class="c1">///////////////////////////////////////</span>
+<span class="cm">/* </span>
+<span class="cm">À chaque fois qu&#39;un objet est créé dans l&#39;application, un bloc mémoire doit être alloué.</span>
+<span class="cm">Quand l&#39;application en a fini avec cet objet, la mémoire doit être libérée afin d&#39;éviter les fuites</span>
+<span class="cm">mémoires</span>
+<span class="cm">Il n&#39;y a pas de ramasse-miettes en Objective-C contrairement à Java par exemple. La gestion de la</span>
+<span class="cm">mémoire repose sur le comptage de référence qui, pour chaque objet, assigne un compteur qui permet</span>
+<span class="cm">de connaitre le nombre de référence qui l&#39;utilise.</span>
+
+<span class="cm">Le principe est le suivant :</span>
+<span class="cm">Lorsque l&#39;objet est créé, le compteur est initialisé à 1. Quand une instance détient un objet, le</span>
+<span class="cm">compteur est incrémenté de un. Quand l&#39;objet est libéré, le compteur est décrémenté de un.  Au moment</span>
+<span class="cm">où le compteur arrive à zéro, l&#39;objet est supprimé de la mémoire</span>
+
+<span class="cm">Une bonne pratique à suivre quand on travaille avec des objets est la suivante :</span>
+<span class="cm">(1) créer un objet, (2) utiliser l&#39;objet, (3) supprimer l&#39;objet de la mémoire</span>
+<span class="cm">*/</span>
+
+<span class="n">MaClasse</span><span class="w"> </span><span class="o">*</span><span class="n">classeVar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">MyClass</span><span class="w"> </span><span class="n">alloc</span><span class="p">];</span><span class="w"> </span><span class="c1">// &#39;alloc&#39; incrémente le compteur de référence</span>
+<span class="p">[</span><span class="n">classeVar</span><span class="w"> </span><span class="k">release</span><span class="p">];</span><span class="w"> </span><span class="c1">// Décrémente le compteur de rérence</span>
+<span class="c1">// &#39;retain&#39; incrémente le compteur de référence</span>
+<span class="c1">// Si &#39;classeVar&#39; est libéré, l&#39;objet reste en mémoire car le compteur de référence est non nul</span>
+<span class="n">MaClasse</span><span class="w"> </span><span class="o">*</span><span class="n">nouvelleVar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">classVar</span><span class="w"> </span><span class="k">retain</span><span class="p">];</span>
+<span class="p">[</span><span class="n">classeVar</span><span class="w"> </span><span class="n">autorelease</span><span class="p">];</span><span class="w"> </span><span class="c1">// Supprime l&#39;appartenance de l&#39;objet à la fin du bloc</span>
+
+<span class="c1">// Les @property peuvent utiliser &#39;retain&#39; et &#39;assign&#39; </span>
+<span class="k">@property</span><span class="w"> </span><span class="p">(</span><span class="k">retain</span><span class="p">)</span><span class="w"> </span><span class="n">MaClasse</span><span class="w"> </span><span class="o">*</span><span class="n">instance</span><span class="p">;</span><span class="w"> </span><span class="c1">// Libère l&#39;ancienne valeur et retient la nouvelle</span>
+<span class="k">@property</span><span class="w"> </span><span class="p">(</span><span class="k">assign</span><span class="p">)</span><span class="w"> </span><span class="bp">NSSet</span><span class="w"> </span><span class="o">*</span><span class="n">set</span><span class="p">;</span><span class="w"> </span><span class="c1">// Pointeur vers la valeur sans retenir/libérer l&#39;ancienne valeur</span>
+
+<span class="c1">// Automatic Reference Counting (ARC)</span>
+<span class="c1">// La gestion de la mémoire étant pénible, depuis iOS 4 et Xcode 4.2, Apple a introduit le comptage de</span>
+<span class="c1">// référence automatique (Automatic Reference Counting en anglais)</span>
+<span class="c1">// ARC est une fonctionnalité du compilateur qui permet d&#39;ajouter les &#39;retain&#39;, &#39;release&#39; et &#39;autorelease&#39;</span>
+<span class="c1">// automatiquement. Cela veut dire que lorsque vous utilisez ARC vous ne devez plus utiliser ces mot-clés</span>
+<span class="n">MaClasse</span><span class="w"> </span><span class="o">*</span><span class="n">arcMaClasse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[[</span><span class="n">MaClasse</span><span class="w"> </span><span class="n">alloc</span><span class="p">]</span><span class="w"> </span><span class="n">init</span><span class="p">];</span><span class="w"> </span>
+<span class="c1">// ... code utilisant arcMaClasse</span>
+<span class="c1">// Sans ARC, vous auriez dû appeler [arcMaClasse release] après avoir utilisé l&#39;objet. Mais avec ARC</span>
+<span class="c1">// activé il n&#39;est plus nécessaire de le faire car le compilateur ajoutera l&#39;expréssion automatiquement</span>
+<span class="c1">// pour vous</span>
+
+<span class="c1">// Les mots clés &#39;assign&#39; et &#39;retain&#39;, avec ARC sont respectivement remplacé par &#39;weak&#39; et &#39;strong&#39;</span>
+<span class="k">@property</span><span class="w"> </span><span class="p">(</span><span class="k">weak</span><span class="p">)</span><span class="w"> </span><span class="n">MaClasse</span><span class="w"> </span><span class="o">*</span><span class="n">weakVar</span><span class="p">;</span><span class="w"> </span><span class="c1">// &#39;weak&#39; ne retient pas l&#39;objet. Si le compteur de référence</span>
+<span class="c1">// descend à zero, weakVar sera automatiquement mis à nil</span>
+<span class="k">@property</span><span class="w"> </span><span class="p">(</span><span class="k">strong</span><span class="p">)</span><span class="w"> </span><span class="n">MaClasse</span><span class="w"> </span><span class="o">*</span><span class="n">strongVar</span><span class="p">;</span><span class="w"> </span><span class="c1">// &#39;strong&#39; prend possession de l&#39;objet comme le ferait avec</span>
+<span class="c1">// le mot-clé &#39;retain&#39;</span>
+
+<span class="c1">// Pour l&#39;instanciation des variables (en dehors de @property), vous pouvez utiliser les instructions</span>
+<span class="c1">// suivantes :</span>
+<span class="k">__strong</span><span class="w"> </span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="n">strongString</span><span class="p">;</span><span class="w"> </span><span class="c1">// Par défaut. La variable est retenue en mémoire jusqu&#39;à la fin</span>
+<span class="c1">//  de sa portée</span>
+<span class="k">__weak</span><span class="w"> </span><span class="bp">NSSet</span><span class="w"> </span><span class="o">*</span><span class="n">weakSet</span><span class="p">;</span><span class="w"> </span><span class="c1">// Maintient une référence vers l&#39;objet sans incrémenter son compteur de référence :</span>
+<span class="c1">// Lorsque l&#39;objet sera supprimé, weakSet sera mis à nil automatiquement</span>
+<span class="n">__unsafe_unretained</span><span class="w"> </span><span class="bp">NSArray</span><span class="w"> </span><span class="o">*</span><span class="n">unsafeArray</span><span class="p">;</span><span class="w"> </span><span class="c1">// Comme __weak, mais la variable n&#39;est pas mis à nil quand</span>
+<span class="c1">// l&#39;objet est supprimé</span>
+</pre></div>
 <h2>Lectures Complémentaires</h2>
 
 <p><a href="http://fr.wikipedia.org/wiki/Objective-C">La Page Wikipedia de l&#39;Objective-C</a></p>

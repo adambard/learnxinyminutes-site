@@ -89,324 +89,324 @@
     <p>MIPS（Microprocessor without Interlocked Pipeline Stages）汇编语言是为了配合约翰·雷洛伊·亨尼西于1981年设计的 MIPS 微处理器范式而设计的，这些 RISC 处理器用于嵌入式系统，例如网关和路由器。</p>
 
 <p><a href="https://en.wikipedia.org/wiki/MIPS_architecture">阅读更多</a></p>
-<div class="highlight"><pre class="highlight plaintext"><code># 注释用一个 '#' 表示
-
-# 一行中 '#' 之后的所有文本都会被汇编器的词法分析器忽略
-
-# 程序通常包含 .data 和 .text 部分
-
-.data # 数据存储在内存中（在RAM中分配）
-      # 类似于高级语言中的变量
-
-  # 声明遵循（ 标签: .类型 值 ）的声明形式
-  hello_world: .asciiz "Hello World\n"      # 声明一个 null 结束的字符串
-  num1: .word 42                            # 整数被视为字
-                                            # （32位值）
-
-  arr1: .word 1, 2, 3, 4, 5                 # 字数组
-  arr2: .byte 'a', 'b'                      # 字符数组（每个1字节）
-  buffer: .space 60                         # 在 RAM 中分配空间
-                                            # （不清除为0）
-
-  # 数据类型的大小
-  _byte: .byte 'a'                          # 1字节
-  _halfword: .half 53                       # 2字节
-  _word: .word 3                            # 4字节
-  _float: .float 3.14                       # 4字节
-  _double: .double 7.0                      # 8字节
-
-  .align 2                                  # 数据的内存对齐
-                                            # 其中数字（应是2的幂）表示几字节对齐
-                                            # .align 2 表示字对齐（因为 2^2 = 4 字节）
-
-.text                                       # 这部分包括指令和程序逻辑
-.globl _main                                # 声明一个全局指令标签
-                                            # 其他文件都可以访问
-
-  _main:                                    # MIPS 程序按顺序执行指令
-                                            # 这条标签下的代码将首先执行
-
-    # 打印 "hello world"
-    la $a0, hello_world                     # 加载存储在内存中的字符串地址
-    li $v0, 4                               # 加载 syscall 的值
-                                            # （数字代表要执行哪个 syscall）
-    syscall                                 # 使用给定的参数（$a0）执行指定的 syscall
-
-    # 寄存器（用于在程序执行期间保存数据）
-    # $t0 - $t9                             # 临时寄存器，用于过程内部的中间计算
-                                            # （过程调用时不保存）
-
-    # $s0 - $s7                             # 保留寄存器（被保留的寄存器，过程调用时保存）
-                                            # 通常保存在栈中
-
-    # $a0 - $a3                             # 参数寄存器，用于传递过程的参数
-    # $v0 - $v1                             # 返回寄存器，用于向调用过程返回值
-
-    # 存取指令
-    la $t0, label                           # 将内存中由 label 指定的值的地址复制到寄存器 $t0 中
-    lw $t0, label                           # 从内存中复制一个字
-    lw $t1, 4($s0)                          # 从寄存器中存储的地址复制一个字
-                                            # 偏移量为4字节（地址 + 4）
-    lb $t2, label                           # 把一个字节复制到寄存器 $t2 的低阶部分
-    lb $t2, 0($s0)                          # 从 $s0 的源地址复制一个字节
-                                            # 偏移量为0
-    # 同理也适用于 'lh' （取半字）
-
-    sw $t0, label                           # 将字存储到由 label 映射的内存地址中
-    sw $t0, 8($s0)                          # 将字存储到 $s0 指定的地址中
-                                            # 偏移量为8字节
-    # 同理也适用于 'sb' （存字）和 'sh' （存半字）。'sa'不存在
-
-### 数学 ###
-  _math:
-    # 记住要将值加载到寄存器中
-    lw $t0, num                             # 从数据部分
-    li $t0, 5                               # 或者从一个立即数（常数）
-    li $t1, 6
-    add $t2, $t0, $t1                       # $t2 = $t0 + $t1
-    sub $t2, $t0, $t1                       # $t2 = $t0 - $t1
-    mul $t2, $t0, $t1                       # $t2 = $t0 * $t1
-    div $t2, $t0, $t1                       # $t2 = $t0 / $t1
-                                            # （MARS 的某些版本可能不支持）
-    div $t0, $t1                            # 执行 $t0 / $t1。
-                                            # 用 'mflo' 得商，用 'mfhi' 得余数
-
-    # 移位
-    sll $t0, $t0, 2                         # 按位左移立即数（常数值）2
-    sllv $t0, $t1, $t2                      # 根据一个寄存器中的变量值左移相应位
-    srl $t0, $t0, 5                         # 按位右移
-                                            # （不保留符号，用0符号扩展）
-    srlv $t0, $t1, $t2                      # 根据一个寄存器中的变量值右移相应位
-    sra $t0, $t0, 7                         # 按算术位右移（保留符号）
-    srav $t0, $t1, $t2                      # 根据一个寄存器中的变量值右移相应算数位
-
-    # 按位运算符
-    and $t0, $t1, $t2                       # 按位与
-    andi $t0, $t1, 0xFFF                    # 用立即数按位与
-    or $t0, $t1, $t2                        # 按位或
-    ori $t0, $t1, 0xFFF                     # 用立即数按位或
-    xor $t0, $t1, $t2                       # 按位异或
-    xori $t0, $t1, 0xFFF                    # 用立即数按位异或
-    nor $t0, $t1, $t2                       # 按位或非
-
-## 分支 ##
-  _branching:
-    # 分支指令的基本格式通常遵循 &lt;指令&gt; &lt;寄存器1&gt; &lt;寄存器2&gt; &lt;标签&gt;
-    # 如果给定的条件求值为真，则跳转到标签
-    # 有时向后编写条件逻辑更容易，如下面的简单的 if 语句示例所示
-
-    beq $t0, $t1, reg_eq                    # 如果 $t0 == $t1，则跳转到 reg_eq
-                                            # 否则执行下一行
-    bne $t0, $t1, reg_neq                   # 当 $t0 != $t1 时跳转
-    b branch_target                         # 非条件分支，总会执行
-    beqz $t0, req_eq_zero                   # 当 $t0 == 0 时跳转
-    bnez $t0, req_neq_zero                  # 当 $t0 != 0 时跳转
-    bgt $t0, $t1, t0_gt_t1                  # 当 $t0 &gt; $t1 时跳转
-    bge $t0, $t1, t0_gte_t1                 # 当 $t0 &gt;= $t1 时跳转
-    bgtz $t0, t0_gt0                        # 当 $t0 &gt; 0 时跳转
-    blt $t0, $t1, t0_gt_t1                  # 当 $t0 &lt; $t1 时跳转
-    ble $t0, $t1, t0_gte_t1                 # 当 $t0 &lt;= $t1 时跳转
-    bltz $t0, t0_lt0                        # 当 $t0 &lt; 0 时跳转
-    slt $s0, $t0, $t1                       # 当 $t0 &lt; $t1 时结果为 $s0 （1为真）
-
-    # 简单的 if 语句
-    # if (i == j)
-    #     f = g + h;
-    #  f = f - i;
-
-    # 让 $s0 = f, $s1 = g, $s2 = h, $s3 = i, $s4 = j
-    bne $s3, $s4, L1 # if (i !=j)
-    add $s0, $s1, $s2 # f = g + h
-
-    L1:
-      sub $s0, $s0, $s3 # f = f - i
-
-    # 下面是一个求3个数的最大值的例子
-    # 从 Java 到 MIPS 逻辑的直接翻译：
-    # if (a &gt; b)
-    #   if (a &gt; c)
-    #     max = a;
-    #   else
-    #     max = c;
-    # else
-    #     max = b;
-    #   else
-    #     max = c;
-
-    # 让 $s0 = a, $s1 = b, $s2 = c, $v0 = 返回寄存器
-    ble $s0, $s1, a_LTE_b                   # 如果 (a &lt;= b) 跳转到 (a_LTE_b)
-    ble $s0, $s2, max_C                     # 如果 (a &gt; b &amp;&amp; a &lt;= c) 跳转到 (max_C)
-    move $v0, $s0                           # 否则 [a &gt; b &amp;&amp; a &gt; c] max = a
-    j done                                  # 跳转到程序结束
-
-    a_LTE_b:                                # 当 a &lt;= b 时的标签
-      ble $s1, $s2, max_C                   # 如果 (a &lt;= b &amp;&amp; b &lt;= c) 跳转到 (max_C)
-      move $v0, $s1                         # 如果 (a &lt;= b &amp;&amp; b &gt; c) max = b
-      j done                                # 跳转到 done
-
-    max_C:
-      move $v0, $s2                         # max = c
-
-    done:                                   # 程序结束
-
-## 循环 ##
-  _loops:
-    # 循环的基本结构是一个退出条件和一个继续执行的跳转指令
-    li $t0, 0
-    while:
-      bgt $t0, 10, end_while                # 当 $t0 小于 10，不停迭代
-      addi $t0, $t0, 1                      # 累加值
-      j while                               # 跳转回循环开始
-    end_while:
-
-    # 二维矩阵遍历
-    # 假设 $a0 存储整数 3 × 3 矩阵的地址
-    li $t0, 0                               # 计数器 i
-    li $t1, 0                               # 计数器 j
-    matrix_row:
-      bgt $t0, 3, matrix_row_end
-
-      matrix_col:
-        bgt $t1, 3, matrix_col_end
-
-        # 执行一些东西
-
-        addi $t1, $t1, 1                  # 累加列计数器
-      matrix_col_end:
-
-      # 执行一些东西
-
-      addi $t0, $t0, 1
-    matrix_row_end:
-
-## 函数 ##
-  _functions:
-    # 函数是可调用的过程，可以接受参数并返回所有用标签表示的值，如前所示
-
-    main:                                 # 程序以 main 函数开始
-      jal return_1                        # jal 会把当前程序计数器（PC）存储在 $ra
-                                          # 并跳转到 return_1
-
-      # 如果我们想传入参数呢？
-      # 首先，我们必须将形参传递给参数寄存器
-      li $a0, 1
-      li $a1, 2
-      jal sum                             # 现在我们可以调用函数了
-
-      # 递归怎么样？
-      # 这需要更多的工作
-      # 由于 jal 会自动覆盖每次调用，我们需要确保在 $ra 中保存并恢复之前的程序计数器
-      li $a0, 3
-      jal fact
-
-      li $v0, 10
-      syscall
-
-    # 这个函数返回1
-    return_1:
-      li $v0, 1                           # 将值取到返回寄存器 $v0 中
-      jr $ra                              # 跳转回原先的程序计数器继续执行
-
-
-    # 有2个参数的函数
-    sum:
-      add $v0, $a0, $a1
-      jr $ra                              # 返回
-
-    # 求阶乘的递归函数
-    fact:
-      addi $sp, $sp, -8                   # 在栈中分配空间
-      sw $s0, ($sp)                       # 存储保存当前数字的寄存器
-      sw $ra, 4($sp)                      # 存储先前的程序计数器
-
-      li $v0, 1                           # 初始化返回值
-      beq $a0, 0, fact_done               # 如果参数为0则完成
-
-      # 否则继续递归
-      move $s0, $a0                       # 复制 $a0 到 $s0
-      sub $a0, $a0, 1
-      jal fact
-
-      mul $v0, $s0, $v0                   # 做乘法
-
-      fact_done:
-        lw $s0, ($sp)
-        lw $ra, ($sp)                     # 恢复程序计数器
-        addi $sp, $sp, 8
-
-        jr $ra
-
-## 宏 ##
-  _macros:
-    # 宏可以实现用单个标签替换重复的代码块，这可以增强程序的可读性
-    # 它们绝不是函数的替代品
-    # 它们必须在使用之前声明
-
-    # 用于打印换行符的宏（这可以被多次重用）
-    .macro println()
-      la $a0, newline                     # 存储在这里的新行字符串
-      li $v0, 4
-      syscall
-    .end_macro
-
-    println()                             # 汇编器会在运行前复制此代码块
-
-    # 参数可以通过宏传入。
-    # 它们由 '%' 符号表示，可以选择起任意名字
-    .macro print_int(%num)
-      li $v0, 1
-      lw $a0, %num
-      syscall
-    .end_macro
-
-    li $t0, 1
-    print_int($t0)
-
-    # 我们也可以给宏传递立即数
-    .macro immediates(%a, %b)
-      add $t0, %a, %b
-    .end_macro
-
-    immediates(3, 5)
-
-    # 以及标签
-    .macro print(%string)
-      la $a0, %string
-      li $v0, 4
-      syscall
-    .end_macro
-
-    print(hello_world)
-
-## 数组 ##
-.data
-  list: .word 3, 0, 1, 2, 6                 # 这是一个字数组
-  char_arr: .asciiz "hello"                 # 这是一个字符数组
-  buffer: .space 128                        # 在内存中分配块，不会自动清除
-                                            # 这些内存块彼此对齐
-
-.text
-  la $s0, list                              # 取 list 的地址
-  li $t0, 0                                 # 计数器
-  li $t1, 5                                 # list 的长度
-
-  loop:
-    bgt $t0, $t1, end_loop
-
-    lw $a0, ($s0)
-    li $v0, 1
-    syscall                                 # 打印数字
-
-    addi $s0, $s0, 4                        # 字的大小为4字节
-    addi $t0, $t0, 1                        # 累加
-    j loop
-  end_loop:
-
-## INCLUDE ##
-# 使用 include 语句可以将外部文件导入到程序中
-# （它只是将文件中的代码放入 include 语句的位置）
-.include "somefile.asm"
-</code></pre></div>
+<div class="highlight"><pre><span></span><span class="c1"># 注释用一个 &#39;#&#39; 表示</span>
+
+<span class="c1"># 一行中 &#39;#&#39; 之后的所有文本都会被汇编器的词法分析器忽略</span>
+
+<span class="c1"># 程序通常包含 .data 和 .text 部分</span>
+
+<span class="na">.data</span><span class="w"> </span><span class="c1"># 数据存储在内存中（在RAM中分配）</span>
+<span class="w">      </span><span class="c1"># 类似于高级语言中的变量</span>
+
+<span class="w">  </span><span class="c1"># 声明遵循（ 标签: .类型 值 ）的声明形式</span>
+<span class="w">  </span><span class="nl">hello_world:</span><span class="w"> </span><span class="na">.asciiz</span><span class="w"> </span><span class="s">&quot;Hello World\n&quot;</span><span class="w">      </span><span class="c1"># 声明一个 null 结束的字符串</span>
+<span class="w">  </span><span class="nl">num1:</span><span class="w"> </span><span class="na">.word</span><span class="w"> </span><span class="mi">42</span><span class="w">                            </span><span class="c1"># 整数被视为字</span>
+<span class="w">                                            </span><span class="c1"># （32位值）</span>
+
+<span class="w">  </span><span class="nl">arr1:</span><span class="w"> </span><span class="na">.word</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="w">                 </span><span class="c1"># 字数组</span>
+<span class="w">  </span><span class="nl">arr2:</span><span class="w"> </span><span class="na">.byte</span><span class="w"> </span><span class="err">&#39;</span><span class="no">a</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="no">b</span><span class="err">&#39;</span><span class="w">                      </span><span class="c1"># 字符数组（每个1字节）</span>
+<span class="w">  </span><span class="nl">buffer:</span><span class="w"> </span><span class="na">.space</span><span class="w"> </span><span class="mi">60</span><span class="w">                         </span><span class="c1"># 在 RAM 中分配空间</span>
+<span class="w">                                            </span><span class="c1"># （不清除为0）</span>
+
+<span class="w">  </span><span class="c1"># 数据类型的大小</span>
+<span class="w">  </span><span class="nl">_byte:</span><span class="w"> </span><span class="na">.byte</span><span class="w"> </span><span class="err">&#39;</span><span class="no">a</span><span class="err">&#39;</span><span class="w">                          </span><span class="c1"># 1字节</span>
+<span class="w">  </span><span class="nl">_halfword:</span><span class="w"> </span><span class="na">.half</span><span class="w"> </span><span class="mi">53</span><span class="w">                       </span><span class="c1"># 2字节</span>
+<span class="w">  </span><span class="nl">_word:</span><span class="w"> </span><span class="na">.word</span><span class="w"> </span><span class="mi">3</span><span class="w">                            </span><span class="c1"># 4字节</span>
+<span class="w">  </span><span class="nl">_float:</span><span class="w"> </span><span class="na">.float</span><span class="w"> </span><span class="mi">3</span><span class="no">.14</span><span class="w">                       </span><span class="c1"># 4字节</span>
+<span class="w">  </span><span class="nl">_double:</span><span class="w"> </span><span class="na">.double</span><span class="w"> </span><span class="mi">7</span><span class="no">.0</span><span class="w">                      </span><span class="c1"># 8字节</span>
+
+<span class="w">  </span><span class="na">.align</span><span class="w"> </span><span class="mi">2</span><span class="w">                                  </span><span class="c1"># 数据的内存对齐</span>
+<span class="w">                                            </span><span class="c1"># 其中数字（应是2的幂）表示几字节对齐</span>
+<span class="w">                                            </span><span class="c1"># .align 2 表示字对齐（因为 2^2 = 4 字节）</span>
+
+<span class="na">.text</span><span class="w">                                       </span><span class="c1"># 这部分包括指令和程序逻辑</span>
+<span class="na">.globl</span><span class="w"> </span><span class="no">_main</span><span class="w">                                </span><span class="c1"># 声明一个全局指令标签</span>
+<span class="w">                                            </span><span class="c1"># 其他文件都可以访问</span>
+
+<span class="w">  </span><span class="nl">_main:</span><span class="w">                                    </span><span class="c1"># MIPS 程序按顺序执行指令</span>
+<span class="w">                                            </span><span class="c1"># 这条标签下的代码将首先执行</span>
+
+<span class="w">    </span><span class="c1"># 打印 &quot;hello world&quot;</span>
+<span class="w">    </span><span class="nf">la</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="no">hello_world</span><span class="w">                     </span><span class="c1"># 加载存储在内存中的字符串地址</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="w">                               </span><span class="c1"># 加载 syscall 的值</span>
+<span class="w">                                            </span><span class="c1"># （数字代表要执行哪个 syscall）</span>
+<span class="w">    </span><span class="nf">syscall</span><span class="w">                                 </span><span class="c1"># 使用给定的参数（$a0）执行指定的 syscall</span>
+
+<span class="w">    </span><span class="c1"># 寄存器（用于在程序执行期间保存数据）</span>
+<span class="w">    </span><span class="c1"># $t0 - $t9                             # 临时寄存器，用于过程内部的中间计算</span>
+<span class="w">                                            </span><span class="c1"># （过程调用时不保存）</span>
+
+<span class="w">    </span><span class="c1"># $s0 - $s7                             # 保留寄存器（被保留的寄存器，过程调用时保存）</span>
+<span class="w">                                            </span><span class="c1"># 通常保存在栈中</span>
+
+<span class="w">    </span><span class="c1"># $a0 - $a3                             # 参数寄存器，用于传递过程的参数</span>
+<span class="w">    </span><span class="c1"># $v0 - $v1                             # 返回寄存器，用于向调用过程返回值</span>
+
+<span class="w">    </span><span class="c1"># 存取指令</span>
+<span class="w">    </span><span class="nf">la</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">label</span><span class="w">                           </span><span class="c1"># 将内存中由 label 指定的值的地址复制到寄存器 $t0 中</span>
+<span class="w">    </span><span class="nf">lw</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">label</span><span class="w">                           </span><span class="c1"># 从内存中复制一个字</span>
+<span class="w">    </span><span class="nf">lw</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">(</span><span class="no">$s0</span><span class="p">)</span><span class="w">                          </span><span class="c1"># 从寄存器中存储的地址复制一个字</span>
+<span class="w">                                            </span><span class="c1"># 偏移量为4字节（地址 + 4）</span>
+<span class="w">    </span><span class="nf">lb</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="no">label</span><span class="w">                           </span><span class="c1"># 把一个字节复制到寄存器 $t2 的低阶部分</span>
+<span class="w">    </span><span class="nf">lb</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">(</span><span class="no">$s0</span><span class="p">)</span><span class="w">                          </span><span class="c1"># 从 $s0 的源地址复制一个字节</span>
+<span class="w">                                            </span><span class="c1"># 偏移量为0</span>
+<span class="w">    </span><span class="c1"># 同理也适用于 &#39;lh&#39; （取半字）</span>
+
+<span class="w">    </span><span class="nf">sw</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">label</span><span class="w">                           </span><span class="c1"># 将字存储到由 label 映射的内存地址中</span>
+<span class="w">    </span><span class="nf">sw</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">(</span><span class="no">$s0</span><span class="p">)</span><span class="w">                          </span><span class="c1"># 将字存储到 $s0 指定的地址中</span>
+<span class="w">                                            </span><span class="c1"># 偏移量为8字节</span>
+<span class="w">    </span><span class="c1"># 同理也适用于 &#39;sb&#39; （存字）和 &#39;sh&#39; （存半字）。&#39;sa&#39;不存在</span>
+
+<span class="c1">### 数学 ###</span>
+<span class="w">  </span><span class="nl">_math:</span>
+<span class="w">    </span><span class="c1"># 记住要将值加载到寄存器中</span>
+<span class="w">    </span><span class="nf">lw</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">num</span><span class="w">                             </span><span class="c1"># 从数据部分</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="w">                               </span><span class="c1"># 或者从一个立即数（常数）</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span>
+<span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                       </span><span class="c1"># $t2 = $t0 + $t1</span>
+<span class="w">    </span><span class="nf">sub</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                       </span><span class="c1"># $t2 = $t0 - $t1</span>
+<span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                       </span><span class="c1"># $t2 = $t0 * $t1</span>
+<span class="w">    </span><span class="nf">div</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                       </span><span class="c1"># $t2 = $t0 / $t1</span>
+<span class="w">                                            </span><span class="c1"># （MARS 的某些版本可能不支持）</span>
+<span class="w">    </span><span class="nf">div</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                            </span><span class="c1"># 执行 $t0 / $t1。</span>
+<span class="w">                                            </span><span class="c1"># 用 &#39;mflo&#39; 得商，用 &#39;mfhi&#39; 得余数</span>
+
+<span class="w">    </span><span class="c1"># 移位</span>
+<span class="w">    </span><span class="nf">sll</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="w">                         </span><span class="c1"># 按位左移立即数（常数值）2</span>
+<span class="w">    </span><span class="nf">sllv</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                      </span><span class="c1"># 根据一个寄存器中的变量值左移相应位</span>
+<span class="w">    </span><span class="nf">srl</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="w">                         </span><span class="c1"># 按位右移</span>
+<span class="w">                                            </span><span class="c1"># （不保留符号，用0符号扩展）</span>
+<span class="w">    </span><span class="nf">srlv</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                      </span><span class="c1"># 根据一个寄存器中的变量值右移相应位</span>
+<span class="w">    </span><span class="nf">sra</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="w">                         </span><span class="c1"># 按算术位右移（保留符号）</span>
+<span class="w">    </span><span class="nf">srav</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                      </span><span class="c1"># 根据一个寄存器中的变量值右移相应算数位</span>
+
+<span class="w">    </span><span class="c1"># 按位运算符</span>
+<span class="w">    </span><span class="nf">and</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                       </span><span class="c1"># 按位与</span>
+<span class="w">    </span><span class="nf">andi</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">0xFFF</span><span class="w">                    </span><span class="c1"># 用立即数按位与</span>
+<span class="w">    </span><span class="nf">or</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                        </span><span class="c1"># 按位或</span>
+<span class="w">    </span><span class="nf">ori</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">0xFFF</span><span class="w">                     </span><span class="c1"># 用立即数按位或</span>
+<span class="w">    </span><span class="nf">xor</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                       </span><span class="c1"># 按位异或</span>
+<span class="w">    </span><span class="nf">xori</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">0xFFF</span><span class="w">                    </span><span class="c1"># 用立即数按位异或</span>
+<span class="w">    </span><span class="nf">nor</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                       </span><span class="c1"># 按位或非</span>
+
+<span class="c1">## 分支 ##</span>
+<span class="w">  </span><span class="nl">_branching:</span>
+<span class="w">    </span><span class="c1"># 分支指令的基本格式通常遵循 &lt;指令&gt; &lt;寄存器1&gt; &lt;寄存器2&gt; &lt;标签&gt;</span>
+<span class="w">    </span><span class="c1"># 如果给定的条件求值为真，则跳转到标签</span>
+<span class="w">    </span><span class="c1"># 有时向后编写条件逻辑更容易，如下面的简单的 if 语句示例所示</span>
+
+<span class="w">    </span><span class="nf">beq</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">reg_eq</span><span class="w">                    </span><span class="c1"># 如果 $t0 == $t1，则跳转到 reg_eq</span>
+<span class="w">                                            </span><span class="c1"># 否则执行下一行</span>
+<span class="w">    </span><span class="nf">bne</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">reg_neq</span><span class="w">                   </span><span class="c1"># 当 $t0 != $t1 时跳转</span>
+<span class="w">    </span><span class="nf">b</span><span class="w"> </span><span class="no">branch_target</span><span class="w">                         </span><span class="c1"># 非条件分支，总会执行</span>
+<span class="w">    </span><span class="nf">beqz</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">req_eq_zero</span><span class="w">                   </span><span class="c1"># 当 $t0 == 0 时跳转</span>
+<span class="w">    </span><span class="nf">bnez</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">req_neq_zero</span><span class="w">                  </span><span class="c1"># 当 $t0 != 0 时跳转</span>
+<span class="w">    </span><span class="nf">bgt</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">t0_gt_t1</span><span class="w">                  </span><span class="c1"># 当 $t0 &gt; $t1 时跳转</span>
+<span class="w">    </span><span class="nf">bge</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">t0_gte_t1</span><span class="w">                 </span><span class="c1"># 当 $t0 &gt;= $t1 时跳转</span>
+<span class="w">    </span><span class="nf">bgtz</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">t0_gt0</span><span class="w">                        </span><span class="c1"># 当 $t0 &gt; 0 时跳转</span>
+<span class="w">    </span><span class="nf">blt</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">t0_gt_t1</span><span class="w">                  </span><span class="c1"># 当 $t0 &lt; $t1 时跳转</span>
+<span class="w">    </span><span class="nf">ble</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">t0_gte_t1</span><span class="w">                 </span><span class="c1"># 当 $t0 &lt;= $t1 时跳转</span>
+<span class="w">    </span><span class="nf">bltz</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">t0_lt0</span><span class="w">                        </span><span class="c1"># 当 $t0 &lt; 0 时跳转</span>
+<span class="w">    </span><span class="nf">slt</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                       </span><span class="c1"># 当 $t0 &lt; $t1 时结果为 $s0 （1为真）</span>
+
+<span class="w">    </span><span class="c1"># 简单的 if 语句</span>
+<span class="w">    </span><span class="c1"># if (i == j)</span>
+<span class="w">    </span><span class="c1">#     f = g + h;</span>
+<span class="w">    </span><span class="c1">#  f = f - i;</span>
+
+<span class="w">    </span><span class="c1"># 让 $s0 = f, $s1 = g, $s2 = h, $s3 = i, $s4 = j</span>
+<span class="w">    </span><span class="nf">bne</span><span class="w"> </span><span class="no">$s3</span><span class="p">,</span><span class="w"> </span><span class="no">$s4</span><span class="p">,</span><span class="w"> </span><span class="no">L1</span><span class="w"> </span><span class="c1"># if (i !=j)</span>
+<span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s1</span><span class="p">,</span><span class="w"> </span><span class="no">$s2</span><span class="w"> </span><span class="c1"># f = g + h</span>
+
+<span class="w">    </span><span class="nl">L1:</span>
+<span class="w">      </span><span class="nf">sub</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s3</span><span class="w"> </span><span class="c1"># f = f - i</span>
+
+<span class="w">    </span><span class="c1"># 下面是一个求3个数的最大值的例子</span>
+<span class="w">    </span><span class="c1"># 从 Java 到 MIPS 逻辑的直接翻译：</span>
+<span class="w">    </span><span class="c1"># if (a &gt; b)</span>
+<span class="w">    </span><span class="c1">#   if (a &gt; c)</span>
+<span class="w">    </span><span class="c1">#     max = a;</span>
+<span class="w">    </span><span class="c1">#   else</span>
+<span class="w">    </span><span class="c1">#     max = c;</span>
+<span class="w">    </span><span class="c1"># else</span>
+<span class="w">    </span><span class="c1">#     max = b;</span>
+<span class="w">    </span><span class="c1">#   else</span>
+<span class="w">    </span><span class="c1">#     max = c;</span>
+
+<span class="w">    </span><span class="c1"># 让 $s0 = a, $s1 = b, $s2 = c, $v0 = 返回寄存器</span>
+<span class="w">    </span><span class="nf">ble</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s1</span><span class="p">,</span><span class="w"> </span><span class="no">a_LTE_b</span><span class="w">                   </span><span class="c1"># 如果 (a &lt;= b) 跳转到 (a_LTE_b)</span>
+<span class="w">    </span><span class="nf">ble</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s2</span><span class="p">,</span><span class="w"> </span><span class="no">max_C</span><span class="w">                     </span><span class="c1"># 如果 (a &gt; b &amp;&amp; a &lt;= c) 跳转到 (max_C)</span>
+<span class="w">    </span><span class="nf">move</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="no">$s0</span><span class="w">                           </span><span class="c1"># 否则 [a &gt; b &amp;&amp; a &gt; c] max = a</span>
+<span class="w">    </span><span class="nf">j</span><span class="w"> </span><span class="no">done</span><span class="w">                                  </span><span class="c1"># 跳转到程序结束</span>
+
+<span class="w">    </span><span class="nl">a_LTE_b:</span><span class="w">                                </span><span class="c1"># 当 a &lt;= b 时的标签</span>
+<span class="w">      </span><span class="nf">ble</span><span class="w"> </span><span class="no">$s1</span><span class="p">,</span><span class="w"> </span><span class="no">$s2</span><span class="p">,</span><span class="w"> </span><span class="no">max_C</span><span class="w">                   </span><span class="c1"># 如果 (a &lt;= b &amp;&amp; b &lt;= c) 跳转到 (max_C)</span>
+<span class="w">      </span><span class="nf">move</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="no">$s1</span><span class="w">                         </span><span class="c1"># 如果 (a &lt;= b &amp;&amp; b &gt; c) max = b</span>
+<span class="w">      </span><span class="nf">j</span><span class="w"> </span><span class="no">done</span><span class="w">                                </span><span class="c1"># 跳转到 done</span>
+
+<span class="w">    </span><span class="nl">max_C:</span>
+<span class="w">      </span><span class="nf">move</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="no">$s2</span><span class="w">                         </span><span class="c1"># max = c</span>
+
+<span class="w">    </span><span class="nl">done:</span><span class="w">                                   </span><span class="c1"># 程序结束</span>
+
+<span class="c1">## 循环 ##</span>
+<span class="w">  </span><span class="nl">_loops:</span>
+<span class="w">    </span><span class="c1"># 循环的基本结构是一个退出条件和一个继续执行的跳转指令</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">    </span><span class="nl">while:</span>
+<span class="w">      </span><span class="nf">bgt</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="no">end_while</span><span class="w">                </span><span class="c1"># 当 $t0 小于 10，不停迭代</span>
+<span class="w">      </span><span class="nf">addi</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                      </span><span class="c1"># 累加值</span>
+<span class="w">      </span><span class="nf">j</span><span class="w"> </span><span class="no">while</span><span class="w">                               </span><span class="c1"># 跳转回循环开始</span>
+<span class="w">    </span><span class="nl">end_while:</span>
+
+<span class="w">    </span><span class="c1"># 二维矩阵遍历</span>
+<span class="w">    </span><span class="c1"># 假设 $a0 存储整数 3 × 3 矩阵的地址</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">                               </span><span class="c1"># 计数器 i</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">                               </span><span class="c1"># 计数器 j</span>
+<span class="w">    </span><span class="nl">matrix_row:</span>
+<span class="w">      </span><span class="nf">bgt</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="no">matrix_row_end</span>
+
+<span class="w">      </span><span class="nl">matrix_col:</span>
+<span class="w">        </span><span class="nf">bgt</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="no">matrix_col_end</span>
+
+<span class="w">        </span><span class="c1"># 执行一些东西</span>
+
+<span class="w">        </span><span class="nf">addi</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                  </span><span class="c1"># 累加列计数器</span>
+<span class="w">      </span><span class="nl">matrix_col_end:</span>
+
+<span class="w">      </span><span class="c1"># 执行一些东西</span>
+
+<span class="w">      </span><span class="nf">addi</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="nl">matrix_row_end:</span>
+
+<span class="c1">## 函数 ##</span>
+<span class="w">  </span><span class="nl">_functions:</span>
+<span class="w">    </span><span class="c1"># 函数是可调用的过程，可以接受参数并返回所有用标签表示的值，如前所示</span>
+
+<span class="w">    </span><span class="nl">main:</span><span class="w">                                 </span><span class="c1"># 程序以 main 函数开始</span>
+<span class="w">      </span><span class="nf">jal</span><span class="w"> </span><span class="no">return_1</span><span class="w">                        </span><span class="c1"># jal 会把当前程序计数器（PC）存储在 $ra</span>
+<span class="w">                                          </span><span class="c1"># 并跳转到 return_1</span>
+
+<span class="w">      </span><span class="c1"># 如果我们想传入参数呢？</span>
+<span class="w">      </span><span class="c1"># 首先，我们必须将形参传递给参数寄存器</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$a1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">      </span><span class="nf">jal</span><span class="w"> </span><span class="no">sum</span><span class="w">                             </span><span class="c1"># 现在我们可以调用函数了</span>
+
+<span class="w">      </span><span class="c1"># 递归怎么样？</span>
+<span class="w">      </span><span class="c1"># 这需要更多的工作</span>
+<span class="w">      </span><span class="c1"># 由于 jal 会自动覆盖每次调用，我们需要确保在 $ra 中保存并恢复之前的程序计数器</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">      </span><span class="nf">jal</span><span class="w"> </span><span class="no">fact</span>
+
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">      </span><span class="nf">syscall</span>
+
+<span class="w">    </span><span class="c1"># 这个函数返回1</span>
+<span class="w">    </span><span class="nl">return_1:</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                           </span><span class="c1"># 将值取到返回寄存器 $v0 中</span>
+<span class="w">      </span><span class="nf">jr</span><span class="w"> </span><span class="no">$ra</span><span class="w">                              </span><span class="c1"># 跳转回原先的程序计数器继续执行</span>
+
+
+<span class="w">    </span><span class="c1"># 有2个参数的函数</span>
+<span class="w">    </span><span class="nl">sum:</span>
+<span class="w">      </span><span class="nf">add</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="no">$a1</span>
+<span class="w">      </span><span class="nf">jr</span><span class="w"> </span><span class="no">$ra</span><span class="w">                              </span><span class="c1"># 返回</span>
+
+<span class="w">    </span><span class="c1"># 求阶乘的递归函数</span>
+<span class="w">    </span><span class="nl">fact:</span>
+<span class="w">      </span><span class="nf">addi</span><span class="w"> </span><span class="no">$sp</span><span class="p">,</span><span class="w"> </span><span class="no">$sp</span><span class="p">,</span><span class="w"> </span><span class="mi">-8</span><span class="w">                   </span><span class="c1"># 在栈中分配空间</span>
+<span class="w">      </span><span class="nf">sw</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="no">$sp</span><span class="p">)</span><span class="w">                       </span><span class="c1"># 存储保存当前数字的寄存器</span>
+<span class="w">      </span><span class="nf">sw</span><span class="w"> </span><span class="no">$ra</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">(</span><span class="no">$sp</span><span class="p">)</span><span class="w">                      </span><span class="c1"># 存储先前的程序计数器</span>
+
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                           </span><span class="c1"># 初始化返回值</span>
+<span class="w">      </span><span class="nf">beq</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="no">fact_done</span><span class="w">               </span><span class="c1"># 如果参数为0则完成</span>
+
+<span class="w">      </span><span class="c1"># 否则继续递归</span>
+<span class="w">      </span><span class="nf">move</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$a0</span><span class="w">                       </span><span class="c1"># 复制 $a0 到 $s0</span>
+<span class="w">      </span><span class="nf">sub</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="nf">jal</span><span class="w"> </span><span class="no">fact</span>
+
+<span class="w">      </span><span class="nf">mul</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$v0</span><span class="w">                   </span><span class="c1"># 做乘法</span>
+
+<span class="w">      </span><span class="nl">fact_done:</span>
+<span class="w">        </span><span class="nf">lw</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="no">$sp</span><span class="p">)</span>
+<span class="w">        </span><span class="nf">lw</span><span class="w"> </span><span class="no">$ra</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="no">$sp</span><span class="p">)</span><span class="w">                     </span><span class="c1"># 恢复程序计数器</span>
+<span class="w">        </span><span class="nf">addi</span><span class="w"> </span><span class="no">$sp</span><span class="p">,</span><span class="w"> </span><span class="no">$sp</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span>
+
+<span class="w">        </span><span class="nf">jr</span><span class="w"> </span><span class="no">$ra</span>
+
+<span class="c1">## 宏 ##</span>
+<span class="w">  </span><span class="nl">_macros:</span>
+<span class="w">    </span><span class="c1"># 宏可以实现用单个标签替换重复的代码块，这可以增强程序的可读性</span>
+<span class="w">    </span><span class="c1"># 它们绝不是函数的替代品</span>
+<span class="w">    </span><span class="c1"># 它们必须在使用之前声明</span>
+
+<span class="w">    </span><span class="c1"># 用于打印换行符的宏（这可以被多次重用）</span>
+<span class="w">    </span><span class="na">.macro</span><span class="w"> </span><span class="no">println</span><span class="p">()</span>
+<span class="w">      </span><span class="nf">la</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="no">newline</span><span class="w">                     </span><span class="c1"># 存储在这里的新行字符串</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">      </span><span class="nf">syscall</span>
+<span class="w">    </span><span class="na">.end_macro</span>
+
+<span class="w">    </span><span class="nf">println</span><span class="p">()</span><span class="w">                             </span><span class="c1"># 汇编器会在运行前复制此代码块</span>
+
+<span class="w">    </span><span class="c1"># 参数可以通过宏传入。</span>
+<span class="w">    </span><span class="c1"># 它们由 &#39;%&#39; 符号表示，可以选择起任意名字</span>
+<span class="w">    </span><span class="na">.macro</span><span class="w"> </span><span class="no">print_int</span><span class="p">(</span><span class="nv">%num</span><span class="p">)</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="nf">lw</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="nv">%num</span>
+<span class="w">      </span><span class="nf">syscall</span>
+<span class="w">    </span><span class="na">.end_macro</span>
+
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="nf">print_int</span><span class="p">(</span><span class="no">$t0</span><span class="p">)</span>
+
+<span class="w">    </span><span class="c1"># 我们也可以给宏传递立即数</span>
+<span class="w">    </span><span class="na">.macro</span><span class="w"> </span><span class="no">immediates</span><span class="p">(</span><span class="nv">%a</span><span class="p">,</span><span class="w"> </span><span class="nv">%b</span><span class="p">)</span>
+<span class="w">      </span><span class="nf">add</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="nv">%a</span><span class="p">,</span><span class="w"> </span><span class="nv">%b</span>
+<span class="w">    </span><span class="na">.end_macro</span>
+
+<span class="w">    </span><span class="nf">immediates</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+
+<span class="w">    </span><span class="c1"># 以及标签</span>
+<span class="w">    </span><span class="na">.macro</span><span class="w"> </span><span class="no">print</span><span class="p">(</span><span class="nv">%string</span><span class="p">)</span>
+<span class="w">      </span><span class="nf">la</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="nv">%string</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">      </span><span class="nf">syscall</span>
+<span class="w">    </span><span class="na">.end_macro</span>
+
+<span class="w">    </span><span class="nf">print</span><span class="p">(</span><span class="no">hello_world</span><span class="p">)</span>
+
+<span class="c1">## 数组 ##</span>
+<span class="na">.data</span>
+<span class="w">  </span><span class="nl">list:</span><span class="w"> </span><span class="na">.word</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="w">                 </span><span class="c1"># 这是一个字数组</span>
+<span class="w">  </span><span class="nl">char_arr:</span><span class="w"> </span><span class="na">.asciiz</span><span class="w"> </span><span class="s">&quot;hello&quot;</span><span class="w">                 </span><span class="c1"># 这是一个字符数组</span>
+<span class="w">  </span><span class="nl">buffer:</span><span class="w"> </span><span class="na">.space</span><span class="w"> </span><span class="mi">128</span><span class="w">                        </span><span class="c1"># 在内存中分配块，不会自动清除</span>
+<span class="w">                                            </span><span class="c1"># 这些内存块彼此对齐</span>
+
+<span class="na">.text</span>
+<span class="w">  </span><span class="nf">la</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">list</span><span class="w">                              </span><span class="c1"># 取 list 的地址</span>
+<span class="w">  </span><span class="nf">li</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">                                 </span><span class="c1"># 计数器</span>
+<span class="w">  </span><span class="nf">li</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="w">                                 </span><span class="c1"># list 的长度</span>
+
+<span class="w">  </span><span class="nl">loop:</span>
+<span class="w">    </span><span class="nf">bgt</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">end_loop</span>
+
+<span class="w">    </span><span class="nf">lw</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="no">$s0</span><span class="p">)</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="nf">syscall</span><span class="w">                                 </span><span class="c1"># 打印数字</span>
+
+<span class="w">    </span><span class="nf">addi</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="w">                        </span><span class="c1"># 字的大小为4字节</span>
+<span class="w">    </span><span class="nf">addi</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                        </span><span class="c1"># 累加</span>
+<span class="w">    </span><span class="nf">j</span><span class="w"> </span><span class="no">loop</span>
+<span class="w">  </span><span class="nl">end_loop:</span>
+
+<span class="c1">## INCLUDE ##</span>
+<span class="c1"># 使用 include 语句可以将外部文件导入到程序中</span>
+<span class="c1"># （它只是将文件中的代码放入 include 语句的位置）</span>
+<span class="na">.include</span><span class="w"> </span><span class="s">&quot;somefile.asm&quot;</span>
+</pre></div>
     <hr>
     <p>有建议？或者发现什么错误？在Github上<a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">开一个issue</a>，或者发起<a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/zh-cn/mips-cn.html.markdown">pull request</a>！
     </p>

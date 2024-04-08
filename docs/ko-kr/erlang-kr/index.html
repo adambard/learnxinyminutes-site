@@ -86,319 +86,319 @@
     <a href="/docs/files/learnerlang-kr.erl">learnerlang-kr.erl</a>
     </p>
   <div id="doc">
-    <div class="highlight"><pre class="highlight erlang"><code><span class="c">% 퍼센트 기호는 한 줄 주석을 시작한다.
-</span>
-<span class="c">%% 두 개의 퍼센트 문자는 함수의 주석에 사용된다.
-</span>
-<span class="c">%%% 세 개의 퍼센트 문자는 모듈의 주석에 사용된다.
-</span>
-<span class="c">% Erlang에선 3가지 유형의 문장 부호를 사용한다.
-% 쉼표(`,`)는 함수 호출에서 인수, 데이터 생성자(constructors), 패턴을 구분한다.
-% 마침표(`.`)(다음에 오는 공백)는 셸에서 함수 전체와 식을 구분한다.
-% 세미콜론(`;`)은 절을 구분한다. 몇 가지 문맥(contexts)에서 절이 발견된다:
-% 함수 정의와 `case`, `if`, `try..catch`, 그리고 `receive` 식
-</span>
+    <div class="highlight"><pre><span></span><span class="c">% 퍼센트 기호는 한 줄 주석을 시작한다.</span>
 
-<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% 1. 변수와 패턴 매칭
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-</span>
-<span class="c">% Erlang에서 새로운 변수는 `=` 문장에 의해 바인딩 된다.
-</span><span class="nv">Num</span> <span class="o">=</span> <span class="mi">42</span><span class="p">.</span>  <span class="c">% 모든 변수 이름은 반드시 대문자로 시작해야 한다.
-</span>
-<span class="c">% Erlang은 단일 할당 변수(single-assignment variables)를 가진다;
-% 만약 다른 값을 `Num` 변수에 할당하려고 시도하면 오류가 발생한다.
-</span><span class="nv">Num</span> <span class="o">=</span> <span class="mi">43</span><span class="p">.</span> <span class="c">% ** 예외 오류: 우변의 값 43과 매칭되지 않음
-</span>
-<span class="c">% 대부분 언어에서 `=`는 할당문을 나타낸다. 그러나 Erlang에서 
-% `=`는 패턴 매칭 연산자를 나타낸다. 비어 있는 변수가 `=` 연산자의 좌변에
-% 사용되면 바인드(할당) 된다, 그러나 바인드 변수가 좌변에 사용된 경우에
-% 다음 행동은 그 바인드 변수가 관측된다.
-% `Lhs = Rhs`의 진짜 의미: 우변(`Rhs`)을 평가하고, 그리고
-% 그 결과를 좌변(`Lhs`)의 패턴과 매치시켜라.
-</span><span class="nv">Num</span> <span class="o">=</span> <span class="mi">7</span> <span class="o">*</span> <span class="mi">6</span><span class="p">.</span>
+<span class="c">%% 두 개의 퍼센트 문자는 함수의 주석에 사용된다.</span>
 
-<span class="c">% 부동 소수점 수.
-</span><span class="nv">Pi</span> <span class="o">=</span> <span class="mi">3</span><span class="p">.</span><span class="mi">14159</span><span class="p">.</span>
+<span class="c">%%% 세 개의 퍼센트 문자는 모듈의 주석에 사용된다.</span>
 
-<span class="c">% Atom은 숫자가 아닌 서로 다른 상숫값을 표현하는 데 사용한다. Atom은
-% 소문자로 시작하고, 연속적인 영숫자(alphanumeric) 문자나 밑줄(`_`) 또는
-% 골뱅이(`@`) 기호가 따라온다.
-</span><span class="nv">Hello</span> <span class="o">=</span> <span class="n">hello</span><span class="p">.</span>
-<span class="nv">OtherNode</span> <span class="o">=</span> <span class="n">example</span><span class="p">@</span><span class="nb">node</span><span class="p">.</span>
-
-<span class="c">% 영숫자 값이 아닌 Atom은 작은따옴표로 묶여서 작성될 수 있다.
-</span><span class="nv">AtomWithSpace</span> <span class="o">=</span> <span class="n">'some atom with space'</span><span class="p">.</span>
-
-<span class="c">% Tuple은 C의 struct와 비슷하다.
-</span><span class="nv">Point</span> <span class="o">=</span> <span class="p">{</span><span class="n">point</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">45</span><span class="p">}.</span>
-
-<span class="c">% Tuple에서 어떤 값을 추출하려면, 패턴 매칭 연산자 `=`를 사용한다.
-</span><span class="p">{</span><span class="n">point</span><span class="p">,</span> <span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">}</span> <span class="o">=</span> <span class="nv">Point</span><span class="p">.</span>  <span class="c">% X = 10, Y = 45
-</span>
-<span class="c">% 관심 없는 변수를 위해 자리 표시자(placeholder) `_`를 사용할 수 있다.
-% 기호 `_`는 익명 변수(anonymous variable)라 부른다. 일반적인 변수들과
-% 다르게 같은 패턴에서 여러 번 나오더라도 동일한 값으로 바인드되지 않아도 된다.
-</span><span class="nv">Person</span> <span class="o">=</span> <span class="p">{</span><span class="n">person</span><span class="p">,</span> <span class="p">{</span><span class="n">name</span><span class="p">,</span> <span class="p">{</span><span class="n">first</span><span class="p">,</span> <span class="n">joe</span><span class="p">},</span> <span class="p">{</span><span class="n">last</span><span class="p">,</span> <span class="n">armstrong</span><span class="p">}},</span> <span class="p">{</span><span class="n">footsize</span><span class="p">,</span> <span class="mi">42</span><span class="p">}}.</span>
-<span class="p">{_,</span> <span class="p">{_,</span> <span class="p">{_,</span> <span class="nv">Who</span><span class="p">},</span> <span class="p">_},</span> <span class="p">_}</span> <span class="o">=</span> <span class="nv">Person</span><span class="p">.</span>  <span class="c">% Who = joe
-</span>
-<span class="c">% List를 만들기 위해서 List의 원소는 대괄호([])로 둘러싸고 쉼표(,)로 구분한다.
-% List의 각각의 원소는 어떤 타입도 가능하다.
-% List의 첫 번째 원소는 List의 HEAD이다. 만약 List의 HEAD를 제거하면,
-% 남은 부분은 List의 TAIL이라 부른다.
-</span><span class="nv">ThingsToBuy</span> <span class="o">=</span> <span class="p">[{</span><span class="n">apples</span><span class="p">,</span> <span class="mi">10</span><span class="p">},</span> <span class="p">{</span><span class="n">pears</span><span class="p">,</span> <span class="mi">6</span><span class="p">},</span> <span class="p">{</span><span class="n">milk</span><span class="p">,</span> <span class="mi">3</span><span class="p">}].</span>
-
-<span class="c">% 만약 `T`가 List이면, `[H|T]`도 HEAD가 `H`이고 TAIL이 `T`인 List이다.
-% 세로 막대(`|`)는 List의 HEAD와 TAIL을 분리한다. `[]`는 빈 List다.
-% List의 원소들은 패턴 매칭 연산으로 추출할 수 있다.
-% 만약 비어있지 않은 List `L`이 있을 때, `[X|Y] = L` 식의 `X`와 `Y`가
-% 바인드되지 않은 변수이면, List의 HEAD는 X에 그리고 TAIL은 Y로 추출된다.
-</span><span class="p">[</span><span class="nv">FirstThing</span><span class="p">|</span><span class="nv">OtherThingsToBuy</span><span class="p">]</span> <span class="o">=</span> <span class="nv">ThingsToBuy</span><span class="p">.</span>
-<span class="c">% FirstThing = {apples, 10}
-% OtherThingsToBuy = [{pears, 6}, {milk, 3}]
-</span>
-<span class="c">% Erlang에는 문자열(String)이 없다. 문자열은 사실 정수의 List일 뿐이다.
-% 문자열은 큰따옴표(`"`)로 묶인다.
-</span><span class="nv">Name</span> <span class="o">=</span> <span class="s">"Hello"</span><span class="p">.</span>
-<span class="p">[</span><span class="mi">72</span><span class="p">,</span> <span class="mi">101</span><span class="p">,</span> <span class="mi">108</span><span class="p">,</span> <span class="mi">108</span><span class="p">,</span> <span class="mi">111</span><span class="p">]</span> <span class="o">=</span> <span class="s">"Hello"</span><span class="p">.</span>
+<span class="c">% Erlang에선 3가지 유형의 문장 부호를 사용한다.</span>
+<span class="c">% 쉼표(`,`)는 함수 호출에서 인수, 데이터 생성자(constructors), 패턴을 구분한다.</span>
+<span class="c">% 마침표(`.`)(다음에 오는 공백)는 셸에서 함수 전체와 식을 구분한다.</span>
+<span class="c">% 세미콜론(`;`)은 절을 구분한다. 몇 가지 문맥(contexts)에서 절이 발견된다:</span>
+<span class="c">% 함수 정의와 `case`, `if`, `try..catch`, 그리고 `receive` 식</span>
 
 
-<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% 2. 순차 프로그래밍
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-</span>
-<span class="c">% Erlang에서 Module은 코드의 기본 단위이다. 우리가 작성한 모든 함수는
-% Module에 담긴다. Module은 확장자가 `.erl`인 파일에 저장된다.
-% 코드가 실행되기 전에 Module은 컴파일되어야 한다. 컴파일된 Module은
-% `.beam` 확장자를 가진다.
-</span><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">geometry</span><span class="p">).</span>
-<span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">area</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span> <span class="c">% Module로부터 내보내진(exported) 함수의 List
-</span>
-<span class="c">% 함수 `area`는 두 개의 절로 구성된다. 절은 세미콜론(`;`)으로 구분되며,
-% 마지막 절은 마침표-공백(dot-whitespace)으로 끝난다.
-% 각 절은 서문(head)과 본문(body)을 가진다. 서문은 함수의 이름에 이어서
-% 패턴이(괄호 속에) 따라온다. 본문은 연속적인 식으로 구성되고,
-% 연속적인 식은 서문의 패턴과 호출한 인수가 성공적으로 매치되면 평가된다.
-% 패턴은 함수 정의가 나타나는 순서대로 매치된다.
-</span><span class="nf">area</span><span class="p">({</span><span class="n">rectangle</span><span class="p">,</span> <span class="nv">Width</span><span class="p">,</span> <span class="nv">Ht</span><span class="p">})</span> <span class="o">-&gt;</span> <span class="nv">Width</span> <span class="o">*</span> <span class="nv">Ht</span><span class="p">;</span>
-<span class="nf">area</span><span class="p">({</span><span class="n">circle</span><span class="p">,</span> <span class="nv">R</span><span class="p">})</span>            <span class="o">-&gt;</span> <span class="mi">3</span><span class="p">.</span><span class="mi">14159</span> <span class="o">*</span> <span class="nv">R</span> <span class="o">*</span> <span class="nv">R</span><span class="p">.</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="c">%% 1. 변수와 패턴 매칭</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 
-<span class="c">% geometry.erl 파일의 코드 컴파일
-</span><span class="nf">c</span><span class="p">(</span><span class="n">geometry</span><span class="p">).</span>  <span class="c">% {ok,geometry}
-</span>
-<span class="c">% 호출하려는 함수를 정확히 알아내기 위해 함수 이름을 Module 이름과 함께
-% 명시하는 것이 필요하다.
-</span><span class="nn">geometry</span><span class="p">:</span><span class="nf">area</span><span class="p">({</span><span class="n">rectangle</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">}).</span>  <span class="c">% 50
-</span><span class="nn">geometry</span><span class="p">:</span><span class="nf">area</span><span class="p">({</span><span class="n">circle</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">4</span><span class="p">}).</span>  <span class="c">% 6.15752
-</span>
-<span class="c">% Erlang에서, 같은 Module에 이름이 같고 Arity(인수의 갯수)가 다른
-% 두 함수는 전혀 다른 함수를 나타낸다.
-</span><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">lib_misc</span><span class="p">).</span>
-<span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">sum</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span> <span class="c">% Arity가 1인 내보내진(export) 함수 `sum`
-</span>                  <span class="c">% 하나의 인수만 받음: 정수의 List
-</span><span class="nf">sum</span><span class="p">(</span><span class="nv">L</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nf">sum</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span> <span class="mi">0</span><span class="p">).</span>
-<span class="nf">sum</span><span class="p">([],</span> <span class="nv">N</span><span class="p">)</span>    <span class="o">-&gt;</span> <span class="nv">N</span><span class="p">;</span>
-<span class="nf">sum</span><span class="p">([</span><span class="nv">H</span><span class="p">|</span><span class="nv">T</span><span class="p">],</span> <span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nf">sum</span><span class="p">(</span><span class="nv">T</span><span class="p">,</span> <span class="nv">H</span><span class="o">+</span><span class="nv">N</span><span class="p">).</span>
+<span class="c">% Erlang에서 새로운 변수는 `=` 문장에 의해 바인딩 된다.</span>
+<span class="nv">Num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">.</span><span class="w">  </span><span class="c">% 모든 변수 이름은 반드시 대문자로 시작해야 한다.</span>
 
-<span class="c">% Fun은 "익명(anonymous)" 함수다. 이름이 없어서 이렇게 부른다.
-% 그러나, 변수에 할당될 수 있다.
-</span><span class="nv">Double</span> <span class="o">=</span> <span class="k">fun</span><span class="p">(</span><span class="nv">X</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="mi">2</span> <span class="o">*</span> <span class="nv">X</span> <span class="k">end</span><span class="p">.</span> <span class="c">% `Double`은 익명 함수를 가리킨다:
-</span>                              <span class="c">% #Fun&lt;erl_eval.6.17052888&gt;
-</span><span class="nv">Double</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span>  <span class="c">% 4
-</span>
-<span class="c">% 함수는 인수로 Fun을 받거나, Fun을 반환할 수 있다.
-</span><span class="nv">Mult</span> <span class="o">=</span> <span class="k">fun</span><span class="p">(</span><span class="nv">Times</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span> <span class="k">fun</span><span class="p">(</span><span class="nv">X</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">X</span> <span class="o">*</span> <span class="nv">Times</span> <span class="k">end</span> <span class="p">)</span> <span class="k">end</span><span class="p">.</span>
-<span class="nv">Triple</span> <span class="o">=</span> <span class="nv">Mult</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span>
-<span class="nv">Triple</span><span class="p">(</span><span class="mi">5</span><span class="p">).</span>  <span class="c">% 15
-</span>
-<span class="c">% List 해석(List comprehensions)은 Fun, Map, Filter 없이 List를 만드는 식이다.
-% 표기법 `[F(X) || X &lt;- L]`은 `F(X)`의 List라는 의미이다.
-% 이때 `X`는 List `L`로부터 가져온다.
-</span><span class="nv">L</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">].</span>
-<span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="nv">X</span> <span class="p">||</span> <span class="nv">X</span> <span class="o">&lt;-</span> <span class="nv">L</span><span class="p">].</span>  <span class="c">% [2,4,6,8,10]
-% List 해석은 Generator와 생성된 값들의 부분 집합을 선택하는 Filter를 가질 수 있다.
-</span><span class="nv">EvenNumbers</span> <span class="o">=</span> <span class="p">[</span><span class="nv">N</span> <span class="p">||</span> <span class="nv">N</span> <span class="o">&lt;-</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="nv">N</span> <span class="ow">rem</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">].</span> <span class="c">% [2, 4]
-</span>
-<span class="c">% Guard는 패턴 매칭의 능력을 향상시키는데 사용할 수 있는 구조다.
-% Guard를 사용하면, 패턴에 있는 변수에 대해 간단한 검사와 비교를 수행할 수 있다.
-% 함수 정의의 서문(head)에 `when` 키워드로 시작되는 Guard를 사용할 수도 있고,
-% 또는 식이 허용되는 언어의 어떤 곳에도 사용될 수 있다.
-</span><span class="nf">max</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">)</span> <span class="k">when</span> <span class="nv">X</span> <span class="o">&gt;</span> <span class="nv">Y</span> <span class="o">-&gt;</span> <span class="nv">X</span><span class="p">;</span>
-<span class="nf">max</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">Y</span><span class="p">.</span>
+<span class="c">% Erlang은 단일 할당 변수(single-assignment variables)를 가진다;</span>
+<span class="c">% 만약 다른 값을 `Num` 변수에 할당하려고 시도하면 오류가 발생한다.</span>
+<span class="nv">Num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">43</span><span class="p">.</span><span class="w"> </span><span class="c">% ** 예외 오류: 우변의 값 43과 매칭되지 않음</span>
 
-<span class="c">% Guard는 쉼표(`,`)로 구분된 연속된 Guard 식이다.
-% 모든 Guard 식 `GuardExpr1`, `GuardExpr2`, ..., `GuardExprN`이
-% `true`로 평가된다면, Guard `GuardExpr1`, `GuardExpr2`, ..., `GuardExprN`는
-% 참이다.
-</span><span class="nf">is_cat</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="k">when</span> <span class="nb">is_atom</span><span class="p">(</span><span class="nv">A</span><span class="p">),</span> <span class="nv">A</span> <span class="o">=:=</span> <span class="n">cat</span> <span class="o">-&gt;</span> <span class="n">true</span><span class="p">;</span>
-<span class="nf">is_cat</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">false</span><span class="p">.</span>
-<span class="nf">is_dog</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="k">when</span> <span class="nb">is_atom</span><span class="p">(</span><span class="nv">A</span><span class="p">),</span> <span class="nv">A</span> <span class="o">=:=</span> <span class="n">dog</span> <span class="o">-&gt;</span> <span class="n">true</span><span class="p">;</span>
-<span class="nf">is_dog</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">false</span><span class="p">.</span>
+<span class="c">% 대부분 언어에서 `=`는 할당문을 나타낸다. 그러나 Erlang에서 </span>
+<span class="c">% `=`는 패턴 매칭 연산자를 나타낸다. 비어 있는 변수가 `=` 연산자의 좌변에</span>
+<span class="c">% 사용되면 바인드(할당) 된다, 그러나 바인드 변수가 좌변에 사용된 경우에</span>
+<span class="c">% 다음 행동은 그 바인드 변수가 관측된다.</span>
+<span class="c">% `Lhs = Rhs`의 진짜 의미: 우변(`Rhs`)을 평가하고, 그리고</span>
+<span class="c">% 그 결과를 좌변(`Lhs`)의 패턴과 매치시켜라.</span>
+<span class="nv">Num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">6</span><span class="p">.</span>
 
-<span class="c">% `=:=` 연산자는 여기서 자세히 다루지 않을 것이다; 두 개의 Erlang 식의 값이 같고
-% *그리고* 같은 타입인지 검사하는 데 사용된다고만 알면 된다.
-% `==` 연산자의 작동과 대조할 것:
-</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">=:=</span> <span class="mi">3</span><span class="p">.</span>   <span class="c">% true
-</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">=:=</span> <span class="mi">3</span><span class="p">.</span><span class="mi">0</span><span class="p">.</span> <span class="c">% false
-</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">==</span>  <span class="mi">3</span><span class="p">.</span><span class="mi">0</span><span class="p">.</span> <span class="c">% true
-</span>
-<span class="c">% 연속적인 Guard는 단일 Guard 또는 세미콜론(`;`)으로 구분된 연속된 Guard다.
-% Guard `G1; G2; ...; Gn` 중에 적어도 하나의 Guard가 `true`로 평가된다면,
-% 연속적인 Guard `G1; G2; ...; Gn`는 참이다.
-</span><span class="nf">is_pet</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span> <span class="k">when</span> <span class="nb">is_atom</span><span class="p">(</span><span class="nv">A</span><span class="p">),</span> <span class="p">(</span><span class="nv">A</span> <span class="o">=:=</span> <span class="n">dog</span><span class="p">);(</span><span class="nv">A</span> <span class="o">=:=</span> <span class="n">cat</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">true</span><span class="p">;</span>
-<span class="nf">is_pet</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span>                                          <span class="o">-&gt;</span> <span class="n">false</span><span class="p">.</span>
+<span class="c">% 부동 소수점 수.</span>
+<span class="nv">Pi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">.</span><span class="mi">14159</span><span class="p">.</span>
 
-<span class="c">% 주의: 모든 유효한 Erlang 식이 Guard 식으로 사용될 수 있는 것은 아니다;
-% 특히, 함수 `is_cat`과 `is_dog`는 `is_pet`의 정의 안에 있는 
-% 연속적인 Guard 사이에 사용될 수 없다.
-% 연속적인 Guard에 허용되는 식의 자세한 설명은 Erlang 레퍼런스 메뉴얼
-% [section](http://erlang.org/doc/reference_manual/expressions.html#id81912)
-% 을 참조하라.
-</span>
-<span class="c">% Record는 Tuple 안에 이름과 특정 요소를 연결하는 방법을 제공한다.
-% Record 정의는 Erlang 소스 코드 파일에 포함되거나 Erlang 소스 코드 파일에
-% 포함될 수 있는 확장자가 `.hrl`인 파일에 집어넣을 수 있다.
-</span><span class="p">-</span><span class="ni">record</span><span class="p">(</span><span class="nl">todo</span><span class="p">,</span> <span class="p">{</span>
-  <span class="n">status</span> <span class="o">=</span> <span class="n">reminder</span><span class="p">,</span>  <span class="c">% 기본 값
-</span>  <span class="n">who</span> <span class="o">=</span> <span class="n">joe</span><span class="p">,</span>
-  <span class="n">text</span>
+<span class="c">% Atom은 숫자가 아닌 서로 다른 상숫값을 표현하는 데 사용한다. Atom은</span>
+<span class="c">% 소문자로 시작하고, 연속적인 영숫자(alphanumeric) 문자나 밑줄(`_`) 또는</span>
+<span class="c">% 골뱅이(`@`) 기호가 따라온다.</span>
+<span class="nv">Hello</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hello</span><span class="p">.</span>
+<span class="nv">OtherNode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">example</span><span class="p">@</span><span class="nb">node</span><span class="p">.</span>
+
+<span class="c">% 영숫자 값이 아닌 Atom은 작은따옴표로 묶여서 작성될 수 있다.</span>
+<span class="nv">AtomWithSpace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">&#39;some atom with space&#39;</span><span class="p">.</span>
+
+<span class="c">% Tuple은 C의 struct와 비슷하다.</span>
+<span class="nv">Point</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">point</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">45</span><span class="p">}.</span>
+
+<span class="c">% Tuple에서 어떤 값을 추출하려면, 패턴 매칭 연산자 `=`를 사용한다.</span>
+<span class="p">{</span><span class="n">point</span><span class="p">,</span><span class="w"> </span><span class="nv">X</span><span class="p">,</span><span class="w"> </span><span class="nv">Y</span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Point</span><span class="p">.</span><span class="w">  </span><span class="c">% X = 10, Y = 45</span>
+
+<span class="c">% 관심 없는 변수를 위해 자리 표시자(placeholder) `_`를 사용할 수 있다.</span>
+<span class="c">% 기호 `_`는 익명 변수(anonymous variable)라 부른다. 일반적인 변수들과</span>
+<span class="c">% 다르게 같은 패턴에서 여러 번 나오더라도 동일한 값으로 바인드되지 않아도 된다.</span>
+<span class="nv">Person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">person</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">first</span><span class="p">,</span><span class="w"> </span><span class="n">joe</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="n">last</span><span class="p">,</span><span class="w"> </span><span class="n">armstrong</span><span class="p">}},</span><span class="w"> </span><span class="p">{</span><span class="n">footsize</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">}}.</span>
+<span class="p">{_,</span><span class="w"> </span><span class="p">{_,</span><span class="w"> </span><span class="p">{_,</span><span class="w"> </span><span class="nv">Who</span><span class="p">},</span><span class="w"> </span><span class="p">_},</span><span class="w"> </span><span class="p">_}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Person</span><span class="p">.</span><span class="w">  </span><span class="c">% Who = joe</span>
+
+<span class="c">% List를 만들기 위해서 List의 원소는 대괄호([])로 둘러싸고 쉼표(,)로 구분한다.</span>
+<span class="c">% List의 각각의 원소는 어떤 타입도 가능하다.</span>
+<span class="c">% List의 첫 번째 원소는 List의 HEAD이다. 만약 List의 HEAD를 제거하면,</span>
+<span class="c">% 남은 부분은 List의 TAIL이라 부른다.</span>
+<span class="nv">ThingsToBuy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[{</span><span class="n">apples</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="n">pears</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="n">milk</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">}].</span>
+
+<span class="c">% 만약 `T`가 List이면, `[H|T]`도 HEAD가 `H`이고 TAIL이 `T`인 List이다.</span>
+<span class="c">% 세로 막대(`|`)는 List의 HEAD와 TAIL을 분리한다. `[]`는 빈 List다.</span>
+<span class="c">% List의 원소들은 패턴 매칭 연산으로 추출할 수 있다.</span>
+<span class="c">% 만약 비어있지 않은 List `L`이 있을 때, `[X|Y] = L` 식의 `X`와 `Y`가</span>
+<span class="c">% 바인드되지 않은 변수이면, List의 HEAD는 X에 그리고 TAIL은 Y로 추출된다.</span>
+<span class="p">[</span><span class="nv">FirstThing</span><span class="p">|</span><span class="nv">OtherThingsToBuy</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">ThingsToBuy</span><span class="p">.</span>
+<span class="c">% FirstThing = {apples, 10}</span>
+<span class="c">% OtherThingsToBuy = [{pears, 6}, {milk, 3}]</span>
+
+<span class="c">% Erlang에는 문자열(String)이 없다. 문자열은 사실 정수의 List일 뿐이다.</span>
+<span class="c">% 문자열은 큰따옴표(`&quot;`)로 묶인다.</span>
+<span class="nv">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Hello&quot;</span><span class="p">.</span>
+<span class="p">[</span><span class="mi">72</span><span class="p">,</span><span class="w"> </span><span class="mi">101</span><span class="p">,</span><span class="w"> </span><span class="mi">108</span><span class="p">,</span><span class="w"> </span><span class="mi">108</span><span class="p">,</span><span class="w"> </span><span class="mi">111</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Hello&quot;</span><span class="p">.</span>
+
+
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="c">%% 2. 순차 프로그래밍</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+
+<span class="c">% Erlang에서 Module은 코드의 기본 단위이다. 우리가 작성한 모든 함수는</span>
+<span class="c">% Module에 담긴다. Module은 확장자가 `.erl`인 파일에 저장된다.</span>
+<span class="c">% 코드가 실행되기 전에 Module은 컴파일되어야 한다. 컴파일된 Module은</span>
+<span class="c">% `.beam` 확장자를 가진다.</span>
+<span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">geometry</span><span class="p">).</span>
+<span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">area</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span><span class="w"> </span><span class="c">% Module로부터 내보내진(exported) 함수의 List</span>
+
+<span class="c">% 함수 `area`는 두 개의 절로 구성된다. 절은 세미콜론(`;`)으로 구분되며,</span>
+<span class="c">% 마지막 절은 마침표-공백(dot-whitespace)으로 끝난다.</span>
+<span class="c">% 각 절은 서문(head)과 본문(body)을 가진다. 서문은 함수의 이름에 이어서</span>
+<span class="c">% 패턴이(괄호 속에) 따라온다. 본문은 연속적인 식으로 구성되고,</span>
+<span class="c">% 연속적인 식은 서문의 패턴과 호출한 인수가 성공적으로 매치되면 평가된다.</span>
+<span class="c">% 패턴은 함수 정의가 나타나는 순서대로 매치된다.</span>
+<span class="nf">area</span><span class="p">({</span><span class="n">rectangle</span><span class="p">,</span><span class="w"> </span><span class="nv">Width</span><span class="p">,</span><span class="w"> </span><span class="nv">Ht</span><span class="p">})</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nv">Width</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">Ht</span><span class="p">;</span>
+<span class="nf">area</span><span class="p">({</span><span class="n">circle</span><span class="p">,</span><span class="w"> </span><span class="nv">R</span><span class="p">})</span><span class="w">            </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">3</span><span class="p">.</span><span class="mi">14159</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">R</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">R</span><span class="p">.</span>
+
+<span class="c">% geometry.erl 파일의 코드 컴파일</span>
+<span class="nf">c</span><span class="p">(</span><span class="n">geometry</span><span class="p">).</span><span class="w">  </span><span class="c">% {ok,geometry}</span>
+
+<span class="c">% 호출하려는 함수를 정확히 알아내기 위해 함수 이름을 Module 이름과 함께</span>
+<span class="c">% 명시하는 것이 필요하다.</span>
+<span class="nn">geometry</span><span class="p">:</span><span class="nf">area</span><span class="p">({</span><span class="n">rectangle</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">}).</span><span class="w">  </span><span class="c">% 50</span>
+<span class="nn">geometry</span><span class="p">:</span><span class="nf">area</span><span class="p">({</span><span class="n">circle</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="mi">4</span><span class="p">}).</span><span class="w">  </span><span class="c">% 6.15752</span>
+
+<span class="c">% Erlang에서, 같은 Module에 이름이 같고 Arity(인수의 갯수)가 다른</span>
+<span class="c">% 두 함수는 전혀 다른 함수를 나타낸다.</span>
+<span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">lib_misc</span><span class="p">).</span>
+<span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">sum</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span><span class="w"> </span><span class="c">% Arity가 1인 내보내진(export) 함수 `sum`</span>
+<span class="w">                  </span><span class="c">% 하나의 인수만 받음: 정수의 List</span>
+<span class="nf">sum</span><span class="p">(</span><span class="nv">L</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">sum</span><span class="p">(</span><span class="nv">L</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">).</span>
+<span class="nf">sum</span><span class="p">([],</span><span class="w"> </span><span class="nv">N</span><span class="p">)</span><span class="w">    </span><span class="o">-&gt;</span><span class="w"> </span><span class="nv">N</span><span class="p">;</span>
+<span class="nf">sum</span><span class="p">([</span><span class="nv">H</span><span class="p">|</span><span class="nv">T</span><span class="p">],</span><span class="w"> </span><span class="nv">N</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">sum</span><span class="p">(</span><span class="nv">T</span><span class="p">,</span><span class="w"> </span><span class="nv">H</span><span class="o">+</span><span class="nv">N</span><span class="p">).</span>
+
+<span class="c">% Fun은 &quot;익명(anonymous)&quot; 함수다. 이름이 없어서 이렇게 부른다.</span>
+<span class="c">% 그러나, 변수에 할당될 수 있다.</span>
+<span class="nv">Double</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">fun</span><span class="p">(</span><span class="nv">X</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">X</span><span class="w"> </span><span class="k">end</span><span class="p">.</span><span class="w"> </span><span class="c">% `Double`은 익명 함수를 가리킨다:</span>
+<span class="w">                              </span><span class="c">% #Fun&lt;erl_eval.6.17052888&gt;</span>
+<span class="nv">Double</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="w">  </span><span class="c">% 4</span>
+
+<span class="c">% 함수는 인수로 Fun을 받거나, Fun을 반환할 수 있다.</span>
+<span class="nv">Mult</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">fun</span><span class="p">(</span><span class="nv">Times</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="k">fun</span><span class="p">(</span><span class="nv">X</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nv">X</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">Times</span><span class="w"> </span><span class="k">end</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">end</span><span class="p">.</span>
+<span class="nv">Triple</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Mult</span><span class="p">(</span><span class="mi">3</span><span class="p">).</span>
+<span class="nv">Triple</span><span class="p">(</span><span class="mi">5</span><span class="p">).</span><span class="w">  </span><span class="c">% 15</span>
+
+<span class="c">% List 해석(List comprehensions)은 Fun, Map, Filter 없이 List를 만드는 식이다.</span>
+<span class="c">% 표기법 `[F(X) || X &lt;- L]`은 `F(X)`의 List라는 의미이다.</span>
+<span class="c">% 이때 `X`는 List `L`로부터 가져온다.</span>
+<span class="nv">L</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">].</span>
+<span class="p">[</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">X</span><span class="w"> </span><span class="p">||</span><span class="w"> </span><span class="nv">X</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nv">L</span><span class="p">].</span><span class="w">  </span><span class="c">% [2,4,6,8,10]</span>
+<span class="c">% List 해석은 Generator와 생성된 값들의 부분 집합을 선택하는 Filter를 가질 수 있다.</span>
+<span class="nv">EvenNumbers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="nv">N</span><span class="w"> </span><span class="p">||</span><span class="w"> </span><span class="nv">N</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">],</span><span class="w"> </span><span class="nv">N</span><span class="w"> </span><span class="ow">rem</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">].</span><span class="w"> </span><span class="c">% [2, 4]</span>
+
+<span class="c">% Guard는 패턴 매칭의 능력을 향상시키는데 사용할 수 있는 구조다.</span>
+<span class="c">% Guard를 사용하면, 패턴에 있는 변수에 대해 간단한 검사와 비교를 수행할 수 있다.</span>
+<span class="c">% 함수 정의의 서문(head)에 `when` 키워드로 시작되는 Guard를 사용할 수도 있고,</span>
+<span class="c">% 또는 식이 허용되는 언어의 어떤 곳에도 사용될 수 있다.</span>
+<span class="nf">max</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="w"> </span><span class="nv">Y</span><span class="p">)</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="nv">X</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">Y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nv">X</span><span class="p">;</span>
+<span class="nf">max</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="w"> </span><span class="nv">Y</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nv">Y</span><span class="p">.</span>
+
+<span class="c">% Guard는 쉼표(`,`)로 구분된 연속된 Guard 식이다.</span>
+<span class="c">% 모든 Guard 식 `GuardExpr1`, `GuardExpr2`, ..., `GuardExprN`이</span>
+<span class="c">% `true`로 평가된다면, Guard `GuardExpr1`, `GuardExpr2`, ..., `GuardExprN`는</span>
+<span class="c">% 참이다.</span>
+<span class="nf">is_cat</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="nb">is_atom</span><span class="p">(</span><span class="nv">A</span><span class="p">),</span><span class="w"> </span><span class="nv">A</span><span class="w"> </span><span class="o">=:=</span><span class="w"> </span><span class="n">cat</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">true</span><span class="p">;</span>
+<span class="nf">is_cat</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">false</span><span class="p">.</span>
+<span class="nf">is_dog</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="nb">is_atom</span><span class="p">(</span><span class="nv">A</span><span class="p">),</span><span class="w"> </span><span class="nv">A</span><span class="w"> </span><span class="o">=:=</span><span class="w"> </span><span class="n">dog</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">true</span><span class="p">;</span>
+<span class="nf">is_dog</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">false</span><span class="p">.</span>
+
+<span class="c">% `=:=` 연산자는 여기서 자세히 다루지 않을 것이다; 두 개의 Erlang 식의 값이 같고</span>
+<span class="c">% *그리고* 같은 타입인지 검사하는 데 사용된다고만 알면 된다.</span>
+<span class="c">% `==` 연산자의 작동과 대조할 것:</span>
+<span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">=:=</span><span class="w"> </span><span class="mi">3</span><span class="p">.</span><span class="w">   </span><span class="c">% true</span>
+<span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">=:=</span><span class="w"> </span><span class="mi">3</span><span class="p">.</span><span class="mi">0</span><span class="p">.</span><span class="w"> </span><span class="c">% false</span>
+<span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w">  </span><span class="mi">3</span><span class="p">.</span><span class="mi">0</span><span class="p">.</span><span class="w"> </span><span class="c">% true</span>
+
+<span class="c">% 연속적인 Guard는 단일 Guard 또는 세미콜론(`;`)으로 구분된 연속된 Guard다.</span>
+<span class="c">% Guard `G1; G2; ...; Gn` 중에 적어도 하나의 Guard가 `true`로 평가된다면,</span>
+<span class="c">% 연속적인 Guard `G1; G2; ...; Gn`는 참이다.</span>
+<span class="nf">is_pet</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="nb">is_atom</span><span class="p">(</span><span class="nv">A</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="nv">A</span><span class="w"> </span><span class="o">=:=</span><span class="w"> </span><span class="n">dog</span><span class="p">);(</span><span class="nv">A</span><span class="w"> </span><span class="o">=:=</span><span class="w"> </span><span class="n">cat</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">true</span><span class="p">;</span>
+<span class="nf">is_pet</span><span class="p">(</span><span class="nv">A</span><span class="p">)</span><span class="w">                                          </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">false</span><span class="p">.</span>
+
+<span class="c">% 주의: 모든 유효한 Erlang 식이 Guard 식으로 사용될 수 있는 것은 아니다;</span>
+<span class="c">% 특히, 함수 `is_cat`과 `is_dog`는 `is_pet`의 정의 안에 있는 </span>
+<span class="c">% 연속적인 Guard 사이에 사용될 수 없다.</span>
+<span class="c">% 연속적인 Guard에 허용되는 식의 자세한 설명은 Erlang 레퍼런스 메뉴얼</span>
+<span class="c">% [section](http://erlang.org/doc/reference_manual/expressions.html#id81912)</span>
+<span class="c">% 을 참조하라.</span>
+
+<span class="c">% Record는 Tuple 안에 이름과 특정 요소를 연결하는 방법을 제공한다.</span>
+<span class="c">% Record 정의는 Erlang 소스 코드 파일에 포함되거나 Erlang 소스 코드 파일에</span>
+<span class="c">% 포함될 수 있는 확장자가 `.hrl`인 파일에 집어넣을 수 있다.</span>
+<span class="p">-</span><span class="ni">record</span><span class="p">(</span><span class="nl">todo</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reminder</span><span class="p">,</span><span class="w">  </span><span class="c">% 기본 값</span>
+<span class="w">  </span><span class="n">who</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">joe</span><span class="p">,</span>
+<span class="w">  </span><span class="n">text</span>
 <span class="p">}).</span>
 
-<span class="c">% Record를 사용할 수 있기 전에 Record 정의를 반드시 셸로 읽어 들여야 한다.
-% 셸로 읽어 들이기 위해 셸 함수 `rr`(read records의 약자)을 사용한다.
-</span><span class="nf">rr</span><span class="p">(</span><span class="s">"records.hrl"</span><span class="p">).</span>  <span class="c">% [todo]
-</span>
-<span class="c">% Record 생성과 수정
-</span><span class="nv">X</span> <span class="o">=</span> <span class="nl">#todo</span><span class="p">{}.</span>
-<span class="c">% #todo{status = reminder, who = joe, text = undefined}
-</span><span class="nv">X1</span> <span class="o">=</span> <span class="nl">#todo</span><span class="p">{</span><span class="n">status</span> <span class="o">=</span> <span class="n">urgent</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="s">"Fix errata in book"</span><span class="p">}.</span>
-<span class="c">% #todo{status = urgent, who = joe, text = "Fix errata in book"}
-</span><span class="nv">X2</span> <span class="o">=</span> <span class="nv">X1</span><span class="nl">#todo</span><span class="p">{</span><span class="n">status</span> <span class="o">=</span> <span class="n">done</span><span class="p">}.</span>
-<span class="c">% #todo{status = done, who = joe, text = "Fix errata in book"}
-</span>
-<span class="c">% `case` 식
-% `filter`는 List `L`의 원소 `X` 중에서 `P(X)`가 참인 모든 `X`의 List를 반환한다.
-</span><span class="nf">filter</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="p">[</span><span class="nv">H</span><span class="p">|</span><span class="nv">T</span><span class="p">])</span> <span class="o">-&gt;</span>
-  <span class="k">case</span> <span class="nv">P</span><span class="p">(</span><span class="nv">H</span><span class="p">)</span> <span class="k">of</span>
-    <span class="n">true</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="nv">H</span><span class="p">|</span><span class="nf">filter</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="nv">T</span><span class="p">)];</span>
-    <span class="n">false</span> <span class="o">-&gt;</span> <span class="nf">filter</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="nv">T</span><span class="p">)</span>
-  <span class="k">end</span><span class="p">;</span>
-<span class="nf">filter</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span> <span class="p">[])</span> <span class="o">-&gt;</span> <span class="p">[].</span>
-<span class="nf">filter</span><span class="p">(</span><span class="k">fun</span><span class="p">(</span><span class="nv">X</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">X</span> <span class="ow">rem</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">end</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]).</span> <span class="c">% [2, 4]
-</span>
-<span class="c">% `if` 식.
-</span><span class="nf">max</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span> <span class="nv">Y</span><span class="p">)</span> <span class="o">-&gt;</span>
-  <span class="k">if</span>
-    <span class="nv">X</span> <span class="o">&gt;</span> <span class="nv">Y</span> <span class="o">-&gt;</span> <span class="nv">X</span><span class="p">;</span>
-    <span class="nv">X</span> <span class="o">&lt;</span> <span class="nv">Y</span> <span class="o">-&gt;</span> <span class="nv">Y</span><span class="p">;</span>
-    <span class="n">true</span> <span class="o">-&gt;</span> <span class="n">nil</span>
-  <span class="k">end</span><span class="p">.</span>
+<span class="c">% Record를 사용할 수 있기 전에 Record 정의를 반드시 셸로 읽어 들여야 한다.</span>
+<span class="c">% 셸로 읽어 들이기 위해 셸 함수 `rr`(read records의 약자)을 사용한다.</span>
+<span class="nf">rr</span><span class="p">(</span><span class="s">&quot;records.hrl&quot;</span><span class="p">).</span><span class="w">  </span><span class="c">% [todo]</span>
 
-<span class="c">% 주의: 적어도 if 식의 Guard 중의 하나는 반드시 `true`로 평가되어야 한다. 
-% 그렇지 않으면 예외가 발생한다.
-</span>
+<span class="c">% Record 생성과 수정</span>
+<span class="nv">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nl">#todo</span><span class="p">{}.</span>
+<span class="c">% #todo{status = reminder, who = joe, text = undefined}</span>
+<span class="nv">X1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nl">#todo</span><span class="p">{</span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">urgent</span><span class="p">,</span><span class="w"> </span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Fix errata in book&quot;</span><span class="p">}.</span>
+<span class="c">% #todo{status = urgent, who = joe, text = &quot;Fix errata in book&quot;}</span>
+<span class="nv">X2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">X1</span><span class="nl">#todo</span><span class="p">{</span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">done</span><span class="p">}.</span>
+<span class="c">% #todo{status = done, who = joe, text = &quot;Fix errata in book&quot;}</span>
 
-<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% 3. 예외
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-</span>
-<span class="c">% 예외는 내부에 에러가 생겼거나 명시적으로 `throw(Exception)`,
-% `exit(Exception)` 또는 `erlang:error(Exception)`를 호출하면
-% 시스템에 의해 발생한다.
-</span><span class="nf">generate_exception</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">a</span><span class="p">;</span>
-<span class="nf">generate_exception</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nf">throw</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
-<span class="nf">generate_exception</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">exit</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
-<span class="nf">generate_exception</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="n">'EXIT'</span><span class="p">,</span> <span class="n">a</span><span class="p">};</span>
-<span class="nf">generate_exception</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nn">erlang</span><span class="p">:</span><span class="nf">error</span><span class="p">(</span><span class="n">a</span><span class="p">).</span>
+<span class="c">% `case` 식</span>
+<span class="c">% `filter`는 List `L`의 원소 `X` 중에서 `P(X)`가 참인 모든 `X`의 List를 반환한다.</span>
+<span class="nf">filter</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="nv">H</span><span class="p">|</span><span class="nv">T</span><span class="p">])</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nv">P</span><span class="p">(</span><span class="nv">H</span><span class="p">)</span><span class="w"> </span><span class="k">of</span>
+<span class="w">    </span><span class="n">true</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">[</span><span class="nv">H</span><span class="p">|</span><span class="n">filter</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span><span class="w"> </span><span class="nv">T</span><span class="p">)];</span>
+<span class="w">    </span><span class="n">false</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">filter</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span><span class="w"> </span><span class="nv">T</span><span class="p">)</span>
+<span class="w">  </span><span class="k">end</span><span class="p">;</span>
+<span class="nf">filter</span><span class="p">(</span><span class="nv">P</span><span class="p">,</span><span class="w"> </span><span class="p">[])</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">[].</span>
+<span class="nf">filter</span><span class="p">(</span><span class="k">fun</span><span class="p">(</span><span class="nv">X</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nv">X</span><span class="w"> </span><span class="ow">rem</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">end</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">]).</span><span class="w"> </span><span class="c">% [2, 4]</span>
 
-<span class="c">% Erlang은 예외를 잡는 두 가지 방법을 가지고 있다. 한 가지는
-% 예외를 발생시키는 함수의 호출 부분을 `try...catch` 식으로 감싸는 것이다.
-</span><span class="nf">catcher</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span>
-  <span class="k">try</span> <span class="nf">generate_exception</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="k">of</span>
-    <span class="nv">Val</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="nv">N</span><span class="p">,</span> <span class="n">normal</span><span class="p">,</span> <span class="nv">Val</span><span class="p">}</span>
-  <span class="k">catch</span>
-    <span class="nn">throw</span><span class="p">:</span><span class="nv">X</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="nv">N</span><span class="p">,</span> <span class="n">caught</span><span class="p">,</span> <span class="n">thrown</span><span class="p">,</span> <span class="nv">X</span><span class="p">};</span>
-    <span class="nb">exit</span><span class="p">:</span><span class="nv">X</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="nv">N</span><span class="p">,</span> <span class="n">caught</span><span class="p">,</span> <span class="n">exited</span><span class="p">,</span> <span class="nv">X</span><span class="p">};</span>
-    <span class="nn">error</span><span class="p">:</span><span class="nv">X</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="nv">N</span><span class="p">,</span> <span class="n">caught</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="nv">X</span><span class="p">}</span>
-  <span class="k">end</span><span class="p">.</span>
+<span class="c">% `if` 식.</span>
+<span class="nf">max</span><span class="p">(</span><span class="nv">X</span><span class="p">,</span><span class="w"> </span><span class="nv">Y</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">  </span><span class="k">if</span>
+<span class="w">    </span><span class="nv">X</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">Y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nv">X</span><span class="p">;</span>
+<span class="w">    </span><span class="nv">X</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nv">Y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nv">Y</span><span class="p">;</span>
+<span class="w">    </span><span class="n">true</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">nil</span>
+<span class="w">  </span><span class="k">end</span><span class="p">.</span>
 
-<span class="c">% 다른 방법은 그 호출 부분을 `catch` 식으로 감싸는 것이다.
-% 예외를 잡았을 때, 그 예외는 오류를 설명하는 Tuple로 변환된다.
-</span><span class="nf">catcher</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">catch</span> <span class="nf">generate_exception</span><span class="p">(</span><span class="nv">N</span><span class="p">).</span>
+<span class="c">% 주의: 적어도 if 식의 Guard 중의 하나는 반드시 `true`로 평가되어야 한다. </span>
+<span class="c">% 그렇지 않으면 예외가 발생한다.</span>
 
 
-<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% 4. 병행성
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-</span>
-<span class="c">% Erlang은 병행성을 위해 Actor 모델을 사용한다. Erlang에서 병행 프로그램을
-% 작성하는 데 필요한 모든 것은 3가지 기본 형식(primitivies)이다:
-% 프로세스 생성, 메시지 보내기, 메시지 받기
-</span>
-<span class="c">% 새로운 프로세스를 시작하기 위해, 함수를 인수로 받는 `spawn` 함수를 사용한다.
-</span>
-<span class="nv">F</span> <span class="o">=</span> <span class="k">fun</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span> <span class="k">end</span><span class="p">.</span> <span class="c">% #Fun&lt;erl_eval.20.67289768&gt;
-</span><span class="nb">spawn</span><span class="p">(</span><span class="nv">F</span><span class="p">).</span> <span class="c">% &lt;0.44.0&gt;
-</span>
-<span class="c">% `spawn`은 pid(프로세스 식별자)를 반환한다. 이 pid를 프로세스로
-% 메시지를 보내는 데 사용할 수 있다. 메시지 전달을 위해, `!` 연산자를 사용한다.
-% 위의 기능이 유용하려면, 메시지를 받을 수 있어야 한다. 메시지를 받는 것은
-% `receive` 메커니즘을 사용한다.
-</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="c">%% 3. 예외</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+
+<span class="c">% 예외는 내부에 에러가 생겼거나 명시적으로 `throw(Exception)`,</span>
+<span class="c">% `exit(Exception)` 또는 `erlang:error(Exception)`를 호출하면</span>
+<span class="c">% 시스템에 의해 발생한다.</span>
+<span class="nf">generate_exception</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
+<span class="nf">generate_exception</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">throw</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+<span class="nf">generate_exception</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb">exit</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+<span class="nf">generate_exception</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="n">&#39;EXIT&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">};</span>
+<span class="nf">generate_exception</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nn">erlang</span><span class="p">:</span><span class="nf">error</span><span class="p">(</span><span class="n">a</span><span class="p">).</span>
+
+<span class="c">% Erlang은 예외를 잡는 두 가지 방법을 가지고 있다. 한 가지는</span>
+<span class="c">% 예외를 발생시키는 함수의 호출 부분을 `try...catch` 식으로 감싸는 것이다.</span>
+<span class="nf">catcher</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">  </span><span class="k">try</span><span class="w"> </span><span class="n">generate_exception</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span><span class="w"> </span><span class="k">of</span>
+<span class="w">    </span><span class="nv">Val</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="nv">N</span><span class="p">,</span><span class="w"> </span><span class="n">normal</span><span class="p">,</span><span class="w"> </span><span class="nv">Val</span><span class="p">}</span>
+<span class="w">  </span><span class="k">catch</span>
+<span class="w">    </span><span class="nn">throw</span><span class="p">:</span><span class="nv">X</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="nv">N</span><span class="p">,</span><span class="w"> </span><span class="n">caught</span><span class="p">,</span><span class="w"> </span><span class="n">thrown</span><span class="p">,</span><span class="w"> </span><span class="nv">X</span><span class="p">};</span>
+<span class="w">    </span><span class="nb">exit</span><span class="p">:</span><span class="nv">X</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="nv">N</span><span class="p">,</span><span class="w"> </span><span class="n">caught</span><span class="p">,</span><span class="w"> </span><span class="n">exited</span><span class="p">,</span><span class="w"> </span><span class="nv">X</span><span class="p">};</span>
+<span class="w">    </span><span class="nn">error</span><span class="p">:</span><span class="nv">X</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="nv">N</span><span class="p">,</span><span class="w"> </span><span class="n">caught</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">,</span><span class="w"> </span><span class="nv">X</span><span class="p">}</span>
+<span class="w">  </span><span class="k">end</span><span class="p">.</span>
+
+<span class="c">% 다른 방법은 그 호출 부분을 `catch` 식으로 감싸는 것이다.</span>
+<span class="c">% 예외를 잡았을 때, 그 예외는 오류를 설명하는 Tuple로 변환된다.</span>
+<span class="nf">catcher</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="n">generate_exception</span><span class="p">(</span><span class="nv">N</span><span class="p">).</span>
+
+
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="c">%% 4. 병행성</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+
+<span class="c">% Erlang은 병행성을 위해 Actor 모델을 사용한다. Erlang에서 병행 프로그램을</span>
+<span class="c">% 작성하는 데 필요한 모든 것은 3가지 기본 형식(primitivies)이다:</span>
+<span class="c">% 프로세스 생성, 메시지 보내기, 메시지 받기</span>
+
+<span class="c">% 새로운 프로세스를 시작하기 위해, 함수를 인수로 받는 `spawn` 함수를 사용한다.</span>
+
+<span class="nv">F</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">fun</span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">end</span><span class="p">.</span><span class="w"> </span><span class="c">% #Fun&lt;erl_eval.20.67289768&gt;</span>
+<span class="nb">spawn</span><span class="p">(</span><span class="nv">F</span><span class="p">).</span><span class="w"> </span><span class="c">% &lt;0.44.0&gt;</span>
+
+<span class="c">% `spawn`은 pid(프로세스 식별자)를 반환한다. 이 pid를 프로세스로</span>
+<span class="c">% 메시지를 보내는 데 사용할 수 있다. 메시지 전달을 위해, `!` 연산자를 사용한다.</span>
+<span class="c">% 위의 기능이 유용하려면, 메시지를 받을 수 있어야 한다. 메시지를 받는 것은</span>
+<span class="c">% `receive` 메커니즘을 사용한다.</span>
+
 <span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">calculateGeometry</span><span class="p">).</span>
 <span class="p">-</span><span class="ni">compile</span><span class="p">(</span><span class="n">export_all</span><span class="p">).</span>
-<span class="nf">calculateArea</span><span class="p">()</span> <span class="o">-&gt;</span>
-    <span class="k">receive</span>
-      <span class="p">{</span><span class="n">rectangle</span><span class="p">,</span> <span class="nv">W</span><span class="p">,</span> <span class="nv">H</span><span class="p">}</span> <span class="o">-&gt;</span>
-        <span class="nv">W</span> <span class="o">*</span> <span class="nv">H</span><span class="p">;</span>
-      <span class="p">{</span><span class="n">circle</span><span class="p">,</span> <span class="nv">R</span><span class="p">}</span> <span class="o">-&gt;</span>
-        <span class="mi">3</span><span class="p">.</span><span class="mi">14</span> <span class="o">*</span> <span class="nv">R</span> <span class="o">*</span> <span class="nv">R</span><span class="p">;</span>
-      <span class="p">_</span> <span class="o">-&gt;</span>
-        <span class="nn">io</span><span class="p">:</span><span class="nf">format</span><span class="p">(</span><span class="s">"We can only calculate area of rectangles or circles."</span><span class="p">)</span>
-    <span class="k">end</span><span class="p">.</span>
+<span class="nf">calculateArea</span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">    </span><span class="k">receive</span>
+<span class="w">      </span><span class="p">{</span><span class="n">rectangle</span><span class="p">,</span><span class="w"> </span><span class="nv">W</span><span class="p">,</span><span class="w"> </span><span class="nv">H</span><span class="p">}</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="nv">W</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">H</span><span class="p">;</span>
+<span class="w">      </span><span class="p">{</span><span class="n">circle</span><span class="p">,</span><span class="w"> </span><span class="nv">R</span><span class="p">}</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="mi">3</span><span class="p">.</span><span class="mi">14</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">R</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">R</span><span class="p">;</span>
+<span class="w">      </span><span class="p">_</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="nn">io</span><span class="p">:</span><span class="nf">format</span><span class="p">(</span><span class="s">&quot;We can only calculate area of rectangles or circles.&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="k">end</span><span class="p">.</span>
 
-<span class="c">% Module을 컴파일하고 셸에서 `calculateArea`를 평가한 프로세스를 생성한다.
-</span><span class="nf">c</span><span class="p">(</span><span class="n">calculateGeometry</span><span class="p">).</span>
-<span class="nv">CalculateArea</span> <span class="o">=</span> <span class="nb">spawn</span><span class="p">(</span><span class="n">calculateGeometry</span><span class="p">,</span> <span class="n">calculateArea</span><span class="p">,</span> <span class="p">[]).</span>
-<span class="nv">CalculateArea</span> <span class="o">!</span> <span class="p">{</span><span class="n">circle</span><span class="p">,</span> <span class="mi">2</span><span class="p">}.</span> <span class="c">% 12.56000000000000049738
-</span>
-<span class="c">% 셸도 마찬가지로 프로세스이다. 현재 pid를 얻기 위해서 `self`를 사용할 수 있다.
-</span><span class="nf">self</span><span class="p">().</span> <span class="c">% &lt;0.41.0&gt;
-</span>
-<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% 5. EUnit과 테스트
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-</span>
-<span class="c">% EUnit의 테스트 생성기(generators)와 assert 매크로를 이용해
-% 단위 테스트를 작성할 수 있다.
-</span><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">fib</span><span class="p">).</span>
+<span class="c">% Module을 컴파일하고 셸에서 `calculateArea`를 평가한 프로세스를 생성한다.</span>
+<span class="nf">c</span><span class="p">(</span><span class="n">calculateGeometry</span><span class="p">).</span>
+<span class="nv">CalculateArea</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">spawn</span><span class="p">(</span><span class="n">calculateGeometry</span><span class="p">,</span><span class="w"> </span><span class="n">calculateArea</span><span class="p">,</span><span class="w"> </span><span class="p">[]).</span>
+<span class="nv">CalculateArea</span><span class="w"> </span><span class="o">!</span><span class="w"> </span><span class="p">{</span><span class="n">circle</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">}.</span><span class="w"> </span><span class="c">% 12.56000000000000049738</span>
+
+<span class="c">% 셸도 마찬가지로 프로세스이다. 현재 pid를 얻기 위해서 `self`를 사용할 수 있다.</span>
+<span class="nf">self</span><span class="p">().</span><span class="w"> </span><span class="c">% &lt;0.41.0&gt;</span>
+
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="c">%% 5. EUnit과 테스트</span>
+<span class="c">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+
+<span class="c">% EUnit의 테스트 생성기(generators)와 assert 매크로를 이용해</span>
+<span class="c">% 단위 테스트를 작성할 수 있다.</span>
+<span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">fib</span><span class="p">).</span>
 <span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">fib</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
-<span class="p">-</span><span class="ni">include_lib</span><span class="p">(</span><span class="s">"eunit/include/eunit.hrl"</span><span class="p">).</span>
+<span class="p">-</span><span class="ni">include_lib</span><span class="p">(</span><span class="s">&quot;eunit/include/eunit.hrl&quot;</span><span class="p">).</span>
 
-<span class="nf">fib</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="p">;</span>
-<span class="nf">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="p">;</span>
-<span class="nf">fib</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span> <span class="k">when</span> <span class="nv">N</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">-&gt;</span> <span class="nf">fib</span><span class="p">(</span><span class="nv">N</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="nf">fib</span><span class="p">(</span><span class="nv">N</span><span class="o">-</span><span class="mi">2</span><span class="p">).</span>
+<span class="nf">fib</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="nf">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="nf">fib</span><span class="p">(</span><span class="nv">N</span><span class="p">)</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="nv">N</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">fib</span><span class="p">(</span><span class="nv">N</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">fib</span><span class="p">(</span><span class="nv">N</span><span class="o">-</span><span class="mi">2</span><span class="p">).</span>
 
-<span class="nf">fib_test_</span><span class="p">()</span> <span class="o">-&gt;</span>
-    <span class="p">[</span><span class="o">?</span><span class="p">_</span><span class="nf">assert</span><span class="p">(</span><span class="nf">fib</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">=:=</span> <span class="mi">1</span><span class="p">),</span>
-     <span class="o">?</span><span class="p">_</span><span class="nf">assert</span><span class="p">(</span><span class="nf">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">=:=</span> <span class="mi">1</span><span class="p">),</span>
-     <span class="o">?</span><span class="p">_</span><span class="nf">assert</span><span class="p">(</span><span class="nf">fib</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">=:=</span> <span class="mi">2</span><span class="p">),</span>
-     <span class="o">?</span><span class="p">_</span><span class="nf">assert</span><span class="p">(</span><span class="nf">fib</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">=:=</span> <span class="mi">3</span><span class="p">),</span>
-     <span class="o">?</span><span class="p">_</span><span class="nf">assert</span><span class="p">(</span><span class="nf">fib</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">=:=</span> <span class="mi">5</span><span class="p">),</span>
-     <span class="o">?</span><span class="p">_</span><span class="nf">assert</span><span class="p">(</span><span class="nf">fib</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">=:=</span> <span class="mi">8</span><span class="p">),</span>
-     <span class="o">?</span><span class="p">_</span><span class="nf">assertException</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">function_clause</span><span class="p">,</span> <span class="nf">fib</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)),</span>
-     <span class="o">?</span><span class="p">_</span><span class="nf">assert</span><span class="p">(</span><span class="nf">fib</span><span class="p">(</span><span class="mi">31</span><span class="p">)</span> <span class="o">=:=</span> <span class="mi">2178309</span><span class="p">)</span>
-    <span class="p">].</span>
+<span class="nf">fib_test_</span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">    </span><span class="p">[</span><span class="o">?</span><span class="p">_</span><span class="n">assert</span><span class="p">(</span><span class="n">fib</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">=:=</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span>
+<span class="w">     </span><span class="o">?</span><span class="p">_</span><span class="n">assert</span><span class="p">(</span><span class="n">fib</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=:=</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span>
+<span class="w">     </span><span class="o">?</span><span class="p">_</span><span class="n">assert</span><span class="p">(</span><span class="n">fib</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=:=</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span>
+<span class="w">     </span><span class="o">?</span><span class="p">_</span><span class="n">assert</span><span class="p">(</span><span class="n">fib</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">=:=</span><span class="w"> </span><span class="mi">3</span><span class="p">),</span>
+<span class="w">     </span><span class="o">?</span><span class="p">_</span><span class="n">assert</span><span class="p">(</span><span class="n">fib</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="o">=:=</span><span class="w"> </span><span class="mi">5</span><span class="p">),</span>
+<span class="w">     </span><span class="o">?</span><span class="p">_</span><span class="n">assert</span><span class="p">(</span><span class="n">fib</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="o">=:=</span><span class="w"> </span><span class="mi">8</span><span class="p">),</span>
+<span class="w">     </span><span class="o">?</span><span class="p">_</span><span class="n">assertException</span><span class="p">(</span><span class="n">error</span><span class="p">,</span><span class="w"> </span><span class="n">function_clause</span><span class="p">,</span><span class="w"> </span><span class="n">fib</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)),</span>
+<span class="w">     </span><span class="o">?</span><span class="p">_</span><span class="n">assert</span><span class="p">(</span><span class="n">fib</span><span class="p">(</span><span class="mi">31</span><span class="p">)</span><span class="w"> </span><span class="o">=:=</span><span class="w"> </span><span class="mi">2178309</span><span class="p">)</span>
+<span class="w">    </span><span class="p">].</span>
 
-<span class="c">% EUnit은 Erlang 셸에서 테스트를 실행할 수 있게 
-% 자동으로 test() 함수를 내보낸다(export).
-</span><span class="nn">fib</span><span class="p">:</span><span class="nf">test</span><span class="p">()</span>
+<span class="c">% EUnit은 Erlang 셸에서 테스트를 실행할 수 있게 </span>
+<span class="c">% 자동으로 test() 함수를 내보낸다(export).</span>
+<span class="nn">fib</span><span class="p">:</span><span class="nf">test</span><span class="p">()</span>
 
-<span class="c">% Erlang의 유명한 빌드 툴인 Rebar는 EUnit과 호환된다.
-% ```
-% rebar eunit
-% ```
-</span></code></pre></div>
+<span class="c">% Erlang의 유명한 빌드 툴인 Rebar는 EUnit과 호환된다.</span>
+<span class="c">% ```</span>
+<span class="c">% rebar eunit</span>
+<span class="c">% ```</span>
+</pre></div>
 <h2>참조</h2>
 
 <ul>

@@ -96,235 +96,235 @@ malgré la concurrence et les critiques faites à son égard.</p>
 
 <p>Le programme make a plusieurs variantes. Dans ce tutoriel, nous utiliserons
 l&#39;implémentation standard : GNU make.</p>
-<div class="highlight"><pre class="highlight make"><code><span class="c"># Ceci est un commentaire.
-</span>
-<span class="c"># Un makefile devrait être nommé "Makefile" (avec ou sans la
-# majuscule). Il peut alors être exécuté par `make &lt;cible&gt;`.
-# Ce nommage n'est toutefois pas obligatoire : utiliser
-# `make -f "fichier" &lt;cible&gt;`.
-</span>
-<span class="c"># ATTENTION : l'indentation est quant à elle obligatoire, et se fait avec des
-# tabulations, pas avec des espaces !
-</span>
-<span class="c">#-----------------------------------------------------------------------
-# Les basiques
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># Une règle. Elle ne sera exécutée que si fichier0.txt n'existe pas.
-</span><span class="nl">fichier0.txt</span><span class="o">:</span>
-    <span class="err">echo</span> <span class="s2">"truc"</span> <span class="err">&gt;</span> <span class="err">fichier0.txt</span>
-    <span class="c"># Même les commentaires sont transférés dans le terminal.
-</span>
-<span class="c"># Cette règle ne sera exécutée que si fichier0.txt est plus récent que
-# fichier1.txt.
-</span><span class="nl">fichier1.txt</span><span class="o">:</span> <span class="nf">fichier0.txt</span>
-    <span class="err">cat</span> <span class="err">fichier0.txt</span> <span class="err">&gt;</span> <span class="err">fichier1.txt</span>
-    <span class="c"># Utiliser la même syntaxe que dans un terminal.
-</span>    <span class="err">@cat</span> <span class="err">fichier0.txt</span> <span class="err">&gt;&gt;</span> <span class="err">fichier1.txt</span>
-    <span class="c"># @ empêche l'affichage de la sortie texte d'une commande.
-</span>    <span class="err">-@echo</span> <span class="s1">'hello'</span>
-    <span class="c"># - signifie que la règle devrait continuer à s'exécuter si cette commande
-</span>    <span class="c"># échoue.
-</span>
-<span class="c"># Une règle peut avoir plusieurs cibles et plusieurs dépendances.
-</span><span class="nl">fichier2.txt fichier3.txt</span><span class="o">:</span> <span class="nf">fichier0.txt fichier1.txt</span>
-    <span class="err">touch</span> <span class="err">fichier2.txt</span>
-    <span class="err">touch</span> <span class="err">fichier3.txt</span>
+<div class="highlight"><pre><span></span><span class="c"># Ceci est un commentaire.</span>
 
-<span class="c"># Make affichera un avertissement si le makefile comporte plusieurs règles pour
-# une même cible. Cependant les règles vides ne comptent pas, et peuvent être
-# utilisées pour ajouter des dépendances plus facilement.
-</span>
-<span class="c">#-----------------------------------------------------------------------
-# Fausses règles
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># Une fausse règle est une règle qui ne correspond pas à un fichier.
-# Par définition, elle ne peut pas être à jour, et donc make l’exécutera à
-# chaque demande.
-</span><span class="nl">all</span><span class="o">:</span> <span class="nf">maker process</span>
+<span class="c"># Un makefile devrait être nommé &quot;Makefile&quot; (avec ou sans la</span>
+<span class="c"># majuscule). Il peut alors être exécuté par `make &lt;cible&gt;`.</span>
+<span class="c"># Ce nommage n&#39;est toutefois pas obligatoire : utiliser</span>
+<span class="c"># `make -f &quot;fichier&quot; &lt;cible&gt;`.</span>
 
-<span class="c"># La déclaration des règles peut être faite dans n'importe quel ordre.
-</span><span class="nl">maker</span><span class="o">:</span>
-    <span class="err">touch</span> <span class="err">ex0.txt</span> <span class="err">ex1.txt</span>
+<span class="c"># ATTENTION : l&#39;indentation est quant à elle obligatoire, et se fait avec des</span>
+<span class="c"># tabulations, pas avec des espaces !</span>
 
-<span class="c"># On peut transformer une règle en fausse règle grâce à la cible spéciale
-# suivante :
-</span><span class="nl">.PHONY</span><span class="o">:</span> <span class="nf">all maker process</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Les basiques</span>
+<span class="c">#-----------------------------------------------------------------------</span>
 
-<span class="c"># Une règle dépendante d'une fausse règle sera toujours exécutée.
-</span><span class="nl">ex0.txt ex1.txt</span><span class="o">:</span> <span class="nf">maker</span>
+<span class="c"># Une règle. Elle ne sera exécutée que si fichier0.txt n&#39;existe pas.</span>
+<span class="nf">fichier0.txt</span><span class="o">:</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;truc&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>fichier0.txt
+<span class="c">    # Même les commentaires sont transférés dans le terminal.</span>
 
-<span class="c"># Voici quelques exemples fréquents de fausses règles : all, make, clean,
-# install...
-</span>
-<span class="c">#-----------------------------------------------------------------------
-# Variables automatiques et wildcards
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># Utilise un wildcard pour des noms de fichier
-</span><span class="nl">process</span><span class="o">:</span> <span class="nf">fichier*.txt</span>
-    <span class="err">@echo</span> <span class="err">$^</span>    <span class="c"># $^ est une variable contenant la liste des dépendances de la
-</span>                <span class="c"># cible actuelle.
-</span>    <span class="err">@echo</span> <span class="err">$@</span>    <span class="c"># $@ est le nom de la cible actuelle. En cas de cibles
-</span>                <span class="c"># multiples, $@ est le nom de la cible ayant causé l'exécution
-</span>                <span class="c"># de cette règle.
-</span>    <span class="err">@echo</span> <span class="err">$&lt;</span>    <span class="c"># $&lt; contient la première dépendance.
-</span>    <span class="err">@echo</span> <span class="err">$?</span>    <span class="c"># $? contient la liste des dépendances qui ne sont pas à jour.
-</span>    <span class="err">@echo</span> <span class="err">$+</span>    <span class="c"># $+ contient la liste des dépendances avec d'éventuels
-</span>                <span class="c"># duplicatas, contrairement à $^.
-</span>    <span class="err">@echo</span> <span class="err">$|</span>    <span class="c"># $| contient la liste des cibles ayant préséance sur la cible
-</span>                <span class="c"># actuelle.
-</span>
-<span class="c"># Même si la définition de la règle est scindée en plusieurs morceaux, $^
-# listera toutes les dépendances indiquées.
-</span><span class="nl">process</span><span class="o">:</span> <span class="nf">ex1.txt fichier0.txt</span>
-<span class="c"># Ici, fichier0.txt est un duplicata dans $+.
-</span>
-<span class="c">#-----------------------------------------------------------------------
-# Pattern matching
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># En utilisant le pattern matching, on peut par exemple créer des règles pour
-# convertir les fichiers d'un certain format dans un autre.
-</span><span class="nl">%.png</span><span class="o">:</span> <span class="nf">%.svg</span>
-    <span class="err">inkscape</span> <span class="err">--export-png</span> <span class="err">$^</span>
+<span class="c"># Cette règle ne sera exécutée que si fichier0.txt est plus récent que</span>
+<span class="c"># fichier1.txt.</span>
+<span class="nf">fichier1.txt</span><span class="o">:</span><span class="w"> </span><span class="n">fichier</span>0.<span class="n">txt</span>
+<span class="w">    </span>cat<span class="w"> </span>fichier0.txt<span class="w"> </span>&gt;<span class="w"> </span>fichier1.txt
+<span class="c">    # Utiliser la même syntaxe que dans un terminal.</span>
+<span class="w">    </span>@cat<span class="w"> </span>fichier0.txt<span class="w"> </span>&gt;&gt;<span class="w"> </span>fichier1.txt
+<span class="c">    # @ empêche l&#39;affichage de la sortie texte d&#39;une commande.</span>
+<span class="w">    </span>-@echo<span class="w"> </span><span class="s1">&#39;hello&#39;</span>
+<span class="c">    # - signifie que la règle devrait continuer à s&#39;exécuter si cette commande</span>
+<span class="c">    # échoue.</span>
 
-<span class="c"># Make exécute une règle même si le fichier correspondant est situé dans un sous
-# dossier. En cas de conflit, la règle avec la meilleure correspondance est
-# choisie.
-</span><span class="nl">small/%.png</span><span class="o">:</span> <span class="nf">%.svg</span>
-    <span class="err">inkscape</span> <span class="err">--export-png</span> <span class="err">--export-dpi</span> <span class="err">30</span> <span class="err">$^</span>
+<span class="c"># Une règle peut avoir plusieurs cibles et plusieurs dépendances.</span>
+<span class="nf">fichier2.txt fichier3.txt</span><span class="o">:</span><span class="w"> </span><span class="n">fichier</span>0.<span class="n">txt</span> <span class="n">fichier</span>1.<span class="n">txt</span>
+<span class="w">    </span>touch<span class="w"> </span>fichier2.txt
+<span class="w">    </span>touch<span class="w"> </span>fichier3.txt
 
-<span class="c"># Dans ce type de conflit (même cible, même dépendances), make exécutera la
-# dernière règle déclarée...
-</span><span class="nl">%.png</span><span class="o">:</span> <span class="nf">%.svg</span>
-    <span class="err">@echo</span> <span class="err">cette</span> <span class="err">règle</span> <span class="err">est</span> <span class="err">choisie</span>
+<span class="c"># Make affichera un avertissement si le makefile comporte plusieurs règles pour</span>
+<span class="c"># une même cible. Cependant les règles vides ne comptent pas, et peuvent être</span>
+<span class="c"># utilisées pour ajouter des dépendances plus facilement.</span>
 
-<span class="c"># Dans ce type de conflit (même cible mais pas les mêmes dépendances), make
-# exécutera la première règle pouvant être exécutée.
-</span><span class="nl">%.png</span><span class="o">:</span> <span class="nf">%.ps</span>
-    <span class="err">@echo</span> <span class="err">cette</span> <span class="err">règle</span> <span class="err">n\</span><span class="s1">'est pas choisie si *.svg et *.ps sont présents
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Fausses règles</span>
+<span class="c">#-----------------------------------------------------------------------</span>
 
-# Make a des règles pré établies. Par exemple, il sait comment créer la cible
-# *.o à partir de *.c.
+<span class="c"># Une fausse règle est une règle qui ne correspond pas à un fichier.</span>
+<span class="c"># Par définition, elle ne peut pas être à jour, et donc make l’exécutera à</span>
+<span class="c"># chaque demande.</span>
+<span class="nf">all</span><span class="o">:</span><span class="w"> </span><span class="n">maker</span> <span class="n">process</span>
 
-# Les makefiles plus vieux utilisent un matching par extension de fichier.
-.png.ps:
-    @echo cette règle est similaire à une règle par pattern matching
+<span class="c"># La déclaration des règles peut être faite dans n&#39;importe quel ordre.</span>
+<span class="nf">maker</span><span class="o">:</span>
+<span class="w">    </span>touch<span class="w"> </span>ex0.txt<span class="w"> </span>ex1.txt
 
-# Utiliser cette règle spéciale pour déclarer une règle comme ayant un
-# matching par extension de fichier.
-.SUFFIXES: .png
+<span class="c"># On peut transformer une règle en fausse règle grâce à la cible spéciale</span>
+<span class="c"># suivante :</span>
+<span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">all</span> <span class="n">maker</span> <span class="n">process</span>
 
-#-----------------------------------------------------------------------
-# Variables, ou macros
-#-----------------------------------------------------------------------
+<span class="c"># Une règle dépendante d&#39;une fausse règle sera toujours exécutée.</span>
+<span class="nf">ex0.txt ex1.txt</span><span class="o">:</span><span class="w"> </span><span class="n">maker</span>
 
-# Les variables sont des chaînes de caractères.
+<span class="c"># Voici quelques exemples fréquents de fausses règles : all, make, clean,</span>
+<span class="c"># install...</span>
 
-variable = Ted
-variable2="Sarah"
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Variables automatiques et wildcards</span>
+<span class="c">#-----------------------------------------------------------------------</span>
 
-echo:
-    @echo $(variable)
-    @echo ${variable2}
-    @echo $variable    # Cette syntaxe signifie $(n)ame et non pas $(variable) !
-    @echo $(variable3) # Les variables non déclarées valent "" (chaîne vide).
+<span class="c"># Utilise un wildcard pour des noms de fichier</span>
+<span class="nf">process</span><span class="o">:</span><span class="w"> </span><span class="n">fichier</span>*.<span class="n">txt</span>
+<span class="w">    </span>@echo<span class="w"> </span>$^<span class="w">    </span><span class="c1"># $^ est une variable contenant la liste des dépendances de la</span>
+<span class="c">                # cible actuelle.</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="nv">$@</span><span class="w">    </span><span class="c1"># $@ est le nom de la cible actuelle. En cas de cibles</span>
+<span class="c">                # multiples, $@ est le nom de la cible ayant causé l&#39;exécution</span>
+<span class="c">                # de cette règle.</span>
+<span class="w">    </span>@echo<span class="w"> </span>$&lt;<span class="w">    </span><span class="c1"># $&lt; contient la première dépendance.</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="nv">$?</span><span class="w">    </span><span class="c1"># $? contient la liste des dépendances qui ne sont pas à jour.</span>
+<span class="w">    </span>@echo<span class="w"> </span>$+<span class="w">    </span><span class="c1"># $+ contient la liste des dépendances avec d&#39;éventuels</span>
+<span class="c">                # duplicatas, contrairement à $^.</span>
+<span class="w">    </span>@echo<span class="w"> </span>$<span class="p">|</span><span class="w">    </span><span class="c1"># $| contient la liste des cibles ayant préséance sur la cible</span>
+<span class="c">                # actuelle.</span>
 
-# Les variables sont déclarées de 4 manières, de la plus grande priorité à la
-# plus faible :
-# 1 : dans la ligne de commande qui invoque make,
-# 2 : dans le makefile,
-# 3 : dans les variables d’environnement du terminal qui invoque make,
-# 4 : les variables prédéfinies.
+<span class="c"># Même si la définition de la règle est scindée en plusieurs morceaux, $^</span>
+<span class="c"># listera toutes les dépendances indiquées.</span>
+<span class="nf">process</span><span class="o">:</span><span class="w"> </span><span class="n">ex</span>1.<span class="n">txt</span> <span class="n">fichier</span>0.<span class="n">txt</span>
+<span class="c"># Ici, fichier0.txt est un duplicata dans $+.</span>
 
-# Assigne la variable si une variable d’environnement du même nom n'</span><span class="err">existe</span> <span class="err">pas</span>
-<span class="c"># déjà.
-</span><span class="nv">variable4</span> <span class="o">?=</span> Jean
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Pattern matching</span>
+<span class="c">#-----------------------------------------------------------------------</span>
 
-<span class="c"># Empêche cette variable d'être modifiée par la ligne de commande.
-</span><span class="err">override</span> <span class="nv">variable5</span> <span class="o">=</span> David
+<span class="c"># En utilisant le pattern matching, on peut par exemple créer des règles pour</span>
+<span class="c"># convertir les fichiers d&#39;un certain format dans un autre.</span>
+<span class="nf">%.png</span><span class="o">:</span><span class="w"> </span>%.<span class="n">svg</span>
+<span class="w">    </span>inkscape<span class="w"> </span>--export-png<span class="w"> </span>$^
 
-<span class="c"># Concatène à une variable (avec un espace avant).
-</span><span class="nv">variable4</span> <span class="o">+=</span>gris
+<span class="c"># Make exécute une règle même si le fichier correspondant est situé dans un sous</span>
+<span class="c"># dossier. En cas de conflit, la règle avec la meilleure correspondance est</span>
+<span class="c"># choisie.</span>
+<span class="nf">small/%.png</span><span class="o">:</span><span class="w"> </span>%.<span class="n">svg</span>
+<span class="w">    </span>inkscape<span class="w"> </span>--export-png<span class="w"> </span>--export-dpi<span class="w"> </span><span class="m">30</span><span class="w"> </span>$^
 
-<span class="c"># Assignations de variable pour les règles correspondant à un pattern
-# (spécifique à GNU make).
-</span><span class="nl">*.png</span><span class="o">:</span> <span class="nf">variable2 = Sara </span><span class="c">#</span><span class="nf"> Pour toutes les règles correspondant à *.png</span><span class="p">,</span><span class="nf"> et tous</span>
-                        <span class="c"># leurs descendants, la variable variable2 vaudra
-</span>                        <span class="c"># "Sara".
-# Si le jeux des dépendances et descendances devient vraiment trop compliqué,
-# des incohérences peuvent survenir.
-</span>
-<span class="c"># Certaines variables sont prédéfinies par make :
-</span><span class="nl">affiche_predefinies</span><span class="o">:</span>
-    <span class="err">echo</span> <span class="err">$(CC)</span>
-    <span class="err">echo</span> <span class="err">${CXX}</span>
-    <span class="err">echo</span> <span class="err">$(FC)</span>
-    <span class="err">echo</span> <span class="err">${CFLAGS}</span>
-    <span class="err">echo</span> <span class="err">$(CPPFLAGS)</span>
-    <span class="err">echo</span> <span class="err">${CXXFLAGS}</span>
-    <span class="err">echo</span> <span class="err">$(LDFLAGS)</span>
-    <span class="err">echo</span> <span class="err">${LDLIBS}</span>
+<span class="c"># Dans ce type de conflit (même cible, même dépendances), make exécutera la</span>
+<span class="c"># dernière règle déclarée...</span>
+<span class="nf">%.png</span><span class="o">:</span><span class="w"> </span>%.<span class="n">svg</span>
+<span class="w">    </span>@echo<span class="w"> </span>cette<span class="w"> </span>règle<span class="w"> </span>est<span class="w"> </span>choisie
 
-<span class="c">#-----------------------------------------------------------------------
-# Variables : le retour
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># Les variables sont évaluées à chaque instance, ce qui peut être coûteux en
-# calculs. Pour parer à ce problème, il existe dans GNU make une seconde
-# manière d'assigner des variables pour qu'elles ne soient évaluées qu'une seule
-# fois seulement.
-</span>
-<span class="nv">var</span> <span class="o">:=</span> A B C
-<span class="nl">var2 </span><span class="o">::</span><span class="nf">=  $(var) D E F </span><span class="c">#</span><span class="nf"> := et ::= sont équivalents.</span>
+<span class="c"># Dans ce type de conflit (même cible mais pas les mêmes dépendances), make</span>
+<span class="c"># exécutera la première règle pouvant être exécutée.</span>
+<span class="nf">%.png</span><span class="o">:</span><span class="w"> </span>%.<span class="n">ps</span>
+<span class="w">    </span>@echo<span class="w"> </span>cette<span class="w"> </span>règle<span class="w"> </span>n<span class="se">\&#39;</span>est<span class="w"> </span>pas<span class="w"> </span>choisie<span class="w"> </span>si<span class="w"> </span>*.svg<span class="w"> </span>et<span class="w"> </span>*.ps<span class="w"> </span>sont<span class="w"> </span>présents
 
-<span class="c"># Ces variables sont évaluées procéduralement (i.e. dans leur ordre
-# d'apparition), contrairement aux règles par exemple !
-</span>
-<span class="c"># Ceci ne fonctionne pas.
-</span><span class="nl">var3 </span><span class="o">::</span><span class="nf">= $(var4) et fais de beaux rêves</span>
-<span class="nl">var4 </span><span class="o">::</span><span class="nf">= bonne nuit</span>
+<span class="c"># Make a des règles pré établies. Par exemple, il sait comment créer la cible</span>
+<span class="c"># *.o à partir de *.c.</span>
 
-<span class="c">#-----------------------------------------------------------------------
-# Fonctions
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># Make a une multitude de fonctions. La syntaxe générale est
-# $(fonction arg0,arg1,arg2...).
-</span>
-<span class="c"># Quelques exemples :
-</span>
-<span class="nv">fichiers_source</span> <span class="o">=</span> <span class="nf">$(</span><span class="nb">wildcard</span> <span class="k">*</span>.c <span class="k">*</span>/<span class="k">*</span>.c<span class="nf">)</span>
-<span class="nv">fichiers_objet</span>  <span class="o">=</span> <span class="nf">$(</span><span class="nb">patsubst</span> %.c,%.o,<span class="nv">$(fichiers_source)</span><span class="nf">)</span>
+<span class="c"># Les makefiles plus vieux utilisent un matching par extension de fichier.</span>
+<span class="nf">.png.ps</span><span class="o">:</span>
+<span class="w">    </span>@echo<span class="w"> </span>cette<span class="w"> </span>règle<span class="w"> </span>est<span class="w"> </span>similaire<span class="w"> </span>à<span class="w"> </span>une<span class="w"> </span>règle<span class="w"> </span>par<span class="w"> </span>pattern<span class="w"> </span>matching
 
-<span class="nl">ls</span><span class="o">:</span> <span class="nf">* src/*</span>
-    <span class="err">@echo</span> <span class="err">$(filter</span> <span class="err">%.txt,</span> <span class="err">$^)</span>
-    <span class="err">@echo</span> <span class="err">$(notdir</span> <span class="err">$^)</span>
-    <span class="err">@echo</span> <span class="err">$(join</span> <span class="err">$(dir</span> <span class="err">$^),$(notdir</span> <span class="err">$^))</span>
+<span class="c"># Utiliser cette règle spéciale pour déclarer une règle comme ayant un</span>
+<span class="c"># matching par extension de fichier.</span>
+<span class="nf">.SUFFIXES</span><span class="o">:</span><span class="w"> </span>.<span class="n">png</span>
 
-<span class="c">#-----------------------------------------------------------------------
-# Directives
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># Inclut d'autres makefiles.
-</span><span class="k">include</span><span class="sx"> meuh.mk</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Variables, ou macros</span>
+<span class="c">#-----------------------------------------------------------------------</span>
 
-<span class="c"># Branchements conditionnels.
-</span><span class="nv">sport</span> <span class="o">=</span> tennis
-<span class="nl">report</span><span class="o">:</span>
-<span class="k">ifeq</span> <span class="nv">($(sport),tennis)                  </span><span class="c"># Il y a aussi ifneq.</span>
-    <span class="err">@echo</span> <span class="s1">'jeu, set et match'</span>
-<span class="k">else</span>
-    <span class="err">@echo</span> <span class="s2">"C'est pas ici Wimbledon ?"</span>
-<span class="k">endif</span>
+<span class="c"># Les variables sont des chaînes de caractères.</span>
 
-<span class="nv">truc</span> <span class="o">=</span> <span class="nb">true</span>
-<span class="k">ifdef</span> <span class="nv">$(truc)                           </span><span class="c"># Il y a aussi ifndef.
-</span>    <span class="nv">machin</span> <span class="o">=</span> <span class="s1">'salut'</span>
-<span class="k">endif</span>
-</code></pre></div>
+<span class="nv">variable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Ted
+<span class="nv">variable2</span><span class="o">=</span><span class="s2">&quot;Sarah&quot;</span>
+
+<span class="nf">echo</span><span class="o">:</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>variable<span class="k">)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="si">${</span><span class="nv">variable2</span><span class="si">}</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="nv">$variable</span><span class="w">    </span><span class="c1"># Cette syntaxe signifie $(n)ame et non pas $(variable) !</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>variable3<span class="k">)</span><span class="w"> </span><span class="c1"># Les variables non déclarées valent &quot;&quot; (chaîne vide).</span>
+
+<span class="c"># Les variables sont déclarées de 4 manières, de la plus grande priorité à la</span>
+<span class="c"># plus faible :</span>
+<span class="c"># 1 : dans la ligne de commande qui invoque make,</span>
+<span class="c"># 2 : dans le makefile,</span>
+<span class="c"># 3 : dans les variables d’environnement du terminal qui invoque make,</span>
+<span class="c"># 4 : les variables prédéfinies.</span>
+
+<span class="c"># Assigne la variable si une variable d’environnement du même nom n&#39;existe pas</span>
+<span class="c"># déjà.</span>
+<span class="nv">variable4</span><span class="w"> </span><span class="o">?=</span><span class="w"> </span>Jean
+
+<span class="c"># Empêche cette variable d&#39;être modifiée par la ligne de commande.</span>
+<span class="err">override</span><span class="w"> </span><span class="nv">variable5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>David
+
+<span class="c"># Concatène à une variable (avec un espace avant).</span>
+<span class="nv">variable4</span><span class="w"> </span><span class="o">+=</span>gris
+
+<span class="c"># Assignations de variable pour les règles correspondant à un pattern</span>
+<span class="c"># (spécifique à GNU make).</span>
+<span class="nf">*.png</span><span class="o">:</span><span class="w"> </span><span class="n">variable</span>2 = <span class="n">Sara</span> <span class="c"># Pour toutes les règles correspondant à *.png, et tous</span>
+<span class="c">                        # leurs descendants, la variable variable2 vaudra</span>
+<span class="c">                        # &quot;Sara&quot;.</span>
+<span class="c"># Si le jeux des dépendances et descendances devient vraiment trop compliqué,</span>
+<span class="c"># des incohérences peuvent survenir.</span>
+
+<span class="c"># Certaines variables sont prédéfinies par make :</span>
+<span class="nf">affiche_predefinies</span><span class="o">:</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>CC<span class="k">)</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">CXX</span><span class="si">}</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>FC<span class="k">)</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">CFLAGS</span><span class="si">}</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>CPPFLAGS<span class="k">)</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">CXXFLAGS</span><span class="si">}</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>LDFLAGS<span class="k">)</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">LDLIBS</span><span class="si">}</span>
+
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Variables : le retour</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+
+<span class="c"># Les variables sont évaluées à chaque instance, ce qui peut être coûteux en</span>
+<span class="c"># calculs. Pour parer à ce problème, il existe dans GNU make une seconde</span>
+<span class="c"># manière d&#39;assigner des variables pour qu&#39;elles ne soient évaluées qu&#39;une seule</span>
+<span class="c"># fois seulement.</span>
+
+<span class="nv">var</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span>A<span class="w"> </span>B<span class="w"> </span>C
+<span class="nf">var2 </span><span class="o">::</span>=  <span class="k">$(</span><span class="nv">var</span><span class="k">)</span> <span class="n">D</span> <span class="n">E</span> <span class="n">F</span> <span class="c"># := et ::= sont équivalents.</span>
+
+<span class="c"># Ces variables sont évaluées procéduralement (i.e. dans leur ordre</span>
+<span class="c"># d&#39;apparition), contrairement aux règles par exemple !</span>
+
+<span class="c"># Ceci ne fonctionne pas.</span>
+<span class="nf">var3 </span><span class="o">::</span>= <span class="k">$(</span><span class="nv">var4</span><span class="k">)</span> <span class="n">et</span> <span class="n">fais</span> <span class="n">de</span> <span class="n">beaux</span> <span class="n">r</span>ê<span class="n">ves</span>
+<span class="nf">var4 </span><span class="o">::</span>= <span class="n">bonne</span> <span class="n">nuit</span>
+
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Fonctions</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+
+<span class="c"># Make a une multitude de fonctions. La syntaxe générale est</span>
+<span class="c"># $(fonction arg0,arg1,arg2...).</span>
+
+<span class="c"># Quelques exemples :</span>
+
+<span class="nv">fichiers_source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">$(</span>wildcard<span class="w"> </span>*.c<span class="w"> </span>*/*.c<span class="k">)</span>
+<span class="nv">fichiers_objet</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="k">$(</span>patsubst<span class="w"> </span>%.c,%.o,<span class="k">$(</span>fichiers_source<span class="k">))</span>
+
+<span class="nf">ls</span><span class="o">:</span><span class="w"> </span>* <span class="n">src</span>/*
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>filter<span class="w"> </span>%.txt,<span class="w"> </span>$^<span class="k">)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>notdir<span class="w"> </span>$^<span class="k">)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>join<span class="w"> </span><span class="k">$(</span>dir<span class="w"> </span>$^<span class="k">)</span>,<span class="k">$(</span>notdir<span class="w"> </span>$^<span class="k">))</span>
+
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Directives</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+
+<span class="c"># Inclut d&#39;autres makefiles.</span>
+<span class="cp">include meuh.mk</span>
+
+<span class="c"># Branchements conditionnels.</span>
+<span class="nv">sport</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>tennis
+<span class="nf">report</span><span class="o">:</span>
+<span class="cp">ifeq ($(sport),tennis)                  # Il y a aussi ifneq.</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="s1">&#39;jeu, set et match&#39;</span>
+<span class="cp">else</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="s2">&quot;C&#39;est pas ici Wimbledon ?&quot;</span>
+<span class="cp">endif</span>
+
+<span class="nv">truc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span>
+<span class="cp">ifdef $(truc)                           # Il y a aussi ifndef.</span>
+<span class="w">    </span><span class="nv">machin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;salut&#39;</span>
+<span class="cp">endif</span>
+</pre></div>
 <h2>Quelques références</h2>
 
 <h3>En français</h3>

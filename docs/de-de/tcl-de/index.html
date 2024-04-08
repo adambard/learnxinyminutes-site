@@ -132,404 +132,404 @@ sind. Das erlaubt Tcl in den Hintergrund von Domänen spezischen Sprachen zu
 treten die das jeweilige Projekt gerade benötigt. Die Tcl-Syntax ist sehr
 leichtgewichtig. Sie ist selbst leichtgewichtiger als die Syntax von Lisp.
 Tcl steht dir einfach nicht im Weg.</p>
-<div class="highlight"><pre class="highlight tcl"><code><span class="c1">#! /bin/env tclsh</span>
+<div class="highlight"><pre><span></span><span class="c">#! /bin/env tclsh</span>
 
-<span class="c1">################################################################################</span>
-<span class="c1">## 1. Richtlinien </span>
-<span class="c1">################################################################################</span>
+<span class="c">################################################################################</span>
+<span class="c">## 1. Richtlinien </span>
+<span class="c">################################################################################</span>
 
-<span class="c1"># Tcl ist nicht Bash oder C! Das muss gesagt werden, denn standard Shell-Quoting</span>
-<span class="c1"># funktioniert fast mit Tcl. Daher glauben viele sie können diese Syntax für</span>
-<span class="c1"># Tcl übernehmen. Am Beginn funktioniert das meist, führt aber schnell zu </span>
-<span class="c1"># Frustrationen wenn die Skripte komplexer werden.</span>
+<span class="c"># Tcl ist nicht Bash oder C! Das muss gesagt werden, denn standard Shell-Quoting</span>
+<span class="c"># funktioniert fast mit Tcl. Daher glauben viele sie können diese Syntax für</span>
+<span class="c"># Tcl übernehmen. Am Beginn funktioniert das meist, führt aber schnell zu </span>
+<span class="c"># Frustrationen wenn die Skripte komplexer werden.</span>
 
-<span class="c1"># Eckige-Klammern sind nur Quoting-Mechanismen, keine Code-Block-Konstruktoren</span>
-<span class="c1"># und auch keine Listen-Konstruktoren. In Tcl gibt es diese beiden Dinge nicht.</span>
-<span class="c1"># Eckige-Klammern werden verwendet um Spezial-Zeichen in Prozeduren zu escapen</span>
-<span class="c1"># und in Zeichenketten die als Listen formattiert sind.</span>
+<span class="c"># Eckige-Klammern sind nur Quoting-Mechanismen, keine Code-Block-Konstruktoren</span>
+<span class="c"># und auch keine Listen-Konstruktoren. In Tcl gibt es diese beiden Dinge nicht.</span>
+<span class="c"># Eckige-Klammern werden verwendet um Spezial-Zeichen in Prozeduren zu escapen</span>
+<span class="c"># und in Zeichenketten die als Listen formattiert sind.</span>
 
-<span class="c1">################################################################################</span>
-<span class="c1">## 2. Syntax </span>
-<span class="c1">################################################################################</span>
+<span class="c">################################################################################</span>
+<span class="c">## 2. Syntax </span>
+<span class="c">################################################################################</span>
 
-<span class="c1"># Jede Zeile ist ein Befehl. Das erste Wort ist der Name des Befehls, jedes</span>
-<span class="c1"># weitere Wort ist ein Argument des Befehls. Wörter sind begrenzt durch</span>
-<span class="c1"># Leerzeichen. Da jedes Wort auch ein String ist, sind keine speziellen</span>
-<span class="c1"># auszeichnungen wie Anführungs-Zeichen, Klammern oder Backslashes nötig.</span>
-<span class="c1"># Selbst wenn Anführungs-Zeichen verwendet werden, denn sie sind ja keine</span>
-<span class="c1"># String-Konstruktoren, sondern nur Escape-Zeichen.</span>
+<span class="c"># Jede Zeile ist ein Befehl. Das erste Wort ist der Name des Befehls, jedes</span>
+<span class="c"># weitere Wort ist ein Argument des Befehls. Wörter sind begrenzt durch</span>
+<span class="c"># Leerzeichen. Da jedes Wort auch ein String ist, sind keine speziellen</span>
+<span class="c"># auszeichnungen wie Anführungs-Zeichen, Klammern oder Backslashes nötig.</span>
+<span class="c"># Selbst wenn Anführungs-Zeichen verwendet werden, denn sie sind ja keine</span>
+<span class="c"># String-Konstruktoren, sondern nur Escape-Zeichen.</span>
 
-set greeting1 Sal 
-set greeting2 ut
-set greeting3 ations
+<span class="k">set</span><span class="w"> </span>greeting1<span class="w"> </span>Sal<span class="w"> </span>
+set<span class="w"> </span>greeting2<span class="w"> </span>ut
+<span class="k">set</span><span class="w"> </span>greeting3<span class="w"> </span>ations
 
 
-<span class="c1"># Strichpunkte begrenzen auch Befehle</span>
-set greeting1 Sal<span class="p">;</span> set greeting2 ut<span class="p">;</span> set greeting3 ations 
+<span class="c"># Strichpunkte begrenzen auch Befehle</span>
+<span class="k">set</span><span class="w"> </span>greeting1<span class="w"> </span>Sal<span class="k">;</span><span class="w"> </span><span class="k">set</span><span class="w"> </span>greeting2<span class="w"> </span>ut<span class="k">;</span><span class="w"> </span><span class="k">set</span><span class="w"> </span>greeting3<span class="w"> </span>ations<span class="w"> </span>
 
 
-<span class="c1"># Das Dollar-Zeichen zeigt eine Variablen-Substitution an.</span>
-set greeting $greeting1$greeting2$greeting3
+<span class="err">#</span><span class="w"> </span>Das<span class="w"> </span>Dollar-Zeichen<span class="w"> </span>zeigt<span class="w"> </span>eine<span class="w"> </span>Variablen-Substitution<span class="w"> </span>an.
+<span class="k">set</span><span class="w"> </span>greeting<span class="w"> </span><span class="nv">$greeting1$greeting2$greeting3</span>
 
 
-<span class="c1"># Eckige-Klammern zeigen Befehls-Substitionen an. Das Ergebnis des Befehls wird an</span>
-# Stelle des Klammern-Ausdrucks eingefügt. Wenn man dem <span class="s2">"set"</span> Befehl nur den
-<span class="c1"># Namen einer Variablen übergibt, gibt er den Wert der Variablen zurück.</span>
-set greeting $greeting1$greeting2<span class="p">[</span>set greeting3<span class="p">]</span>
+<span class="c"># Eckige-Klammern zeigen Befehls-Substitionen an. Das Ergebnis des Befehls wird an</span>
+<span class="c"># Stelle des Klammern-Ausdrucks eingefügt. Wenn man dem &quot;set&quot; Befehl nur den</span>
+<span class="c"># Namen einer Variablen übergibt, gibt er den Wert der Variablen zurück.</span>
+<span class="k">set</span><span class="w"> </span>greeting<span class="w"> </span><span class="nv">$greeting1$greeting2</span><span class="k">[set</span><span class="w"> </span>greeting3<span class="k">]</span>
 
 
-<span class="c1"># Befehls-Substitution sollte eigentlich Script-Substitution heißen, denn ein</span>
-<span class="c1"># komplettes Script, und nicht nur ein Befehl, kann zwischen die Eckigen-Klammern</span>
-# geschrieben werden. Der <span class="s2">"incr"</span> Befehl erhöht den Wert einer Variable um 1
-<span class="c1"># und gibt den neuen Wert der Variable zurück.</span>
-set greeting $greeting<span class="p">[</span>
-    incr i
-    incr i
-    incr i
-<span class="p">]</span>
+<span class="c"># Befehls-Substitution sollte eigentlich Script-Substitution heißen, denn ein</span>
+<span class="c"># komplettes Script, und nicht nur ein Befehl, kann zwischen die Eckigen-Klammern</span>
+<span class="c"># geschrieben werden. Der &quot;incr&quot; Befehl erhöht den Wert einer Variable um 1</span>
+<span class="c"># und gibt den neuen Wert der Variable zurück.</span>
+<span class="k">set</span><span class="w"> </span>greeting<span class="w"> </span><span class="nv">$greeting</span><span class="k">[</span>
+<span class="w">    </span><span class="nb">incr</span><span class="w"> </span>i
+<span class="w">    </span><span class="nb">incr</span><span class="w"> </span>i
+<span class="w">    </span><span class="nb">incr</span><span class="w"> </span>i
+<span class="k">]</span>
 
 
-<span class="c1"># Der Backslash unterdrück die Bedeutung von Sonderzeichen</span>
-set amount <span class="se">\$</span>16.42
+<span class="c"># Der Backslash unterdrück die Bedeutung von Sonderzeichen</span>
+<span class="k">set</span><span class="w"> </span>amount<span class="w"> </span><span class="err">\</span><span class="nv">$16.42</span>
 
 
-<span class="c1"># Der Backslash macht bestimmte Zeichen zu Sonderzeichen</span>
-puts lots<span class="se">\n</span>of<span class="se">\n\n\n\n\n\n</span>newlines
+<span class="c"># Der Backslash macht bestimmte Zeichen zu Sonderzeichen</span>
+<span class="nb">puts</span><span class="w"> </span>lots<span class="err">\</span>nof<span class="err">\</span>n<span class="err">\</span>n<span class="err">\</span>n<span class="err">\</span>n<span class="err">\</span>n<span class="err">\</span>nnewlines
 
-<span class="c1"># Ein Wort das in geschweiften Klammern eingeschlossen wurde ist von jeglichen</span>
-<span class="c1"># speziellen Interpretationen ausgeschlossen. Eine Ausnahme bilden Backslashes</span>
-<span class="c1"># vor geschweiften Klammern, hiermit wird die geschweifte Klammer von der Suche</span>
-<span class="c1"># nach der schließenden geschweiften Klammer ausgeschlossen.</span>
-set somevar <span class="p">{</span>
-    Das ist ein literales $ Zeichen, diese geschweifte Klammer <span class="se">\}</span> wird nicht
-    als Ende interpretiert.
-<span class="p">}</span> 
+<span class="c"># Ein Wort das in geschweiften Klammern eingeschlossen wurde ist von jeglichen</span>
+<span class="c"># speziellen Interpretationen ausgeschlossen. Eine Ausnahme bilden Backslashes</span>
+<span class="c"># vor geschweiften Klammern, hiermit wird die geschweifte Klammer von der Suche</span>
+<span class="c"># nach der schließenden geschweiften Klammer ausgeschlossen.</span>
+<span class="k">set</span><span class="w"> </span>somevar<span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="nv">Das</span><span class="w"> </span>ist<span class="w"> </span>ein<span class="w"> </span>literales<span class="w"> </span><span class="err">$</span><span class="w"> </span>Zeichen,<span class="w"> </span>diese<span class="w"> </span>geschweifte<span class="w"> </span>Klammer<span class="w"> </span><span class="err">\</span><span class="k">}</span><span class="w"> </span>wird<span class="w"> </span>nicht
+<span class="w">    </span><span class="nv">als</span><span class="w"> </span>Ende<span class="w"> </span>interpretiert.
+<span class="k">}</span><span class="w"> </span>
 
 
-<span class="c1"># Bei einem Wort das in doppelten Anführungszeichen steht verlieren Leerzeichen</span>
-<span class="c1"># ihre spezielle Bedeutung.</span>
-set name Neo
-set greeting <span class="s2">"Hallo, </span><span class="nv">$name</span><span class="s2">"</span>
+<span class="c"># Bei einem Wort das in doppelten Anführungszeichen steht verlieren Leerzeichen</span>
+<span class="c"># ihre spezielle Bedeutung.</span>
+<span class="k">set</span><span class="w"> </span>name<span class="w"> </span>Neo
+<span class="k">set</span><span class="w"> </span>greeting<span class="w"> </span><span class="s2">&quot;Hallo, $name&quot;</span>
 
 
-<span class="c1">#Variablen-Namen können irgend eine Zeichenkette sein.</span>
-set <span class="p">{</span>first name<span class="p">}</span> New
+<span class="c">#Variablen-Namen können irgend eine Zeichenkette sein.</span>
+<span class="k">set</span><span class="w"> </span><span class="k">{</span><span class="nv">first</span><span class="w"> </span>name<span class="k">}</span><span class="w"> </span>New
 
 
-<span class="c1"># Die Geschweifte-Klammern-Form der Variablen-Substitution kann sehr komplexe</span>
-<span class="c1"># Variblen-Namen handhaben.</span>
-set greeting <span class="s2">"Hello, </span><span class="nv">${first name}</span><span class="s2">"</span>
+<span class="c"># Die Geschweifte-Klammern-Form der Variablen-Substitution kann sehr komplexe</span>
+<span class="c"># Variblen-Namen handhaben.</span>
+<span class="k">set</span><span class="w"> </span>greeting<span class="w"> </span><span class="s2">&quot;Hello, ${first name}&quot;</span>
 
 
-# Der <span class="s2">"set"</span> Befehl kann immer anstatt einer Variablen-Substition verwendet
-<span class="c1"># werden.</span>
-set greeting <span class="s2">"Hello, </span><span class="p">[</span>set <span class="p">{</span>first name<span class="p">}]</span><span class="s2">"</span>
+<span class="c"># Der &quot;set&quot; Befehl kann immer anstatt einer Variablen-Substition verwendet</span>
+<span class="c"># werden.</span>
+<span class="k">set</span><span class="w"> </span>greeting<span class="w"> </span><span class="s2">&quot;Hello, [set {first name}]&quot;</span>
 
 
-# Mit dem Expansions-Operator <span class="s2">"{*}"</span> werden Wörter innerhalb eines Wortes wieder
-<span class="c1"># individuell als Teile des aktuellen Befehls behandelt.</span>
-set <span class="k">{*}</span><span class="p">{</span>name Neo<span class="p">}</span>
+<span class="c"># Mit dem Expansions-Operator &quot;{*}&quot; werden Wörter innerhalb eines Wortes wieder</span>
+<span class="c"># individuell als Teile des aktuellen Befehls behandelt.</span>
+<span class="k">set</span><span class="w"> </span><span class="k">{</span><span class="o">*</span><span class="k">}{</span><span class="nv">name</span><span class="w"> </span>Neo<span class="k">}</span>
 
-<span class="c1"># Ist Äquivalent zu</span>
-set name Neo
+<span class="c"># Ist Äquivalent zu</span>
+<span class="k">set</span><span class="w"> </span>name<span class="w"> </span>Neo
 
 
-<span class="c1"># Ein Array ist eine spezielle Varible die also Kontainer für andere Variablen</span>
-<span class="c1"># dient.</span>
-set person<span class="p">(</span>name<span class="p">)</span> Neo
-set person<span class="p">(</span>gender<span class="p">)</span> male
-set greeting <span class="s2">"Hello, </span><span class="nv">$person</span><span class="s2">(name)"</span>
+<span class="c"># Ein Array ist eine spezielle Varible die also Kontainer für andere Variablen</span>
+<span class="c"># dient.</span>
+<span class="k">set</span><span class="w"> </span>person<span class="k">(</span><span class="nv">name</span><span class="k">)</span><span class="w"> </span>Neo
+<span class="k">set</span><span class="w"> </span>person<span class="k">(</span><span class="nv">gender</span><span class="k">)</span><span class="w"> </span>male
+<span class="k">set</span><span class="w"> </span>greeting<span class="w"> </span><span class="s2">&quot;Hello, $person(name)&quot;</span>
 
 
-<span class="c1"># Ein Namensraum enthält Befehle und Variablen</span>
-namespace eval people <span class="p">{</span>
-    namespace eval person1 <span class="p">{</span>
-        variable name Neo
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="c"># Ein Namensraum enthält Befehle und Variablen</span>
+<span class="k">namespace</span><span class="w"> </span>eval<span class="w"> </span>people<span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="k">namespace</span><span class="w"> </span>eval<span class="w"> </span>person1<span class="w"> </span><span class="k">{</span>
+<span class="w">        </span><span class="k">variable</span><span class="w"> </span>name<span class="w"> </span>Neo
+<span class="w">    </span><span class="k">}</span>
+<span class="k">}</span>
 
 
-<span class="c1">#Der volle Name einer Variablen beihaltet den/die umschließenden</span>
-<span class="c1"># Namensraum/Namensräume begrenzt durch zwei Doppelpunkte.</span>
-set greeting <span class="s2">"Hello </span><span class="nv">$people::person1::name</span><span class="s2">"</span>
-</code></pre></div><div class="highlight"><pre class="highlight tcl"><code><span class="c1">################################################################################</span>
-<span class="c1">## 3. Einige Notizen </span>
-<span class="c1">################################################################################</span>
+<span class="c">#Der volle Name einer Variablen beihaltet den/die umschließenden</span>
+<span class="c"># Namensraum/Namensräume begrenzt durch zwei Doppelpunkte.</span>
+<span class="k">set</span><span class="w"> </span>greeting<span class="w"> </span><span class="s2">&quot;Hello $people::person1::name&quot;</span>
+</pre></div><div class="highlight"><pre><span></span><span class="c">################################################################################</span>
+<span class="c">## 3. Einige Notizen </span>
+<span class="c">################################################################################</span>
 
-<span class="c1"># Jede weitere Funktion ist über Befehle implementiert. Von nun an kommt keine</span>
-<span class="c1"># neue Syntax hinzu. Alles weitere das es über Tcl zu lernen gibt ist das</span>
-<span class="c1"># Verhalten individueller Befehle und die bedeutung ihrer Argumente.</span>
+<span class="c"># Jede weitere Funktion ist über Befehle implementiert. Von nun an kommt keine</span>
+<span class="c"># neue Syntax hinzu. Alles weitere das es über Tcl zu lernen gibt ist das</span>
+<span class="c"># Verhalten individueller Befehle und die bedeutung ihrer Argumente.</span>
 
 
-<span class="c1"># Um einen Interpreter zu bekommen mit dem man nichts mehr machen kann, lösche</span>
-<span class="c1"># einfach den globalen Namensraum. Das ist nicht sehr sinnvoll, zeigt aber die</span>
-<span class="c1"># Natur von Tcl.</span>
-namespace delete ::
+<span class="c"># Um einen Interpreter zu bekommen mit dem man nichts mehr machen kann, lösche</span>
+<span class="c"># einfach den globalen Namensraum. Das ist nicht sehr sinnvoll, zeigt aber die</span>
+<span class="c"># Natur von Tcl.</span>
+<span class="k">namespace</span><span class="w"> </span>delete<span class="w"> </span><span class="o">::</span>
 
 
-# Wegen des Verhaltens der Namens-Auflösung ist es sicherer den <span class="s2">"variable"</span>
-<span class="c1"># Befehl zu verwenden um in einem Namensraum einen Wert zu deklarieren oder</span>
-# zuzuweisen. Wenn eine Variable mit dem namen <span class="s2">"name"</span> bereits im globalen
-# Namensraum existiert, bewirkt der <span class="s2">"set"</span> Befehl das der globalen Variable ein
-<span class="c1"># Wert zugewiesen wird, anstatt eine Variable im lokalen Namensraum zu erzeugen</span>
-namespace eval people <span class="p">{</span>
-    namespace eval person1 <span class="p">{</span>
-        variable name Neo
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="c"># Wegen des Verhaltens der Namens-Auflösung ist es sicherer den &quot;variable&quot;</span>
+<span class="c"># Befehl zu verwenden um in einem Namensraum einen Wert zu deklarieren oder</span>
+<span class="c"># zuzuweisen. Wenn eine Variable mit dem namen &quot;name&quot; bereits im globalen</span>
+<span class="c"># Namensraum existiert, bewirkt der &quot;set&quot; Befehl das der globalen Variable ein</span>
+<span class="c"># Wert zugewiesen wird, anstatt eine Variable im lokalen Namensraum zu erzeugen</span>
+<span class="k">namespace</span><span class="w"> </span>eval<span class="w"> </span>people<span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="k">namespace</span><span class="w"> </span>eval<span class="w"> </span>person1<span class="w"> </span><span class="k">{</span>
+<span class="w">        </span><span class="k">variable</span><span class="w"> </span>name<span class="w"> </span>Neo
+<span class="w">    </span><span class="k">}</span>
+<span class="k">}</span>
 
 
-<span class="c1"># Es kann immer der vollständige Name einer Variable verwendet werden, falls</span>
-<span class="c1"># gewünscht.</span>
-set people::person1::name Neo
+<span class="c"># Es kann immer der vollständige Name einer Variable verwendet werden, falls</span>
+<span class="c"># gewünscht.</span>
+<span class="k">set</span><span class="w"> </span>people::person1::name<span class="w"> </span>Neo
 
 
 
-<span class="c1">################################################################################</span>
-<span class="c1">## 4. Befehle </span>
-<span class="c1">################################################################################</span>
+<span class="c">################################################################################</span>
+<span class="c">## 4. Befehle </span>
+<span class="c">################################################################################</span>
 
-# Berechnungen werde mit dem <span class="s2">"expr"</span> Befehl durchgeführt.
-set a 3
-set b 4
-set c <span class="p">[</span>expr <span class="p">{</span><span class="nv">$a</span> + $b<span class="p">}]</span>
+<span class="c"># Berechnungen werde mit dem &quot;expr&quot; Befehl durchgeführt.</span>
+<span class="k">set</span><span class="w"> </span>a<span class="w"> </span><span class="mi">3</span>
+<span class="k">set</span><span class="w"> </span>b<span class="w"> </span><span class="mi">4</span>
+<span class="k">set</span><span class="w"> </span>c<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="k">{</span><span class="nv">$a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$b</span><span class="k">}]</span>
 
-# Since <span class="s2">"expr"</span> performs variable substitution on its own, brace the expression
-<span class="c1"># to prevent Tcl from performing variable substitution first.  See</span>
+<span class="c"># Since &quot;expr&quot; performs variable substitution on its own, brace the expression</span>
+<span class="c"># to prevent Tcl from performing variable substitution first.  See</span>
 
-# Da der <span class="s2">"expr"</span> Befehl eigene Variablen-Substitutionen durchführt, setze den
-<span class="c1"># zu berechnenden Ausdruck in Eckige-Klammern. Das hindert Tcl daran Variablen-</span>
-<span class="c1"># Substitutionen durchzuführen. Für Details siehe:</span>
-# <span class="s2">"http://wiki.tcl.tk/Brace%20your%20#%20expr-essions"</span>
+<span class="c"># Da der &quot;expr&quot; Befehl eigene Variablen-Substitutionen durchführt, setze den</span>
+<span class="c"># zu berechnenden Ausdruck in Eckige-Klammern. Das hindert Tcl daran Variablen-</span>
+<span class="c"># Substitutionen durchzuführen. Für Details siehe:</span>
+<span class="c"># &quot;http://wiki.tcl.tk/Brace%20your%20#%20expr-essions&quot;</span>
 
 
-# Der <span class="s2">"expr"</span> Befehl versteht Variablen- und Befehls-Substitutionen
-set c <span class="p">[</span>expr <span class="p">{</span><span class="nv">$a</span> + <span class="p">[</span>set b<span class="p">]}]</span>
+<span class="c"># Der &quot;expr&quot; Befehl versteht Variablen- und Befehls-Substitutionen</span>
+<span class="k">set</span><span class="w"> </span>c<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="k">{</span><span class="nv">$a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">[set</span><span class="w"> </span>b<span class="k">]}]</span>
 
 
-# Der <span class="s2">"expr"</span> Befehl stellt Mathematische-Funktionen zur Verfügung.
-set c <span class="p">[</span>expr <span class="p">{</span>pow<span class="p">(</span><span class="nv">$a</span>,$b<span class="p">)}]</span>
+<span class="c"># Der &quot;expr&quot; Befehl stellt Mathematische-Funktionen zur Verfügung.</span>
+<span class="k">set</span><span class="w"> </span>c<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="k">{</span><span class="nv">pow</span><span class="k">(</span><span class="nv">$a</span>,<span class="nv">$b</span><span class="k">)}]</span>
 
 
-<span class="c1"># Mathematische Operatoren sind als Befehle auch im Namensraum </span>
-<span class="c1"># ::tcl::mathop verfügbar.</span>
-::tcl::mathop::+ 5 3
+<span class="c"># Mathematische Operatoren sind als Befehle auch im Namensraum </span>
+<span class="c"># ::tcl::mathop verfügbar.</span>
+<span class="o">::</span><span class="nv">tcl</span><span class="o">::</span>mathop::<span class="o">+</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">3</span>
 
-<span class="c1"># Befehle können aus anderen Namensräumen importiert werden.</span>
-namespace import ::tcl::mathop::+
-set result <span class="p">[</span>+ 5 3<span class="p">]</span>
+<span class="c"># Befehle können aus anderen Namensräumen importiert werden.</span>
+<span class="k">namespace</span><span class="w"> </span>import<span class="w"> </span><span class="o">::</span>tcl::mathop::<span class="o">+</span>
+<span class="k">set</span><span class="w"> </span>result<span class="w"> </span><span class="k">[</span><span class="o">+</span><span class="w"> </span><span class="nv">5</span><span class="w"> </span><span class="mi">3</span><span class="k">]</span>
 
 
-# Neu Befehle werden mit dem <span class="s2">"proc"</span> Befehl gebildet.
-proc greet name <span class="p">{</span>
-    return <span class="s2">"Hello, </span><span class="nv">$name</span><span class="s2">!"</span>
-<span class="p">}</span>
+<span class="c"># Neu Befehle werden mit dem &quot;proc&quot; Befehl gebildet.</span>
+<span class="k">proc</span><span class="w"> </span>greet<span class="w"> </span>name<span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s2">&quot;Hello, $name!&quot;</span>
+<span class="k">}</span>
 
-<span class="c1">#Es können mehrere Parameter spezifiziert werden.</span>
-proc greet <span class="p">{</span>greeting name<span class="p">}</span> <span class="p">{</span>
-    return <span class="s2">"</span><span class="nv">$greeting</span><span class="s2">, </span><span class="nv">$name</span><span class="s2">!"</span>
-<span class="p">}</span>
+<span class="c">#Es können mehrere Parameter spezifiziert werden.</span>
+<span class="k">proc</span><span class="w"> </span>greet<span class="w"> </span><span class="k">{</span><span class="nv">greeting</span><span class="w"> </span>name<span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s2">&quot;$greeting, $name!&quot;</span>
+<span class="k">}</span>
 
 
-<span class="c1"># Wie bereits erwähnt, geschwungene Klammern erzeugen keinen Code-Block.</span>
-# Jeder Wert, sogar das dritte Argument für den <span class="s2">"proc"</span> Befehl ist eine
-<span class="c1"># Zeichenkette. Der vorherige Befehl kann daher auch ohne</span>
-<span class="c1"># geschwungene Klammern geschrieben werden:</span>
-proc greet greeting<span class="se">\ </span>name return<span class="se">\ \"</span>Hello,<span class="se">\ \$</span>name!
+<span class="c"># Wie bereits erwähnt, geschwungene Klammern erzeugen keinen Code-Block.</span>
+<span class="c"># Jeder Wert, sogar das dritte Argument für den &quot;proc&quot; Befehl ist eine</span>
+<span class="c"># Zeichenkette. Der vorherige Befehl kann daher auch ohne</span>
+<span class="c"># geschwungene Klammern geschrieben werden:</span>
+<span class="k">proc</span><span class="w"> </span>greet<span class="w"> </span>greeting<span class="err">\</span><span class="w"> </span>name<span class="w"> </span>return<span class="err">\</span><span class="w"> </span><span class="err">\</span><span class="s2">&quot;Hello,\ \$name!</span>
 
 
 
-# Wenn der letzte Parameter der literale Wert <span class="s2">"args"</span> ist, sammelt dieser Wert
-<span class="c1"># alle übrigen Argumente des Befehls ein wenn dieser aufgerufen wird.</span>
-proc fold <span class="p">{</span>cmd args<span class="p">}</span> <span class="p">{</span>
-    set res 0
-    foreach arg $args <span class="p">{</span>
-        set res <span class="p">[</span><span class="nv">$cmd</span> $res $arg<span class="p">]</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-fold ::tcl::mathop::* 5 3 3 <span class="p">;</span><span class="c1"># -&gt;  45</span>
+<span class="s2"># Wenn der letzte Parameter der literale Wert &quot;</span>args<span class="s2">&quot; ist, sammelt dieser Wert</span>
+<span class="s2"># alle übrigen Argumente des Befehls ein wenn dieser aufgerufen wird.</span>
+<span class="s2">proc fold {cmd args} {</span>
+<span class="s2">    set res 0</span>
+<span class="s2">    foreach arg $args {</span>
+<span class="s2">        set res [$cmd $res $arg]</span>
+<span class="s2">    }</span>
+<span class="s2">}</span>
+<span class="s2">fold ::tcl::mathop::* 5 3 3 ;# -&gt;  45</span>
 
 
-<span class="c1"># Bedingte Ausführung ist auch als Befehl implementiert</span>
-if <span class="p">{</span>3 &gt; 4<span class="p">}</span> <span class="p">{</span>
-    puts <span class="p">{</span>This will never happen<span class="p">}</span>
-<span class="p">}</span> elseif <span class="p">{</span>4 &gt; 4<span class="p">}</span> <span class="p">{</span>
-    puts <span class="p">{</span>This will also never happen<span class="p">}</span>
-<span class="p">}</span> else <span class="p">{</span>
-    puts <span class="p">{</span>This will always happen<span class="p">}</span>
-<span class="p">}</span>
+<span class="s2"># Bedingte Ausführung ist auch als Befehl implementiert</span>
+<span class="s2">if {3 &gt; 4} {</span>
+<span class="s2">    puts {This will never happen}</span>
+<span class="s2">} elseif {4 &gt; 4} {</span>
+<span class="s2">    puts {This will also never happen}</span>
+<span class="s2">} else {</span>
+<span class="s2">    puts {This will always happen}</span>
+<span class="s2">}</span>
 
 
-# Auch Schleifen sind Befehle. Das erste, zweite und dritte Argument des <span class="s2">"for"</span>
-<span class="c1"># Befehls wird als mathematischer Ausdruck behandelt.</span>
-for <span class="p">{</span>set i 0<span class="p">}</span> <span class="p">{</span><span class="nv">$i</span> &lt; 10<span class="p">}</span> <span class="p">{</span>incr i<span class="p">}</span> <span class="p">{</span>
-    set res <span class="p">[</span>expr <span class="p">{</span><span class="nv">$res</span> + $i<span class="p">}]</span>
-<span class="p">}</span>
+<span class="s2"># Auch Schleifen sind Befehle. Das erste, zweite und dritte Argument des &quot;</span>for<span class="s2">&quot;</span>
+<span class="s2"># Befehls wird als mathematischer Ausdruck behandelt.</span>
+<span class="s2">for {set i 0} {$i &lt; 10} {incr i} {</span>
+<span class="s2">    set res [expr {$res + $i}]</span>
+<span class="s2">}</span>
 
 
-# Das erste Argument des <span class="s2">"while"</span> Befehls wird auch als mathematischer Ausdruck
-<span class="c1"># behandelt.</span>
-set i 0
-while <span class="p">{</span><span class="nv">$i</span> &lt; 10<span class="p">}</span> <span class="p">{</span>
-    incr i 2
-<span class="p">}</span>
+<span class="s2"># Das erste Argument des &quot;</span>while<span class="s2">&quot; Befehls wird auch als mathematischer Ausdruck</span>
+<span class="s2"># behandelt.</span>
+<span class="s2">set i 0</span>
+<span class="s2">while {$i &lt; 10} {</span>
+<span class="s2">    incr i 2</span>
+<span class="s2">}</span>
 
 
-<span class="c1"># Eine Liste ist eine speziell formatierte Zeichenkette. Im einfachsten Fall</span>
-<span class="c1"># genügen Leerzeichen als Trennzeichen zwischen den einzelnen Werten.</span>
-set amounts 10<span class="se">\ </span>33<span class="se">\ </span>18 
-set amount <span class="p">[</span>lindex $amounts 1<span class="p">]</span>
+<span class="s2"># Eine Liste ist eine speziell formatierte Zeichenkette. Im einfachsten Fall</span>
+<span class="s2"># genügen Leerzeichen als Trennzeichen zwischen den einzelnen Werten.</span>
+<span class="s2">set amounts 10\ 33\ 18 </span>
+<span class="s2">set amount [lindex $amounts 1]</span>
 
 
-<span class="c1"># Geschwungene Klammern und Backslashes können verwendet werden um komplexe</span>
-<span class="c1"># Werte in einer Liste zu formatieren. Eine Liste sieht aus wie ein Skript,</span>
-<span class="c1"># allerdings verlieren verlieren Zeilenumbrüche und Doppelüunkte ihre </span>
-<span class="c1"># besondere Bedeutung. Diese Funktionalität macht Tcl homoikonisch. Die</span>
-<span class="c1"># folgende Liste enhtält drei Elemente.</span>
-set values <span class="p">{</span>
+<span class="s2"># Geschwungene Klammern und Backslashes können verwendet werden um komplexe</span>
+<span class="s2"># Werte in einer Liste zu formatieren. Eine Liste sieht aus wie ein Skript,</span>
+<span class="s2"># allerdings verlieren verlieren Zeilenumbrüche und Doppelüunkte ihre </span>
+<span class="s2"># besondere Bedeutung. Diese Funktionalität macht Tcl homoikonisch. Die</span>
+<span class="s2"># folgende Liste enhtält drei Elemente.</span>
+<span class="s2">set values {</span>
 
-    one<span class="se">\ </span>two
+<span class="s2">    one\ two</span>
 
-    <span class="p">{</span>three four<span class="p">}</span>
+<span class="s2">    {three four}</span>
 
-    five<span class="se">\{</span>six
+<span class="s2">    five\{six</span>
 
-<span class="p">}</span>
+<span class="s2">}</span>
 
 
-<span class="c1"># Da Listen auch Zeichenketten sind, kann man Zeichenketten-Operationen auf</span>
-<span class="c1"># ihnen anwenden. Allerdings mit dem Risiko die Formatierung der Liste zu</span>
-<span class="c1"># beschädigen.</span>
-set values <span class="p">{</span>one two three four<span class="p">}</span>
-set values <span class="p">[</span>string map <span class="p">{</span>two <span class="se">\{</span><span class="p">}</span> $values<span class="p">]</span> <span class="p">;</span># $values is no-longer a <span class="se">\
-</span>    properly-formatted listwell-formed list
+<span class="s2"># Da Listen auch Zeichenketten sind, kann man Zeichenketten-Operationen auf</span>
+<span class="s2"># ihnen anwenden. Allerdings mit dem Risiko die Formatierung der Liste zu</span>
+<span class="s2"># beschädigen.</span>
+<span class="s2">set values {one two three four}</span>
+<span class="s2">set values [string map {two \{} $values] ;# $values is no-longer a \</span>
+<span class="s2">    properly-formatted listwell-formed list</span>
 
 
-# Der sicherste Weg korrekt formatierte Liste zu erzeugen, ist den <span class="s2">"list"</span>
-<span class="c1"># Befehl zu verwenden.</span>
-set values <span class="p">[</span>list one <span class="se">\{</span> three four<span class="p">]</span>
-lappend values <span class="p">{</span> <span class="p">}</span> <span class="p">;</span><span class="c1"># Ein Leerzeichen als Element der Liste hinzufügen</span>
+<span class="s2"># Der sicherste Weg korrekt formatierte Liste zu erzeugen, ist den &quot;</span>list<span class="s2">&quot;</span>
+<span class="s2"># Befehl zu verwenden.</span>
+<span class="s2">set values [list one \{ three four]</span>
+<span class="s2">lappend values { } ;# Ein Leerzeichen als Element der Liste hinzufügen</span>
 
 
-# Mit <span class="s2">"eval"</span> können Werte als Skripts evaluiert weden.
-eval <span class="p">{</span>
-    set name Neo
-    set greeting <span class="s2">"Hello, </span><span class="nv">$name</span><span class="s2">"</span>
-<span class="p">}</span>
+<span class="s2"># Mit &quot;</span>eval<span class="s2">&quot; können Werte als Skripts evaluiert weden.</span>
+<span class="s2">eval {</span>
+<span class="s2">    set name Neo</span>
+<span class="s2">    set greeting &quot;</span>Hello,<span class="w"> </span><span class="nv">$name</span><span class="s2">&quot;</span>
+<span class="s2">}</span>
 
 
-# Eine Liste kann immer an <span class="s2">"eval"</span> übergeben werden, solange die Liste einen
-<span class="c1"># einzigen Befehl entält.</span>
-eval <span class="p">{</span>set name Neo<span class="p">}</span>
-eval <span class="p">[</span>list set greeting <span class="s2">"Hello, </span><span class="nv">$name</span><span class="s2">"</span><span class="p">]</span>
+<span class="s2"># Eine Liste kann immer an &quot;</span>eval<span class="s2">&quot; übergeben werden, solange die Liste einen</span>
+<span class="s2"># einzigen Befehl entält.</span>
+<span class="s2">eval {set name Neo}</span>
+<span class="s2">eval [list set greeting &quot;Hello, $name&quot;]</span>
 
 
-# Daher: Wenn <span class="s2">"eval"</span> verwendet wird, verwende <span class="p">[</span><span class="nb">list</span><span class="p">]</span> um den gewünschten Befehl
-<span class="c1"># aufzubauen.</span>
-set command <span class="p">{</span>set name<span class="p">}</span>
-lappend command <span class="p">{</span>Archibald Sorbisol<span class="p">}</span>
-eval $command
+<span class="s2"># Daher: Wenn &quot;</span>eval<span class="s2">&quot; verwendet wird, verwende [list] um den gewünschten Befehl</span>
+<span class="s2"># aufzubauen.</span>
+<span class="s2">set command {set name}</span>
+<span class="s2">lappend command {Archibald Sorbisol}</span>
+<span class="s2">eval $command</span>
 
 
-<span class="c1"># Es ist ein häufiger Fehler die Listen funktionen beim Aufbauen von Listen</span>
-<span class="c1"># nicht zu verwenden.</span>
-set command <span class="p">{</span>set name<span class="p">}</span>
-append command <span class="p">{</span> Archibald Sorbisol<span class="p">}</span>
-eval $command <span class="p">;</span># Hier passiert eine Fehler, denn der <span class="s2">"set"</span> Befehl hat nun zu <span class="se">\
-</span>    viele Argumente <span class="p">{</span>set name Archibald Sorbisol<span class="p">}</span>
+<span class="s2"># Es ist ein häufiger Fehler die Listen funktionen beim Aufbauen von Listen</span>
+<span class="s2"># nicht zu verwenden.</span>
+<span class="s2">set command {set name}</span>
+<span class="s2">append command { Archibald Sorbisol}</span>
+<span class="s2">eval $command ;# Hier passiert eine Fehler, denn der &quot;</span>set<span class="s2">&quot; Befehl hat nun zu \</span>
+<span class="s2">    viele Argumente {set name Archibald Sorbisol}</span>
 
 
-# Dieser Fehler kann auch leicht beim <span class="s2">"subst"</span> Befehl passieren.
-set replacement <span class="p">{</span>Archibald Sorbisol<span class="p">}</span>
-set command <span class="p">{</span>set name $replacement<span class="p">}</span>
-set command <span class="p">[</span>subst $command<span class="p">]</span> 
-eval $command <span class="p">;</span># The same error as before: too many arguments to <span class="s2">"set"</span> in <span class="se">\
-</span>    <span class="p">{</span>set name Archibald Sorbisol<span class="p">}</span>
+<span class="s2"># Dieser Fehler kann auch leicht beim &quot;</span>subst<span class="s2">&quot; Befehl passieren.</span>
+<span class="s2">set replacement {Archibald Sorbisol}</span>
+<span class="s2">set command {set name $replacement}</span>
+<span class="s2">set command [subst $command] </span>
+<span class="s2">eval $command ;# The same error as before: too many arguments to &quot;</span>set<span class="s2">&quot; in \</span>
+<span class="s2">    {set name Archibald Sorbisol}</span>
 
 
-# Die korrekte Vorgangsweise ist es den substituierten Wert mit dem <span class="s2">"list"</span>
-<span class="c1"># Befehl zu formatieren.</span>
-set replacement <span class="p">[</span>list <span class="p">{</span>Archibald Sorbisol<span class="p">}]</span>
-set command <span class="p">{</span>set name $replacement<span class="p">}</span>
-set command <span class="p">[</span>subst $command<span class="p">]</span> 
-eval $command
+<span class="s2"># Die korrekte Vorgangsweise ist es den substituierten Wert mit dem &quot;</span>list<span class="s2">&quot;</span>
+<span class="s2"># Befehl zu formatieren.</span>
+<span class="s2">set replacement [list {Archibald Sorbisol}]</span>
+<span class="s2">set command {set name $replacement}</span>
+<span class="s2">set command [subst $command] </span>
+<span class="s2">eval $command</span>
 
 
-# Der <span class="s2">"list"</span> Befehl wird sehr häufig verwendet um Werte zu formatieren die
-<span class="c1"># in Tcl Skript Vorlagen substituiert werden. Es gibt dazu viele Beispiele,</span>
-<span class="c1"># siehe unterhalb.</span>
+<span class="s2"># Der &quot;</span>list<span class="s2">&quot; Befehl wird sehr häufig verwendet um Werte zu formatieren die</span>
+<span class="s2"># in Tcl Skript Vorlagen substituiert werden. Es gibt dazu viele Beispiele,</span>
+<span class="s2"># siehe unterhalb.</span>
 
 
-# Der <span class="s2">"apply"</span> Befehl evaluiert eine Zeichenkette als Befehl.
-set cmd <span class="p">{{</span>greeting name<span class="p">}</span> <span class="p">{</span>
-    return <span class="s2">"</span><span class="nv">$greeting</span><span class="s2">, </span><span class="nv">$name</span><span class="s2">!"</span>
-<span class="p">}}</span>
-apply $cmd Whaddup Neo
+<span class="s2"># Der &quot;</span>apply<span class="s2">&quot; Befehl evaluiert eine Zeichenkette als Befehl.</span>
+<span class="s2">set cmd {{greeting name} {</span>
+<span class="s2">    return &quot;</span><span class="nv">$greeting</span>,<span class="w"> </span><span class="nv">$name</span><span class="o">!</span><span class="s2">&quot;</span>
+<span class="s2">}}</span>
+<span class="s2">apply $cmd Whaddup Neo</span>
 
 
-# Der <span class="s2">"uplevel"</span> Befehl evaluiert ein Skript in einem höher liegenden
-Gültigkeitsbereich.
-proc greet <span class="p">{}</span> <span class="p">{</span>
-    uplevel <span class="p">{</span>puts <span class="s2">"</span><span class="nv">$greeting</span><span class="s2">, </span><span class="nv">$name</span><span class="s2">"</span><span class="p">}</span>
-<span class="p">}</span>
+<span class="s2"># Der &quot;</span>uplevel<span class="s2">&quot; Befehl evaluiert ein Skript in einem höher liegenden</span>
+<span class="s2">Gültigkeitsbereich.</span>
+<span class="s2">proc greet {} {</span>
+<span class="s2">    uplevel {puts &quot;</span><span class="nv">$greeting</span>,<span class="w"> </span><span class="nv">$name</span><span class="s2">&quot;}</span>
+<span class="s2">}</span>
 
-proc set_double <span class="p">{</span>varname value<span class="p">}</span> <span class="p">{</span>
-    if <span class="p">{[</span>string is double $value<span class="p">]}</span> <span class="p">{</span>
-        uplevel <span class="p">[</span>list variable $varname $value<span class="p">]</span>
-    <span class="p">}</span> else <span class="p">{</span>
-        error <span class="p">[</span>list <span class="p">{</span>not a double<span class="p">}</span> $value<span class="p">]</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="s2">proc set_double {varname value} {</span>
+<span class="s2">    if {[string is double $value]} {</span>
+<span class="s2">        uplevel [list variable $varname $value]</span>
+<span class="s2">    } else {</span>
+<span class="s2">        error [list {not a double} $value]</span>
+<span class="s2">    }</span>
+<span class="s2">}</span>
 
 
-# Der <span class="s2">"upvar"</span> Befehl verknüpft eine Variable im aktuellen Gültigkeitsbereich
-<span class="c1"># mit einer Variable in einem höher liegenden Gültigkeitsbereich.</span>
-proc set_double <span class="p">{</span>varname value<span class="p">}</span> <span class="p">{</span>
-    if <span class="p">{[</span>string is double $value<span class="p">]}</span> <span class="p">{</span>
-        upvar 1 $varname var
-        set var $value
-    <span class="p">}</span> else <span class="p">{</span>
-        error <span class="p">[</span>list <span class="p">{</span>not a double<span class="p">}</span> $value<span class="p">]</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="s2"># Der &quot;</span>upvar<span class="s2">&quot; Befehl verknüpft eine Variable im aktuellen Gültigkeitsbereich</span>
+<span class="s2"># mit einer Variable in einem höher liegenden Gültigkeitsbereich.</span>
+<span class="s2">proc set_double {varname value} {</span>
+<span class="s2">    if {[string is double $value]} {</span>
+<span class="s2">        upvar 1 $varname var</span>
+<span class="s2">        set var $value</span>
+<span class="s2">    } else {</span>
+<span class="s2">        error [list {not a double} $value]</span>
+<span class="s2">    }</span>
+<span class="s2">}</span>
 
 
-# Werde den eingebauten <span class="s2">"while"</span> Befehl los.
-rename ::while <span class="p">{}</span>
+<span class="s2"># Werde den eingebauten &quot;</span>while<span class="s2">&quot; Befehl los.</span>
+<span class="s2">rename ::while {}</span>
 
 
-# Definieren einen neuen <span class="s2">"while"</span> Befehl mit hilfe des <span class="s2">"proc"</span> Befehls.
-<span class="c1"># Ausführlichere Fehler-Behandlung wird dem Leser als Übung überlassen.</span>
-proc while <span class="p">{</span>condition script<span class="p">}</span> <span class="p">{</span>
-    if <span class="p">{[</span>uplevel 1 <span class="p">[</span>list expr $condition<span class="p">]]}</span> <span class="p">{</span>
-        uplevel 1 $script
-        tailcall <span class="p">[</span>namespace which while<span class="p">]</span> $condition $script
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="s2"># Definieren einen neuen &quot;</span>while<span class="s2">&quot; Befehl mit hilfe des &quot;</span>proc<span class="s2">&quot; Befehls.</span>
+<span class="s2"># Ausführlichere Fehler-Behandlung wird dem Leser als Übung überlassen.</span>
+<span class="s2">proc while {condition script} {</span>
+<span class="s2">    if {[uplevel 1 [list expr $condition]]} {</span>
+<span class="s2">        uplevel 1 $script</span>
+<span class="s2">        tailcall [namespace which while] $condition $script</span>
+<span class="s2">    }</span>
+<span class="s2">}</span>
 
 
-# Der <span class="s2">"coroutine"</span> Befehl erzeugt einen separaten Call-Stack, zusammen mit einem
-# Befehl um diesem Call-Stack zu verwenden. Der <span class="s2">"yield"</span> Befehl unterbricht
-<span class="c1"># die Ausführung des aktuellen Call-Stacks.</span>
-proc countdown <span class="p">{}</span> <span class="p">{</span>
-    #send something back to the initial <span class="s2">"coroutine"</span> command
-    yield
+<span class="s2"># Der &quot;</span>coroutine<span class="s2">&quot; Befehl erzeugt einen separaten Call-Stack, zusammen mit einem</span>
+<span class="s2"># Befehl um diesem Call-Stack zu verwenden. Der &quot;</span>yield<span class="s2">&quot; Befehl unterbricht</span>
+<span class="s2"># die Ausführung des aktuellen Call-Stacks.</span>
+<span class="s2">proc countdown {} {</span>
+<span class="s2">    #send something back to the initial &quot;</span>coroutine<span class="s2">&quot; command</span>
+<span class="s2">    yield</span>
 
-    set count 3 
-    while <span class="p">{</span><span class="nv">$count</span> &gt; 1<span class="p">}</span> <span class="p">{</span>
-        yield <span class="p">[</span>incr count -1<span class="p">]</span>
-    <span class="p">}</span>
-    return 0
-<span class="p">}</span>
-coroutine countdown1 countdown
-coroutine countdown2 countdown
-puts <span class="p">[</span>countdown 1<span class="p">]</span> <span class="p">;</span><span class="c1"># -&gt; 2 </span>
-puts <span class="p">[</span>countdown 2<span class="p">]</span> <span class="p">;</span><span class="c1"># -&gt; 2 </span>
-puts <span class="p">[</span>countdown 1<span class="p">]</span> <span class="p">;</span><span class="c1"># -&gt; 1 </span>
-puts <span class="p">[</span>countdown 1<span class="p">]</span> <span class="p">;</span><span class="c1"># -&gt; 0 </span>
-puts <span class="p">[</span>coundown 1<span class="p">]</span> <span class="p">;</span># -&gt; invalid command name <span class="s2">"countdown1"</span>
-puts <span class="p">[</span>countdown 2<span class="p">]</span> <span class="p">;</span><span class="c1"># -&gt; 1 </span>
-</code></pre></div>
+<span class="s2">    set count 3 </span>
+<span class="s2">    while {$count &gt; 1} {</span>
+<span class="s2">        yield [incr count -1]</span>
+<span class="s2">    }</span>
+<span class="s2">    return 0</span>
+<span class="s2">}</span>
+<span class="s2">coroutine countdown1 countdown</span>
+<span class="s2">coroutine countdown2 countdown</span>
+<span class="s2">puts [countdown 1] ;# -&gt; 2 </span>
+<span class="s2">puts [countdown 2] ;# -&gt; 2 </span>
+<span class="s2">puts [countdown 1] ;# -&gt; 1 </span>
+<span class="s2">puts [countdown 1] ;# -&gt; 0 </span>
+<span class="s2">puts [coundown 1] ;# -&gt; invalid command name &quot;</span>countdown1<span class="s2">&quot;</span>
+<span class="s2">puts [countdown 2] ;# -&gt; 1 </span>
+</pre></div>
 <h2>Referenzen</h2>
 
 <p><a href="http://www.tcl.tk/man/tcl/">Official Tcl Documentation</a></p>

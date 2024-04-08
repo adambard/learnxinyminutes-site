@@ -96,394 +96,394 @@
 и даже может быть автоматизирована.</p>
 
 <p>(Последующие примеры кода предполагают выполнение в Clojure версии 1.2 и выше)</p>
-<div class="highlight"><pre class="highlight clojure"><code><span class="c1">; Комментарии начинаются символом ";".</span><span class="w">
-
-</span><span class="c1">; Код на языке Clojure записывается в виде «форм»,</span><span class="w">
-</span><span class="c1">; которые представляют собой обычные списки элементов, разделенных пробелами,</span><span class="w">
-</span><span class="c1">; заключённые в круглые скобки.</span><span class="w">
-</span><span class="c1">;</span><span class="w">
-</span><span class="c1">; Clojure Reader (инструмент языка, отвечающий за чтение исходного кода),</span><span class="w">
-</span><span class="c1">; анализируя форму, предполагает, что первым элементом формы (т.е. списка)</span><span class="w">
-</span><span class="c1">; является функция или макрос, который следует вызвать, передав ему</span><span class="w">
-</span><span class="c1">; в качестве аргументов остальные элементы списка-формы.</span><span class="w">
-
-</span><span class="c1">; Первым вызовом в файле должен быть вызов функции ns,</span><span class="w">
-</span><span class="c1">; которая отвечает за выбор текущего пространства имен (namespace)</span><span class="w">
-</span><span class="p">(</span><span class="nf">ns</span><span class="w"> </span><span class="n">learnclojure-ru</span><span class="p">)</span><span class="w">
-
-</span><span class="c1">; Несколько простых примеров:</span><span class="w">
-
-</span><span class="c1">; str объединяет в единую строку все свои аргументы</span><span class="w">
-</span><span class="p">(</span><span class="nb">str</span><span class="w"> </span><span class="s">"Hello"</span><span class="w"> </span><span class="s">" "</span><span class="w"> </span><span class="s">"World"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "Hello World"</span><span class="w">
-
-</span><span class="c1">; Арифметика тоже выглядит несложно</span><span class="w">
-</span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 2</span><span class="w">
-</span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 1</span><span class="w">
-</span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 2</span><span class="w">
-</span><span class="p">(</span><span class="nb">/</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 2</span><span class="w">
-
-</span><span class="c1">; Проверка на равенство (Equality)</span><span class="w">
-</span><span class="p">(</span><span class="nb">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; true</span><span class="w">
-</span><span class="p">(</span><span class="nb">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; false</span><span class="w">
-
-</span><span class="c1">; Для булевой логики вам может понадобиться not</span><span class="w">
-</span><span class="p">(</span><span class="nb">not</span><span class="w"> </span><span class="n">true</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; false</span><span class="w">
-
-</span><span class="c1">; Вложенные формы, конечно же, допустимы и работают вполне предсказуемо</span><span class="w">
-</span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="c1">; = 1 + (3 - 2) =&gt; 2</span><span class="w">
-
-</span><span class="c1">; Типы</span><span class="w">
-</span><span class="c1">;;;;;;;;;;;;;</span><span class="w">
-
-</span><span class="c1">; Clojure использует типы Java для представления булевых значений,</span><span class="w">
-</span><span class="c1">; строк и чисел</span><span class="w">
-</span><span class="c1">; Узнать тип мы можем, использую функцию `class</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w">     </span><span class="c1">; Целочисленные литералы типа по-умолчанию являются java.lang.Long</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="mi">1</span><span class="nb">.</span><span class="p">)</span><span class="w">    </span><span class="c1">; Числа с плавающей точкой, это java.lang.Double</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="s">""</span><span class="p">)</span><span class="w">    </span><span class="c1">; Строки всегда заключаются в двойные кавычки</span><span class="w">
-              </span><span class="c1">; и представляют собой java.lang.String</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="n">false</span><span class="p">)</span><span class="w"> </span><span class="c1">; Булевы значения, это экземпляры java.lang.Boolean</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="n">nil</span><span class="p">)</span><span class="w">   </span><span class="c1">; "Пустое" значение называется "nil"</span><span class="w">
-
-</span><span class="c1">; Если Вы захотите создать список из чисел, вы можете просто</span><span class="w">
-</span><span class="c1">; предварить форму списка символом "'", который подскажет Reader`у,</span><span class="w">
-</span><span class="c1">; что эта форма не требует вычисления</span><span class="w">
-</span><span class="o">'</span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; (+ 1 2)</span><span class="w">
-</span><span class="c1">; ("'", это краткая запись формы (quote (+ 1 2))</span><span class="w">
-
-</span><span class="c1">; «Квотированный» список можно вычислить, передав его функции eval</span><span class="w">
-</span><span class="p">(</span><span class="nb">eval</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; 3</span><span class="w">
-
-</span><span class="c1">; Коллекции и Последовательности</span><span class="w">
-</span><span class="c1">;;;;;;;;;;;;;;;;;;;</span><span class="w">
-
-</span><span class="c1">; Списки (Lists) в clojure структурно представляют собой «связанные списки»,</span><span class="w">
-</span><span class="c1">; тогда как Векторы (Vectors), устроены как массивы.</span><span class="w">
-</span><span class="c1">; Векторы и Списки тоже являются классами Java!</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="c1">; =&gt; clojure.lang.PersistentVector</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="c1">; =&gt; clojure.lang.PersistentList</span><span class="w">
-
-</span><span class="c1">; Список может быть записан как (1 2 3), но в этом случае</span><span class="w">
-</span><span class="c1">; он будет воспринят reader`ом, как вызов функции.</span><span class="w">
-</span><span class="c1">; Есть два способа этого избежать:</span><span class="w">
-</span><span class="c1">; '(1 2 3)     - квотирование,</span><span class="w">
-</span><span class="c1">; (list 1 2 3) - явное конструирование списка с помощью функции list.</span><span class="w">
-
-</span><span class="c1">; «Коллекции» — это некие наборы данных.</span><span class="w">
-</span><span class="c1">; И списки, и векторы являются коллекциями:</span><span class="w">
-</span><span class="p">(</span><span class="nf">coll?</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; true</span><span class="w">
-</span><span class="p">(</span><span class="nf">coll?</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; true</span><span class="w">
-
-</span><span class="c1">; «Последовательности» (seqs) — это абстракция над наборами данных,</span><span class="w">
-</span><span class="c1">; элементы которых "упакованы" последовательно.</span><span class="w">
-</span><span class="c1">; Списки — последовательности, а векторы — нет.</span><span class="w">
-</span><span class="p">(</span><span class="nb">seq?</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; true</span><span class="w">
-</span><span class="p">(</span><span class="nb">seq?</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; false</span><span class="w">
-
-</span><span class="c1">; Любая seq предоставляет доступ только к началу последовательности данных,</span><span class="w">
-</span><span class="c1">; не предоставляя информацию о её длине.</span><span class="w">
-</span><span class="c1">; При этом последовательности могут быть и бесконечными,</span><span class="w">
-</span><span class="c1">; т.к. являются ленивыми и предоставляют данные только по требованию!</span><span class="w">
-</span><span class="p">(</span><span class="nb">range</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; (0 1 2 3)</span><span class="w">
-</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; (0 1 2 3 4 ...) (бесконечная последовательность!)</span><span class="w">
-</span><span class="p">(</span><span class="nb">take</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">(</span><span class="nb">range</span><span class="p">))</span><span class="w"> </span><span class="c1">;  (0 1 2 3)</span><span class="w">
-
-</span><span class="c1">; Добавить элемент в начало списка или вектора можно с помощью функции cons</span><span class="w">
-</span><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; (4 1 2 3)</span><span class="w">
-</span><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; (4 1 2 3)</span><span class="w">
-
-</span><span class="c1">; Функция conj добавляет элемент в коллекцию</span><span class="w">
-</span><span class="c1">; максимально эффективным для неё способом.</span><span class="w">
-</span><span class="c1">; Для списков эффективно добавление в начло, а для векторов — в конец.</span><span class="w">
-</span><span class="p">(</span><span class="nb">conj</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; [1 2 3 4]</span><span class="w">
-</span><span class="p">(</span><span class="nb">conj</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; (4 1 2 3)</span><span class="w">
-
-</span><span class="c1">; Функция concat объединяет несколько списков и векторов в единый список</span><span class="w">
-</span><span class="p">(</span><span class="nb">concat</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">3</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; (1 2 3 4)</span><span class="w">
-
-</span><span class="c1">; Работать с коллекциями удобно с помощью функций filter и map</span><span class="w">
-</span><span class="p">(</span><span class="nb">map</span><span class="w"> </span><span class="nb">inc</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; (2 3 4)</span><span class="w">
-</span><span class="p">(</span><span class="nb">filter</span><span class="w"> </span><span class="n">even?</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; (2)</span><span class="w">
-
-</span><span class="c1">; reduce поможет «свернуть» коллекцию</span><span class="w">
-</span><span class="p">(</span><span class="nb">reduce</span><span class="w"> </span><span class="nb">+</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">])</span><span class="w">
-</span><span class="c1">; = (+ (+ (+ 1 2) 3) 4)</span><span class="w">
-</span><span class="c1">; =&gt; 10</span><span class="w">
-
-</span><span class="c1">; Вызывая reduce, мы можем указать начальное значение</span><span class="w">
-</span><span class="p">(</span><span class="nb">reduce</span><span class="w"> </span><span class="nb">conj</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">3</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w">
-</span><span class="c1">; = (conj (conj (conj [] 3) 2) 1)</span><span class="w">
-</span><span class="c1">; =&gt; [3 2 1]</span><span class="w">
-
-</span><span class="c1">; Функции</span><span class="w">
-</span><span class="c1">;;;;;;;;;;;;;;;;;;;;;</span><span class="w">
-
-</span><span class="c1">; Функция создается специальной формой fn.</span><span class="w">
-</span><span class="c1">; «Тело» функции может состоять из нескольких форм,</span><span class="w">
-</span><span class="c1">; но результатом вызова функции всегда будет результат вычисления</span><span class="w">
-</span><span class="c1">; последней из них.</span><span class="w">
-</span><span class="p">(</span><span class="k">fn</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="s">"Hello World"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; fn</span><span class="w">
-
-</span><span class="c1">; (Вызов функции требует «оборачивания» fn-формы в форму вызова)</span><span class="w">
-</span><span class="p">((</span><span class="k">fn</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="s">"Hello World"</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; "Hello World"</span><span class="w">
-
-</span><span class="c1">; Назначить значению имя можно специальной формой def</span><span class="w">
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w">
-</span><span class="n">x</span><span class="w"> </span><span class="c1">; =&gt; 1</span><span class="w">
-
-</span><span class="c1">; Назначить имя можно любому значению, в т.ч. и функции:</span><span class="w">
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">hello-world</span><span class="w"> </span><span class="p">(</span><span class="k">fn</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="s">"Hello World"</span><span class="p">))</span><span class="w">
-</span><span class="p">(</span><span class="nf">hello-world</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "Hello World"</span><span class="w">
-
-</span><span class="c1">; Поскольку именование функций — очень частая операция,</span><span class="w">
-</span><span class="c1">; clojure позволяет, сделать это проще:</span><span class="w">
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">hello-world</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="s">"Hello World"</span><span class="p">)</span><span class="w">
+<div class="highlight"><pre><span></span><span class="c1">; Комментарии начинаются символом &quot;;&quot;.</span>
+
+<span class="c1">; Код на языке Clojure записывается в виде «форм»,</span>
+<span class="c1">; которые представляют собой обычные списки элементов, разделенных пробелами,</span>
+<span class="c1">; заключённые в круглые скобки.</span>
+<span class="c1">;</span>
+<span class="c1">; Clojure Reader (инструмент языка, отвечающий за чтение исходного кода),</span>
+<span class="c1">; анализируя форму, предполагает, что первым элементом формы (т.е. списка)</span>
+<span class="c1">; является функция или макрос, который следует вызвать, передав ему</span>
+<span class="c1">; в качестве аргументов остальные элементы списка-формы.</span>
+
+<span class="c1">; Первым вызовом в файле должен быть вызов функции ns,</span>
+<span class="c1">; которая отвечает за выбор текущего пространства имен (namespace)</span>
+<span class="p">(</span><span class="kd">ns </span><span class="nv">learnclojure-ru</span><span class="p">)</span>
+
+<span class="c1">; Несколько простых примеров:</span>
+
+<span class="c1">; str объединяет в единую строку все свои аргументы</span>
+<span class="p">(</span><span class="nb">str </span><span class="s">&quot;Hello&quot;</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="w"> </span><span class="s">&quot;World&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Hello World&quot;</span>
+
+<span class="c1">; Арифметика тоже выглядит несложно</span>
+<span class="p">(</span><span class="nb">+ </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 2</span>
+<span class="p">(</span><span class="nb">- </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 1</span>
+<span class="p">(</span><span class="nb">* </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 2</span>
+<span class="p">(</span><span class="nb">/ </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 2</span>
+
+<span class="c1">; Проверка на равенство (Equality)</span>
+<span class="p">(</span><span class="nb">= </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; true</span>
+<span class="p">(</span><span class="nb">= </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; false</span>
+
+<span class="c1">; Для булевой логики вам может понадобиться not</span>
+<span class="p">(</span><span class="nb">not </span><span class="nv">true</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; false</span>
+
+<span class="c1">; Вложенные формы, конечно же, допустимы и работают вполне предсказуемо</span>
+<span class="p">(</span><span class="nb">+ </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="nb">- </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="c1">; = 1 + (3 - 2) =&gt; 2</span>
+
+<span class="c1">; Типы</span>
+<span class="c1">;;;;;;;;;;;;;</span>
+
+<span class="c1">; Clojure использует типы Java для представления булевых значений,</span>
+<span class="c1">; строк и чисел</span>
+<span class="c1">; Узнать тип мы можем, использую функцию `class</span>
+<span class="p">(</span><span class="nb">class </span><span class="mi">1</span><span class="p">)</span><span class="w">     </span><span class="c1">; Целочисленные литералы типа по-умолчанию являются java.lang.Long</span>
+<span class="p">(</span><span class="nb">class </span><span class="mi">1</span><span class="nv">.</span><span class="p">)</span><span class="w">    </span><span class="c1">; Числа с плавающей точкой, это java.lang.Double</span>
+<span class="p">(</span><span class="nb">class </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w">    </span><span class="c1">; Строки всегда заключаются в двойные кавычки</span>
+<span class="w">              </span><span class="c1">; и представляют собой java.lang.String</span>
+<span class="p">(</span><span class="nb">class </span><span class="nv">false</span><span class="p">)</span><span class="w"> </span><span class="c1">; Булевы значения, это экземпляры java.lang.Boolean</span>
+<span class="p">(</span><span class="nb">class </span><span class="nv">nil</span><span class="p">)</span><span class="w">   </span><span class="c1">; &quot;Пустое&quot; значение называется &quot;nil&quot;</span>
+
+<span class="c1">; Если Вы захотите создать список из чисел, вы можете просто</span>
+<span class="c1">; предварить форму списка символом &quot;&#39;&quot;, который подскажет Reader`у,</span>
+<span class="c1">; что эта форма не требует вычисления</span>
+<span class="o">&#39;</span><span class="p">(</span><span class="nb">+ </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; (+ 1 2)</span>
+<span class="c1">; (&quot;&#39;&quot;, это краткая запись формы (quote (+ 1 2))</span>
+
+<span class="c1">; «Квотированный» список можно вычислить, передав его функции eval</span>
+<span class="p">(</span><span class="nb">eval </span><span class="o">&#39;</span><span class="p">(</span><span class="nb">+ </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; 3</span>
+
+<span class="c1">; Коллекции и Последовательности</span>
+<span class="c1">;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">; Списки (Lists) в clojure структурно представляют собой «связанные списки»,</span>
+<span class="c1">; тогда как Векторы (Vectors), устроены как массивы.</span>
+<span class="c1">; Векторы и Списки тоже являются классами Java!</span>
+<span class="p">(</span><span class="nb">class </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="c1">; =&gt; clojure.lang.PersistentVector</span>
+<span class="p">(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="c1">; =&gt; clojure.lang.PersistentList</span>
+
+<span class="c1">; Список может быть записан как (1 2 3), но в этом случае</span>
+<span class="c1">; он будет воспринят reader`ом, как вызов функции.</span>
+<span class="c1">; Есть два способа этого избежать:</span>
+<span class="c1">; &#39;(1 2 3)     - квотирование,</span>
+<span class="c1">; (list 1 2 3) - явное конструирование списка с помощью функции list.</span>
+
+<span class="c1">; «Коллекции» — это некие наборы данных.</span>
+<span class="c1">; И списки, и векторы являются коллекциями:</span>
+<span class="p">(</span><span class="nf">coll?</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; true</span>
+<span class="p">(</span><span class="nf">coll?</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; true</span>
+
+<span class="c1">; «Последовательности» (seqs) — это абстракция над наборами данных,</span>
+<span class="c1">; элементы которых &quot;упакованы&quot; последовательно.</span>
+<span class="c1">; Списки — последовательности, а векторы — нет.</span>
+<span class="p">(</span><span class="nb">seq? </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; true</span>
+<span class="p">(</span><span class="nb">seq? </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; false</span>
+
+<span class="c1">; Любая seq предоставляет доступ только к началу последовательности данных,</span>
+<span class="c1">; не предоставляя информацию о её длине.</span>
+<span class="c1">; При этом последовательности могут быть и бесконечными,</span>
+<span class="c1">; т.к. являются ленивыми и предоставляют данные только по требованию!</span>
+<span class="p">(</span><span class="nb">range </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; (0 1 2 3)</span>
+<span class="p">(</span><span class="nf">range</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; (0 1 2 3 4 ...) (бесконечная последовательность!)</span>
+<span class="p">(</span><span class="nb">take </span><span class="mi">4</span><span class="w"> </span><span class="p">(</span><span class="nf">range</span><span class="p">))</span><span class="w"> </span><span class="c1">;  (0 1 2 3)</span>
+
+<span class="c1">; Добавить элемент в начало списка или вектора можно с помощью функции cons</span>
+<span class="p">(</span><span class="nb">cons </span><span class="mi">4</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; (4 1 2 3)</span>
+<span class="p">(</span><span class="nb">cons </span><span class="mi">4</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; (4 1 2 3)</span>
+
+<span class="c1">; Функция conj добавляет элемент в коллекцию</span>
+<span class="c1">; максимально эффективным для неё способом.</span>
+<span class="c1">; Для списков эффективно добавление в начло, а для векторов — в конец.</span>
+<span class="p">(</span><span class="nb">conj </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; [1 2 3 4]</span>
+<span class="p">(</span><span class="nb">conj </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; (4 1 2 3)</span>
+
+<span class="c1">; Функция concat объединяет несколько списков и векторов в единый список</span>
+<span class="p">(</span><span class="nb">concat </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; (1 2 3 4)</span>
+
+<span class="c1">; Работать с коллекциями удобно с помощью функций filter и map</span>
+<span class="p">(</span><span class="nb">map inc </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; (2 3 4)</span>
+<span class="p">(</span><span class="nb">filter </span><span class="nv">even?</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; (2)</span>
+
+<span class="c1">; reduce поможет «свернуть» коллекцию</span>
+<span class="p">(</span><span class="nb">reduce + </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">])</span>
+<span class="c1">; = (+ (+ (+ 1 2) 3) 4)</span>
+<span class="c1">; =&gt; 10</span>
+
+<span class="c1">; Вызывая reduce, мы можем указать начальное значение</span>
+<span class="p">(</span><span class="nb">reduce conj </span><span class="p">[]</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span>
+<span class="c1">; = (conj (conj (conj [] 3) 2) 1)</span>
+<span class="c1">; =&gt; [3 2 1]</span>
+
+<span class="c1">; Функции</span>
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">; Функция создается специальной формой fn.</span>
+<span class="c1">; «Тело» функции может состоять из нескольких форм,</span>
+<span class="c1">; но результатом вызова функции всегда будет результат вычисления</span>
+<span class="c1">; последней из них.</span>
+<span class="p">(</span><span class="k">fn </span><span class="p">[]</span><span class="w"> </span><span class="s">&quot;Hello World&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; fn</span>
+
+<span class="c1">; (Вызов функции требует «оборачивания» fn-формы в форму вызова)</span>
+<span class="p">((</span><span class="k">fn </span><span class="p">[]</span><span class="w"> </span><span class="s">&quot;Hello World&quot;</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; &quot;Hello World&quot;</span>
+
+<span class="c1">; Назначить значению имя можно специальной формой def</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">x</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="nv">x</span><span class="w"> </span><span class="c1">; =&gt; 1</span>
+
+<span class="c1">; Назначить имя можно любому значению, в т.ч. и функции:</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">hello-world</span><span class="w"> </span><span class="p">(</span><span class="k">fn </span><span class="p">[]</span><span class="w"> </span><span class="s">&quot;Hello World&quot;</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">hello-world</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Hello World&quot;</span>
+
+<span class="c1">; Поскольку именование функций — очень частая операция,</span>
+<span class="c1">; clojure позволяет, сделать это проще:</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">hello-world</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="s">&quot;Hello World&quot;</span><span class="p">)</span>
 
-</span><span class="c1">; Вектор [] в форме описания функции, следующий сразу за именем,</span><span class="w">
-</span><span class="c1">; описывает параметры функции:</span><span class="w">
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">hello</span><span class="w"> </span><span class="p">[</span><span class="nb">name</span><span class="p">]</span><span class="w">
-  </span><span class="p">(</span><span class="nb">str</span><span class="w"> </span><span class="s">"Hello "</span><span class="w"> </span><span class="nb">name</span><span class="p">))</span><span class="w">
-</span><span class="p">(</span><span class="nf">hello</span><span class="w"> </span><span class="s">"Steve"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "Hello Steve"</span><span class="w">
+<span class="c1">; Вектор [] в форме описания функции, следующий сразу за именем,</span>
+<span class="c1">; описывает параметры функции:</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">hello</span><span class="w"> </span><span class="p">[</span><span class="nv">name</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Hello &quot;</span><span class="w"> </span><span class="nv">name</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">hello</span><span class="w"> </span><span class="s">&quot;Steve&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Hello Steve&quot;</span>
 
-</span><span class="c1">; Одна функция может иметь сразу несколько наборов аргументов:</span><span class="w">
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">hello3</span><span class="w">
-  </span><span class="p">([]</span><span class="w"> </span><span class="s">"Hello World"</span><span class="p">)</span><span class="w">
-  </span><span class="p">([</span><span class="nb">name</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="nb">str</span><span class="w"> </span><span class="s">"Hello "</span><span class="w"> </span><span class="nb">name</span><span class="p">)))</span><span class="w">
-</span><span class="p">(</span><span class="nf">hello3</span><span class="w"> </span><span class="s">"Jake"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "Hello Jake"</span><span class="w">
-</span><span class="p">(</span><span class="nf">hello3</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "Hello World"</span><span class="w">
+<span class="c1">; Одна функция может иметь сразу несколько наборов аргументов:</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">hello3</span>
+<span class="w">  </span><span class="p">([]</span><span class="w"> </span><span class="s">&quot;Hello World&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">([</span><span class="nv">name</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Hello &quot;</span><span class="w"> </span><span class="nv">name</span><span class="p">)))</span>
+<span class="p">(</span><span class="nf">hello3</span><span class="w"> </span><span class="s">&quot;Jake&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Hello Jake&quot;</span>
+<span class="p">(</span><span class="nf">hello3</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Hello World&quot;</span>
 
-</span><span class="c1">; Также функция может иметь набор аргументов переменной длины</span><span class="w">
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">count-args</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="w"> </span><span class="n">args</span><span class="p">]</span><span class="w"> </span><span class="c1">; args будет содержать seq аргументов</span><span class="w">
-  </span><span class="p">(</span><span class="nb">str</span><span class="w"> </span><span class="s">"You passed "</span><span class="w"> </span><span class="p">(</span><span class="nb">count</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="s">" args: "</span><span class="w"> </span><span class="n">args</span><span class="p">))</span><span class="w">
-</span><span class="p">(</span><span class="nf">count-args</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "You passed 3 args: (1 2 3)"</span><span class="w">
+<span class="c1">; Также функция может иметь набор аргументов переменной длины</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">count-args</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="w"> </span><span class="nv">args</span><span class="p">]</span><span class="w"> </span><span class="c1">; args будет содержать seq аргументов</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;You passed &quot;</span><span class="w"> </span><span class="p">(</span><span class="nb">count </span><span class="nv">args</span><span class="p">)</span><span class="w"> </span><span class="s">&quot; args: &quot;</span><span class="w"> </span><span class="nv">args</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">count-args</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;You passed 3 args: (1 2 3)&quot;</span>
 
-</span><span class="c1">; Можно комбинировать оба подхода задания аргументов</span><span class="w">
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">hello-count</span><span class="w"> </span><span class="p">[</span><span class="nb">name</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">args</span><span class="p">]</span><span class="w">
-  </span><span class="p">(</span><span class="nb">str</span><span class="w"> </span><span class="s">"Hello "</span><span class="w"> </span><span class="nb">name</span><span class="w"> </span><span class="s">", you passed "</span><span class="w"> </span><span class="p">(</span><span class="nb">count</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="s">" extra args"</span><span class="p">))</span><span class="w">
-</span><span class="p">(</span><span class="nf">hello-count</span><span class="w"> </span><span class="s">"Finn"</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w">
-</span><span class="c1">; =&gt; "Hello Finn, you passed 3 extra args"</span><span class="w">
-
-</span><span class="c1">; Для создания анонимных функций есть специальный синтаксис:</span><span class="w">
-</span><span class="c1">; функциональные литералы</span><span class="w">
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">hello2</span><span class="w"> </span><span class="o">#</span><span class="p">(</span><span class="nb">str</span><span class="w"> </span><span class="s">"Hello "</span><span class="w"> </span><span class="n">%1</span><span class="p">))</span><span class="w">
-</span><span class="p">(</span><span class="nf">hello2</span><span class="w"> </span><span class="s">"Fanny"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "Hello Fanny"</span><span class="w">
-
-</span><span class="c1">; такие функциональные литералы удобно использовать с map, filter и reduce</span><span class="w">
-</span><span class="p">(</span><span class="nb">map</span><span class="w"> </span><span class="o">#</span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="n">%1</span><span class="p">)</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">5</span><span class="p">])</span><span class="w">          </span><span class="c1">; =&gt; (10 20 30 50)</span><span class="w">
-</span><span class="p">(</span><span class="nb">filter</span><span class="w"> </span><span class="o">#</span><span class="p">(</span><span class="nb">&gt;</span><span class="w"> </span><span class="n">%1</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="mi">7</span><span class="p">])</span><span class="w">  </span><span class="c1">; =&gt; (4 5 6 7)</span><span class="w">
-</span><span class="p">(</span><span class="nb">reduce</span><span class="w"> </span><span class="o">#</span><span class="p">(</span><span class="nb">str</span><span class="w"> </span><span class="n">%1</span><span class="w"> </span><span class="s">","</span><span class="w"> </span><span class="n">%2</span><span class="p">)</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; "1,2,3,4"</span><span class="w">
-
-</span><span class="c1">; Отображения (Maps)</span><span class="w">
-</span><span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span><span class="w">
-
-</span><span class="c1">; Hash maps и array maps имеют одинаковый интерфейс.</span><span class="w">
-</span><span class="c1">; Hash maps производят поиск по ключу быстрее, но не сохраняют порядок ключей</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="p">{</span><span class="no">:a</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="no">:b</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="no">:c</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span><span class="w">          </span><span class="c1">; =&gt; clojure.lang.PersistentArrayMap</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="p">(</span><span class="nb">hash-map</span><span class="w"> </span><span class="no">:a</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="no">:b</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="no">:c</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; clojure.lang.PersistentHashMap</span><span class="w">
-
-</span><span class="c1">; Array maps автоматически преобразуются в hash maps,</span><span class="w">
-</span><span class="c1">; как только разрастутся до определенного размера</span><span class="w">
-
-</span><span class="c1">; Отображения могут использовать в качестве ключей любые хэшируемые значения,</span><span class="w">
-</span><span class="c1">; однако предпочтительными являются ключи,</span><span class="w">
-</span><span class="c1">; являющиеся «ключевыми словами» (keywords)</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="no">:a</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; clojure.lang.Keyword</span><span class="w">
-
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">stringmap</span><span class="w"> </span><span class="p">{</span><span class="s">"a"</span><span class="w"> </span><span class="mi">1</span><span class="n">,</span><span class="w"> </span><span class="s">"b"</span><span class="w"> </span><span class="mi">2</span><span class="n">,</span><span class="w"> </span><span class="s">"c"</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span><span class="w">
-</span><span class="n">stringmap</span><span class="w">  </span><span class="c1">; =&gt; {"a" 1, "b" 2, "c" 3}</span><span class="w">
-
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">keymap</span><span class="w"> </span><span class="p">{</span><span class="no">:a</span><span class="w"> </span><span class="mi">1</span><span class="n">,</span><span class="w"> </span><span class="no">:b</span><span class="w"> </span><span class="mi">2</span><span class="n">,</span><span class="w"> </span><span class="no">:c</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span><span class="w">
-</span><span class="n">keymap</span><span class="w"> </span><span class="c1">; =&gt; {:a 1, :c 3, :b 2}</span><span class="w">
-
-</span><span class="c1">; Предыдущий пример содержит запятые в коде, однако reader не использует их,</span><span class="w">
-</span><span class="c1">; при обработке литералов - запятые просто воспринимаются,</span><span class="w">
-</span><span class="c1">; как "пробельные символы" (whitespaces)</span><span class="w">
-
-</span><span class="c1">; Отображение может выступать в роли функции, возвращающей значение по ключу</span><span class="w">
-</span><span class="p">(</span><span class="nf">stringmap</span><span class="w"> </span><span class="s">"a"</span><span class="p">)</span><span class="w">          </span><span class="c1">; =&gt; 1</span><span class="w">
-</span><span class="p">(</span><span class="nf">keymap</span><span class="w"> </span><span class="no">:a</span><span class="p">)</span><span class="w">              </span><span class="c1">; =&gt; 1</span><span class="w">
-
-</span><span class="c1">; При попытке получить отсутствующее значение, будет возвращён nil</span><span class="w">
-</span><span class="p">(</span><span class="nf">stringmap</span><span class="w"> </span><span class="s">"d"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; nil</span><span class="w">
-
-</span><span class="c1">; Иногда бывает удобно указать конкретное значение по-умолчанию:</span><span class="w">
-</span><span class="p">({</span><span class="no">:a</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="no">:b</span><span class="w"> </span><span class="mi">2</span><span class="p">}</span><span class="w"> </span><span class="no">:c</span><span class="w"> </span><span class="s">"Oops!"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "Oops!"</span><span class="w">
-
-</span><span class="c1">; Keywords тоже могут использоваться в роли функций!</span><span class="w">
-</span><span class="p">(</span><span class="no">:b</span><span class="w"> </span><span class="n">keymap</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 2</span><span class="w">
-
-</span><span class="c1">; Однако этот фокус не пройдёт со строками.</span><span class="w">
-</span><span class="c1">;("a" stringmap)</span><span class="w">
-</span><span class="c1">; =&gt; Exception: java.lang.String cannot be cast to clojure.lang.IFn</span><span class="w">
-
-</span><span class="c1">; Добавить пару ключ-значение в отображение можно функцией assoc</span><span class="w">
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">newkeymap</span><span class="w"> </span><span class="p">(</span><span class="nb">assoc</span><span class="w"> </span><span class="n">keymap</span><span class="w"> </span><span class="no">:d</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span><span class="w">
-</span><span class="n">newkeymap</span><span class="w"> </span><span class="c1">; =&gt; {:a 1, :b 2, :c 3, :d 4}</span><span class="w">
-
-</span><span class="c1">; Но всегда следует помнить, что значения в Clojure - неизменяемые!</span><span class="w">
-</span><span class="n">keymap</span><span class="w"> </span><span class="c1">; =&gt; {:a 1, :b 2, :c 3} - оригинал не был затронут</span><span class="w">
-
-</span><span class="c1">; dissoc позволяет исключить значение по ключу</span><span class="w">
-</span><span class="p">(</span><span class="nb">dissoc</span><span class="w"> </span><span class="n">keymap</span><span class="w"> </span><span class="no">:a</span><span class="w"> </span><span class="no">:b</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; {:c 3}</span><span class="w">
-
-</span><span class="c1">; Множества (Sets)</span><span class="w">
-</span><span class="c1">;;;;;;;;;;;;;;;;;;</span><span class="w">
-
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span><span class="w"> </span><span class="c1">; =&gt; clojure.lang.PersistentHashSet</span><span class="w">
-</span><span class="p">(</span><span class="nb">set</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; #{1 2 3}</span><span class="w">
-
-</span><span class="c1">; Добавляются элементы посредством conj</span><span class="w">
-</span><span class="p">(</span><span class="nb">conj</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; #{1 2 3 4}</span><span class="w">
-
-</span><span class="c1">; Исключаются - посредством disj</span><span class="w">
-</span><span class="p">(</span><span class="nb">disj</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; #{2 3}</span><span class="w">
-
-</span><span class="c1">; Вызов множества как функции позволяет проверить</span><span class="w">
-</span><span class="c1">; принадлежность элемента этому множеству:</span><span class="w">
-</span><span class="p">(</span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 1</span><span class="w">
-</span><span class="p">(</span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; nil</span><span class="w">
-
-</span><span class="c1">; В пространстве имен clojure.sets</span><span class="w">
-</span><span class="c1">; содержится множество функций для работы с множествами</span><span class="w">
-
-</span><span class="c1">; Полезные формы</span><span class="w">
-</span><span class="c1">;;;;;;;;;;;;;;;;;</span><span class="w">
-
-</span><span class="c1">; Конструкции ветвления в clojure — это обычные макросы,</span><span class="w">
-</span><span class="c1">; они подобны своим собратьям в других языках:</span><span class="w">
-</span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="n">false</span><span class="w"> </span><span class="s">"a"</span><span class="w"> </span><span class="s">"b"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "b"</span><span class="w">
-</span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="n">false</span><span class="w"> </span><span class="s">"a"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; nil</span><span class="w">
-
-</span><span class="c1">; Специальная форма let позволяет присвоить имена значениям локально.</span><span class="w">
-</span><span class="c1">; При этом все изменения будут видны только вложенным формам:</span><span class="w">
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="w">
-  </span><span class="p">(</span><span class="nb">&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; false</span><span class="w">
-
-</span><span class="c1">; Несколько форм можно объединить в одну форму посредством do.</span><span class="w">
-</span><span class="c1">; Значением do-формы будет значение последней формы из списка вложенных в неё:</span><span class="w">
-</span><span class="p">(</span><span class="nf">do</span><span class="w">
-  </span><span class="p">(</span><span class="nb">print</span><span class="w"> </span><span class="s">"Hello"</span><span class="p">)</span><span class="w">
-  </span><span class="s">"World"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "World" (prints "Hello")</span><span class="w">
-
-</span><span class="c1">; Множество макросов содержит внутри себя неявную do-форму.</span><span class="w">
-</span><span class="c1">; Пример - макрос определения функции:</span><span class="w">
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">print-and-say-hello</span><span class="w"> </span><span class="p">[</span><span class="nb">name</span><span class="p">]</span><span class="w">
-  </span><span class="p">(</span><span class="nb">print</span><span class="w"> </span><span class="s">"Saying hello to "</span><span class="w"> </span><span class="nb">name</span><span class="p">)</span><span class="w">
-  </span><span class="p">(</span><span class="nb">str</span><span class="w"> </span><span class="s">"Hello "</span><span class="w"> </span><span class="nb">name</span><span class="p">))</span><span class="w">
-</span><span class="p">(</span><span class="nf">print-and-say-hello</span><span class="w"> </span><span class="s">"Jeff"</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; "Hello Jeff" (prints "Saying hello to Jeff")</span><span class="w">
-
-</span><span class="c1">; Ещё один пример — let:</span><span class="w">
-</span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[</span><span class="nb">name</span><span class="w"> </span><span class="s">"Urkel"</span><span class="p">]</span><span class="w">
-  </span><span class="p">(</span><span class="nb">print</span><span class="w"> </span><span class="s">"Saying hello to "</span><span class="w"> </span><span class="nb">name</span><span class="p">)</span><span class="w">
-  </span><span class="p">(</span><span class="nb">str</span><span class="w"> </span><span class="s">"Hello "</span><span class="w"> </span><span class="nb">name</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; "Hello Urkel" (prints "Saying hello to Urkel")</span><span class="w">
-
-</span><span class="c1">; Модули</span><span class="w">
-</span><span class="c1">;;;;;;;;;</span><span class="w">
-
-</span><span class="c1">; Форма use позволяет добавить в текущее пространство имен</span><span class="w">
-</span><span class="c1">; все имена (вместе со значениями) из указанного модуля:</span><span class="w">
-</span><span class="p">(</span><span class="nf">use</span><span class="w"> </span><span class="ss">'clojure.set</span><span class="p">)</span><span class="w">
-
-</span><span class="c1">; Теперь нам доступны операции над множествами:</span><span class="w">
-</span><span class="p">(</span><span class="nb">intersection</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">})</span><span class="w"> </span><span class="c1">; =&gt; #{2 3}</span><span class="w">
-</span><span class="p">(</span><span class="nb">difference</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">})</span><span class="w"> </span><span class="c1">; =&gt; #{1}</span><span class="w">
-
-</span><span class="c1">; use позволяет указать, какие конкретно имена</span><span class="w">
-</span><span class="c1">; должны быть импортированы из модуля:</span><span class="w">
-</span><span class="p">(</span><span class="nf">use</span><span class="w"> </span><span class="o">'</span><span class="p">[</span><span class="n">clojure.set</span><span class="w"> </span><span class="no">:only</span><span class="w"> </span><span class="p">[</span><span class="nb">intersection</span><span class="p">]])</span><span class="w">
-
-</span><span class="c1">; Также модуль может быть импортирован формой require</span><span class="w">
-</span><span class="p">(</span><span class="nf">require</span><span class="w"> </span><span class="ss">'clojure.string</span><span class="p">)</span><span class="w">
-
-</span><span class="c1">; После этого модуль становится доступен в текущем пространстве имен,</span><span class="w">
-</span><span class="c1">; а вызов его функций может быть осуществлен указанием полного имени функции:</span><span class="w">
-</span><span class="p">(</span><span class="nf">clojure.string/blank?</span><span class="w"> </span><span class="s">""</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; true</span><span class="w">
-
-</span><span class="c1">; Импортируемому модулю можно назначить короткое имя:</span><span class="w">
-</span><span class="p">(</span><span class="nf">require</span><span class="w"> </span><span class="o">'</span><span class="p">[</span><span class="n">clojure.string</span><span class="w"> </span><span class="no">:as</span><span class="w"> </span><span class="nb">str</span><span class="p">])</span><span class="w">
-</span><span class="p">(</span><span class="nf">str/replace</span><span class="w"> </span><span class="s">"This is a test."</span><span class="w"> </span><span class="o">#</span><span class="s">"[a-o]"</span><span class="w"> </span><span class="n">str/upper-case</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "THIs Is A tEst."</span><span class="w">
-</span><span class="c1">; (Литерал вида #"" обозначает регулярное выражение)</span><span class="w">
-
-</span><span class="c1">; Вместо отдельной формы require (и use, хотя это и не приветствуется) можно</span><span class="w">
-</span><span class="c1">; указать необходимые модули прямо в форме ns:</span><span class="w">
-</span><span class="p">(</span><span class="nf">ns</span><span class="w"> </span><span class="nb">test</span><span class="w">
-  </span><span class="p">(</span><span class="no">:require</span><span class="w">
-    </span><span class="p">[</span><span class="n">clojure.string</span><span class="w"> </span><span class="no">:as</span><span class="w"> </span><span class="nb">str</span><span class="p">]</span><span class="w"> </span><span class="c1">; Внимание: при указании внутри формы ns</span><span class="w">
-    </span><span class="p">[</span><span class="n">clojure.set</span><span class="w"> </span><span class="no">:as</span><span class="w"> </span><span class="nb">set</span><span class="p">]))</span><span class="w">  </span><span class="c1">; имена пакетов не квотируются!</span><span class="w">
-
-</span><span class="c1">; Java</span><span class="w">
-</span><span class="c1">;;;;;;;</span><span class="w">
-
-</span><span class="c1">; Стандартная библиотека Java очень богата,</span><span class="w">
-</span><span class="c1">; и всё это богатство доступно и для Clojure!</span><span class="w">
-
-</span><span class="c1">; import позволяет импортировать модули Java</span><span class="w">
-</span><span class="p">(</span><span class="nb">import</span><span class="w"> </span><span class="n">java.util.Date</span><span class="p">)</span><span class="w">
-
-</span><span class="c1">; В том числе и из ns</span><span class="w">
-</span><span class="p">(</span><span class="nf">ns</span><span class="w"> </span><span class="nb">test</span><span class="w">
-  </span><span class="p">(</span><span class="no">:import</span><span class="w"> </span><span class="n">java.util.Date</span><span class="w">
-           </span><span class="n">java.util.Calendar</span><span class="p">))</span><span class="w">
-
-</span><span class="c1">; Имя класса, сопровождаемое символом "." позволяет</span><span class="w">
-</span><span class="c1">; инстанцировать объекты Java-классов:</span><span class="w">
-</span><span class="p">(</span><span class="nf">Date.</span><span class="p">)</span><span class="w"> </span><span class="c1">; &lt;a date object&gt;</span><span class="w">
-
-</span><span class="c1">; форма . позволяет вызывать методы:</span><span class="w">
-</span><span class="p">(</span><span class="nb">.</span><span class="w"> </span><span class="p">(</span><span class="nf">Date.</span><span class="p">)</span><span class="w"> </span><span class="n">getTime</span><span class="p">)</span><span class="w"> </span><span class="c1">; &lt;a timestamp&gt;</span><span class="w">
-</span><span class="p">(</span><span class="nf">.getTime</span><span class="w"> </span><span class="p">(</span><span class="nf">Date.</span><span class="p">))</span><span class="w">  </span><span class="c1">; а можно и так</span><span class="w">
-
-</span><span class="c1">; Статические методы вызываются как функции модуля:</span><span class="w">
-</span><span class="p">(</span><span class="nf">System/currentTimeMillis</span><span class="p">)</span><span class="w"> </span><span class="c1">; &lt;a timestamp&gt; (Модуль system всегда доступен!)</span><span class="w">
-
-</span><span class="c1">; doto позволяет удобно работать с объектами, изменяющими свое состояние</span><span class="w">
-</span><span class="p">(</span><span class="nb">import</span><span class="w"> </span><span class="n">java.util.Calendar</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="nb">doto</span><span class="w"> </span><span class="p">(</span><span class="nf">Calendar/getInstance</span><span class="p">)</span><span class="w">
-  </span><span class="p">(</span><span class="nf">.set</span><span class="w"> </span><span class="mi">2000</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w">
-  </span><span class="n">.getTime</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; A Date. set to 2000-01-01 00:00:00</span><span class="w">
-
-</span><span class="c1">; Работа с изменяемым сотоянием</span><span class="w">
-</span><span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span><span class="w">
-
-</span><span class="c1">; Clojure предоставляет набор инструментов</span><span class="w">
-</span><span class="c1">; для работы с изменяемым состоянием: Software Transactional Memory.</span><span class="w">
-</span><span class="c1">; Структуры STM представлены тремя типами:</span><span class="w">
-</span><span class="c1">; - атомы (atoms)</span><span class="w">
-</span><span class="c1">; - агенты (agents)</span><span class="w">
-</span><span class="c1">; - ссылки (references)</span><span class="w">
-
-</span><span class="c1">; Самые простые хранители состояния - атомы:</span><span class="w">
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">my-atom</span><span class="w"> </span><span class="p">(</span><span class="nf">atom</span><span class="w"> </span><span class="p">{}))</span><span class="w"> </span><span class="c1">; {} - начальное состояние атома</span><span class="w">
-
-</span><span class="c1">; Обновляется атом посредством swap!.</span><span class="w">
-</span><span class="c1">; swap! применяет функцию аргумент к текущему значению</span><span class="w">
-</span><span class="c1">; атома и помещает в атом результат</span><span class="w">
-</span><span class="p">(</span><span class="nf">swap!</span><span class="w"> </span><span class="n">my-atom</span><span class="w"> </span><span class="nb">assoc</span><span class="w"> </span><span class="no">:a</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; Обновляет my-atom, помещая в него (assoc {} :a 1)</span><span class="w">
-</span><span class="p">(</span><span class="nf">swap!</span><span class="w"> </span><span class="n">my-atom</span><span class="w"> </span><span class="nb">assoc</span><span class="w"> </span><span class="no">:b</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">; Обновляет my-atom, помещая в него (assoc {:a 1} :b 2)</span><span class="w">
-
-</span><span class="c1">; Получить значение атома можно посредством '@'</span><span class="w">
-</span><span class="c1">; (провести так называемую операцию dereference)</span><span class="w">
-</span><span class="n">my-atom</span><span class="w">  </span><span class="c1">;=&gt; Atom&lt;#...&gt; (Возвращает объект типа Atom)</span><span class="w">
-</span><span class="o">@</span><span class="n">my-atom</span><span class="w"> </span><span class="c1">; =&gt; {:a 1 :b 2}</span><span class="w">
-
-</span><span class="c1">; Пример реализации счётчика на атоме:</span><span class="w">
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">counter</span><span class="w"> </span><span class="p">(</span><span class="nf">atom</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w">
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">inc-counter</span><span class="w"> </span><span class="p">[]</span><span class="w">
-  </span><span class="p">(</span><span class="nf">swap!</span><span class="w"> </span><span class="n">counter</span><span class="w"> </span><span class="nb">inc</span><span class="p">))</span><span class="w">
-
-</span><span class="p">(</span><span class="nf">inc-counter</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="nf">inc-counter</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="nf">inc-counter</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="nf">inc-counter</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="nf">inc-counter</span><span class="p">)</span><span class="w">
-
-</span><span class="o">@</span><span class="n">counter</span><span class="w"> </span><span class="c1">; =&gt; 5</span><span class="w">
-
-</span><span class="c1">; С другими STM-конструкциями - refs и agents - можно ознакомиться тут:</span><span class="w">
-</span><span class="c1">; Refs: http://clojure.org/refs</span><span class="w">
-</span><span class="c1">; Agents: http://clojure.org/agents</span><span class="w">
-</span></code></pre></div>
+<span class="c1">; Можно комбинировать оба подхода задания аргументов</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">hello-count</span><span class="w"> </span><span class="p">[</span><span class="nb">name </span><span class="o">&amp;</span><span class="w"> </span><span class="nv">args</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Hello &quot;</span><span class="w"> </span><span class="nb">name </span><span class="s">&quot;, you passed &quot;</span><span class="w"> </span><span class="p">(</span><span class="nb">count </span><span class="nv">args</span><span class="p">)</span><span class="w"> </span><span class="s">&quot; extra args&quot;</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">hello-count</span><span class="w"> </span><span class="s">&quot;Finn&quot;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span>
+<span class="c1">; =&gt; &quot;Hello Finn, you passed 3 extra args&quot;</span>
+
+<span class="c1">; Для создания анонимных функций есть специальный синтаксис:</span>
+<span class="c1">; функциональные литералы</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">hello2</span><span class="w"> </span><span class="o">#</span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Hello &quot;</span><span class="w"> </span><span class="nv">%1</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">hello2</span><span class="w"> </span><span class="s">&quot;Fanny&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Hello Fanny&quot;</span>
+
+<span class="c1">; такие функциональные литералы удобно использовать с map, filter и reduce</span>
+<span class="p">(</span><span class="nb">map </span><span class="o">#</span><span class="p">(</span><span class="nb">* </span><span class="mi">10</span><span class="w"> </span><span class="nv">%1</span><span class="p">)</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">5</span><span class="p">])</span><span class="w">          </span><span class="c1">; =&gt; (10 20 30 50)</span>
+<span class="p">(</span><span class="nb">filter </span><span class="o">#</span><span class="p">(</span><span class="nb">&gt; </span><span class="nv">%1</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="mi">7</span><span class="p">])</span><span class="w">  </span><span class="c1">; =&gt; (4 5 6 7)</span>
+<span class="p">(</span><span class="nb">reduce </span><span class="o">#</span><span class="p">(</span><span class="nb">str </span><span class="nv">%1</span><span class="w"> </span><span class="s">&quot;,&quot;</span><span class="w"> </span><span class="nv">%2</span><span class="p">)</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; &quot;1,2,3,4&quot;</span>
+
+<span class="c1">; Отображения (Maps)</span>
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">; Hash maps и array maps имеют одинаковый интерфейс.</span>
+<span class="c1">; Hash maps производят поиск по ключу быстрее, но не сохраняют порядок ключей</span>
+<span class="p">(</span><span class="nb">class </span><span class="p">{</span><span class="ss">:a</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ss">:b</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="ss">:c</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span><span class="w">          </span><span class="c1">; =&gt; clojure.lang.PersistentArrayMap</span>
+<span class="p">(</span><span class="nb">class </span><span class="p">(</span><span class="nb">hash-map </span><span class="ss">:a</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ss">:b</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="ss">:c</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; clojure.lang.PersistentHashMap</span>
+
+<span class="c1">; Array maps автоматически преобразуются в hash maps,</span>
+<span class="c1">; как только разрастутся до определенного размера</span>
+
+<span class="c1">; Отображения могут использовать в качестве ключей любые хэшируемые значения,</span>
+<span class="c1">; однако предпочтительными являются ключи,</span>
+<span class="c1">; являющиеся «ключевыми словами» (keywords)</span>
+<span class="p">(</span><span class="nb">class </span><span class="ss">:a</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; clojure.lang.Keyword</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">stringmap</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;a&quot;</span><span class="w"> </span><span class="mi">1</span>,<span class="w"> </span><span class="s">&quot;b&quot;</span><span class="w"> </span><span class="mi">2</span>,<span class="w"> </span><span class="s">&quot;c&quot;</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span>
+<span class="nv">stringmap</span><span class="w">  </span><span class="c1">; =&gt; {&quot;a&quot; 1, &quot;b&quot; 2, &quot;c&quot; 3}</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">keymap</span><span class="w"> </span><span class="p">{</span><span class="ss">:a</span><span class="w"> </span><span class="mi">1</span>,<span class="w"> </span><span class="ss">:b</span><span class="w"> </span><span class="mi">2</span>,<span class="w"> </span><span class="ss">:c</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span>
+<span class="nv">keymap</span><span class="w"> </span><span class="c1">; =&gt; {:a 1, :c 3, :b 2}</span>
+
+<span class="c1">; Предыдущий пример содержит запятые в коде, однако reader не использует их,</span>
+<span class="c1">; при обработке литералов - запятые просто воспринимаются,</span>
+<span class="c1">; как &quot;пробельные символы&quot; (whitespaces)</span>
+
+<span class="c1">; Отображение может выступать в роли функции, возвращающей значение по ключу</span>
+<span class="p">(</span><span class="nf">stringmap</span><span class="w"> </span><span class="s">&quot;a&quot;</span><span class="p">)</span><span class="w">          </span><span class="c1">; =&gt; 1</span>
+<span class="p">(</span><span class="nf">keymap</span><span class="w"> </span><span class="ss">:a</span><span class="p">)</span><span class="w">              </span><span class="c1">; =&gt; 1</span>
+
+<span class="c1">; При попытке получить отсутствующее значение, будет возвращён nil</span>
+<span class="p">(</span><span class="nf">stringmap</span><span class="w"> </span><span class="s">&quot;d&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; nil</span>
+
+<span class="c1">; Иногда бывает удобно указать конкретное значение по-умолчанию:</span>
+<span class="p">({</span><span class="ss">:a</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ss">:b</span><span class="w"> </span><span class="mi">2</span><span class="p">}</span><span class="w"> </span><span class="ss">:c</span><span class="w"> </span><span class="s">&quot;Oops!&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Oops!&quot;</span>
+
+<span class="c1">; Keywords тоже могут использоваться в роли функций!</span>
+<span class="p">(</span><span class="ss">:b</span><span class="w"> </span><span class="nv">keymap</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 2</span>
+
+<span class="c1">; Однако этот фокус не пройдёт со строками.</span>
+<span class="c1">;(&quot;a&quot; stringmap)</span>
+<span class="c1">; =&gt; Exception: java.lang.String cannot be cast to clojure.lang.IFn</span>
+
+<span class="c1">; Добавить пару ключ-значение в отображение можно функцией assoc</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">newkeymap</span><span class="w"> </span><span class="p">(</span><span class="nb">assoc </span><span class="nv">keymap</span><span class="w"> </span><span class="ss">:d</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span>
+<span class="nv">newkeymap</span><span class="w"> </span><span class="c1">; =&gt; {:a 1, :b 2, :c 3, :d 4}</span>
+
+<span class="c1">; Но всегда следует помнить, что значения в Clojure - неизменяемые!</span>
+<span class="nv">keymap</span><span class="w"> </span><span class="c1">; =&gt; {:a 1, :b 2, :c 3} - оригинал не был затронут</span>
+
+<span class="c1">; dissoc позволяет исключить значение по ключу</span>
+<span class="p">(</span><span class="nb">dissoc </span><span class="nv">keymap</span><span class="w"> </span><span class="ss">:a</span><span class="w"> </span><span class="ss">:b</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; {:c 3}</span>
+
+<span class="c1">; Множества (Sets)</span>
+<span class="c1">;;;;;;;;;;;;;;;;;;</span>
+
+<span class="p">(</span><span class="nb">class </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span><span class="w"> </span><span class="c1">; =&gt; clojure.lang.PersistentHashSet</span>
+<span class="p">(</span><span class="nb">set </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; #{1 2 3}</span>
+
+<span class="c1">; Добавляются элементы посредством conj</span>
+<span class="p">(</span><span class="nb">conj </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; #{1 2 3 4}</span>
+
+<span class="c1">; Исключаются - посредством disj</span>
+<span class="p">(</span><span class="nb">disj </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; #{2 3}</span>
+
+<span class="c1">; Вызов множества как функции позволяет проверить</span>
+<span class="c1">; принадлежность элемента этому множеству:</span>
+<span class="p">(</span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 1</span>
+<span class="p">(</span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; nil</span>
+
+<span class="c1">; В пространстве имен clojure.sets</span>
+<span class="c1">; содержится множество функций для работы с множествами</span>
+
+<span class="c1">; Полезные формы</span>
+<span class="c1">;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">; Конструкции ветвления в clojure — это обычные макросы,</span>
+<span class="c1">; они подобны своим собратьям в других языках:</span>
+<span class="p">(</span><span class="k">if </span><span class="nv">false</span><span class="w"> </span><span class="s">&quot;a&quot;</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;b&quot;</span>
+<span class="p">(</span><span class="k">if </span><span class="nv">false</span><span class="w"> </span><span class="s">&quot;a&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; nil</span>
+
+<span class="c1">; Специальная форма let позволяет присвоить имена значениям локально.</span>
+<span class="c1">; При этом все изменения будут видны только вложенным формам:</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">a</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+<span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">a</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">b</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">&gt; </span><span class="nv">a</span><span class="w"> </span><span class="nv">b</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; false</span>
+
+<span class="c1">; Несколько форм можно объединить в одну форму посредством do.</span>
+<span class="c1">; Значением do-формы будет значение последней формы из списка вложенных в неё:</span>
+<span class="p">(</span><span class="nf">do</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">print </span><span class="s">&quot;Hello&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="s">&quot;World&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;World&quot; (prints &quot;Hello&quot;)</span>
+
+<span class="c1">; Множество макросов содержит внутри себя неявную do-форму.</span>
+<span class="c1">; Пример - макрос определения функции:</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">print-and-say-hello</span><span class="w"> </span><span class="p">[</span><span class="nv">name</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">print </span><span class="s">&quot;Saying hello to &quot;</span><span class="w"> </span><span class="nv">name</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Hello &quot;</span><span class="w"> </span><span class="nv">name</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">print-and-say-hello</span><span class="w"> </span><span class="s">&quot;Jeff&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; &quot;Hello Jeff&quot; (prints &quot;Saying hello to Jeff&quot;)</span>
+
+<span class="c1">; Ещё один пример — let:</span>
+<span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nb">name </span><span class="s">&quot;Urkel&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">print </span><span class="s">&quot;Saying hello to &quot;</span><span class="w"> </span><span class="nv">name</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Hello &quot;</span><span class="w"> </span><span class="nv">name</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; &quot;Hello Urkel&quot; (prints &quot;Saying hello to Urkel&quot;)</span>
+
+<span class="c1">; Модули</span>
+<span class="c1">;;;;;;;;;</span>
+
+<span class="c1">; Форма use позволяет добавить в текущее пространство имен</span>
+<span class="c1">; все имена (вместе со значениями) из указанного модуля:</span>
+<span class="p">(</span><span class="nf">use</span><span class="w"> </span><span class="ss">&#39;clojure.set</span><span class="p">)</span>
+
+<span class="c1">; Теперь нам доступны операции над множествами:</span>
+<span class="p">(</span><span class="nb">intersection </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">})</span><span class="w"> </span><span class="c1">; =&gt; #{2 3}</span>
+<span class="p">(</span><span class="nb">difference </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">})</span><span class="w"> </span><span class="c1">; =&gt; #{1}</span>
+
+<span class="c1">; use позволяет указать, какие конкретно имена</span>
+<span class="c1">; должны быть импортированы из модуля:</span>
+<span class="p">(</span><span class="nf">use</span><span class="w"> </span><span class="o">&#39;</span><span class="p">[</span><span class="nv">clojure.set</span><span class="w"> </span><span class="ss">:only</span><span class="w"> </span><span class="p">[</span><span class="nv">intersection</span><span class="p">]])</span>
+
+<span class="c1">; Также модуль может быть импортирован формой require</span>
+<span class="p">(</span><span class="nf">require</span><span class="w"> </span><span class="ss">&#39;clojure.string</span><span class="p">)</span>
+
+<span class="c1">; После этого модуль становится доступен в текущем пространстве имен,</span>
+<span class="c1">; а вызов его функций может быть осуществлен указанием полного имени функции:</span>
+<span class="p">(</span><span class="nf">clojure.string/blank?</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; true</span>
+
+<span class="c1">; Импортируемому модулю можно назначить короткое имя:</span>
+<span class="p">(</span><span class="nf">require</span><span class="w"> </span><span class="o">&#39;</span><span class="p">[</span><span class="nv">clojure.string</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">str</span><span class="p">])</span>
+<span class="p">(</span><span class="nf">str/replace</span><span class="w"> </span><span class="s">&quot;This is a test.&quot;</span><span class="w"> </span><span class="o">#</span><span class="s">&quot;[a-o]&quot;</span><span class="w"> </span><span class="nv">str/upper-case</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;THIs Is A tEst.&quot;</span>
+<span class="c1">; (Литерал вида #&quot;&quot; обозначает регулярное выражение)</span>
+
+<span class="c1">; Вместо отдельной формы require (и use, хотя это и не приветствуется) можно</span>
+<span class="c1">; указать необходимые модули прямо в форме ns:</span>
+<span class="p">(</span><span class="kd">ns </span><span class="nv">test</span>
+<span class="w">  </span><span class="p">(</span><span class="ss">:require</span>
+<span class="w">    </span><span class="p">[</span><span class="nv">clojure.string</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">str</span><span class="p">]</span><span class="w"> </span><span class="c1">; Внимание: при указании внутри формы ns</span>
+<span class="w">    </span><span class="p">[</span><span class="nv">clojure.set</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">set</span><span class="p">]))</span><span class="w">  </span><span class="c1">; имена пакетов не квотируются!</span>
+
+<span class="c1">; Java</span>
+<span class="c1">;;;;;;;</span>
+
+<span class="c1">; Стандартная библиотека Java очень богата,</span>
+<span class="c1">; и всё это богатство доступно и для Clojure!</span>
+
+<span class="c1">; import позволяет импортировать модули Java</span>
+<span class="p">(</span><span class="nb">import </span><span class="nv">java.util.Date</span><span class="p">)</span>
+
+<span class="c1">; В том числе и из ns</span>
+<span class="p">(</span><span class="kd">ns </span><span class="nv">test</span>
+<span class="w">  </span><span class="p">(</span><span class="ss">:import</span><span class="w"> </span><span class="nv">java.util.Date</span>
+<span class="w">           </span><span class="nv">java.util.Calendar</span><span class="p">))</span>
+
+<span class="c1">; Имя класса, сопровождаемое символом &quot;.&quot; позволяет</span>
+<span class="c1">; инстанцировать объекты Java-классов:</span>
+<span class="p">(</span><span class="nf">Date.</span><span class="p">)</span><span class="w"> </span><span class="c1">; &lt;a date object&gt;</span>
+
+<span class="c1">; форма . позволяет вызывать методы:</span>
+<span class="p">(</span><span class="k">. </span><span class="p">(</span><span class="nf">Date.</span><span class="p">)</span><span class="w"> </span><span class="nv">getTime</span><span class="p">)</span><span class="w"> </span><span class="c1">; &lt;a timestamp&gt;</span>
+<span class="p">(</span><span class="nf">.getTime</span><span class="w"> </span><span class="p">(</span><span class="nf">Date.</span><span class="p">))</span><span class="w">  </span><span class="c1">; а можно и так</span>
+
+<span class="c1">; Статические методы вызываются как функции модуля:</span>
+<span class="p">(</span><span class="nf">System/currentTimeMillis</span><span class="p">)</span><span class="w"> </span><span class="c1">; &lt;a timestamp&gt; (Модуль system всегда доступен!)</span>
+
+<span class="c1">; doto позволяет удобно работать с объектами, изменяющими свое состояние</span>
+<span class="p">(</span><span class="nb">import </span><span class="nv">java.util.Calendar</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">doto </span><span class="p">(</span><span class="nf">Calendar/getInstance</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">.set</span><span class="w"> </span><span class="mi">2000</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">.getTime</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; A Date. set to 2000-01-01 00:00:00</span>
+
+<span class="c1">; Работа с изменяемым сотоянием</span>
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">; Clojure предоставляет набор инструментов</span>
+<span class="c1">; для работы с изменяемым состоянием: Software Transactional Memory.</span>
+<span class="c1">; Структуры STM представлены тремя типами:</span>
+<span class="c1">; - атомы (atoms)</span>
+<span class="c1">; - агенты (agents)</span>
+<span class="c1">; - ссылки (references)</span>
+
+<span class="c1">; Самые простые хранители состояния - атомы:</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">my-atom</span><span class="w"> </span><span class="p">(</span><span class="nf">atom</span><span class="w"> </span><span class="p">{}))</span><span class="w"> </span><span class="c1">; {} - начальное состояние атома</span>
+
+<span class="c1">; Обновляется атом посредством swap!.</span>
+<span class="c1">; swap! применяет функцию аргумент к текущему значению</span>
+<span class="c1">; атома и помещает в атом результат</span>
+<span class="p">(</span><span class="nf">swap!</span><span class="w"> </span><span class="nv">my-atom</span><span class="w"> </span><span class="nb">assoc </span><span class="ss">:a</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; Обновляет my-atom, помещая в него (assoc {} :a 1)</span>
+<span class="p">(</span><span class="nf">swap!</span><span class="w"> </span><span class="nv">my-atom</span><span class="w"> </span><span class="nb">assoc </span><span class="ss">:b</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">; Обновляет my-atom, помещая в него (assoc {:a 1} :b 2)</span>
+
+<span class="c1">; Получить значение атома можно посредством &#39;@&#39;</span>
+<span class="c1">; (провести так называемую операцию dereference)</span>
+<span class="nv">my-atom</span><span class="w">  </span><span class="c1">;=&gt; Atom&lt;#...&gt; (Возвращает объект типа Atom)</span>
+<span class="o">@</span><span class="nv">my-atom</span><span class="w"> </span><span class="c1">; =&gt; {:a 1 :b 2}</span>
+
+<span class="c1">; Пример реализации счётчика на атоме:</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">counter</span><span class="w"> </span><span class="p">(</span><span class="nf">atom</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">inc-counter</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">swap!</span><span class="w"> </span><span class="nv">counter</span><span class="w"> </span><span class="nv">inc</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nf">inc-counter</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">inc-counter</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">inc-counter</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">inc-counter</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">inc-counter</span><span class="p">)</span>
+
+<span class="o">@</span><span class="nv">counter</span><span class="w"> </span><span class="c1">; =&gt; 5</span>
+
+<span class="c1">; С другими STM-конструкциями - refs и agents - можно ознакомиться тут:</span>
+<span class="c1">; Refs: http://clojure.org/refs</span>
+<span class="c1">; Agents: http://clojure.org/agents</span>
+</pre></div>
 <h3>Для будущего чтения</h3>
 
 <p>Это руководство не претендует на полноту, но мы смеем надеяться, способно вызвать интерес к дальнейшему изучению языка.</p>

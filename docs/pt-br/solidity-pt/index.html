@@ -112,7 +112,7 @@ sintaxe, então, muito padrões populares são excluídos.</p>
 <p>Como Solidity e Ethereum ainda estão sob desenvolvimento, funcionalidades beta
 e experimentais são tipicamente marcadas e sujeitas à mudanças. Pull requests
 são bem-vindos.</p>
-<div class="highlight"><pre class="highlight javascript"><code><span class="c1">// Primeiramente, um contrato de um Banco simples</span>
+<div class="highlight"><pre><span></span><span class="c1">// Primeiramente, um contrato de um Banco simples</span>
 <span class="c1">// Permite depósitos, retiradas e checagens de saldo</span>
 
 <span class="c1">// banco_simples.sol (note a extensão .sol)</span>
@@ -120,7 +120,7 @@ são bem-vindos.</p>
 <span class="cm">/* **** INCICIO DO EXEMPLO **** */</span>
 
 <span class="c1">// Declare a versão do compilador.</span>
-<span class="nx">pragma</span> <span class="nx">solidity</span> <span class="o">^</span><span class="mf">0.4</span><span class="p">.</span><span class="mi">2</span><span class="p">;</span>
+<span class="nx">pragma</span><span class="w"> </span><span class="nx">solidity</span><span class="w"> </span><span class="o">^</span><span class="mf">0.4.2</span><span class="p">;</span>
 
 <span class="c1">// Inicie com comentários Natspec (as três barras)</span>
 <span class="c1">// usados para documentação - e como dados descritivos para elementos/ação de UI</span>
@@ -128,94 +128,94 @@ são bem-vindos.</p>
 <span class="c1">/// @title BancoSimples</span>
 <span class="c1">/// @author nemild</span>
 
-<span class="cm">/* 'contrato' tem similadirades com 'classes' em outras linguagens (variáveis de
-class, herança, etc.) */</span>
+<span class="cm">/* &#39;contrato&#39; tem similadirades com &#39;classes&#39; em outras linguagens (variáveis de</span>
+<span class="cm">class, herança, etc.) */</span>
 
-<span class="nx">contract</span> <span class="nx">BancoSimples</span> <span class="p">{</span> <span class="c1">// CamelCase</span>
-    <span class="c1">// Declare variáveis de estado fora da função, para persistí-la durante a</span>
-    <span class="c1">// duração do contrato</span>
+<span class="nx">contract</span><span class="w"> </span><span class="nx">BancoSimples</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// CamelCase</span>
+<span class="w">    </span><span class="c1">// Declare variáveis de estado fora da função, para persistí-la durante a</span>
+<span class="w">    </span><span class="c1">// duração do contrato</span>
 
-    <span class="c1">// dicionário que mapeia endereços para saldos</span>
-    <span class="c1">// tenha cuidado  sobre ataques de overflow com números</span>
+<span class="w">    </span><span class="c1">// dicionário que mapeia endereços para saldos</span>
+<span class="w">    </span><span class="c1">// tenha cuidado  sobre ataques de overflow com números</span>
 
-    <span class="nx">mapping</span> <span class="p">(</span><span class="nx">address</span> <span class="o">=&gt;</span> <span class="nx">uint</span><span class="p">)</span> <span class="kr">private</span> <span class="nx">saldos</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">mapping</span><span class="w"> </span><span class="p">(</span><span class="nx">address</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">uint</span><span class="p">)</span><span class="w"> </span><span class="kr">private</span><span class="w"> </span><span class="nx">saldos</span><span class="p">;</span>
 
-    <span class="c1">// "private" significa que outros contratos não podem acessar saldos</span>
-    <span class="c1">// diretamente, mas o dado ainda é visível para outras partes da blockchain</span>
+<span class="w">    </span><span class="c1">// &quot;private&quot; significa que outros contratos não podem acessar saldos</span>
+<span class="w">    </span><span class="c1">// diretamente, mas o dado ainda é visível para outras partes da blockchain</span>
 
-    <span class="nx">address</span> <span class="kr">public</span> <span class="nx">dono</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">address</span><span class="w"> </span><span class="kr">public</span><span class="w"> </span><span class="nx">dono</span><span class="p">;</span>
 
-    <span class="c1">// ´public´ é legível (mas sem acesso de escrita) por usuários e contratos</span>
+<span class="w">    </span><span class="c1">// ´public´ é legível (mas sem acesso de escrita) por usuários e contratos</span>
 
-    <span class="c1">// Eventos - ações públicas para ouvintes externo</span>
-    <span class="nx">event</span> <span class="nx">LogRealizacaoDeDeposito</span><span class="p">(</span><span class="nx">address</span> <span class="nx">numeroDaConta</span><span class="p">,</span> <span class="nx">uint</span> <span class="nx">quantidade</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Eventos - ações públicas para ouvintes externo</span>
+<span class="w">    </span><span class="nx">event</span><span class="w"> </span><span class="nx">LogRealizacaoDeDeposito</span><span class="p">(</span><span class="nx">address</span><span class="w"> </span><span class="nx">numeroDaConta</span><span class="p">,</span><span class="w"> </span><span class="nx">uint</span><span class="w"> </span><span class="nx">quantidade</span><span class="p">);</span>
 
-    <span class="c1">// Construtor, pode receber uma ou várias variáveis; apenas uma opção é</span>
-    <span class="c1">// permitidas</span>
+<span class="w">    </span><span class="c1">// Construtor, pode receber uma ou várias variáveis; apenas uma opção é</span>
+<span class="w">    </span><span class="c1">// permitidas</span>
 
-    <span class="kd">function</span> <span class="nx">BancoSimples</span><span class="p">()</span> <span class="p">{</span>
-        <span class="c1">// msg dá detalhes sobre a mensagem mandada pelo contrato</span>
-        <span class="c1">// msg.sender é um chamador do contrato (endereço do criador do</span>
-        <span class="c1">// contrato)</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">BancoSimples</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// msg dá detalhes sobre a mensagem mandada pelo contrato</span>
+<span class="w">        </span><span class="c1">// msg.sender é um chamador do contrato (endereço do criador do</span>
+<span class="w">        </span><span class="c1">// contrato)</span>
 
-        <span class="nx">dono</span> <span class="o">=</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="w">        </span><span class="nx">dono</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="c1">/// @notice Deposita ether no banco</span>
-    <span class="c1">/// @return O saldo do usuário após o depósito</span>
+<span class="w">    </span><span class="c1">/// @notice Deposita ether no banco</span>
+<span class="w">    </span><span class="c1">/// @return O saldo do usuário após o depósito</span>
 
-    <span class="kd">function</span> <span class="nx">deposito</span><span class="p">()</span> <span class="kr">public</span> <span class="nx">returns</span> <span class="p">(</span><span class="nx">uint</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">saldos</span><span class="p">[</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">]</span> <span class="o">+=</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">deposito</span><span class="p">()</span><span class="w"> </span><span class="kr">public</span><span class="w"> </span><span class="nx">returns</span><span class="w"> </span><span class="p">(</span><span class="nx">uint</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">saldos</span><span class="p">[</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nx">msg</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
 
-        <span class="c1">// Sem necessidade de "this." ou "self." para variáveis de estado</span>
-        <span class="c1">// todos as variáveis são inciadas com seu valor default</span>
+<span class="w">        </span><span class="c1">// Sem necessidade de &quot;this.&quot; ou &quot;self.&quot; para variáveis de estado</span>
+<span class="w">        </span><span class="c1">// todos as variáveis são inciadas com seu valor default</span>
 
-        <span class="nx">LogRealizacaoDeDeposito</span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">,</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span> <span class="c1">// dispara evento</span>
+<span class="w">        </span><span class="nx">LogRealizacaoDeDeposito</span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">,</span><span class="w"> </span><span class="nx">msg</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span><span class="w"> </span><span class="c1">// dispara evento</span>
 
-        <span class="k">return</span> <span class="nx">saldos</span><span class="p">[</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">];</span>
-    <span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">saldos</span><span class="p">[</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="c1">/// @notice Retira ether do banco</span>
-    <span class="c1">/// @dev Isto não retorna nenhum ether excendente</span>
-    <span class="c1">/// @param quantidadeDeRetirada quantidade que você quer retirar</span>
-    <span class="c1">/// @return O saldo restante do usuário</span>
-    <span class="kd">function</span> <span class="nx">retirada</span><span class="p">(</span><span class="nx">uint</span> <span class="nx">quantidadeDeRetirada</span><span class="p">)</span> <span class="kr">public</span> <span class="nx">returns</span> <span class="p">(</span><span class="nx">uint</span> <span class="nx">saldoRestate</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span><span class="p">(</span><span class="nx">saldos</span><span class="p">[</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="nx">quantidadeDeRetirada</span><span class="p">)</span> <span class="p">{</span>
+<span class="w">    </span><span class="c1">/// @notice Retira ether do banco</span>
+<span class="w">    </span><span class="c1">/// @dev Isto não retorna nenhum ether excendente</span>
+<span class="w">    </span><span class="c1">/// @param quantidadeDeRetirada quantidade que você quer retirar</span>
+<span class="w">    </span><span class="c1">/// @return O saldo restante do usuário</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">retirada</span><span class="p">(</span><span class="nx">uint</span><span class="w"> </span><span class="nx">quantidadeDeRetirada</span><span class="p">)</span><span class="w"> </span><span class="kr">public</span><span class="w"> </span><span class="nx">returns</span><span class="w"> </span><span class="p">(</span><span class="nx">uint</span><span class="w"> </span><span class="nx">saldoRestate</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="p">(</span><span class="nx">saldos</span><span class="p">[</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="nx">quantidadeDeRetirada</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 
-            <span class="c1">// Observe como deduzimos o saldo imediatamente, antes de enviar -</span>
-            <span class="c1">// devido ao risco de uma chamada recursiva que permite o chamador</span>
-            <span class="c1">// pedir um valor maior que seu saldo</span>
+<span class="w">            </span><span class="c1">// Observe como deduzimos o saldo imediatamente, antes de enviar -</span>
+<span class="w">            </span><span class="c1">// devido ao risco de uma chamada recursiva que permite o chamador</span>
+<span class="w">            </span><span class="c1">// pedir um valor maior que seu saldo</span>
 
-            <span class="nx">saldos</span><span class="p">[</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">]</span> <span class="o">-=</span> <span class="nx">quantidadeDeRetirada</span><span class="p">;</span>
+<span class="w">            </span><span class="nx">saldos</span><span class="p">[</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="nx">quantidadeDeRetirada</span><span class="p">;</span>
 
-            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">quantidadeDeRetirada</span><span class="p">))</span> <span class="p">{</span>
-                <span class="c1">// incremente de volta só se falhar, como pode estar enviando</span>
-                <span class="c1">// para o contrato que substituiu 'enviar' no final</span>
-                <span class="c1">// do recebimento</span>
-                <span class="nx">saldos</span><span class="p">[</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">]</span> <span class="o">+=</span> <span class="nx">quantidadeDeRetirada</span><span class="p">;</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">quantidadeDeRetirada</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="c1">// incremente de volta só se falhar, como pode estar enviando</span>
+<span class="w">                </span><span class="c1">// para o contrato que substituiu &#39;enviar&#39; no final</span>
+<span class="w">                </span><span class="c1">// do recebimento</span>
+<span class="w">                </span><span class="nx">saldos</span><span class="p">[</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nx">quantidadeDeRetirada</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
 
-        <span class="k">return</span> <span class="nx">saldos</span><span class="p">[</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">];</span>
-    <span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">saldos</span><span class="p">[</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="c1">/// @notice Retorna o saldo</span>
-    <span class="c1">/// @return O saldo do usuário</span>
-    <span class="c1">// 'constant' evita que a função edite variáveis de estado</span>
-    <span class="c1">// permite a função executar localmente/fora da blockchain</span>
-    <span class="kd">function</span> <span class="nx">saldo</span><span class="p">()</span> <span class="nx">constant</span> <span class="nx">returns</span> <span class="p">(</span><span class="nx">uint</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="nx">saldos</span><span class="p">[</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">];</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">/// @notice Retorna o saldo</span>
+<span class="w">    </span><span class="c1">/// @return O saldo do usuário</span>
+<span class="w">    </span><span class="c1">// &#39;constant&#39; evita que a função edite variáveis de estado</span>
+<span class="w">    </span><span class="c1">// permite a função executar localmente/fora da blockchain</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">saldo</span><span class="p">()</span><span class="w"> </span><span class="nx">constant</span><span class="w"> </span><span class="nx">returns</span><span class="w"> </span><span class="p">(</span><span class="nx">uint</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">saldos</span><span class="p">[</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="c1">// Função de fallback - Chamada se outras funções não forem chamadas ou</span>
-    <span class="c1">// se ether sem dados forem enviados</span>
-    <span class="c1">// Tipicamente chamada quando dados inválidos são enviados</span>
-    <span class="c1">// Adicionada para que ether enviado neste contrato seja revertido se o</span>
-    <span class="c1">// contrato falhar. Se não existisse, o dinheiro do enviante é transferido</span>
-    <span class="c1">// para o contrato</span>
-    <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-        <span class="k">throw</span><span class="p">;</span> <span class="c1">// 'throw' reverte o estao para antes da chamada</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// Função de fallback - Chamada se outras funções não forem chamadas ou</span>
+<span class="w">    </span><span class="c1">// se ether sem dados forem enviados</span>
+<span class="w">    </span><span class="c1">// Tipicamente chamada quando dados inválidos são enviados</span>
+<span class="w">    </span><span class="c1">// Adicionada para que ether enviado neste contrato seja revertido se o</span>
+<span class="w">    </span><span class="c1">// contrato falhar. Se não existisse, o dinheiro do enviante é transferido</span>
+<span class="w">    </span><span class="c1">// para o contrato</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">throw</span><span class="p">;</span><span class="w"> </span><span class="c1">// &#39;throw&#39; reverte o estao para antes da chamada</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 <span class="c1">// ** FIM DO EXEMPLO **</span>
 
@@ -226,33 +226,33 @@ class, herança, etc.) */</span>
 <span class="c1">// uint é usado para quantidade de moeda (não existem doubles ou floats)</span>
 <span class="c1">// e para datas (no sistema de tempo Unix)</span>
 
-<span class="nx">uint</span> <span class="nx">x</span><span class="p">;</span>
+<span class="nx">uint</span><span class="w"> </span><span class="nx">x</span><span class="p">;</span>
 
 <span class="c1">// int de 256 bits, não pode ser mudado após sua instanciação</span>
-<span class="nx">int</span> <span class="nx">constant</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span>
-<span class="nx">int256</span> <span class="nx">constant</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span> <span class="c1">// mesmo efeito, mas aqui os 256 bits são explícitos</span>
-<span class="nx">uint</span> <span class="nx">constant</span> <span class="nx">VERSÃO_ID</span> <span class="o">=</span> <span class="mh">0x123A1</span><span class="p">;</span> <span class="c1">// uma constante hexadecimal</span>
+<span class="kr">int</span><span class="w"> </span><span class="nx">constant</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">8</span><span class="p">;</span>
+<span class="nx">int256</span><span class="w"> </span><span class="nx">constant</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">8</span><span class="p">;</span><span class="w"> </span><span class="c1">// mesmo efeito, mas aqui os 256 bits são explícitos</span>
+<span class="nx">uint</span><span class="w"> </span><span class="nx">constant</span><span class="w"> </span><span class="nx">VERSÃO_ID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x123A1</span><span class="p">;</span><span class="w"> </span><span class="c1">// uma constante hexadecimal</span>
 
-<span class="c1">// com 'constant', o compilador substitui cada ocorrência com o valor</span>
+<span class="c1">// com &#39;constant&#39;, o compilador substitui cada ocorrência com o valor</span>
 
 <span class="c1">// Para int e uint, é possível determinar o espaço explicitamente, em intervalos</span>
 <span class="c1">// de 8 a 256, e.g., int8, int16, int24</span>
-<span class="nx">uint8</span> <span class="nx">b</span><span class="p">;</span>
-<span class="nx">int64</span> <span class="nx">c</span><span class="p">;</span>
-<span class="nx">uint248</span> <span class="nx">e</span><span class="p">;</span>
+<span class="nx">uint8</span><span class="w"> </span><span class="nx">b</span><span class="p">;</span>
+<span class="nx">int64</span><span class="w"> </span><span class="nx">c</span><span class="p">;</span>
+<span class="nx">uint248</span><span class="w"> </span><span class="nx">e</span><span class="p">;</span>
 
 <span class="c1">// Cuidado contra overflows, e proteja-se contra esse tipo de ataque</span>
 
 <span class="c1">// Não há funções randômicas padrão, use outros contratos para este objetivo</span>
 
 <span class="c1">// Casting de tipo</span>
-<span class="nx">int</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">int</span><span class="p">(</span><span class="nx">b</span><span class="p">);</span>
+<span class="kr">int</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">int</span><span class="p">(</span><span class="nx">b</span><span class="p">);</span>
 
-<span class="nx">bool</span> <span class="nx">b</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span> <span class="c1">// ou então 'var b = true;' para inferição de tipo</span>
+<span class="nx">bool</span><span class="w"> </span><span class="nx">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w"> </span><span class="c1">// ou então &#39;var b = true;&#39; para inferição de tipo</span>
 
 <span class="c1">// Endereços - comportam 20 bytes/160 bits endereços Ethereum</span>
 <span class="c1">// Não permite operações aritiméticas</span>
-<span class="nx">address</span> <span class="kr">public</span> <span class="nx">dono</span><span class="p">;</span>
+<span class="nx">address</span><span class="w"> </span><span class="kr">public</span><span class="w"> </span><span class="nx">dono</span><span class="p">;</span>
 
 <span class="c1">// Tipos de contas:</span>
 <span class="c1">// Conta de contrato: endereço criado ao criar (função do endereço do criador,</span>
@@ -260,12 +260,12 @@ class, herança, etc.) */</span>
 <span class="c1">// Conta externa: (pessoa/entidade externa): endereç criado a partir de chave</span>
 <span class="c1">// pública</span>
 
-<span class="c1">// Adicione o campo 'public' para indicar visibilidade pública/externa</span>
+<span class="c1">// Adicione o campo &#39;public&#39; para indicar visibilidade pública/externa</span>
 <span class="c1">// um getter é automaticamente criado, mas NÃO um setter</span>
 
 <span class="c1">// Todos os endereços podem enviar ether</span>
-<span class="nx">dono</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">ALGUM_SALDO</span><span class="p">);</span> <span class="c1">// returna falso caso falhe</span>
-<span class="k">if</span> <span class="p">(</span><span class="nx">dono</span><span class="p">.</span><span class="nx">send</span><span class="p">)</span> <span class="p">{}</span> <span class="c1">// LEMBRE-SE: encapsule num 'if', dado que endereços de</span>
+<span class="nx">dono</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">ALGUM_SALDO</span><span class="p">);</span><span class="w"> </span><span class="c1">// returna falso caso falhe</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">dono</span><span class="p">.</span><span class="nx">send</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w"> </span><span class="c1">// LEMBRE-SE: encapsule num &#39;if&#39;, dado que endereços de</span>
 <span class="c1">// contrato tem funções executadas no envio e estas podem falhar</span>
 <span class="c1">//Também certifique-se que os saldos deduzidos ANTES de tentar enviar, dado que</span>
 <span class="c1">// há um risco de chamada recursiva que pode drenar um contrato</span>
@@ -273,23 +273,23 @@ class, herança, etc.) */</span>
 <span class="c1">// pode sobrescrever seu próprio</span>
 
 <span class="c1">// Pode verificar o saldo</span>
-<span class="nx">dona</span><span class="p">.</span><span class="nx">balance</span><span class="p">;</span> <span class="c1">// o saldo do dono (usuário ou contrato)</span>
+<span class="nx">dona</span><span class="p">.</span><span class="nx">balance</span><span class="p">;</span><span class="w"> </span><span class="c1">// o saldo do dono (usuário ou contrato)</span>
 
 <span class="c1">// Bytes permitidos de 1 a 32</span>
-<span class="nx">byte</span> <span class="nx">a</span><span class="p">;</span> <span class="c1">// byte é o mesmo que bytes1</span>
-<span class="nx">bytes2</span> <span class="nx">b</span><span class="p">;</span>
-<span class="nx">bytes32</span> <span class="nx">c</span><span class="p">;</span>
+<span class="kr">byte</span><span class="w"> </span><span class="nx">a</span><span class="p">;</span><span class="w"> </span><span class="c1">// byte é o mesmo que bytes1</span>
+<span class="nx">bytes2</span><span class="w"> </span><span class="nx">b</span><span class="p">;</span>
+<span class="nx">bytes32</span><span class="w"> </span><span class="nx">c</span><span class="p">;</span>
 
 <span class="c1">// Bytes dinamicamente criados</span>
 
-<span class="nx">bytes</span> <span class="nx">m</span><span class="p">;</span> <span class="c1">// Um array especial, mesmo que byte[] (mas mais comprimido)</span>
+<span class="nx">bytes</span><span class="w"> </span><span class="nx">m</span><span class="p">;</span><span class="w"> </span><span class="c1">// Um array especial, mesmo que byte[] (mas mais comprimido)</span>
 
 <span class="c1">// Mais custoso que byte1-byte32, então, prefira estes quando possível</span>
 
 <span class="c1">// mesmo que bytes, mas não permite verificar tamanho ou acesso por indíce (por</span>
 <span class="c1">// enquanto)</span>
 
-<span class="nx">string</span> <span class="nx">n</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">oi</span><span class="dl">"</span><span class="p">;</span> <span class="c1">// guardado em UTF8, note as aspas duplas, não simples</span>
+<span class="nx">string</span><span class="w"> </span><span class="nx">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;oi&quot;</span><span class="p">;</span><span class="w"> </span><span class="c1">// guardado em UTF8, note as aspas duplas, não simples</span>
 
 <span class="c1">// funções de string serão adicionadas no futuro</span>
 <span class="c1">// prefira bytes32/bytes, dado que UTF8 usa mais espaço</span>
@@ -298,93 +298,93 @@ class, herança, etc.) */</span>
 <span class="c1">// var não infere tipos baseados na primeira atribuição,</span>
 <span class="c1">// não pode ser usado em paramêtros de funções</span>
 
-<span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
 
 <span class="c1">// use com cuidado, inferência pode resultar em tipos errados</span>
 <span class="c1">// e.g., um int8, quando um contador precisa de int16</span>
 
 <span class="c1">// var pode ser usado para assinalar uma função a uma variável</span>
-<span class="kd">function</span> <span class="nx">a</span><span class="p">(</span><span class="nx">uint</span> <span class="nx">x</span><span class="p">)</span> <span class="nx">returns</span> <span class="p">(</span><span class="nx">uint</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nx">x</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">a</span><span class="p">(</span><span class="nx">uint</span><span class="w"> </span><span class="nx">x</span><span class="p">)</span><span class="w"> </span><span class="nx">returns</span><span class="w"> </span><span class="p">(</span><span class="nx">uint</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">2</span><span class="p">;</span>
 <span class="p">}</span>
-<span class="kd">var</span> <span class="nx">f</span> <span class="o">=</span> <span class="nx">a</span><span class="p">;</span>
-<span class="nx">f</span><span class="p">(</span><span class="mi">22</span><span class="p">);</span> <span class="c1">// chamada</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">a</span><span class="p">;</span>
+<span class="nx">f</span><span class="p">(</span><span class="mf">22</span><span class="p">);</span><span class="w"> </span><span class="c1">// chamada</span>
 
 <span class="c1">// por padrão, todos os valores são inicializados com 0</span>
 
 <span class="c1">// Delete pode ser chamada na maioria dos tipos</span>
 <span class="c1">// (NÃO destroi o valor, mas retorna para o valor 0, o incial)</span>
 
-<span class="nx">uint</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+<span class="nx">uint</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">5</span><span class="p">;</span>
 
 <span class="c1">// Desestruturação/Tuplas</span>
-<span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">);</span> <span class="c1">// assinada/troca múltiplos valores</span>
+<span class="p">(</span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">y</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mf">2</span><span class="p">,</span><span class="w"> </span><span class="mf">7</span><span class="p">);</span><span class="w"> </span><span class="c1">// assinada/troca múltiplos valores</span>
 
 <span class="c1">// 2. ESTRUTURAS DE DADOS</span>
 <span class="c1">// Arrays</span>
 
-<span class="nx">bytes32</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="nx">apelidos</span><span class="p">;</span> <span class="c1">// array estático</span>
-<span class="nx">bytes32</span><span class="p">[]</span> <span class="nx">nomes</span><span class="p">;</span> <span class="c1">// array dinâmico</span>
-<span class="nx">uint</span> <span class="nx">novoTamanho</span> <span class="o">=</span> <span class="nx">nomes</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="dl">"</span><span class="s2">João</span><span class="dl">"</span><span class="p">);</span> <span class="c1">// adicionando retorna o novo tamanho do</span>
+<span class="nx">bytes32</span><span class="p">[</span><span class="mf">5</span><span class="p">]</span><span class="w"> </span><span class="nx">apelidos</span><span class="p">;</span><span class="w"> </span><span class="c1">// array estático</span>
+<span class="nx">bytes32</span><span class="p">[]</span><span class="w"> </span><span class="nx">nomes</span><span class="p">;</span><span class="w"> </span><span class="c1">// array dinâmico</span>
+<span class="nx">uint</span><span class="w"> </span><span class="nx">novoTamanho</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">nomes</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">&quot;João&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// adicionando retorna o novo tamanho do</span>
 
 <span class="c1">// Tamanho</span>
-<span class="nx">nomes</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="c1">// pega o tamanho</span>
-<span class="nx">nomes</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// tamanhos pode ser alterados (para arrays dinâmicos)</span>
+<span class="nx">nomes</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="c1">// pega o tamanho</span>
+<span class="nx">nomes</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// tamanhos pode ser alterados (para arrays dinâmicos)</span>
 
 <span class="c1">// arrays multidimensionais</span>
-<span class="nx">uint</span><span class="p">[][</span><span class="mi">5</span><span class="p">]</span> <span class="nx">x</span><span class="p">;</span> <span class="c1">// array com 5 arrays dinâmicos como elementos (ordem da maioria</span>
+<span class="nx">uint</span><span class="p">[][</span><span class="mf">5</span><span class="p">]</span><span class="w"> </span><span class="nx">x</span><span class="p">;</span><span class="w"> </span><span class="c1">// array com 5 arrays dinâmicos como elementos (ordem da maioria</span>
 <span class="c1">// das linguagens)</span>
 
 <span class="c1">// Dicionários (qualquer tipo para qualquer tipo)</span>
-<span class="nx">mapping</span> <span class="p">(</span><span class="nx">string</span> <span class="o">=&gt;</span> <span class="nx">uint</span><span class="p">)</span> <span class="kr">public</span> <span class="nx">saldos</span><span class="p">;</span>
-<span class="nx">saldos</span><span class="p">[</span><span class="dl">"</span><span class="s2">charles</span><span class="dl">"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">saldos</span><span class="p">[</span><span class="dl">"</span><span class="s2">ada</span><span class="dl">"</span><span class="p">]);</span> <span class="c1">// é 0, toda chave não assinalada retorna zero</span>
-<span class="c1">// 'public' permite o seguinte contrato</span>
-<span class="nx">nomeDoContrato</span><span class="p">.</span><span class="nx">saldos</span><span class="p">(</span><span class="dl">"</span><span class="s2">charles</span><span class="dl">"</span><span class="p">);</span> <span class="c1">// retorna 1</span>
-<span class="c1">// 'public' cria um getter (mas não um setter) como o seguinte</span>
-<span class="kd">function</span> <span class="nx">saldos</span><span class="p">(</span><span class="nx">string</span> <span class="nx">_conta</span><span class="p">)</span> <span class="nx">returns</span> <span class="p">(</span><span class="nx">uint</span> <span class="nx">saldo</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nx">saldos</span><span class="p">[</span><span class="nx">_conta</span><span class="p">];</span>
+<span class="nx">mapping</span><span class="w"> </span><span class="p">(</span><span class="nx">string</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">uint</span><span class="p">)</span><span class="w"> </span><span class="kr">public</span><span class="w"> </span><span class="nx">saldos</span><span class="p">;</span>
+<span class="nx">saldos</span><span class="p">[</span><span class="s2">&quot;charles&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">saldos</span><span class="p">[</span><span class="s2">&quot;ada&quot;</span><span class="p">]);</span><span class="w"> </span><span class="c1">// é 0, toda chave não assinalada retorna zero</span>
+<span class="c1">// &#39;public&#39; permite o seguinte contrato</span>
+<span class="nx">nomeDoContrato</span><span class="p">.</span><span class="nx">saldos</span><span class="p">(</span><span class="s2">&quot;charles&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// retorna 1</span>
+<span class="c1">// &#39;public&#39; cria um getter (mas não um setter) como o seguinte</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">saldos</span><span class="p">(</span><span class="nx">string</span><span class="w"> </span><span class="nx">_conta</span><span class="p">)</span><span class="w"> </span><span class="nx">returns</span><span class="w"> </span><span class="p">(</span><span class="nx">uint</span><span class="w"> </span><span class="nx">saldo</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">saldos</span><span class="p">[</span><span class="nx">_conta</span><span class="p">];</span>
 <span class="p">}</span>
 
 <span class="c1">// Mapeamentos aninhados</span>
-<span class="nx">mapping</span> <span class="p">(</span><span class="nx">endereco</span> <span class="o">=&gt;</span> <span class="nx">mapping</span> <span class="p">(</span><span class="nx">endereco</span> <span class="o">=&gt;</span> <span class="nx">uint</span><span class="p">))</span> <span class="kr">public</span> <span class="nx">guardioes</span><span class="p">;</span>
+<span class="nx">mapping</span><span class="w"> </span><span class="p">(</span><span class="nx">endereco</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">mapping</span><span class="w"> </span><span class="p">(</span><span class="nx">endereco</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">uint</span><span class="p">))</span><span class="w"> </span><span class="kr">public</span><span class="w"> </span><span class="nx">guardioes</span><span class="p">;</span>
 
 <span class="c1">// Para deletar</span>
-<span class="k">delete</span> <span class="nx">saldos</span><span class="p">[</span><span class="dl">"</span><span class="s2">John</span><span class="dl">"</span><span class="p">];</span>
-<span class="k">delete</span> <span class="nx">saldos</span><span class="p">;</span> <span class="c1">// assinala zero para todas as chaves</span>
+<span class="ow">delete</span><span class="w"> </span><span class="nx">saldos</span><span class="p">[</span><span class="s2">&quot;John&quot;</span><span class="p">];</span>
+<span class="ow">delete</span><span class="w"> </span><span class="nx">saldos</span><span class="p">;</span><span class="w"> </span><span class="c1">// assinala zero para todas as chaves</span>
 
 <span class="c1">// Diferentemente de outras linguages, NÃO É POSSÍVEL iterar sobre todos os</span>
 <span class="c1">// elementos de um mapeamento, sem saber previamente as chaves - é possível</span>
 <span class="c1">// construir estruturas de dados personalizadas para fazer isso</span>
 
 <span class="c1">// Structs e enums</span>
-<span class="nx">struct</span> <span class="nx">Banco</span> <span class="p">{</span>
-    <span class="nx">address</span> <span class="nx">dono</span><span class="p">;</span>
-    <span class="nx">uint</span> <span class="nx">saldo</span><span class="p">;</span>
+<span class="nx">struct</span><span class="w"> </span><span class="nx">Banco</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">address</span><span class="w"> </span><span class="nx">dono</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">uint</span><span class="w"> </span><span class="nx">saldo</span><span class="p">;</span>
 <span class="p">}</span>
-<span class="nx">Banco</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">Banco</span><span class="p">({</span>
-    <span class="na">dono</span><span class="p">:</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">,</span>
-    <span class="na">saldo</span><span class="p">:</span> <span class="mi">5</span>
+<span class="nx">Banco</span><span class="w"> </span><span class="nx">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Banco</span><span class="p">({</span>
+<span class="w">    </span><span class="nx">dono</span><span class="o">:</span><span class="w"> </span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">,</span>
+<span class="w">    </span><span class="nx">saldo</span><span class="o">:</span><span class="w"> </span><span class="mf">5</span>
 <span class="p">});</span>
 <span class="c1">// ou</span>
-<span class="nx">Banco</span> <span class="nx">c</span> <span class="o">=</span> <span class="nx">Banco</span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+<span class="nx">Banco</span><span class="w"> </span><span class="nx">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Banco</span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">,</span><span class="w"> </span><span class="mf">5</span><span class="p">);</span>
 
-<span class="nx">c</span><span class="p">.</span><span class="nx">quantidade</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">// cria novo valor</span>
-<span class="k">delete</span> <span class="nx">b</span><span class="p">;</span>
+<span class="nx">c</span><span class="p">.</span><span class="nx">quantidade</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">5</span><span class="p">;</span><span class="w"> </span><span class="c1">// cria novo valor</span>
+<span class="ow">delete</span><span class="w"> </span><span class="nx">b</span><span class="p">;</span>
 <span class="c1">// assinala todos os valores do enum para zero, exceto mapeamentos</span>
 
 <span class="c1">// Enums</span>
-<span class="kr">enum</span> <span class="nx">Estado</span> <span class="p">{</span> <span class="nx">Criado</span><span class="p">,</span> <span class="nx">Travado</span><span class="p">,</span> <span class="nx">Inativo</span> <span class="p">};</span> <span class="c1">// geralmente usado para máquina de</span>
+<span class="kr">enum</span><span class="w"> </span><span class="nx">Estado</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Criado</span><span class="p">,</span><span class="w"> </span><span class="nx">Travado</span><span class="p">,</span><span class="w"> </span><span class="nx">Inativo</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// geralmente usado para máquina de</span>
 <span class="c1">// estados</span>
-<span class="nx">Estado</span> <span class="kr">public</span> <span class="nx">estado</span><span class="p">;</span> <span class="c1">// Declara variável para enum</span>
-<span class="nx">estado</span> <span class="o">=</span> <span class="nx">Estado</span><span class="p">.</span><span class="nx">Criado</span><span class="p">;</span>
+<span class="nx">Estado</span><span class="w"> </span><span class="kr">public</span><span class="w"> </span><span class="nx">estado</span><span class="p">;</span><span class="w"> </span><span class="c1">// Declara variável para enum</span>
+<span class="nx">estado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Estado</span><span class="p">.</span><span class="nx">Criado</span><span class="p">;</span>
 <span class="c1">// enums podem ser explicitamente convertidas em ints</span>
-<span class="nx">uint</span> <span class="nx">estadoCriado</span> <span class="o">=</span> <span class="nx">uint</span><span class="p">(</span><span class="nx">Estado</span><span class="p">.</span><span class="nx">Criado</span><span class="p">);</span> <span class="c1">//  0</span>
+<span class="nx">uint</span><span class="w"> </span><span class="nx">estadoCriado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">uint</span><span class="p">(</span><span class="nx">Estado</span><span class="p">.</span><span class="nx">Criado</span><span class="p">);</span><span class="w"> </span><span class="c1">//  0</span>
 
 <span class="c1">// Localização de dados: Memória vs. disco vs. pilha - todos os tipos complexos</span>
 <span class="c1">// (arrays, structs) tem uma localização de dados</span>
-<span class="c1">// 'memória' não é persistida, 'disco' é</span>
-<span class="c1">// Padrão é 'disco' para variáveis locais e de estado; 'memória' para paramêtros</span>
+<span class="c1">// &#39;memória&#39; não é persistida, &#39;disco&#39; é</span>
+<span class="c1">// Padrão é &#39;disco&#39; para variáveis locais e de estado; &#39;memória&#39; para paramêtros</span>
 <span class="c1">// de função. Pilha guarda pequena variáveis locais</span>
 
 <span class="c1">// a maioria dos tipos podem ter sua localização de dados explicitamente assinalos</span>
@@ -397,74 +397,74 @@ class, herança, etc.) */</span>
 
 <span class="c1">// 4. Variáveis Globais de nota</span>
 <span class="c1">// ** this **</span>
-<span class="k">this</span><span class="p">;</span> <span class="c1">// endereço do contrato</span>
+<span class="k">this</span><span class="p">;</span><span class="w"> </span><span class="c1">// endereço do contrato</span>
 <span class="c1">// geralmente usado no final do contrato para enviar o saldo restante às partes</span>
 <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">;</span>
-<span class="k">this</span><span class="p">.</span><span class="nx">algumFuncao</span><span class="p">();</span> <span class="c1">// chamada de função externa via call, não via jump interno</span>
+<span class="k">this</span><span class="p">.</span><span class="nx">algumFuncao</span><span class="p">();</span><span class="w"> </span><span class="c1">// chamada de função externa via call, não via jump interno</span>
 
 <span class="c1">// ** msg - Mensagem corrente recebida pelo contrato ** **</span>
-<span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">;</span> <span class="c1">// endereço do enviador</span>
-<span class="nx">msg</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span> <span class="c1">// quantidade de ether provida para este contrato em wei</span>
-<span class="nx">msg</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span> <span class="c1">// bytes, todos os dados da chamada</span>
-<span class="nx">msg</span><span class="p">.</span><span class="nx">gas</span><span class="p">;</span> <span class="c1">// gas restante</span>
+<span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">;</span><span class="w"> </span><span class="c1">// endereço do enviador</span>
+<span class="nx">msg</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span><span class="w"> </span><span class="c1">// quantidade de ether provida para este contrato em wei</span>
+<span class="nx">msg</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span><span class="w"> </span><span class="c1">// bytes, todos os dados da chamada</span>
+<span class="nx">msg</span><span class="p">.</span><span class="nx">gas</span><span class="p">;</span><span class="w"> </span><span class="c1">// gas restante</span>
 
 <span class="c1">// ** tx - Esta transação **</span>
-<span class="nx">tx</span><span class="p">.</span><span class="nx">origin</span><span class="p">;</span> <span class="c1">// endereço do enviador da transação</span>
-<span class="nx">tx</span><span class="p">.</span><span class="nx">gasprice</span><span class="p">;</span> <span class="c1">// valor do gas da transação</span>
+<span class="nx">tx</span><span class="p">.</span><span class="nx">origin</span><span class="p">;</span><span class="w"> </span><span class="c1">// endereço do enviador da transação</span>
+<span class="nx">tx</span><span class="p">.</span><span class="nx">gasprice</span><span class="p">;</span><span class="w"> </span><span class="c1">// valor do gas da transação</span>
 
 <span class="c1">// ** block - Informação do bloco corrente **</span>
-<span class="nx">now</span><span class="p">;</span> <span class="c1">// tempo corrente (aproxiamdo), substituto para block.timestamp</span>
+<span class="nx">now</span><span class="p">;</span><span class="w"> </span><span class="c1">// tempo corrente (aproxiamdo), substituto para block.timestamp</span>
 <span class="c1">//(usa tempo do Unix)</span>
-<span class="nx">block</span><span class="p">.</span><span class="nx">number</span><span class="p">;</span> <span class="c1">// número do bloco corrente</span>
-<span class="nx">block</span><span class="p">.</span><span class="nx">difficulty</span><span class="p">;</span> <span class="c1">// dificuldade do bloco corrente</span>
-<span class="nx">block</span><span class="p">.</span><span class="nx">blockhash</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// retorna bytes32, só funciona para os 256 blocos mais</span>
+<span class="nx">block</span><span class="p">.</span><span class="nx">number</span><span class="p">;</span><span class="w"> </span><span class="c1">// número do bloco corrente</span>
+<span class="nx">block</span><span class="p">.</span><span class="nx">difficulty</span><span class="p">;</span><span class="w"> </span><span class="c1">// dificuldade do bloco corrente</span>
+<span class="nx">block</span><span class="p">.</span><span class="nx">blockhash</span><span class="p">(</span><span class="mf">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// retorna bytes32, só funciona para os 256 blocos mais</span>
 <span class="c1">//recentes</span>
 <span class="nx">block</span><span class="p">.</span><span class="nx">gasLimit</span><span class="p">();</span>
 
 <span class="c1">// ** storage - Hash de disco persistente **</span>
-<span class="nx">storage</span><span class="p">[</span><span class="dl">'</span><span class="s1">abc</span><span class="dl">'</span><span class="p">]</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">def</span><span class="dl">'</span><span class="p">;</span> <span class="c1">// mapea palavras de 256 bits em palavras de 256 bits</span>
+<span class="nx">storage</span><span class="p">[</span><span class="s1">&#39;abc&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;def&#39;</span><span class="p">;</span><span class="w"> </span><span class="c1">// mapea palavras de 256 bits em palavras de 256 bits</span>
 
 
 <span class="c1">// 4. FUNÇÕES E MAIS</span>
 <span class="c1">// A. Funções</span>
 <span class="c1">// Funções simples</span>
-<span class="kd">function</span> <span class="nx">incremento</span><span class="p">(</span><span class="nx">uint</span> <span class="nx">x</span><span class="p">)</span> <span class="nx">returns</span> <span class="p">(</span><span class="nx">uint</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">x</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="k">return</span> <span class="nx">x</span><span class="p">;</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">incremento</span><span class="p">(</span><span class="nx">uint</span><span class="w"> </span><span class="nx">x</span><span class="p">)</span><span class="w"> </span><span class="nx">returns</span><span class="w"> </span><span class="p">(</span><span class="nx">uint</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">x</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">x</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="c1">// Funções podem retornar muito argumentos, e podem especificar argumentos</span>
 <span class="c1">// retornados sem necessidade de explicitamente usar return</span>
-<span class="kd">function</span> <span class="nx">incremento</span><span class="p">(</span><span class="nx">uint</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">uint</span> <span class="nx">y</span><span class="p">)</span> <span class="nx">returns</span> <span class="p">(</span><span class="nx">uint</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">uint</span> <span class="nx">y</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">x</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="nx">y</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">incremento</span><span class="p">(</span><span class="nx">uint</span><span class="w"> </span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">uint</span><span class="w"> </span><span class="nx">y</span><span class="p">)</span><span class="w"> </span><span class="nx">returns</span><span class="w"> </span><span class="p">(</span><span class="nx">uint</span><span class="w"> </span><span class="nx">x</span><span class="p">,</span><span class="w"> </span><span class="nx">uint</span><span class="w"> </span><span class="nx">y</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">x</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">y</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="c1">// Chamando a função anterior</span>
-<span class="nx">uint</span> <span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">)</span> <span class="o">=</span> <span class="nx">incremento</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+<span class="nx">uint</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">incremento</span><span class="p">(</span><span class="mf">1</span><span class="p">,</span><span class="mf">1</span><span class="p">);</span>
 
-<span class="c1">// 'constant' indica que uam função não altera variáveis persistidas</span>
+<span class="c1">// &#39;constant&#39; indica que uam função não altera variáveis persistidas</span>
 <span class="c1">// Funções constantes são executadas localmente, não na blockchain</span>
-<span class="nx">uint</span> <span class="nx">y</span><span class="p">;</span>
+<span class="nx">uint</span><span class="w"> </span><span class="nx">y</span><span class="p">;</span>
 
-<span class="kd">function</span> <span class="nx">incremento</span><span class="p">(</span><span class="nx">uint</span> <span class="nx">x</span><span class="p">)</span> <span class="nx">constant</span> <span class="nx">returns</span> <span class="p">(</span><span class="nx">uint</span> <span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">x</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="nx">y</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// Esta linha deve falhar</span>
-    <span class="c1">// y é uma variável de estado e não pode ser alterada por uma função local</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">incremento</span><span class="p">(</span><span class="nx">uint</span><span class="w"> </span><span class="nx">x</span><span class="p">)</span><span class="w"> </span><span class="nx">constant</span><span class="w"> </span><span class="nx">returns</span><span class="w"> </span><span class="p">(</span><span class="nx">uint</span><span class="w"> </span><span class="nx">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">x</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">y</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// Esta linha deve falhar</span>
+<span class="w">    </span><span class="c1">// y é uma variável de estado e não pode ser alterada por uma função local</span>
 <span class="p">}</span>
 
-<span class="c1">// 'Especificadores de visibilidade de funções'</span>
-<span class="c1">// Estes podem substituitir 'constante', incluíndo:</span>
+<span class="c1">// &#39;Especificadores de visibilidade de funções&#39;</span>
+<span class="c1">// Estes podem substituitir &#39;constante&#39;, incluíndo:</span>
 <span class="c1">// public - visbilidade externa e interna (padrão)</span>
 <span class="c1">// private - apenas visível no contrato corrente</span>
 <span class="c1">// internal - apenas visível no contrato corrente e seus derivados</span>
 
 <span class="c1">// Functions hosteada - e pode ser assinalada para variável</span>
-<span class="kd">function</span> <span class="nx">a</span><span class="p">()</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">z</span> <span class="o">=</span> <span class="nx">b</span><span class="p">;</span>
-    <span class="nx">b</span><span class="p">();</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">a</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">b</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">b</span><span class="p">();</span>
 <span class="p">}</span>
 
-<span class="kd">function</span> <span class="nx">b</span><span class="p">()</span> <span class="p">{</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">b</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 
 <span class="p">}</span>
 
@@ -479,22 +479,22 @@ class, herança, etc.) */</span>
 <span class="c1">// ser explicito e previnir confusão na chamada da função</span>
 
 <span class="c1">// Declaração</span>
-<span class="nx">event</span> <span class="nx">LogEnvio</span><span class="p">(</span><span class="nx">address</span> <span class="nx">indexed</span> <span class="nx">de</span><span class="p">,</span> <span class="nx">address</span> <span class="nx">indexed</span> <span class="nx">para</span><span class="p">,</span> <span class="nx">uint</span> <span class="nx">quantidade</span><span class="p">);</span>
+<span class="nx">event</span><span class="w"> </span><span class="nx">LogEnvio</span><span class="p">(</span><span class="nx">address</span><span class="w"> </span><span class="nx">indexed</span><span class="w"> </span><span class="nx">de</span><span class="p">,</span><span class="w"> </span><span class="nx">address</span><span class="w"> </span><span class="nx">indexed</span><span class="w"> </span><span class="nx">para</span><span class="p">,</span><span class="w"> </span><span class="nx">uint</span><span class="w"> </span><span class="nx">quantidade</span><span class="p">);</span>
 <span class="c1">// Observe a letra maíscula no início do nome</span>
 
 <span class="c1">// Chamada</span>
-<span class="nx">Envio</span><span class="p">(</span><span class="nx">de</span><span class="p">,</span> <span class="nx">para</span><span class="p">,</span> <span class="nx">quantidade</span><span class="p">);</span>
+<span class="nx">Envio</span><span class="p">(</span><span class="nx">de</span><span class="p">,</span><span class="w"> </span><span class="nx">para</span><span class="p">,</span><span class="w"> </span><span class="nx">quantidade</span><span class="p">);</span>
 
 <span class="c1">// Para partes externas (um contrato ou entidade externo), observe:</span>
-<span class="nx">Coin</span><span class="p">.</span><span class="nx">Envio</span><span class="p">().</span><span class="nx">watch</span><span class="p">({},</span> <span class="dl">''</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">erro</span><span class="p">,</span> <span class="nx">resultado</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">erro</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Moeda transferida: </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">resultado</span><span class="p">.</span><span class="nx">args</span><span class="p">.</span><span class="nx">quantidade</span> <span class="o">+</span>
-            <span class="dl">"</span><span class="s2"> moedas enviadas de </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">resultado</span><span class="p">.</span><span class="nx">args</span><span class="p">.</span><span class="nx">de</span> <span class="o">+</span>
-            <span class="dl">"</span><span class="s2"> para </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">resultado</span><span class="p">.</span><span class="nx">args</span><span class="p">.</span><span class="nx">para</span> <span class="o">+</span> <span class="dl">"</span><span class="s2">.</span><span class="dl">"</span><span class="p">);</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Saldo atual:</span><span class="se">\n</span><span class="dl">"</span> <span class="o">+</span>
-            <span class="dl">"</span><span class="s2">Enviador: </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">Coin</span><span class="p">.</span><span class="nx">balances</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">resultado</span><span class="p">.</span><span class="nx">args</span><span class="p">.</span><span class="nx">de</span><span class="p">)</span> <span class="o">+</span>
-            <span class="dl">"</span><span class="s2">Recebedor: </span><span class="dl">"</span> <span class="o">+</span> <span class="nx">Coin</span><span class="p">.</span><span class="nx">balances</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">resultado</span><span class="p">.</span><span class="nx">args</span><span class="p">.</span><span class="nx">para</span><span class="p">));</span>
-    <span class="p">}</span>
+<span class="nx">Coin</span><span class="p">.</span><span class="nx">Envio</span><span class="p">().</span><span class="nx">watch</span><span class="p">({},</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="w"> </span><span class="kd">function</span><span class="p">(</span><span class="nx">erro</span><span class="p">,</span><span class="w"> </span><span class="nx">resultado</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">erro</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Moeda transferida: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">resultado</span><span class="p">.</span><span class="nx">args</span><span class="p">.</span><span class="nx">quantidade</span><span class="w"> </span><span class="o">+</span>
+<span class="w">            </span><span class="s2">&quot; moedas enviadas de &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">resultado</span><span class="p">.</span><span class="nx">args</span><span class="p">.</span><span class="nx">de</span><span class="w"> </span><span class="o">+</span>
+<span class="w">            </span><span class="s2">&quot; para &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">resultado</span><span class="p">.</span><span class="nx">args</span><span class="p">.</span><span class="nx">para</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;.&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;Saldo atual:\n&quot;</span><span class="w"> </span><span class="o">+</span>
+<span class="w">            </span><span class="s2">&quot;Enviador: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">Coin</span><span class="p">.</span><span class="nx">balances</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">resultado</span><span class="p">.</span><span class="nx">args</span><span class="p">.</span><span class="nx">de</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">            </span><span class="s2">&quot;Recebedor: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">Coin</span><span class="p">.</span><span class="nx">balances</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">resultado</span><span class="p">.</span><span class="nx">args</span><span class="p">.</span><span class="nx">para</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 <span class="c1">// Paradigma comum para um contrato depender de outro (e.g., um contrato que</span>
 <span class="c1">// depende da taxa de troca provida por outro)</span>
@@ -503,33 +503,33 @@ class, herança, etc.) */</span>
 <span class="c1">// MOdificadores validam entradas de funções, como saldo mínimo e autorização</span>
 <span class="c1">// do usuário; semelhantes a guardas em outras linguagens</span>
 
-<span class="c1">// '_' (subtraço) geralmente incluído como última linha do corpo, indica que a</span>
+<span class="c1">// &#39;_&#39; (subtraço) geralmente incluído como última linha do corpo, indica que a</span>
 <span class="c1">// função sendo chamada deve ser colocada ali</span>
-<span class="nx">modifier</span> <span class="nx">apenasDepois</span><span class="p">(</span><span class="nx">uint</span> <span class="nx">_tempo</span><span class="p">)</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="nx">agora</span> <span class="o">&lt;=</span> <span class="nx">_tempo</span><span class="p">)</span> <span class="k">throw</span><span class="p">;</span> <span class="nx">_</span> <span class="p">}</span>
-<span class="nx">modifier</span> <span class="nx">apenasDono</span> <span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">==</span> <span class="nx">dono</span><span class="p">)</span> <span class="nx">_</span> <span class="p">}</span>
+<span class="nx">modifier</span><span class="w"> </span><span class="nx">apenasDepois</span><span class="p">(</span><span class="nx">uint</span><span class="w"> </span><span class="nx">_tempo</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">agora</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="nx">_tempo</span><span class="p">)</span><span class="w"> </span><span class="k">throw</span><span class="p">;</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="p">}</span>
+<span class="nx">modifier</span><span class="w"> </span><span class="nx">apenasDono</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">dono</span><span class="p">)</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="p">}</span>
 <span class="c1">// geralmente usado para máquina de estado</span>
-<span class="nx">modifier</span> <span class="nx">apenasSeEmEstado</span> <span class="p">(</span><span class="nx">Estado</span> <span class="nx">estadoCorrente</span><span class="p">)</span>
-<span class="p">{</span> <span class="k">if</span> <span class="p">(</span><span class="nx">estadoCorrente</span> <span class="o">!=</span> <span class="nx">Estado</span><span class="p">.</span><span class="nx">A</span><span class="p">)</span> <span class="nx">_</span> <span class="p">}</span>
+<span class="nx">modifier</span><span class="w"> </span><span class="nx">apenasSeEmEstado</span><span class="w"> </span><span class="p">(</span><span class="nx">Estado</span><span class="w"> </span><span class="nx">estadoCorrente</span><span class="p">)</span>
+<span class="p">{</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">estadoCorrente</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nx">Estado</span><span class="p">.</span><span class="nx">A</span><span class="p">)</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="p">}</span>
 
 <span class="c1">// Concatenado logo após a chamada da função</span>
-<span class="kd">function</span> <span class="nx">mudeDona</span><span class="p">(</span><span class="nx">novoDono</span><span class="p">)</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">mudeDona</span><span class="p">(</span><span class="nx">novoDono</span><span class="p">)</span>
 <span class="nx">apenasDepois</span><span class="p">(</span><span class="nx">algumTempo</span><span class="p">)</span>
 <span class="nx">apenasDono</span><span class="p">()</span>
 <span class="nx">apenasSeEmEstado</span><span class="p">(</span><span class="nx">Estado</span><span class="p">.</span><span class="nx">A</span><span class="p">)</span>
 <span class="p">{</span>
-    <span class="nx">dono</span> <span class="o">=</span> <span class="nx">novoDono</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">dono</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">novoDono</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="c1">// subtração pode ser incluído antes do final do corpo, mas retorno explícitos</span>
 <span class="c1">// pode ser ignorado, então, tome cuidado</span>
-<span class="nx">modifier</span> <span class="nx">chequeValor</span><span class="p">(</span><span class="nx">uint</span> <span class="nx">quantidade</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">_</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">value</span> <span class="o">&gt;</span> <span class="nx">quantidade</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">uint</span> <span class="nx">quantidadeASerDevolvida</span> <span class="o">=</span> <span class="nx">quantidade</span> <span class="o">-</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
-        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">quantidadeASerDevolvida</span><span class="p">))</span> <span class="p">{</span>
-            <span class="k">throw</span><span class="p">;</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
+<span class="nx">modifier</span><span class="w"> </span><span class="nx">chequeValor</span><span class="p">(</span><span class="nx">uint</span><span class="w"> </span><span class="nx">quantidade</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">_</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">value</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nx">quantidade</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">uint</span><span class="w"> </span><span class="nx">quantidadeASerDevolvida</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">quantidade</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">msg</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">quantidadeASerDevolvida</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">throw</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 
 <span class="c1">// 6. BRANCHES E LOOPS</span>
@@ -545,10 +545,10 @@ class, herança, etc.) */</span>
 <span class="c1">// que contratos tem uma quantidade máxima de gas para cada bloco de</span>
 <span class="c1">// de código - falhas acontecerão caso ele seja excedido</span>
 <span class="c1">// Por exemplo:</span>
-<span class="k">for</span><span class="p">(</span><span class="nx">uint</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="nx">listaDeEnderecoDeRefundo</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">x</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">listaDeEnderecoDeRefundo</span><span class="p">[</span><span class="nx">x</span><span class="p">].</span><span class="nx">send</span><span class="p">(</span><span class="nx">ALGUMA_QUANTIDADE</span><span class="p">))</span> <span class="p">{</span>
-       <span class="k">throw</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="k">for</span><span class="p">(</span><span class="nx">uint</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">listaDeEnderecoDeRefundo</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">x</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">listaDeEnderecoDeRefundo</span><span class="p">[</span><span class="nx">x</span><span class="p">].</span><span class="nx">send</span><span class="p">(</span><span class="nx">ALGUMA_QUANTIDADE</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">       </span><span class="k">throw</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 
 <span class="c1">// Dois erros acima:</span>
@@ -563,58 +563,58 @@ class, herança, etc.) */</span>
 <span class="c1">// 7. OBJETOS/CONTRATOS</span>
 
 <span class="c1">// A. Chamando um contrato externo</span>
-<span class="nx">contract</span> <span class="nx">FonteDeInformacoes</span> <span class="p">{</span>
-    <span class="kd">function</span> <span class="nx">info</span><span class="p">()</span> <span class="nx">returns</span> <span class="p">(</span><span class="nx">uint</span> <span class="nx">ret</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">42</span><span class="p">;</span> <span class="p">}</span>
+<span class="nx">contract</span><span class="w"> </span><span class="nx">FonteDeInformacoes</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">info</span><span class="p">()</span><span class="w"> </span><span class="nx">returns</span><span class="w"> </span><span class="p">(</span><span class="nx">uint</span><span class="w"> </span><span class="nx">ret</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mf">42</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="p">}</span>
 
-<span class="nx">contract</span> <span class="nx">Consumidor</span> <span class="p">{</span>
-    <span class="nx">FonteDeInformacoes</span> <span class="nx">fonte</span><span class="p">;</span> <span class="c1">// aponta para um contrato na blockchain</span>
+<span class="nx">contract</span><span class="w"> </span><span class="nx">Consumidor</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">FonteDeInformacoes</span><span class="w"> </span><span class="nx">fonte</span><span class="p">;</span><span class="w"> </span><span class="c1">// aponta para um contrato na blockchain</span>
 
-    <span class="c1">// Assinala variável para uma instância do contrato</span>
-    <span class="kd">function</span> <span class="nx">setFonte</span><span class="p">(</span><span class="nx">address</span> <span class="nx">endereco</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Cast automático, cuidado; construtor não é chamado</span>
-        <span class="nx">fonte</span> <span class="o">=</span> <span class="nx">FonteDeInformacoes</span><span class="p">(</span><span class="nx">endereco</span><span class="p">);</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// Assinala variável para uma instância do contrato</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">setFonte</span><span class="p">(</span><span class="nx">address</span><span class="w"> </span><span class="nx">endereco</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Cast automático, cuidado; construtor não é chamado</span>
+<span class="w">        </span><span class="nx">fonte</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">FonteDeInformacoes</span><span class="p">(</span><span class="nx">endereco</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="c1">// Assinala variável para uma nova instância do contrato</span>
-    <span class="kd">function</span> <span class="nx">createNewFeed</span><span class="p">()</span> <span class="p">{</span>
-        <span class="nx">fonte</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">FonteDeInformacoes</span><span class="p">();</span> <span class="c1">// nova instância criada</span>
-        <span class="c1">// construtor é chamado</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// Assinala variável para uma nova instância do contrato</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">createNewFeed</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">fonte</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">FonteDeInformacoes</span><span class="p">();</span><span class="w"> </span><span class="c1">// nova instância criada</span>
+<span class="w">        </span><span class="c1">// construtor é chamado</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="kd">function</span> <span class="nx">chameFonte</span><span class="p">()</span> <span class="p">{</span>
-        <span class="c1">// último parenteses chama o contrato, podendo adicionar</span>
-        <span class="c1">// opcionalmente valores ou gas</span>
-        <span class="nx">fonte</span><span class="p">.</span><span class="nx">info</span><span class="p">.</span><span class="nx">value</span><span class="p">(</span><span class="mi">10</span><span class="p">).</span><span class="nx">gas</span><span class="p">(</span><span class="mi">800</span><span class="p">)();</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">chameFonte</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// último parenteses chama o contrato, podendo adicionar</span>
+<span class="w">        </span><span class="c1">// opcionalmente valores ou gas</span>
+<span class="w">        </span><span class="nx">fonte</span><span class="p">.</span><span class="nx">info</span><span class="p">.</span><span class="nx">value</span><span class="p">(</span><span class="mf">10</span><span class="p">).</span><span class="nx">gas</span><span class="p">(</span><span class="mf">800</span><span class="p">)();</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 
 <span class="c1">// B. Herança</span>
 
-<span class="c1">// Ordem importa, último contrato herdado (i.e., 'def') pode</span>
+<span class="c1">// Ordem importa, último contrato herdado (i.e., &#39;def&#39;) pode</span>
 <span class="c1">// sobrescrever partes de contratos previamente herdados</span>
-<span class="nx">contract</span> <span class="nx">MeuContratdo</span> <span class="nx">is</span> <span class="nx">abc</span><span class="p">,</span> <span class="nx">def</span><span class="p">(</span><span class="dl">"</span><span class="s2">um argumento personalizado def</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+<span class="nx">contract</span><span class="w"> </span><span class="nx">MeuContratdo</span><span class="w"> </span><span class="nx">is</span><span class="w"> </span><span class="nx">abc</span><span class="p">,</span><span class="w"> </span><span class="nx">def</span><span class="p">(</span><span class="s2">&quot;um argumento personalizado def&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 
 <span class="c1">// sobrescrevendo função</span>
-    <span class="kd">function</span> <span class="nx">z</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">==</span> <span class="nx">dono</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">def</span><span class="p">.</span><span class="nx">z</span><span class="p">();</span> <span class="c1">// chama função sobrescrita de def</span>
-            <span class="k">super</span><span class="p">.</span><span class="nx">z</span><span class="p">();</span> <span class="c1">// chama função do pai imeadiato</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">z</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">dono</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">def</span><span class="p">.</span><span class="nx">z</span><span class="p">();</span><span class="w"> </span><span class="c1">// chama função sobrescrita de def</span>
+<span class="w">            </span><span class="k">super</span><span class="p">.</span><span class="nx">z</span><span class="p">();</span><span class="w"> </span><span class="c1">// chama função do pai imeadiato</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 
 <span class="c1">// função abstrata</span>
-<span class="kd">function</span> <span class="nx">umaFuncaoAbstrata</span><span class="p">(</span><span class="nx">uint</span> <span class="nx">x</span><span class="p">);</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">umaFuncaoAbstrata</span><span class="p">(</span><span class="nx">uint</span><span class="w"> </span><span class="nx">x</span><span class="p">);</span>
 <span class="c1">// não pode ser compilada, usada em contratos base/abstratos que</span>
 <span class="c1">// então, a implementam</span>
 
 <span class="c1">// C. Import</span>
 
-<span class="k">import</span> <span class="dl">"</span><span class="s2">filename</span><span class="dl">"</span><span class="p">;</span>
-<span class="k">import</span> <span class="dl">"</span><span class="s2">github.com/ethereum/dapp-bin/library/iterable_mapping.sol</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="s2">&quot;filename&quot;</span><span class="p">;</span>
+<span class="k">import</span><span class="w"> </span><span class="s2">&quot;github.com/ethereum/dapp-bin/library/iterable_mapping.sol&quot;</span><span class="p">;</span>
 
-<span class="c1">// 'Import' está sobre desenvolvimento</span>
+<span class="c1">// &#39;Import&#39; está sobre desenvolvimento</span>
 <span class="c1">// Atualmente não pode ser usada na linha de comando</span>
 
 
@@ -622,12 +622,12 @@ class, herança, etc.) */</span>
 
 <span class="c1">// A. Throwing</span>
 <span class="c1">// Throwing</span>
-<span class="k">throw</span><span class="p">;</span> <span class="c1">// reverte estado e dinheiro NÃO-USADO é devolvido ao usuários</span>
+<span class="k">throw</span><span class="p">;</span><span class="w"> </span><span class="c1">// reverte estado e dinheiro NÃO-USADO é devolvido ao usuários</span>
 <span class="c1">// Atualmente não pode ser capturado</span>
 
 <span class="c1">// Um padrão de design comum é:</span>
-<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">endereco</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="mi">123</span><span class="p">))</span> <span class="p">{</span>
-    <span class="k">throw</span><span class="p">;</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">endereco</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="mf">123</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="c1">// B. Selfdestruct</span>
@@ -640,11 +640,11 @@ class, herança, etc.) */</span>
 
 <span class="c1">// Padrão comum, permite ao dono finalizar o contrato e receber fundos</span>
 <span class="c1">// restantes</span>
-<span class="kd">function</span> <span class="nx">remover</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">if</span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">==</span> <span class="nx">criador</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// Apenas o criador do contrato pode</span>
-                                <span class="c1">// fazer isso</span>
-        <span class="nx">selfdestruct</span><span class="p">(</span><span class="nx">criador</span><span class="p">);</span> <span class="c1">// Inativa o contrato e retorna os fundos</span>
-    <span class="p">}</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">remover</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">criador</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// Apenas o criador do contrato pode</span>
+<span class="w">                                </span><span class="c1">// fazer isso</span>
+<span class="w">        </span><span class="nx">selfdestruct</span><span class="p">(</span><span class="nx">criador</span><span class="p">);</span><span class="w"> </span><span class="c1">// Inativa o contrato e retorna os fundos</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 
 <span class="c1">// Talvez queria desativar o contrato manualmente, ao invés de usar</span>
@@ -658,11 +658,11 @@ class, herança, etc.) */</span>
 <span class="c1">// qualquer coisa privada precisa ser obfuscada (e.g., hash com segredo)</span>
 
 <span class="c1">// Passo-a-pass: 1. Comprometa-se com algo, 2. Revele compromisso</span>
-<span class="nx">sha3</span><span class="p">(</span><span class="dl">"</span><span class="s2">quantidade_de_lance</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">algum segredo</span><span class="dl">"</span><span class="p">);</span> <span class="c1">// compromisso</span>
+<span class="nx">sha3</span><span class="p">(</span><span class="s2">&quot;quantidade_de_lance&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;algum segredo&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// compromisso</span>
 
 <span class="c1">// chame a função reveal (revelar) do contrato no futuros</span>
 <span class="c1">// mostrando o lance mais o segredo para foi hasheado com SHA3</span>
-<span class="nx">reveal</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="dl">"</span><span class="s2">meuSegredo</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">reveal</span><span class="p">(</span><span class="mf">100</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;meuSegredo&quot;</span><span class="p">);</span>
 
 <span class="c1">// B. Otimização de disco</span>
 <span class="c1">// Escrever na blockchain pode ser caro, dado que os dados são guardados</span>
@@ -679,7 +679,7 @@ class, herança, etc.) */</span>
 <span class="c1">// Não pode restringir humanos ou computadores de ler os conteúdos</span>
 <span class="c1">// de transações ou estado de transações</span>
 
-<span class="c1">// Enquanto 'private' previne outros *contratos* de ler dados ]</span>
+<span class="c1">// Enquanto &#39;private&#39; previne outros *contratos* de ler dados ]</span>
 <span class="c1">// diretamente - qualquer outra parte ainda pode ler dados da blockchain</span>
 
 <span class="c1">// Todos os dados são armazedos na blockchain, para que qualquer um</span>
@@ -697,31 +697,31 @@ class, herança, etc.) */</span>
 
 <span class="c1">// Este é um contrato abstrato, tanto as classes cliente como a</span>
 <span class="c1">// servidor importam o cliente que deve ser implementado</span>
-<span class="nx">contract</span> <span class="nx">AlgumOraculoCallback</span> <span class="p">{</span>
-    <span class="kd">function</span> <span class="nx">OraculoCallback</span><span class="p">(</span><span class="nx">int</span> <span class="nx">_valor</span><span class="p">,</span> <span class="nx">uint</span> <span class="nx">_tempo</span><span class="p">,</span> <span class="nx">bytes32</span> <span class="nx">info</span><span class="p">)</span> <span class="nx">external</span><span class="p">;</span>
+<span class="nx">contract</span><span class="w"> </span><span class="nx">AlgumOraculoCallback</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">OraculoCallback</span><span class="p">(</span><span class="kr">int</span><span class="w"> </span><span class="nx">_valor</span><span class="p">,</span><span class="w"> </span><span class="nx">uint</span><span class="w"> </span><span class="nx">_tempo</span><span class="p">,</span><span class="w"> </span><span class="nx">bytes32</span><span class="w"> </span><span class="nx">info</span><span class="p">)</span><span class="w"> </span><span class="nx">external</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="nx">contract</span> <span class="nx">AlgumOráculo</span> <span class="p">{</span>
-    <span class="nx">AlgumOraculoCallback</span><span class="p">[]</span> <span class="nx">callbacks</span><span class="p">;</span> <span class="c1">// array com todos os inscritos</span>
+<span class="nx">contract</span><span class="w"> </span><span class="nx">AlgumOráculo</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">AlgumOraculoCallback</span><span class="p">[]</span><span class="w"> </span><span class="nx">callbacks</span><span class="p">;</span><span class="w"> </span><span class="c1">// array com todos os inscritos</span>
 
-    <span class="c1">// Registra inscrito</span>
-    <span class="kd">function</span> <span class="nx">addInscrito</span><span class="p">(</span><span class="nx">AlgumOraculoCallback</span> <span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">callbacks</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// Registra inscrito</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">addInscrito</span><span class="p">(</span><span class="nx">AlgumOraculoCallback</span><span class="w"> </span><span class="nx">a</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">callbacks</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="kd">function</span> <span class="nx">notificar</span><span class="p">(</span><span class="nx">valor</span><span class="p">,</span> <span class="nx">tempo</span><span class="p">,</span> <span class="nx">info</span><span class="p">)</span> <span class="kr">private</span> <span class="p">{</span>
-        <span class="k">for</span><span class="p">(</span><span class="nx">uint</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">callbacks</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-            <span class="c1">// todos os inscritos precisam implementar AlgumOraculoCallback</span>
-            <span class="nx">callbacks</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">OraculoCallback</span><span class="p">(</span><span class="nx">valor</span><span class="p">,</span> <span class="nx">tempo</span><span class="p">,</span> <span class="nx">info</span><span class="p">);</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">notificar</span><span class="p">(</span><span class="nx">valor</span><span class="p">,</span><span class="w"> </span><span class="nx">tempo</span><span class="p">,</span><span class="w"> </span><span class="nx">info</span><span class="p">)</span><span class="w"> </span><span class="kr">private</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">for</span><span class="p">(</span><span class="nx">uint</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">callbacks</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// todos os inscritos precisam implementar AlgumOraculoCallback</span>
+<span class="w">            </span><span class="nx">callbacks</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">OraculoCallback</span><span class="p">(</span><span class="nx">valor</span><span class="p">,</span><span class="w"> </span><span class="nx">tempo</span><span class="p">,</span><span class="w"> </span><span class="nx">info</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="kd">function</span> <span class="nx">facaAlgo</span><span class="p">()</span> <span class="kr">public</span> <span class="p">{</span>
-        <span class="c1">// Código para fazer algo</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">facaAlgo</span><span class="p">()</span><span class="w"> </span><span class="kr">public</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Código para fazer algo</span>
 
-        <span class="c1">// Notifica todos os inscrito</span>
-        <span class="nx">notificar</span><span class="p">(</span><span class="nx">_valor</span><span class="p">,</span> <span class="nx">_tempo</span><span class="p">,</span> <span class="nx">_info</span><span class="p">);</span>
-    <span class="p">}</span>
+<span class="w">        </span><span class="c1">// Notifica todos os inscrito</span>
+<span class="w">        </span><span class="nx">notificar</span><span class="p">(</span><span class="nx">_valor</span><span class="p">,</span><span class="w"> </span><span class="nx">_tempo</span><span class="p">,</span><span class="w"> </span><span class="nx">_info</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 
 <span class="c1">// Agora, seu contrato cliente pode addInscrito importando</span>
@@ -738,143 +738,143 @@ class, herança, etc.) */</span>
 
 <span class="c1">/// @title FundadorDoCrowdFunding</span>
 <span class="c1">/// @author nemild</span>
-<span class="nx">contract</span> <span class="nx">FundadorDoCrowdFunding</span> <span class="p">{</span>
-    <span class="c1">// Variáveis assinaladas na crição pelo criador</span>
-    <span class="nx">address</span> <span class="kr">public</span> <span class="nx">criador</span><span class="p">;</span>
-    <span class="nx">address</span> <span class="kr">public</span> <span class="nx">recipiente</span><span class="p">;</span> <span class="c1">// criador pode ser diferente do Recipiente</span>
-    <span class="nx">uint</span> <span class="kr">public</span> <span class="nx">minALevantar</span><span class="p">;</span> <span class="c1">// requisito para pagar, pelo contrário</span>
-                              <span class="c1">// os doadores recebem o dinheiro de volta</span>
-    <span class="nx">string</span> <span class="nx">urlDaCampanha</span><span class="p">;</span>
-    <span class="nx">byte</span> <span class="nx">constant</span> <span class="nx">versao</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="nx">contract</span><span class="w"> </span><span class="nx">FundadorDoCrowdFunding</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Variáveis assinaladas na crição pelo criador</span>
+<span class="w">    </span><span class="nx">address</span><span class="w"> </span><span class="kr">public</span><span class="w"> </span><span class="nx">criador</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">address</span><span class="w"> </span><span class="kr">public</span><span class="w"> </span><span class="nx">recipiente</span><span class="p">;</span><span class="w"> </span><span class="c1">// criador pode ser diferente do Recipiente</span>
+<span class="w">    </span><span class="nx">uint</span><span class="w"> </span><span class="kr">public</span><span class="w"> </span><span class="nx">minALevantar</span><span class="p">;</span><span class="w"> </span><span class="c1">// requisito para pagar, pelo contrário</span>
+<span class="w">                              </span><span class="c1">// os doadores recebem o dinheiro de volta</span>
+<span class="w">    </span><span class="nx">string</span><span class="w"> </span><span class="nx">urlDaCampanha</span><span class="p">;</span>
+<span class="w">    </span><span class="kr">byte</span><span class="w"> </span><span class="nx">constant</span><span class="w"> </span><span class="nx">versao</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span>
 
-    <span class="c1">// Estruturas de dados</span>
-    <span class="kr">enum</span> <span class="nx">Estado</span> <span class="p">{</span>
-        <span class="nx">LevantandoFundos</span><span class="p">,</span>
-        <span class="nx">RefundoExpirado</span><span class="p">,</span>
-        <span class="nx">Sucesso</span>
-    <span class="p">}</span>
-    <span class="nx">struct</span> <span class="nx">Contribuicao</span> <span class="p">{</span>
-        <span class="nx">uint</span> <span class="nx">quantidade</span><span class="p">;</span>
-        <span class="nx">address</span> <span class="nx">contribuidor</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// Estruturas de dados</span>
+<span class="w">    </span><span class="kr">enum</span><span class="w"> </span><span class="nx">Estado</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">LevantandoFundos</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">RefundoExpirado</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">Sucesso</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="nx">struct</span><span class="w"> </span><span class="nx">Contribuicao</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">uint</span><span class="w"> </span><span class="nx">quantidade</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">address</span><span class="w"> </span><span class="nx">contribuidor</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="c1">// Variáveis de Estado</span>
-    <span class="nx">State</span> <span class="kr">public</span> <span class="nx">estado</span> <span class="o">=</span> <span class="nx">Estado</span><span class="p">.</span><span class="nx">LevantandoFundos</span><span class="p">;</span> <span class="c1">// incializado na criação</span>
-    <span class="nx">uint</span> <span class="kr">public</span> <span class="nx">totalLevantado</span><span class="p">;</span>
-    <span class="nx">uint</span> <span class="kr">public</span> <span class="nx">levantadoPor</span><span class="p">;</span>
-    <span class="nx">uint</span> <span class="kr">public</span> <span class="nx">completadoEm</span><span class="p">;</span>
-    <span class="nx">Contribution</span><span class="p">[]</span> <span class="nx">contribuidores</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// Variáveis de Estado</span>
+<span class="w">    </span><span class="nx">State</span><span class="w"> </span><span class="kr">public</span><span class="w"> </span><span class="nx">estado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Estado</span><span class="p">.</span><span class="nx">LevantandoFundos</span><span class="p">;</span><span class="w"> </span><span class="c1">// incializado na criação</span>
+<span class="w">    </span><span class="nx">uint</span><span class="w"> </span><span class="kr">public</span><span class="w"> </span><span class="nx">totalLevantado</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">uint</span><span class="w"> </span><span class="kr">public</span><span class="w"> </span><span class="nx">levantadoPor</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">uint</span><span class="w"> </span><span class="kr">public</span><span class="w"> </span><span class="nx">completadoEm</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">Contribution</span><span class="p">[]</span><span class="w"> </span><span class="nx">contribuidores</span><span class="p">;</span>
 
-    <span class="nx">event</span> <span class="nx">LogRecebimentoDeFundos</span><span class="p">(</span><span class="nx">address</span> <span class="nx">endereco</span><span class="p">,</span>
-                                 <span class="nx">uint</span> <span class="nx">quantidade</span><span class="p">,</span>
-                                 <span class="nx">uint</span> <span class="nx">totalAtual</span><span class="p">);</span>
-    <span class="nx">event</span> <span class="nx">LogFundosPagos</span><span class="p">(</span><span class="nx">address</span> <span class="nx">enderecoDoRecebedor</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">event</span><span class="w"> </span><span class="nx">LogRecebimentoDeFundos</span><span class="p">(</span><span class="nx">address</span><span class="w"> </span><span class="nx">endereco</span><span class="p">,</span>
+<span class="w">                                 </span><span class="nx">uint</span><span class="w"> </span><span class="nx">quantidade</span><span class="p">,</span>
+<span class="w">                                 </span><span class="nx">uint</span><span class="w"> </span><span class="nx">totalAtual</span><span class="p">);</span>
+<span class="w">    </span><span class="nx">event</span><span class="w"> </span><span class="nx">LogFundosPagos</span><span class="p">(</span><span class="nx">address</span><span class="w"> </span><span class="nx">enderecoDoRecebedor</span><span class="p">);</span>
 
-    <span class="nx">modifier</span> <span class="nx">noEstado</span><span class="p">(</span><span class="nx">Estado</span> <span class="nx">_estado</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">estado</span> <span class="o">!=</span> <span class="nx">_estado</span><span class="p">)</span> <span class="k">throw</span><span class="p">;</span>
-        <span class="nx">_</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="nx">modifier</span><span class="w"> </span><span class="nx">noEstado</span><span class="p">(</span><span class="nx">Estado</span><span class="w"> </span><span class="nx">_estado</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">estado</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nx">_estado</span><span class="p">)</span><span class="w"> </span><span class="k">throw</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">_</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="nx">modifier</span> <span class="nx">eOCriador</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">criador</span><span class="p">)</span> <span class="k">throw</span><span class="p">;</span>
-        <span class="nx">_</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="nx">modifier</span><span class="w"> </span><span class="nx">eOCriador</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nx">criador</span><span class="p">)</span><span class="w"> </span><span class="k">throw</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">_</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="c1">// Aguarda 6 meses após o final do contrato para destruí-lo</span>
-    <span class="nx">modifier</span> <span class="nx">noFimDoContrato</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="p">((</span><span class="nx">estado</span> <span class="o">==</span> <span class="nx">Estado</span><span class="p">.</span><span class="nx">RefundoExpirado</span> <span class="o">||</span> <span class="nx">estado</span> <span class="o">==</span> <span class="nx">Estado</span><span class="p">.</span><span class="nx">Sucesso</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
-        <span class="nx">completadoEm</span> <span class="o">+</span> <span class="mi">6</span> <span class="nx">months</span> <span class="o">&lt;</span> <span class="nx">now</span><span class="p">))</span> <span class="p">{</span>
-            <span class="k">throw</span><span class="p">;</span>
-        <span class="p">}</span>
-        <span class="nx">_</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="c1">// Aguarda 6 meses após o final do contrato para destruí-lo</span>
+<span class="w">    </span><span class="nx">modifier</span><span class="w"> </span><span class="nx">noFimDoContrato</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="p">((</span><span class="nx">estado</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">Estado</span><span class="p">.</span><span class="nx">RefundoExpirado</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">estado</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">Estado</span><span class="p">.</span><span class="nx">Sucesso</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">        </span><span class="nx">completadoEm</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">6</span><span class="w"> </span><span class="nx">months</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nx">now</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">throw</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="nx">_</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="kd">function</span> <span class="nx">FundadorDoCrowdFunding</span><span class="p">(</span>
-        <span class="nx">uint</span> <span class="nx">tempoEmHorasParaFundraising</span><span class="p">,</span>
-        <span class="nx">string</span> <span class="nx">_urlDaCampanha</span><span class="p">,</span>
-        <span class="nx">address</span> <span class="nx">_recipiente</span><span class="p">,</span>
-        <span class="nx">uint</span> <span class="nx">_minALevantar</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="nx">criador</span> <span class="o">=</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">;</span>
-        <span class="nx">recipiente</span> <span class="o">=</span> <span class="nx">_recipiente</span><span class="p">;</span>
-        <span class="nx">urlDaCampanha</span> <span class="o">=</span> <span class="nx">_urlDaCampanha</span><span class="p">;</span>
-        <span class="nx">minALevantar</span> <span class="o">=</span> <span class="nx">_minALevantar</span><span class="p">;</span>
-        <span class="nx">levantadoPor</span> <span class="o">=</span> <span class="nx">now</span> <span class="o">+</span> <span class="p">(</span><span class="nx">tempoEmHorasParaFundraising</span> <span class="o">*</span> <span class="mi">1</span> <span class="nx">hours</span><span class="p">);</span>
-    <span class="p">}</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">FundadorDoCrowdFunding</span><span class="p">(</span>
+<span class="w">        </span><span class="nx">uint</span><span class="w"> </span><span class="nx">tempoEmHorasParaFundraising</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">string</span><span class="w"> </span><span class="nx">_urlDaCampanha</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">address</span><span class="w"> </span><span class="nx">_recipiente</span><span class="p">,</span>
+<span class="w">        </span><span class="nx">uint</span><span class="w"> </span><span class="nx">_minALevantar</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">criador</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">recipiente</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">_recipiente</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">urlDaCampanha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">_urlDaCampanha</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">minALevantar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">_minALevantar</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">levantadoPor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">now</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="nx">tempoEmHorasParaFundraising</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="nx">hours</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="kd">function</span> <span class="nx">contribuir</span><span class="p">()</span>
-    <span class="kr">public</span>
-    <span class="nx">noEstado</span><span class="p">(</span><span class="nx">Estado</span><span class="p">.</span><span class="nx">LevantandoFundos</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="nx">contribuidores</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span>
-            <span class="nx">Contribuicao</span><span class="p">({</span>
-                <span class="na">quantidade</span><span class="p">:</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span>
-                <span class="na">contribuidor</span><span class="p">:</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span>
-            <span class="p">})</span> <span class="c1">// use array, para podermos iterar</span>
-        <span class="p">);</span>
-        <span class="nx">totalLevantado</span> <span class="o">+=</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">contribuir</span><span class="p">()</span>
+<span class="w">    </span><span class="kr">public</span>
+<span class="w">    </span><span class="nx">noEstado</span><span class="p">(</span><span class="nx">Estado</span><span class="p">.</span><span class="nx">LevantandoFundos</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">contribuidores</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span>
+<span class="w">            </span><span class="nx">Contribuicao</span><span class="p">({</span>
+<span class="w">                </span><span class="nx">quantidade</span><span class="o">:</span><span class="w"> </span><span class="nx">msg</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span>
+<span class="w">                </span><span class="nx">contribuidor</span><span class="o">:</span><span class="w"> </span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span>
+<span class="w">            </span><span class="p">})</span><span class="w"> </span><span class="c1">// use array, para podermos iterar</span>
+<span class="w">        </span><span class="p">);</span>
+<span class="w">        </span><span class="nx">totalLevantado</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="nx">msg</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
 
-        <span class="nx">LogRecebimentoDeFundos</span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">,</span> <span class="nx">msg</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span> <span class="nx">totalRaised</span><span class="p">);</span>
+<span class="w">        </span><span class="nx">LogRecebimentoDeFundos</span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">,</span><span class="w"> </span><span class="nx">msg</span><span class="p">.</span><span class="nx">value</span><span class="p">,</span><span class="w"> </span><span class="nx">totalRaised</span><span class="p">);</span>
 
-        <span class="nx">verifiqueSeLevantamentoFoiCompletadoOuExpirado</span><span class="p">();</span>
-        <span class="k">return</span> <span class="nx">contribuicoes</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// retorna id</span>
-    <span class="p">}</span>
+<span class="w">        </span><span class="nx">verifiqueSeLevantamentoFoiCompletadoOuExpirado</span><span class="p">();</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="nx">contribuicoes</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// retorna id</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="kd">function</span> <span class="nx">verifiqueSeLevantamentoFoiCompletadoOuExpirado</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">totalLevantado</span> <span class="o">&gt;</span> <span class="nx">minALevantar</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">estado</span> <span class="o">=</span> <span class="nx">Estado</span><span class="p">.</span><span class="nx">Sucesso</span><span class="p">;</span>
-            <span class="nx">pagar</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">verifiqueSeLevantamentoFoiCompletadoOuExpirado</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">totalLevantado</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nx">minALevantar</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">estado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Estado</span><span class="p">.</span><span class="nx">Sucesso</span><span class="p">;</span>
+<span class="w">            </span><span class="nx">pagar</span><span class="p">();</span>
 
-            <span class="c1">// pode incentivar enviador que iniciou a mudanção de estado</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">now</span> <span class="o">&gt;</span> <span class="nx">levantadoPor</span> <span class="p">)</span>  <span class="p">{</span>
-            <span class="nx">estado</span> <span class="o">=</span> <span class="nx">Estado</span><span class="p">.</span><span class="nx">RefundoExpirado</span><span class="p">;</span> <span class="c1">// backers podem coletar</span>
-                                             <span class="c1">// o fundo chamando receberRefundo(id)</span>
-        <span class="p">}</span>
-        <span class="nx">completadoEm</span> <span class="o">=</span> <span class="nx">now</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="w">            </span><span class="c1">// pode incentivar enviador que iniciou a mudanção de estado</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="nx">now</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nx">levantadoPor</span><span class="w"> </span><span class="p">)</span><span class="w">  </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">estado</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Estado</span><span class="p">.</span><span class="nx">RefundoExpirado</span><span class="p">;</span><span class="w"> </span><span class="c1">// backers podem coletar</span>
+<span class="w">                                             </span><span class="c1">// o fundo chamando receberRefundo(id)</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="nx">completadoEm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">now</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="kd">function</span> <span class="nx">pagar</span><span class="p">()</span>
-    <span class="kr">public</span>
-    <span class="nx">emEstado</span><span class="p">(</span><span class="nx">Estado</span><span class="p">.</span><span class="nx">Sucesso</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">recipiente</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">))</span> <span class="p">{</span>
-            <span class="k">throw</span><span class="p">;</span>
-        <span class="p">}</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">pagar</span><span class="p">()</span>
+<span class="w">    </span><span class="kr">public</span>
+<span class="w">    </span><span class="nx">emEstado</span><span class="p">(</span><span class="nx">Estado</span><span class="p">.</span><span class="nx">Sucesso</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">recipiente</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">throw</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
 
 
-        <span class="nx">LogFundosPagos</span><span class="p">(</span><span class="nx">fundRecipient</span><span class="p">);</span>
-    <span class="p">}</span>
+<span class="w">        </span><span class="nx">LogFundosPagos</span><span class="p">(</span><span class="nx">fundRecipient</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="kd">function</span> <span class="nx">receberRefundo</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span>
-    <span class="kr">public</span>
-    <span class="nx">emEstado</span><span class="p">(</span><span class="nx">Estado</span><span class="p">.</span><span class="nx">RefundoExpirado</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">contribuicoes</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;=</span> <span class="nx">id</span> <span class="o">||</span> <span class="nx">id</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">contribuicoes</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">amount</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
-            <span class="k">throw</span><span class="p">;</span>
-        <span class="p">}</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">receberRefundo</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">public</span>
+<span class="w">    </span><span class="nx">emEstado</span><span class="p">(</span><span class="nx">Estado</span><span class="p">.</span><span class="nx">RefundoExpirado</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">contribuicoes</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="nx">id</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">id</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">contribuicoes</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">amount</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">throw</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
 
-        <span class="nx">uint</span> <span class="nx">quantidadeDeRefundo</span> <span class="o">=</span> <span class="nx">contribuicoes</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">amount</span><span class="p">;</span>
-        <span class="nx">contribuicoes</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">amount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">uint</span><span class="w"> </span><span class="nx">quantidadeDeRefundo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">contribuicoes</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">amount</span><span class="p">;</span>
+<span class="w">        </span><span class="nx">contribuicoes</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">amount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
 
-        <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">contribuicoes</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">contribuidor</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">quantidadeParaEnviar</span><span class="p">))</span> <span class="p">{</span>
-            <span class="nx">contribuicoes</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">amount</span> <span class="o">=</span> <span class="nx">quantidadeParaEnviar</span><span class="p">;</span>
-            <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
-        <span class="p">}</span>
+<span class="w">        </span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">contribuicoes</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">contribuidor</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">quantidadeParaEnviar</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nx">contribuicoes</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">amount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">quantidadeParaEnviar</span><span class="p">;</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
 
-      <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-    <span class="p">}</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="kd">function</span> <span class="nx">removerContrato</span><span class="p">()</span>
-    <span class="kr">public</span>
-    <span class="nx">eOCriador</span><span class="p">()</span>
-    <span class="nx">noFimDoContrato</span><span class="p">()</span>
-    <span class="p">{</span>
-        <span class="nx">selfdestruct</span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">);</span>
-        <span class="c1">// criador recebe todo o dinheiro restante{</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="nx">removerContrato</span><span class="p">()</span>
+<span class="w">    </span><span class="kr">public</span>
+<span class="w">    </span><span class="nx">eOCriador</span><span class="p">()</span>
+<span class="w">    </span><span class="nx">noFimDoContrato</span><span class="p">()</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nx">selfdestruct</span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span><span class="p">);</span>
+<span class="w">        </span><span class="c1">// criador recebe todo o dinheiro restante{</span>
 
-    <span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
 
-    <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span> <span class="k">throw</span><span class="p">;</span> <span class="p">}</span>
+<span class="w">    </span><span class="kd">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">throw</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="p">}</span>
 <span class="c1">// ** FIM DO EXEMPLO **</span>
 
@@ -882,27 +882,27 @@ class, herança, etc.) */</span>
 
 <span class="c1">// Unidades monetárias</span>
 <span class="c1">// Moeda é definida usando wei, menor quantidade de ether</span>
-<span class="nx">uint</span> <span class="nx">quantidadeMin</span> <span class="o">=</span> <span class="mi">1</span> <span class="nx">wei</span><span class="p">;</span>
-<span class="nx">uint</span> <span class="nx">a</span> <span class="o">=</span> <span class="mi">1</span> <span class="nx">finney</span><span class="p">;</span> <span class="c1">// 1 ether == 1000 finney</span>
+<span class="nx">uint</span><span class="w"> </span><span class="nx">quantidadeMin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="nx">wei</span><span class="p">;</span>
+<span class="nx">uint</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="nx">finney</span><span class="p">;</span><span class="w"> </span><span class="c1">// 1 ether == 1000 finney</span>
 <span class="c1">// Para outras unidades, veja: http://ether.fund/tool/converter</span>
 
 <span class="c1">// Unidades temporais</span>
-<span class="mi">1</span> <span class="o">==</span> <span class="mi">1</span> <span class="nx">second</span> <span class="c1">// segundos</span>
-<span class="mi">1</span> <span class="nx">minutes</span> <span class="o">==</span> <span class="mi">60</span> <span class="nx">seconds</span> <span class="c1">// Minutos</span>
+<span class="mf">1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="nx">second</span><span class="w"> </span><span class="c1">// segundos</span>
+<span class="mf">1</span><span class="w"> </span><span class="nx">minutes</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mf">60</span><span class="w"> </span><span class="nx">seconds</span><span class="w"> </span><span class="c1">// Minutos</span>
 
 <span class="c1">// Pode multiplicar uma variável de tempo, dado que unidades não são guardadas</span>
 <span class="c1">// na variável</span>
-<span class="nx">uint</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
-<span class="p">(</span><span class="nx">x</span> <span class="o">*</span> <span class="mi">1</span> <span class="nx">days</span><span class="p">);</span> <span class="c1">// 5 dias</span>
+<span class="nx">uint</span><span class="w"> </span><span class="nx">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">5</span><span class="p">;</span>
+<span class="p">(</span><span class="nx">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1</span><span class="w"> </span><span class="nx">days</span><span class="p">);</span><span class="w"> </span><span class="c1">// 5 dias</span>
 
 <span class="c1">// Cuidado com o salto de segundos / anos com declarações de igualdade para o tempo</span>
 <span class="c1">// (em vez disso, prefira maior que / menor que)</span>
 
 <span class="c1">// Criptografia</span>
 <span class="c1">// Todas as string passadas são concatenadas antes de realizar hashing</span>
-<span class="nx">sha3</span><span class="p">(</span><span class="dl">"</span><span class="s2">ab</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">cd</span><span class="dl">"</span><span class="p">);</span>
-<span class="nx">ripemd160</span><span class="p">(</span><span class="dl">"</span><span class="s2">abc</span><span class="dl">"</span><span class="p">);</span>
-<span class="nx">sha256</span><span class="p">(</span><span class="dl">"</span><span class="s2">def</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">sha3</span><span class="p">(</span><span class="s2">&quot;ab&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cd&quot;</span><span class="p">);</span>
+<span class="nx">ripemd160</span><span class="p">(</span><span class="s2">&quot;abc&quot;</span><span class="p">);</span>
+<span class="nx">sha256</span><span class="p">(</span><span class="s2">&quot;def&quot;</span><span class="p">);</span>
 
 <span class="c1">// 11. Segurança</span>
 
@@ -913,11 +913,11 @@ class, herança, etc.) */</span>
 
 <span class="c1">// 12. FUNÇÕES DE BAIXO NÍVELS</span>
 <span class="c1">// call - baixo nível, geralmente não usada, não tem segurança de tipos</span>
-<span class="nx">booleanSucesso</span> <span class="o">=</span> <span class="nx">algumEnderecoDeContrato</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="dl">'</span><span class="s1">nome_da_funcao</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">arg1</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">arg2</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">booleanSucesso</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">algumEnderecoDeContrato</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="s1">&#39;nome_da_funcao&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;arg1&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;arg2&#39;</span><span class="p">);</span>
 
 <span class="c1">// callcode - Código no endereço alvo executado no *contexto* do contrato</span>
 <span class="c1">// de chamada. Fornece funcionalidade de biblioteca</span>
-<span class="nx">algumEnderecoDeContrato</span><span class="p">.</span><span class="nx">callcode</span><span class="p">(</span><span class="dl">'</span><span class="s1">nome_da_funcao</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">algumEnderecoDeContrato</span><span class="p">.</span><span class="nx">callcode</span><span class="p">(</span><span class="s1">&#39;nome_da_funcao&#39;</span><span class="p">);</span>
 
 
 <span class="c1">// 13. NOTAS DE ESTILO</span>
@@ -945,7 +945,7 @@ class, herança, etc.) */</span>
 <span class="c1">// Parâmetro de função / valor de retorno  natspec</span>
 <span class="c1">/// @param algumParametro Alguma descrição do que o parametro faz</span>
 <span class="c1">/// @return Descrição do valor de retorno</span>
-</code></pre></div>
+</pre></div>
 <h2>Recursos adicionais</h2>
 
 <ul>

@@ -128,536 +128,536 @@ cosas como iteraciones y operaciones matemáticas que normalmente están en la
 sintaxis de otros lenguajes, permitiendo fundirse en el fondo de cualquier
 funcionalidad específica del dominio que necesita un proyecto.  Su sintaxis,
 incluso más simple que la de lisp, simplemente se quita de en medio.</p>
-<div class="highlight"><pre class="highlight tcl"><code><span class="c1">#! /bin/env tclsh</span>
+<div class="highlight"><pre><span></span><span class="c">#! /bin/env tclsh</span>
 
-<span class="c1">###############################################################################</span>
-<span class="c1">## 1. Directrices</span>
-<span class="c1">###############################################################################</span>
+<span class="c">###############################################################################</span>
+<span class="c">## 1. Directrices</span>
+<span class="c">###############################################################################</span>
 
-<span class="c1"># ¡Tcl no es ni Sh ni C!  Es necesario decirlo porque el entrecomillado estándar</span>
-<span class="c1"># de shell casi funciona en Tcl, y es común que la gente empiece con Tcl e</span>
-<span class="c1"># intente utilizar sintaxis de otros lenguajes.  Funciona al principio, pero</span>
-<span class="c1"># rápidamente conduce a frustración cuando los scripts se vuelven más complejos.</span>
+<span class="c"># ¡Tcl no es ni Sh ni C!  Es necesario decirlo porque el entrecomillado estándar</span>
+<span class="c"># de shell casi funciona en Tcl, y es común que la gente empiece con Tcl e</span>
+<span class="c"># intente utilizar sintaxis de otros lenguajes.  Funciona al principio, pero</span>
+<span class="c"># rápidamente conduce a frustración cuando los scripts se vuelven más complejos.</span>
 
-<span class="c1"># Las llaves son un mecanismo de entrecomillado, no de sintaxis para la construcción</span>
-<span class="c1"># de bloques de código o listas.  Tcl no tiene ninguna de ellas.  Las llaves se</span>
-<span class="c1"># usan para escapar caracteres especiales, lo que las hace apropiadas para </span>
-<span class="c1"># entrecomillar cuerpos de procedimientos y cadenas que deberían ser interpretadas</span>
-<span class="c1"># como listas.</span>
+<span class="c"># Las llaves son un mecanismo de entrecomillado, no de sintaxis para la construcción</span>
+<span class="c"># de bloques de código o listas.  Tcl no tiene ninguna de ellas.  Las llaves se</span>
+<span class="c"># usan para escapar caracteres especiales, lo que las hace apropiadas para </span>
+<span class="c"># entrecomillar cuerpos de procedimientos y cadenas que deberían ser interpretadas</span>
+<span class="c"># como listas.</span>
 
 
-<span class="c1">###############################################################################</span>
-<span class="c1">## 2. Sintaxis</span>
-<span class="c1">###############################################################################</span>
+<span class="c">###############################################################################</span>
+<span class="c">## 2. Sintaxis</span>
+<span class="c">###############################################################################</span>
 
-<span class="c1"># Un script consiste en comandos delimitados por saltos de línea o puntos y coma.</span>
-<span class="c1"># Cada comando es una llamada a una rutina.  La primera palabra es el nombre de</span>
-<span class="c1"># la rutina a llamar, y las siguientes palabras son argumentos de la rutina.</span>
-<span class="c1"># Las palabras están delimitadas por espacios.  Puesto que cada argumento es una</span>
-<span class="c1"># palabra en el comando, y una cadena de caracteres, puede no ser entrecomillada:</span>
-set part1 Sal
-set part2 ut<span class="p">;</span> set part3 ations
+<span class="c"># Un script consiste en comandos delimitados por saltos de línea o puntos y coma.</span>
+<span class="c"># Cada comando es una llamada a una rutina.  La primera palabra es el nombre de</span>
+<span class="c"># la rutina a llamar, y las siguientes palabras son argumentos de la rutina.</span>
+<span class="c"># Las palabras están delimitadas por espacios.  Puesto que cada argumento es una</span>
+<span class="c"># palabra en el comando, y una cadena de caracteres, puede no ser entrecomillada:</span>
+<span class="k">set</span><span class="w"> </span>part1<span class="w"> </span>Sal
+<span class="k">set</span><span class="w"> </span>part2<span class="w"> </span>ut<span class="k">;</span><span class="w"> </span><span class="k">set</span><span class="w"> </span>part3<span class="w"> </span>ations
 
 
-<span class="c1"># el símbolo del dólar introduce la sustitución de variables:</span>
-set greeting $part1$part2$part3
+<span class="c"># el símbolo del dólar introduce la sustitución de variables:</span>
+<span class="k">set</span><span class="w"> </span>greeting<span class="w"> </span><span class="nv">$part1$part2$part3</span>
 
 
-# Cuando <span class="s2">"set"</span>recibe sólamente el nombre de una variable, devuelve su valor:
-set part3 <span class="p">;</span><span class="c1"># Returns the value of the variable.</span>
+<span class="c"># Cuando &quot;set&quot;recibe sólamente el nombre de una variable, devuelve su valor:</span>
+<span class="k">set</span><span class="w"> </span>part3<span class="w"> </span><span class="k">;</span><span class="c"># Returns the value of the variable.</span>
 
 
-<span class="c1"># Los corchetes delimitan un script que será evaluado y sustituido por su resultado:</span>
-set greeting $part1$part2<span class="p">[</span>set part3<span class="p">]</span>
+<span class="c"># Los corchetes delimitan un script que será evaluado y sustituido por su resultado:</span>
+<span class="k">set</span><span class="w"> </span>greeting<span class="w"> </span><span class="nv">$part1$part2</span><span class="k">[set</span><span class="w"> </span>part3<span class="k">]</span>
 
 
-<span class="c1"># Un script incrustado puede estar compuesto de múltiples comandos, el último de</span>
-<span class="c1"># los cuales devuelve el resultado de la sustitución:</span>
-set greeting $greeting<span class="p">[</span>
-    incr i
-    incr i
-    incr i
-<span class="p">]</span>
-puts $greeting <span class="p">;</span># La salida es <span class="s2">"Salutations3"</span>
+<span class="c"># Un script incrustado puede estar compuesto de múltiples comandos, el último de</span>
+<span class="c"># los cuales devuelve el resultado de la sustitución:</span>
+<span class="k">set</span><span class="w"> </span>greeting<span class="w"> </span><span class="nv">$greeting</span><span class="k">[</span>
+<span class="w">    </span><span class="nb">incr</span><span class="w"> </span>i
+<span class="w">    </span><span class="nb">incr</span><span class="w"> </span>i
+<span class="w">    </span><span class="nb">incr</span><span class="w"> </span>i
+<span class="k">]</span>
+<span class="nb">puts</span><span class="w"> </span><span class="nv">$greeting</span><span class="w"> </span><span class="k">;</span><span class="c"># La salida es &quot;Salutations3&quot;</span>
 
-<span class="c1"># Cada palabra en un comando es una cadena, incluyendo el nombre de la rutina,</span>
-<span class="c1"># así que se pueden utilizar sustituciones allí también. Dada esta asignación</span>
-<span class="c1"># de variable,</span>
+<span class="c"># Cada palabra en un comando es una cadena, incluyendo el nombre de la rutina,</span>
+<span class="c"># así que se pueden utilizar sustituciones allí también. Dada esta asignación</span>
+<span class="c"># de variable,</span>
 
-set action pu
+<span class="k">set</span><span class="w"> </span>action<span class="w"> </span>pu
 
-<span class="c1"># los siguientes tres comandos son equivalentes:</span>
-puts $greeting
-<span class="nv">${action}</span>ts $greeting 
-<span class="p">[</span>set action<span class="p">]</span>ts $greeting
+<span class="c"># los siguientes tres comandos son equivalentes:</span>
+<span class="nb">puts</span><span class="w"> </span><span class="nv">$greeting</span>
+<span class="nv">${action}ts</span><span class="w"> </span><span class="nv">$greeting</span><span class="w"> </span>
+<span class="k">[set</span><span class="w"> </span>action<span class="k">]</span>ts<span class="w"> </span><span class="nv">$greeting</span>
 
 
-<span class="c1"># La barra invertida suprime el significado especial de los caracteres:</span>
-set amount <span class="se">\$</span>16.42
+<span class="c"># La barra invertida suprime el significado especial de los caracteres:</span>
+<span class="k">set</span><span class="w"> </span>amount<span class="w"> </span><span class="err">\</span><span class="nv">$16.42</span>
 
 
-<span class="c1"># La barra invertida añade significado especial a ciertos caracteres:</span>
-puts lots<span class="se">\n</span>of<span class="se">\n\n\n\n\n\n</span>newlines
+<span class="c"># La barra invertida añade significado especial a ciertos caracteres:</span>
+<span class="nb">puts</span><span class="w"> </span>lots<span class="err">\</span>nof<span class="err">\</span>n<span class="err">\</span>n<span class="err">\</span>n<span class="err">\</span>n<span class="err">\</span>n<span class="err">\</span>nnewlines
 
 
-<span class="c1"># Una palabra encerrada entre llaves no está sujeta a interpretación especial o</span>
-<span class="c1"># sustitución, excepto que una barra invertida antes de una llave no cuenta al</span>
-<span class="c1"># buscar la llave de cierre:</span>
-set somevar <span class="p">{</span>
-    This is a literal $ sign, and this <span class="se">\}</span> escaped
-    brace remains uninterpreted
-<span class="p">}</span>
+<span class="c"># Una palabra encerrada entre llaves no está sujeta a interpretación especial o</span>
+<span class="c"># sustitución, excepto que una barra invertida antes de una llave no cuenta al</span>
+<span class="c"># buscar la llave de cierre:</span>
+<span class="k">set</span><span class="w"> </span>somevar<span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="nv">This</span><span class="w"> </span>is<span class="w"> </span>a<span class="w"> </span>literal<span class="w"> </span><span class="err">$</span><span class="w"> </span>sign,<span class="w"> </span>and<span class="w"> </span>this<span class="w"> </span><span class="err">\</span><span class="k">}</span><span class="w"> </span>escaped
+<span class="w">    </span><span class="nv">brace</span><span class="w"> </span>remains<span class="w"> </span>uninterpreted
+<span class="k">}</span>
 
 
-<span class="c1"># En una palabra delimitada por comillas dobles, los espacios pierden su significado</span>
-<span class="c1"># especial:</span>
-set name Neo
-set greeting <span class="s2">"Hello, </span><span class="nv">$name</span><span class="s2">"</span>
+<span class="c"># En una palabra delimitada por comillas dobles, los espacios pierden su significado</span>
+<span class="c"># especial:</span>
+<span class="k">set</span><span class="w"> </span>name<span class="w"> </span>Neo
+<span class="k">set</span><span class="w"> </span>greeting<span class="w"> </span><span class="s2">&quot;Hello, $name&quot;</span>
 
 
-<span class="c1"># Un nombre de variable puede ser cualquier cadena:</span>
-set <span class="p">{</span>first name<span class="p">}</span> New
+<span class="c"># Un nombre de variable puede ser cualquier cadena:</span>
+<span class="k">set</span><span class="w"> </span><span class="k">{</span><span class="nv">first</span><span class="w"> </span>name<span class="k">}</span><span class="w"> </span>New
 
 
-<span class="c1"># La forma de sustitución de variables utilizando llaves permite nombres de</span>
-<span class="c1"># variable más complejos:</span>
-set greeting <span class="s2">"Hello, </span><span class="nv">${first name}</span><span class="s2">"</span>
+<span class="c"># La forma de sustitución de variables utilizando llaves permite nombres de</span>
+<span class="c"># variable más complejos:</span>
+<span class="k">set</span><span class="w"> </span>greeting<span class="w"> </span><span class="s2">&quot;Hello, ${first name}&quot;</span>
 
 
-# <span class="s2">"set"</span> puede utilizarse siempre en lugar de la sustitución de variables, y permite
-<span class="c1"># utilizar cualquier nombre de variable:</span>
-set greeting <span class="s2">"Hello, </span><span class="p">[</span>set <span class="p">{</span>first name<span class="p">}]</span><span class="s2">"</span>
+<span class="c"># &quot;set&quot; puede utilizarse siempre en lugar de la sustitución de variables, y permite</span>
+<span class="c"># utilizar cualquier nombre de variable:</span>
+<span class="k">set</span><span class="w"> </span>greeting<span class="w"> </span><span class="s2">&quot;Hello, [set {first name}]&quot;</span>
 
 
-<span class="c1"># Para desempaquetar una lista en un el comando, se utiliza el operador de expansión,</span>
-# <span class="s2">"{*}"</span>.  Estos dos comandos son equivalentes:
-set name Neo
-set <span class="k">{*}</span><span class="p">{</span>name Neo<span class="p">}</span>
-
-
-<span class="c1"># Un array es una variable especial que sirve como contenedor de otras variables.</span>
-set person<span class="p">(</span>name<span class="p">)</span> Neo
-set person<span class="p">(</span>destiny<span class="p">)</span> <span class="p">{</span>The One<span class="p">}</span>
-set greeting <span class="s2">"Hello, </span><span class="nv">$person</span><span class="s2">(name)"</span>
+<span class="c"># Para desempaquetar una lista en un el comando, se utiliza el operador de expansión,</span>
+<span class="c"># &quot;{*}&quot;.  Estos dos comandos son equivalentes:</span>
+<span class="k">set</span><span class="w"> </span>name<span class="w"> </span>Neo
+<span class="k">set</span><span class="w"> </span><span class="k">{</span><span class="o">*</span><span class="k">}{</span><span class="nv">name</span><span class="w"> </span>Neo<span class="k">}</span>
+
+
+<span class="c"># Un array es una variable especial que sirve como contenedor de otras variables.</span>
+<span class="k">set</span><span class="w"> </span>person<span class="k">(</span><span class="nv">name</span><span class="k">)</span><span class="w"> </span>Neo
+<span class="k">set</span><span class="w"> </span>person<span class="k">(</span><span class="nv">destiny</span><span class="k">)</span><span class="w"> </span><span class="k">{</span><span class="nv">The</span><span class="w"> </span>One<span class="k">}</span>
+<span class="k">set</span><span class="w"> </span>greeting<span class="w"> </span><span class="s2">&quot;Hello, $person(name)&quot;</span>
 
 
-# <span class="s2">"variable"</span> se puede utilizar para declarar o asignar variables. Al contrario
-# que <span class="s2">"set"</span>, que utiliza el espacio de nombres global y el actual para resolver
-# un nombre de variable, <span class="s2">"variable"</span> usa solamente el actual:
-variable name New
-
-
-# <span class="s2">"namespace eval"</span> crea un nuevo espacio de nombres en caso de no existir.
-<span class="c1"># Un espacio de nombres puede contener tanto rutinas como variables:</span>
-namespace eval people <span class="p">{</span>
-    namespace eval person1 <span class="p">{</span>
-        variable name Neo
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="c"># &quot;variable&quot; se puede utilizar para declarar o asignar variables. Al contrario</span>
+<span class="c"># que &quot;set&quot;, que utiliza el espacio de nombres global y el actual para resolver</span>
+<span class="c"># un nombre de variable, &quot;variable&quot; usa solamente el actual:</span>
+<span class="k">variable</span><span class="w"> </span>name<span class="w"> </span>New
+
+
+<span class="c"># &quot;namespace eval&quot; crea un nuevo espacio de nombres en caso de no existir.</span>
+<span class="c"># Un espacio de nombres puede contener tanto rutinas como variables:</span>
+<span class="k">namespace</span><span class="w"> </span>eval<span class="w"> </span>people<span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="k">namespace</span><span class="w"> </span>eval<span class="w"> </span>person1<span class="w"> </span><span class="k">{</span>
+<span class="w">        </span><span class="k">variable</span><span class="w"> </span>name<span class="w"> </span>Neo
+<span class="w">    </span><span class="k">}</span>
+<span class="k">}</span>
 
 
-# Use dos o más <span class="s2">":"</span> para delimitar componentes del espacio de nombres en nombres
-<span class="c1"># de variables:</span>
-namespace eval people <span class="p">{</span>
-    set greeting <span class="s2">"Hello </span><span class="nv">$person1::name</span><span class="s2">"</span>
-<span class="p">}</span>
+<span class="c"># Use dos o más &quot;:&quot; para delimitar componentes del espacio de nombres en nombres</span>
+<span class="c"># de variables:</span>
+<span class="k">namespace</span><span class="w"> </span>eval<span class="w"> </span>people<span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="k">set</span><span class="w"> </span>greeting<span class="w"> </span><span class="s2">&quot;Hello $person1::name&quot;</span>
+<span class="k">}</span>
 
-# Dos o más <span class="s2">":"</span> también delimitan componentes del espacio de nombres en nombres
-<span class="c1"># de rutinas:</span>
-proc people::person1::speak <span class="p">{}</span> <span class="p">{</span>
-    puts <span class="p">{</span>I am The One.<span class="p">}</span>
-<span class="p">}</span>
+<span class="c"># Dos o más &quot;:&quot; también delimitan componentes del espacio de nombres en nombres</span>
+<span class="c"># de rutinas:</span>
+<span class="k">proc</span><span class="w"> </span>people::person1::speak<span class="w"> </span><span class="k">{}</span><span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="k">{</span><span class="nv">I</span><span class="w"> </span>am<span class="w"> </span>The<span class="w"> </span>One.<span class="k">}</span>
+<span class="k">}</span>
 
-# Nombres completos comienzan con dos <span class="s2">":"</span>:
-set greeting <span class="s2">"Hello </span><span class="nv">$::people::person1::name</span><span class="s2">"</span>
+<span class="c"># Nombres completos comienzan con dos &quot;:&quot;:</span>
+<span class="k">set</span><span class="w"> </span>greeting<span class="w"> </span><span class="s2">&quot;Hello $::people::person1::name&quot;</span>
 
 
 
-<span class="c1">###############################################################################</span>
-<span class="c1">## 3. No más sintaxis</span>
-<span class="c1">###############################################################################</span>
+<span class="c">###############################################################################</span>
+<span class="c">## 3. No más sintaxis</span>
+<span class="c">###############################################################################</span>
 
-<span class="c1"># El resto de funcionalidades se implementa mediante rutinas.  Desde este punto,</span>
-<span class="c1"># no hay nueva sintaxis.  Todo lo que queda para aprender Tcl es acerca del</span>
-<span class="c1"># comportamiento de rutinas individuales y el significado que asignan a sus</span>
-<span class="c1"># argumentos.</span>
+<span class="c"># El resto de funcionalidades se implementa mediante rutinas.  Desde este punto,</span>
+<span class="c"># no hay nueva sintaxis.  Todo lo que queda para aprender Tcl es acerca del</span>
+<span class="c"># comportamiento de rutinas individuales y el significado que asignan a sus</span>
+<span class="c"># argumentos.</span>
 
 
 
-<span class="c1">###############################################################################</span>
-<span class="c1">## 4. Variables y espacios de nombres</span>
-<span class="c1">###############################################################################</span>
+<span class="c">###############################################################################</span>
+<span class="c">## 4. Variables y espacios de nombres</span>
+<span class="c">###############################################################################</span>
 
-<span class="c1"># Cada variable y cada rutina están asociadas a algún espacio de nombres</span>
+<span class="c"># Cada variable y cada rutina están asociadas a algún espacio de nombres</span>
 
-<span class="c1"># Para terminar con un intérprete inútil, sólo hay que eliminar el espacio de</span>
-<span class="c1"># nombres global.  No es algo muy útil, pero sirve para ilustrar la naturaleza</span>
-<span class="c1"># de Tcl.  El nombre del espacio de nombres global es en realidad la cadena</span>
-<span class="c1"># vacía, pero la única forma de representarlo es como un nombre completo. Para</span>
-<span class="c1"># probarlo, se puede usar esta rutina.</span>
-proc delete_global_namespace <span class="p">{}</span> <span class="p">{</span>
-    namespace delete ::
-<span class="p">}</span>
+<span class="c"># Para terminar con un intérprete inútil, sólo hay que eliminar el espacio de</span>
+<span class="c"># nombres global.  No es algo muy útil, pero sirve para ilustrar la naturaleza</span>
+<span class="c"># de Tcl.  El nombre del espacio de nombres global es en realidad la cadena</span>
+<span class="c"># vacía, pero la única forma de representarlo es como un nombre completo. Para</span>
+<span class="c"># probarlo, se puede usar esta rutina.</span>
+<span class="k">proc</span><span class="w"> </span>delete_global_namespace<span class="w"> </span><span class="k">{}</span><span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="k">namespace</span><span class="w"> </span>delete<span class="w"> </span><span class="o">::</span>
+<span class="k">}</span>
 
-# Como <span class="s2">"set"</span> siempre mantiene su vista en los espacios de nombres global y actual,
-# es más seguro utilizar <span class="s2">"variable"</span> para declarar o asignar un valor a una
-# variable.  Si una variable llamada <span class="s2">"nombre"</span> ya existe en el espacio de nombres
-# global, usar <span class="s2">"set"</span> asignará un valor a la variable local en lugar de a la
-# variable del espacio de nombres actual, mientras que <span class="s2">"variable"</span> opera en el
-<span class="c1"># espacio de nombres actual solamente.</span>
-namespace eval people <span class="p">{</span>
-    namespace eval person1 <span class="p">{</span>
-        variable name Neo
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="c"># Como &quot;set&quot; siempre mantiene su vista en los espacios de nombres global y actual,</span>
+<span class="c"># es más seguro utilizar &quot;variable&quot; para declarar o asignar un valor a una</span>
+<span class="c"># variable.  Si una variable llamada &quot;nombre&quot; ya existe en el espacio de nombres</span>
+<span class="c"># global, usar &quot;set&quot; asignará un valor a la variable local en lugar de a la</span>
+<span class="c"># variable del espacio de nombres actual, mientras que &quot;variable&quot; opera en el</span>
+<span class="c"># espacio de nombres actual solamente.</span>
+<span class="k">namespace</span><span class="w"> </span>eval<span class="w"> </span>people<span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="k">namespace</span><span class="w"> </span>eval<span class="w"> </span>person1<span class="w"> </span><span class="k">{</span>
+<span class="w">        </span><span class="k">variable</span><span class="w"> </span>name<span class="w"> </span>Neo
+<span class="w">    </span><span class="k">}</span>
+<span class="k">}</span>
 
-# Una vez que una variable es declarada en un espacio de nombres, <span class="p">[</span><span class="k">set</span><span class="p">]</span> la vé
-<span class="c1"># en lugar de una variable de idéntico nombre en el espacio de nombres global:</span>
-namespace eval people <span class="p">{</span>
-    namespace eval person1 <span class="p">{</span>
-        variable name
-        set name Neo
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="c"># Una vez que una variable es declarada en un espacio de nombres, [set] la vé</span>
+<span class="c"># en lugar de una variable de idéntico nombre en el espacio de nombres global:</span>
+<span class="k">namespace</span><span class="w"> </span>eval<span class="w"> </span>people<span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="k">namespace</span><span class="w"> </span>eval<span class="w"> </span>person1<span class="w"> </span><span class="k">{</span>
+<span class="w">        </span><span class="k">variable</span><span class="w"> </span>name
+<span class="w">        </span><span class="k">set</span><span class="w"> </span>name<span class="w"> </span>Neo
+<span class="w">    </span><span class="k">}</span>
+<span class="k">}</span>
 
-# En cambio, si <span class="s2">"set"</span> tiene que crear una nueva variable, siempre lo hace en el
-<span class="c1"># espacio de nombres actual:</span>
-unset name
-namespace eval people <span class="p">{</span>
-    namespace eval person1 <span class="p">{</span>
-        set name neo
-    <span class="p">}</span>
+<span class="c"># En cambio, si &quot;set&quot; tiene que crear una nueva variable, siempre lo hace en el</span>
+<span class="c"># espacio de nombres actual:</span>
+<span class="k">unset</span><span class="w"> </span>name
+<span class="k">namespace</span><span class="w"> </span>eval<span class="w"> </span>people<span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="k">namespace</span><span class="w"> </span>eval<span class="w"> </span>person1<span class="w"> </span><span class="k">{</span>
+<span class="w">        </span><span class="k">set</span><span class="w"> </span>name<span class="w"> </span>neo
+<span class="w">    </span><span class="k">}</span>
 
-<span class="p">}</span>
-set people::person1::name
+<span class="k">}</span>
+<span class="k">set</span><span class="w"> </span>people::person1::name
 
 
-<span class="c1"># Un nombre absoluto siempre comienza con el nombre del espacio de nombres global</span>
-# <span class="p">(</span>cadena vacía<span class="p">)</span>, seguido de dos <span class="s2">":"</span>:
-set ::people::person1::name Neo
+<span class="c"># Un nombre absoluto siempre comienza con el nombre del espacio de nombres global</span>
+<span class="c"># (cadena vacía), seguido de dos &quot;:&quot;:</span>
+<span class="k">set</span><span class="w"> </span><span class="o">::</span>people::person1::name<span class="w"> </span>Neo
 
 
-<span class="c1"># En el interior de un procedimiento, la variable enlaza una variable en el espacio</span>
-<span class="c1"># de nombres actual en el ámbito local:</span>
-namespace eval people::person1 <span class="p">{</span>
-    proc fly <span class="p">{}</span> <span class="p">{</span>
-        variable name
-        puts <span class="s2">"</span><span class="nv">$name</span><span class="s2"> is flying!"</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<span class="c"># En el interior de un procedimiento, la variable enlaza una variable en el espacio</span>
+<span class="c"># de nombres actual en el ámbito local:</span>
+<span class="k">namespace</span><span class="w"> </span>eval<span class="w"> </span>people::person1<span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="k">proc</span><span class="w"> </span>fly<span class="w"> </span><span class="k">{}</span><span class="w"> </span><span class="k">{</span>
+<span class="w">        </span><span class="k">variable</span><span class="w"> </span>name
+<span class="w">        </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;$name is flying!&quot;</span>
+<span class="w">    </span><span class="k">}</span>
+<span class="k">}</span>
 
 
 
 
-<span class="c1">###############################################################################</span>
-<span class="c1">## 4. Rutinas incorporadas</span>
-<span class="c1">###############################################################################</span>
+<span class="c">###############################################################################</span>
+<span class="c">## 4. Rutinas incorporadas</span>
+<span class="c">###############################################################################</span>
 
-# Las operaciones matemáticas se pueden hacer con <span class="s2">"expr"</span>:
-set a 3
-set b 4
-set c <span class="p">[</span>expr <span class="p">{</span><span class="nv">$a</span> + $b<span class="p">}]</span>
+<span class="c"># Las operaciones matemáticas se pueden hacer con &quot;expr&quot;:</span>
+<span class="k">set</span><span class="w"> </span>a<span class="w"> </span><span class="mi">3</span>
+<span class="k">set</span><span class="w"> </span>b<span class="w"> </span><span class="mi">4</span>
+<span class="k">set</span><span class="w"> </span>c<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="k">{</span><span class="nv">$a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">$b</span><span class="k">}]</span>
 
-# Como <span class="s2">"expr"</span> realiza sustituciones de variables por sí mismo, es necesario
-<span class="c1"># poner la expresión entre llaves para prevenir a Tcl sustituir las variables</span>
-# primero. Ver <span class="s2">"http://wiki.tcl.tk/Brace%20your%20#%20expr-essions"</span> para más
-<span class="c1"># detalles.</span>
+<span class="c"># Como &quot;expr&quot; realiza sustituciones de variables por sí mismo, es necesario</span>
+<span class="c"># poner la expresión entre llaves para prevenir a Tcl sustituir las variables</span>
+<span class="c"># primero. Ver &quot;http://wiki.tcl.tk/Brace%20your%20#%20expr-essions&quot; para más</span>
+<span class="c"># detalles.</span>
 
 
-# <span class="s2">"expr"</span> entiende sustitución de variables y scripts:
-set c <span class="p">[</span>expr <span class="p">{</span><span class="nv">$a</span> + <span class="p">[</span>set b<span class="p">]}]</span>
+<span class="c"># &quot;expr&quot; entiende sustitución de variables y scripts:</span>
+<span class="k">set</span><span class="w"> </span>c<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="k">{</span><span class="nv">$a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">[set</span><span class="w"> </span>b<span class="k">]}]</span>
 
 
-# <span class="s2">"expr"</span> provee de un conjunto de funciones matemáticas:
-set c <span class="p">[</span>expr <span class="p">{</span>pow<span class="p">(</span><span class="nv">$a</span>,$b<span class="p">)}]</span>
+<span class="c"># &quot;expr&quot; provee de un conjunto de funciones matemáticas:</span>
+<span class="k">set</span><span class="w"> </span>c<span class="w"> </span><span class="k">[expr</span><span class="w"> </span><span class="k">{</span><span class="nv">pow</span><span class="k">(</span><span class="nv">$a</span>,<span class="nv">$b</span><span class="k">)}]</span>
 
 
-<span class="c1"># Los operadores matemáticos están disponibles como rutinas en el espacio de</span>
-<span class="c1"># nombres ::tcl::mathop</span>
-::tcl::mathop::+ 5 3
+<span class="c"># Los operadores matemáticos están disponibles como rutinas en el espacio de</span>
+<span class="c"># nombres ::tcl::mathop</span>
+<span class="o">::</span><span class="nv">tcl</span><span class="o">::</span>mathop::<span class="o">+</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">3</span>
 
-<span class="c1"># Las rutinas pueden ser importadas desde otros espacios de nombres:</span>
-namespace import ::tcl::mathop::+
-set result <span class="p">[</span>+ 5 3<span class="p">]</span>
+<span class="c"># Las rutinas pueden ser importadas desde otros espacios de nombres:</span>
+<span class="k">namespace</span><span class="w"> </span>import<span class="w"> </span><span class="o">::</span>tcl::mathop::<span class="o">+</span>
+<span class="k">set</span><span class="w"> </span>result<span class="w"> </span><span class="k">[</span><span class="o">+</span><span class="w"> </span><span class="nv">5</span><span class="w"> </span><span class="mi">3</span><span class="k">]</span>
 
 
-# Los valores no numéricos deben ser entrecomillados, y los operadores como <span class="s2">"eq"</span>
-<span class="c1"># pueden utilizarse para restringir la operación a una comparación de cadenas:</span>
-set name Neo
-expr <span class="p">{{</span>Bob<span class="p">}</span> eq $name<span class="p">}</span>
+<span class="c"># Los valores no numéricos deben ser entrecomillados, y los operadores como &quot;eq&quot;</span>
+<span class="c"># pueden utilizarse para restringir la operación a una comparación de cadenas:</span>
+<span class="k">set</span><span class="w"> </span>name<span class="w"> </span>Neo
+<span class="k">expr</span><span class="w"> </span><span class="k">{{</span><span class="nv">Bob</span><span class="k">}</span><span class="w"> </span><span class="nv">eq</span><span class="w"> </span><span class="nv">$name</span><span class="k">}</span>
 
-<span class="c1"># Los operadores generales recurren a la comparación de cadenas si una operación</span>
-<span class="c1"># numérica no es factible.</span>
-expr <span class="p">{{</span>Bob<span class="p">}</span> == $name<span class="p">}</span>
+<span class="c"># Los operadores generales recurren a la comparación de cadenas si una operación</span>
+<span class="c"># numérica no es factible.</span>
+<span class="k">expr</span><span class="w"> </span><span class="k">{{</span><span class="nv">Bob</span><span class="k">}</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nv">$name</span><span class="k">}</span>
 
 
-# <span class="s2">"proc"</span> crea nuevas rutinas:
-proc greet name <span class="p">{</span>
-    return <span class="s2">"Hello, </span><span class="nv">$name</span><span class="s2">!"</span>
-<span class="p">}</span>
+<span class="c"># &quot;proc&quot; crea nuevas rutinas:</span>
+<span class="k">proc</span><span class="w"> </span>greet<span class="w"> </span>name<span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s2">&quot;Hello, $name!&quot;</span>
+<span class="k">}</span>
 
-<span class="c1"># Se pueden especificar múltiples parámetros:</span>
-proc greet <span class="p">{</span>greeting name<span class="p">}</span> <span class="p">{</span>
-    return <span class="s2">"</span><span class="nv">$greeting</span><span class="s2">, </span><span class="nv">$name</span><span class="s2">!"</span>
-<span class="p">}</span>
+<span class="c"># Se pueden especificar múltiples parámetros:</span>
+<span class="k">proc</span><span class="w"> </span>greet<span class="w"> </span><span class="k">{</span><span class="nv">greeting</span><span class="w"> </span>name<span class="k">}</span><span class="w"> </span><span class="k">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s2">&quot;$greeting, $name!&quot;</span>
+<span class="k">}</span>
 
 
-<span class="c1"># Como se dijo antes, las llaves no construyen un bloque de código.  Cada valor,</span>
-# incluso el tercer argumento de <span class="s2">"proc"</span>, es una cadena.  El comando anterior
-<span class="c1"># puede ser reescrito sin usar llaves:</span>
-proc greet greeting<span class="se">\ </span>name return<span class="se">\ \"\$</span>greeting,<span class="se">\ \$</span>name!<span class="se">\"</span>
+<span class="c"># Como se dijo antes, las llaves no construyen un bloque de código.  Cada valor,</span>
+<span class="c"># incluso el tercer argumento de &quot;proc&quot;, es una cadena.  El comando anterior</span>
+<span class="c"># puede ser reescrito sin usar llaves:</span>
+<span class="k">proc</span><span class="w"> </span>greet<span class="w"> </span>greeting<span class="err">\</span><span class="w"> </span>name<span class="w"> </span>return<span class="err">\</span><span class="w"> </span><span class="err">\</span><span class="s2">&quot;\$greeting,\ \$name!\&quot;</span>
 
 
 
-# Cuando el último parámetro es el valor literal <span class="s2">"args"</span>, todos los argumentos
-# extra pasados a la rutina son recogidos en una lista y asignado a <span class="s2">"args"</span>:
-proc fold <span class="p">{</span>cmd first args<span class="p">}</span> <span class="p">{</span>
-    foreach arg $args <span class="p">{</span>
-        set first <span class="p">[</span><span class="nv">$cmd</span> $first $arg<span class="p">]</span>
-    <span class="p">}</span>
-    return $first
-<span class="p">}</span>
-fold ::tcl::mathop::* 5 3 3 <span class="p">;</span><span class="c1"># -&gt;  45</span>
+<span class="s2"># Cuando el último parámetro es el valor literal &quot;</span>args<span class="s2">&quot;, todos los argumentos</span>
+<span class="s2"># extra pasados a la rutina son recogidos en una lista y asignado a &quot;</span>args<span class="s2">&quot;:</span>
+<span class="s2">proc fold {cmd first args} {</span>
+<span class="s2">    foreach arg $args {</span>
+<span class="s2">        set first [$cmd $first $arg]</span>
+<span class="s2">    }</span>
+<span class="s2">    return $first</span>
+<span class="s2">}</span>
+<span class="s2">fold ::tcl::mathop::* 5 3 3 ;# -&gt;  45</span>
 
 
-<span class="c1"># La ejecución condicional se implementa como una rutina:</span>
-if <span class="p">{</span>3 &gt; 4<span class="p">}</span> <span class="p">{</span>
-    puts <span class="p">{</span>This will never happen<span class="p">}</span>
-<span class="p">}</span> elseif <span class="p">{</span>4 &gt; 4<span class="p">}</span> <span class="p">{</span>
-    puts <span class="p">{</span>This will also never happen<span class="p">}</span>
-<span class="p">}</span> else <span class="p">{</span>
-    puts <span class="p">{</span>This will always happen<span class="p">}</span>
-<span class="p">}</span>
+<span class="s2"># La ejecución condicional se implementa como una rutina:</span>
+<span class="s2">if {3 &gt; 4} {</span>
+<span class="s2">    puts {This will never happen}</span>
+<span class="s2">} elseif {4 &gt; 4} {</span>
+<span class="s2">    puts {This will also never happen}</span>
+<span class="s2">} else {</span>
+<span class="s2">    puts {This will always happen}</span>
+<span class="s2">}</span>
 
 
-# Los bucles se implementan como rutinas.  Los primer y tercer argumentos de <span class="s2">"for"</span>
-<span class="c1"># son tratados como scripts, mientras que el segundo lo es como una expresión:</span>
-set res 0
-for <span class="p">{</span>set i 0<span class="p">}</span> <span class="p">{</span><span class="nv">$i</span> &lt; 10<span class="p">}</span> <span class="p">{</span>incr i<span class="p">}</span> <span class="p">{</span>
-    set res <span class="p">[</span>expr <span class="p">{</span><span class="nv">$res</span> + $i<span class="p">}]</span>
-<span class="p">}</span>
-unset res
+<span class="s2"># Los bucles se implementan como rutinas.  Los primer y tercer argumentos de &quot;</span>for<span class="s2">&quot;</span>
+<span class="s2"># son tratados como scripts, mientras que el segundo lo es como una expresión:</span>
+<span class="s2">set res 0</span>
+<span class="s2">for {set i 0} {$i &lt; 10} {incr i} {</span>
+<span class="s2">    set res [expr {$res + $i}]</span>
+<span class="s2">}</span>
+<span class="s2">unset res</span>
 
 
-# El primer argumento de <span class="s2">"while"</span> se trata también como una expresión:
-set i 0
-while <span class="p">{</span><span class="nv">$i</span> &lt; 10<span class="p">}</span> <span class="p">{</span>
-    incr i 2
-<span class="p">}</span>
+<span class="s2"># El primer argumento de &quot;</span>while<span class="s2">&quot; se trata también como una expresión:</span>
+<span class="s2">set i 0</span>
+<span class="s2">while {$i &lt; 10} {</span>
+<span class="s2">    incr i 2</span>
+<span class="s2">}</span>
 
 
-<span class="c1"># Una lista es una cadena, y los elementos de la lista se delimitan con espacios</span>
-<span class="c1"># en blanco:</span>
-set amounts 10<span class="se">\ </span>33<span class="se">\ </span>18
-set amount <span class="p">[</span>lindex $amounts 1<span class="p">]</span>
+<span class="s2"># Una lista es una cadena, y los elementos de la lista se delimitan con espacios</span>
+<span class="s2"># en blanco:</span>
+<span class="s2">set amounts 10\ 33\ 18</span>
+<span class="s2">set amount [lindex $amounts 1]</span>
 
-<span class="c1"># El espacio en blanco dentro de una lista debe ser entrecomillado:</span>
-set inventory <span class="p">{</span><span class="s2">"item 1"</span> item<span class="se">\ </span>2 <span class="p">{</span>item 3<span class="p">}}</span>
+<span class="s2"># El espacio en blanco dentro de una lista debe ser entrecomillado:</span>
+<span class="s2">set inventory {&quot;</span>item<span class="w"> </span><span class="mi">1</span><span class="s2">&quot; item\ 2 {item 3}}</span>
 
 
-<span class="c1"># Generalmente, es mejor idea usar rutinas de listas al modificarlas:</span>
-lappend inventory <span class="p">{</span>item 1<span class="p">}</span> <span class="p">{</span>item 2<span class="p">}</span> <span class="p">{</span>item 3<span class="p">}</span>
+<span class="s2"># Generalmente, es mejor idea usar rutinas de listas al modificarlas:</span>
+<span class="s2">lappend inventory {item 1} {item 2} {item 3}</span>
 
 
-<span class="c1"># Las llaves y barras invertidas pueden utilizarse para formatear valores más</span>
-<span class="c1"># complejos en una lista.  Una lista parece un script, excepto en que el carácter</span>
-# de nueva línea y el <span class="s2">":"</span> pierden su significado especial, y no hay sustitución
-<span class="c1"># de variable o scripts.  Esta característica hace Tcl homoicónico.  Hay tres</span>
-<span class="c1"># elementos en la siguiente lista:</span>
-set values <span class="p">{</span>
+<span class="s2"># Las llaves y barras invertidas pueden utilizarse para formatear valores más</span>
+<span class="s2"># complejos en una lista.  Una lista parece un script, excepto en que el carácter</span>
+<span class="s2"># de nueva línea y el &quot;</span><span class="o">:</span><span class="s2">&quot; pierden su significado especial, y no hay sustitución</span>
+<span class="s2"># de variable o scripts.  Esta característica hace Tcl homoicónico.  Hay tres</span>
+<span class="s2"># elementos en la siguiente lista:</span>
+<span class="s2">set values {</span>
 
-    one<span class="se">\ </span>two
+<span class="s2">    one\ two</span>
 
-    <span class="p">{</span>three four<span class="p">}</span>
+<span class="s2">    {three four}</span>
 
-    five<span class="se">\{</span>six
+<span class="s2">    five\{six</span>
 
-<span class="p">}</span>
+<span class="s2">}</span>
 
 
-<span class="c1"># Como, al igual que todos los valores, una lista es una cadena, operaciones de</span>
-<span class="c1"># cadenas pueden ser realizadas sobre ellas, corriendo el riesgo de corromper</span>
-<span class="c1"># el formato de la lista:</span>
-set values <span class="p">{</span>one two three four<span class="p">}</span>
-set values <span class="p">[</span>string map <span class="p">{</span>two <span class="se">\{</span><span class="p">}</span> $values<span class="p">]</span> <span class="p">;</span># $values is no-longer a <span class="se">\
-</span>    properly-formatted list
+<span class="s2"># Como, al igual que todos los valores, una lista es una cadena, operaciones de</span>
+<span class="s2"># cadenas pueden ser realizadas sobre ellas, corriendo el riesgo de corromper</span>
+<span class="s2"># el formato de la lista:</span>
+<span class="s2">set values {one two three four}</span>
+<span class="s2">set values [string map {two \{} $values] ;# $values is no-longer a \</span>
+<span class="s2">    properly-formatted list</span>
 
 
-<span class="c1"># La forma segura de conseguir una lista debidamente formateada es utilizando</span>
-<span class="c1"># las rutinas propias de lista:</span>
-set values <span class="p">[</span>list one <span class="se">\{</span> three four<span class="p">]</span>
-lappend values <span class="p">{</span> <span class="p">}</span> <span class="p">;</span><span class="c1"># add a single space as an item in the list</span>
+<span class="s2"># La forma segura de conseguir una lista debidamente formateada es utilizando</span>
+<span class="s2"># las rutinas propias de lista:</span>
+<span class="s2">set values [list one \{ three four]</span>
+<span class="s2">lappend values { } ;# add a single space as an item in the list</span>
 
 
-# Se puede utilizar <span class="s2">"eval"</span> para evaluar un valor como un script:
-eval <span class="p">{</span>
-    set name Neo
-    set greeting <span class="s2">"Hello, </span><span class="nv">$name</span><span class="s2">"</span>
-<span class="p">}</span>
+<span class="s2"># Se puede utilizar &quot;</span>eval<span class="s2">&quot; para evaluar un valor como un script:</span>
+<span class="s2">eval {</span>
+<span class="s2">    set name Neo</span>
+<span class="s2">    set greeting &quot;</span>Hello,<span class="w"> </span><span class="nv">$name</span><span class="s2">&quot;</span>
+<span class="s2">}</span>
 
 
-# Una lista siempre puede ser pasada a <span class="s2">"eval"</span> como un script compuesto de un único
-<span class="c1"># comando:</span>
-eval <span class="p">{</span>set name Neo<span class="p">}</span>
-eval <span class="p">[</span>list set greeting <span class="s2">"Hello, </span><span class="nv">$name</span><span class="s2">"</span><span class="p">]</span>
+<span class="s2"># Una lista siempre puede ser pasada a &quot;</span>eval<span class="s2">&quot; como un script compuesto de un único</span>
+<span class="s2"># comando:</span>
+<span class="s2">eval {set name Neo}</span>
+<span class="s2">eval [list set greeting &quot;Hello, $name&quot;]</span>
 
 
-# Por lo tanto, cuando se utiliza <span class="s2">"eval"</span>, use <span class="s2">"list"</span> para construir el comando
-<span class="c1"># deseado:</span>
-set command <span class="p">{</span>set name<span class="p">}</span>
-lappend command <span class="p">{</span>Archibald Sorbisol<span class="p">}</span>
-eval $command
+<span class="s2"># Por lo tanto, cuando se utiliza &quot;</span>eval<span class="s2">&quot;, use &quot;</span>list<span class="s2">&quot; para construir el comando</span>
+<span class="s2"># deseado:</span>
+<span class="s2">set command {set name}</span>
+<span class="s2">lappend command {Archibald Sorbisol}</span>
+<span class="s2">eval $command</span>
 
 
-<span class="c1"># Un error común es no usar funciones de listas al construir un comando:</span>
-set command <span class="p">{</span>set name<span class="p">}</span>
-append command <span class="p">{</span> Archibald Sorbisol<span class="p">}</span>
-try <span class="p">{</span>
-    eval $command <span class="p">;</span># El error es que <span class="s2">"set"</span> tiene demasiados argumentos en <span class="se">\
-</span>        <span class="p">{</span>set name Archibald Sorbisol<span class="p">}</span>
-<span class="p">}</span> on error <span class="p">{</span>result eoptions<span class="p">}</span> <span class="p">{</span>
-    puts <span class="p">[</span>list <span class="p">{</span>received an error<span class="p">}</span> $result<span class="p">]</span>
-<span class="p">}</span>
+<span class="s2"># Un error común es no usar funciones de listas al construir un comando:</span>
+<span class="s2">set command {set name}</span>
+<span class="s2">append command { Archibald Sorbisol}</span>
+<span class="s2">try {</span>
+<span class="s2">    eval $command ;# El error es que &quot;</span>set<span class="s2">&quot; tiene demasiados argumentos en \</span>
+<span class="s2">        {set name Archibald Sorbisol}</span>
+<span class="s2">} on error {result eoptions} {</span>
+<span class="s2">    puts [list {received an error} $result]</span>
+<span class="s2">}</span>
 
-# Este error puede ocurrir fácilmente con <span class="s2">"subst"</span>:
+<span class="s2"># Este error puede ocurrir fácilmente con &quot;</span>subst<span class="s2">&quot;:</span>
 
-set replacement <span class="p">{</span>Archibald Sorbisol<span class="p">}</span>
-set command <span class="p">{</span>set name $replacement<span class="p">}</span>
-set command <span class="p">[</span>subst $command<span class="p">]</span> 
-try <span class="p">{</span>
-    eval $command <span class="p">;</span># El mismo error que antes:  demasiados argumentos a <span class="s2">"set"</span> en <span class="se">\
-</span>        <span class="p">{</span>set name Archibald Sorbisol<span class="p">}</span>
-<span class="p">}</span> trap <span class="p">{</span>TCL WRONGARGS<span class="p">}</span> <span class="p">{</span>result options<span class="p">}</span> <span class="p">{</span>
-    puts <span class="p">[</span>list <span class="p">{</span>received another error<span class="p">}</span> $result<span class="p">]</span>
-<span class="p">}</span>
+<span class="s2">set replacement {Archibald Sorbisol}</span>
+<span class="s2">set command {set name $replacement}</span>
+<span class="s2">set command [subst $command] </span>
+<span class="s2">try {</span>
+<span class="s2">    eval $command ;# El mismo error que antes:  demasiados argumentos a &quot;</span>set<span class="s2">&quot; en \</span>
+<span class="s2">        {set name Archibald Sorbisol}</span>
+<span class="s2">} trap {TCL WRONGARGS} {result options} {</span>
+<span class="s2">    puts [list {received another error} $result]</span>
+<span class="s2">}</span>
 
 
-# <span class="s2">"list"</span> formatea correctamente un valor para su sustitución:
-set replacement <span class="p">[</span>list <span class="p">{</span>Archibald Sorbisol<span class="p">}]</span>
-set command <span class="p">{</span>set name $replacement<span class="p">}</span>
-set command <span class="p">[</span>subst $command<span class="p">]</span>
-eval $command
+<span class="s2"># &quot;</span>list<span class="s2">&quot; formatea correctamente un valor para su sustitución:</span>
+<span class="s2">set replacement [list {Archibald Sorbisol}]</span>
+<span class="s2">set command {set name $replacement}</span>
+<span class="s2">set command [subst $command]</span>
+<span class="s2">eval $command</span>
 
 
-# <span class="s2">"list"</span> se utiliza normalmente para formatear valores para su sustitución en
-<span class="c1"># scripts: Hay muchos ejemplos de esto más abajo.</span>
+<span class="s2"># &quot;</span>list<span class="s2">&quot; se utiliza normalmente para formatear valores para su sustitución en</span>
+<span class="s2"># scripts: Hay muchos ejemplos de esto más abajo.</span>
 
 
-# <span class="s2">"apply"</span> evalúa una lista de dos elementos como una rutina:
-set cmd <span class="p">{{</span>greeting name<span class="p">}</span> <span class="p">{</span>
-    return <span class="s2">"</span><span class="nv">$greeting</span><span class="s2">, </span><span class="nv">$name</span><span class="s2">!"</span>
-<span class="p">}}</span>
-apply $cmd Whaddup Neo
+<span class="s2"># &quot;</span>apply<span class="s2">&quot; evalúa una lista de dos elementos como una rutina:</span>
+<span class="s2">set cmd {{greeting name} {</span>
+<span class="s2">    return &quot;</span><span class="nv">$greeting</span>,<span class="w"> </span><span class="nv">$name</span><span class="o">!</span><span class="s2">&quot;</span>
+<span class="s2">}}</span>
+<span class="s2">apply $cmd Whaddup Neo</span>
 
-<span class="c1"># Un tercer elemento puede ser utilizado para especificar el espacio de nombres</span>
-<span class="c1"># donde aplicar la rutina:</span>
-set cmd <span class="p">[</span>list <span class="p">{</span>greeting name<span class="p">}</span> <span class="p">{</span>
-    return <span class="s2">"</span><span class="nv">$greeting</span><span class="s2">, </span><span class="nv">$name</span><span class="s2">!"</span>
-<span class="p">}</span> <span class="p">[</span>namespace current<span class="p">]]</span>
-apply $cmd Whaddup Neo
+<span class="s2"># Un tercer elemento puede ser utilizado para especificar el espacio de nombres</span>
+<span class="s2"># donde aplicar la rutina:</span>
+<span class="s2">set cmd [list {greeting name} {</span>
+<span class="s2">    return &quot;$greeting, $name!&quot;</span>
+<span class="s2">} [namespace current]]</span>
+<span class="s2">apply $cmd Whaddup Neo</span>
 
 
-# <span class="s2">"uplevel"</span> evalúa un script en un nivel superior de la pila de llamadas:
-proc greet <span class="p">{}</span> <span class="p">{</span>
-    uplevel <span class="p">{</span>puts <span class="s2">"</span><span class="nv">$greeting</span><span class="s2">, </span><span class="nv">$name</span><span class="s2">"</span><span class="p">}</span>
-<span class="p">}</span>
-
-proc set_double <span class="p">{</span>varname value<span class="p">}</span> <span class="p">{</span>
-    if <span class="p">{[</span>string is double $value<span class="p">]}</span> <span class="p">{</span>
-        uplevel <span class="p">[</span>list variable $varname $value<span class="p">]</span>
-    <span class="p">}</span> else <span class="p">{</span>
-        error <span class="p">[</span>list <span class="p">{</span>not a double<span class="p">}</span> $value<span class="p">]</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-
-# <span class="s2">"upvar"</span> enlaza una variable en el nivel actual de la pila de llamadas a una
-<span class="c1"># variable en un nivel superior:</span>
-proc set_double <span class="p">{</span>varname value<span class="p">}</span> <span class="p">{</span>
-    if <span class="p">{[</span>string is double $value<span class="p">]}</span> <span class="p">{</span>
-        upvar 1 $varname var
-        set var $value
-    <span class="p">}</span> else <span class="p">{</span>
-        error <span class="p">[</span>list <span class="p">{</span>not a double<span class="p">}</span> $value<span class="p">]</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-
-# Deshacerse de la rutina <span class="s2">"while"</span> incorporada, y utilizar <span class="s2">"proc"</span> para definir
-<span class="c1"># una nueva:</span>
-rename ::while <span class="p">{}</span>
-<span class="c1"># la manipulación se deja como ejercicio:</span>
-proc while <span class="p">{</span>condition script<span class="p">}</span> <span class="p">{</span>
-    if <span class="p">{[</span>uplevel 1 <span class="p">[</span>list expr $condition<span class="p">]]}</span> <span class="p">{</span>
-        uplevel 1 $script
-        tailcall <span class="p">[</span>namespace which while<span class="p">]</span> $condition $script
-    <span class="p">}</span>
-<span class="p">}</span>
-
-
-# <span class="s2">"coroutine"</span> crea una nueva pila de llamadas, una nueva rutina en la que
-# introducir esa pila de llamadas, y luego llama a dicha rutina. <span class="s2">"yield"</span> suspende
-<span class="c1"># la evaluación en esa pila y devuelve el control a la pila que efectúa la llamada.</span>
-proc countdown count <span class="p">{</span>
-    # devuelve algo al creador de la corrutina, efectivamente pausando esta
-    # pila de llamadas por ahora.
-    yield <span class="p">[</span>info coroutine<span class="p">]</span>
-
-    while <span class="p">{</span><span class="nv">$count</span> &gt; 1<span class="p">}</span> <span class="p">{</span>
-        yield <span class="p">[</span>incr count -1<span class="p">]</span>
-    <span class="p">}</span>
-    return 0
-<span class="p">}</span>
-coroutine countdown1 countdown 3
-coroutine countdown2 countdown 5
-puts <span class="p">[</span>countdown1<span class="p">]</span> <span class="p">;</span><span class="c1"># -&gt; 2 </span>
-puts <span class="p">[</span>countdown2<span class="p">]</span> <span class="p">;</span><span class="c1"># -&gt; 4 </span>
-puts <span class="p">[</span>countdown1<span class="p">]</span> <span class="p">;</span><span class="c1"># -&gt; 1 </span>
-puts <span class="p">[</span>countdown1<span class="p">]</span> <span class="p">;</span><span class="c1"># -&gt; 0 </span>
-catch <span class="p">{</span>
-    puts <span class="p">[</span>coundown1<span class="p">]</span> <span class="p">;</span># -&gt; invalid command name <span class="s2">"countdown1"</span>
-<span class="p">}</span> cres copts 
-puts $cres
-puts <span class="p">[</span>countdown2<span class="p">]</span> <span class="p">;</span><span class="c1"># -&gt; 3 </span>
-
-
-<span class="c1"># Pilas de corrutinas pueden cederse el control entre sí:</span>
-
-proc pass <span class="p">{</span>whom args<span class="p">}</span> <span class="p">{</span>
-    return <span class="p">[</span>yieldto $whom <span class="k">{*}</span><span class="nv">$args</span><span class="p">]</span>
-<span class="p">}</span>
-
-coroutine a apply <span class="p">{{}</span> <span class="p">{</span>
-        yield
-        set result <span class="p">[</span>pass b <span class="p">{</span>please pass the salt<span class="p">}]</span>
-        puts <span class="p">[</span>list got the $result<span class="p">]</span>
-        set result <span class="p">[</span>pass b <span class="p">{</span>please pass the pepper<span class="p">}]</span>
-        puts <span class="p">[</span>list got the $result<span class="p">]</span>
-<span class="p">}}</span>
-
-coroutine b apply <span class="p">{{}</span> <span class="p">{</span>
-    set request <span class="p">[</span>yield<span class="p">]</span>
-    while 1 <span class="p">{</span>
-        set response <span class="p">[</span>pass c $request<span class="p">]</span>
-        puts <span class="p">[</span>list <span class="p">[</span>info coroutine<span class="p">]</span> is now yielding<span class="p">]</span>
-        set request <span class="p">[</span>pass a $response<span class="p">]</span>
-    <span class="p">}</span>
-<span class="p">}}</span>
-
-coroutine c apply <span class="p">{{}</span> <span class="p">{</span>
-    set request <span class="p">[</span>yield<span class="p">]</span>
-    while 1 <span class="p">{</span>
-        if <span class="p">{[</span>string match *salt* $request<span class="p">]}</span> <span class="p">{</span>
-            set request <span class="p">[</span>pass b salt<span class="p">]</span>
-        <span class="p">}</span> else <span class="p">{</span>
-            set request <span class="p">[</span>pass b huh?<span class="p">]</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}}</span>
-
-<span class="c1"># Pon las cosas en marcha</span>
-a
-</code></pre></div>
+<span class="s2"># &quot;</span>uplevel<span class="s2">&quot; evalúa un script en un nivel superior de la pila de llamadas:</span>
+<span class="s2">proc greet {} {</span>
+<span class="s2">    uplevel {puts &quot;</span><span class="nv">$greeting</span>,<span class="w"> </span><span class="nv">$name</span><span class="s2">&quot;}</span>
+<span class="s2">}</span>
+
+<span class="s2">proc set_double {varname value} {</span>
+<span class="s2">    if {[string is double $value]} {</span>
+<span class="s2">        uplevel [list variable $varname $value]</span>
+<span class="s2">    } else {</span>
+<span class="s2">        error [list {not a double} $value]</span>
+<span class="s2">    }</span>
+<span class="s2">}</span>
+
+
+<span class="s2"># &quot;</span>upvar<span class="s2">&quot; enlaza una variable en el nivel actual de la pila de llamadas a una</span>
+<span class="s2"># variable en un nivel superior:</span>
+<span class="s2">proc set_double {varname value} {</span>
+<span class="s2">    if {[string is double $value]} {</span>
+<span class="s2">        upvar 1 $varname var</span>
+<span class="s2">        set var $value</span>
+<span class="s2">    } else {</span>
+<span class="s2">        error [list {not a double} $value]</span>
+<span class="s2">    }</span>
+<span class="s2">}</span>
+
+
+<span class="s2"># Deshacerse de la rutina &quot;</span>while<span class="s2">&quot; incorporada, y utilizar &quot;</span>proc<span class="s2">&quot; para definir</span>
+<span class="s2"># una nueva:</span>
+<span class="s2">rename ::while {}</span>
+<span class="s2"># la manipulación se deja como ejercicio:</span>
+<span class="s2">proc while {condition script} {</span>
+<span class="s2">    if {[uplevel 1 [list expr $condition]]} {</span>
+<span class="s2">        uplevel 1 $script</span>
+<span class="s2">        tailcall [namespace which while] $condition $script</span>
+<span class="s2">    }</span>
+<span class="s2">}</span>
+
+
+<span class="s2"># &quot;</span>coroutine<span class="s2">&quot; crea una nueva pila de llamadas, una nueva rutina en la que</span>
+<span class="s2"># introducir esa pila de llamadas, y luego llama a dicha rutina. &quot;</span>yield<span class="s2">&quot; suspende</span>
+<span class="s2"># la evaluación en esa pila y devuelve el control a la pila que efectúa la llamada.</span>
+<span class="s2">proc countdown count {</span>
+<span class="s2">    # devuelve algo al creador de la corrutina, efectivamente pausando esta</span>
+<span class="s2">    # pila de llamadas por ahora.</span>
+<span class="s2">    yield [info coroutine]</span>
+
+<span class="s2">    while {$count &gt; 1} {</span>
+<span class="s2">        yield [incr count -1]</span>
+<span class="s2">    }</span>
+<span class="s2">    return 0</span>
+<span class="s2">}</span>
+<span class="s2">coroutine countdown1 countdown 3</span>
+<span class="s2">coroutine countdown2 countdown 5</span>
+<span class="s2">puts [countdown1] ;# -&gt; 2 </span>
+<span class="s2">puts [countdown2] ;# -&gt; 4 </span>
+<span class="s2">puts [countdown1] ;# -&gt; 1 </span>
+<span class="s2">puts [countdown1] ;# -&gt; 0 </span>
+<span class="s2">catch {</span>
+<span class="s2">    puts [coundown1] ;# -&gt; invalid command name &quot;</span>countdown1<span class="s2">&quot;</span>
+<span class="s2">} cres copts </span>
+<span class="s2">puts $cres</span>
+<span class="s2">puts [countdown2] ;# -&gt; 3 </span>
+
+
+<span class="s2"># Pilas de corrutinas pueden cederse el control entre sí:</span>
+
+<span class="s2">proc pass {whom args} {</span>
+<span class="s2">    return [yieldto $whom {*}$args]</span>
+<span class="s2">}</span>
+
+<span class="s2">coroutine a apply {{} {</span>
+<span class="s2">        yield</span>
+<span class="s2">        set result [pass b {please pass the salt}]</span>
+<span class="s2">        puts [list got the $result]</span>
+<span class="s2">        set result [pass b {please pass the pepper}]</span>
+<span class="s2">        puts [list got the $result]</span>
+<span class="s2">}}</span>
+
+<span class="s2">coroutine b apply {{} {</span>
+<span class="s2">    set request [yield]</span>
+<span class="s2">    while 1 {</span>
+<span class="s2">        set response [pass c $request]</span>
+<span class="s2">        puts [list [info coroutine] is now yielding]</span>
+<span class="s2">        set request [pass a $response]</span>
+<span class="s2">    }</span>
+<span class="s2">}}</span>
+
+<span class="s2">coroutine c apply {{} {</span>
+<span class="s2">    set request [yield]</span>
+<span class="s2">    while 1 {</span>
+<span class="s2">        if {[string match *salt* $request]} {</span>
+<span class="s2">            set request [pass b salt]</span>
+<span class="s2">        } else {</span>
+<span class="s2">            set request [pass b huh?]</span>
+<span class="s2">        }</span>
+<span class="s2">    }</span>
+<span class="s2">}}</span>
+
+<span class="s2"># Pon las cosas en marcha</span>
+<span class="s2">a</span>
+</pre></div>
 <h2>Reference</h2>
 
 <p><a href="http://www.tcl.tk/man/tcl/">Documentación oficial de Tcl</a></p>

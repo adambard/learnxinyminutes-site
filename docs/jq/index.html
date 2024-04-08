@@ -97,890 +97,890 @@ to produce another JSON document for further processing by other programs.</p>
 <p><strong>NOTE</strong>: This guide demonstrates the use of jq from the command line,
 specifically, under an environment running the Bash shell.</p>
 </blockquote>
-<div class="highlight"><pre class="highlight shell"><code><span class="c"># When running jq from the command line, jq program code can be specified as the</span>
-<span class="c"># first argument after any options to `jq`. We often quote such jq program with</span>
-<span class="c"># single quotes (`'`) to prevent any special interpretation from the command line</span>
-<span class="c"># shell.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'# Comments start with # until the end of line.
-       # The -n option sets the input to the value, `null`, and prevents `jq`
-       # from reading inputs from external sources.
-'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># null</span>
-
-
-<span class="c"># By default jq reads from *STDIN* a stream of JSON inputs (values). It</span>
-<span class="c"># processes each input with the jq program (filters) specified at the command</span>
-<span class="c"># line, and prints the outputs of processing each input with the program to</span>
-<span class="c"># *STDOUT*.</span>
-<span class="c">#</span>
-<span class="nb">echo</span> <span class="s1">'
-  "hello" 123 [
-    "one",
-    "two",
-    "three"
-  ]
-  { "name": "jq" }
-'</span> |
- jq <span class="s1">'.  # &lt;-- the jq program here is the single dot (.), called the identity
-        # operator, which stands for the current input.
-'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># "hello"</span>
-<span class="c"># 123</span>
-<span class="c"># [</span>
-<span class="c">#   "one",</span>
-<span class="c">#   "two",</span>
-<span class="c">#   "three"</span>
-<span class="c"># ]</span>
-<span class="c"># {</span>
-<span class="c">#   "name": "jq"</span>
-<span class="c"># }</span>
-
-
-<span class="c"># Notice that jq pretty-prints the outputs by default, therefore, piping</span>
-<span class="c"># to `jq` is a simple way to format a response from some REST API endpoint</span>
-<span class="c"># that returns JSON. E.g., `curl -s https://freegeoip.app/json/ | jq`</span>
-
-
-<span class="c"># Instead of processing each JSON input with a jq program, you can also</span>
-<span class="c"># ask jq to slurp them up as an array.</span>
-<span class="c">#</span>
-<span class="nb">echo</span> <span class="s1">'1 "two" 3'</span> | jq <span class="nt">-s</span> <span class="nb">.</span>
-
-<span class="c"># Output:</span>
-<span class="c"># [</span>
-<span class="c">#   1,</span>
-<span class="c">#   "two",</span>
-<span class="c">#   3</span>
-<span class="c"># ]</span>
-
-
-<span class="c"># Or, treat each line as a string.</span>
-<span class="c">#</span>
-<span class="o">(</span><span class="nb">echo </span>line 1<span class="p">;</span> <span class="nb">echo </span>line 2<span class="o">)</span> | jq <span class="nt">-R</span> <span class="nb">.</span>
-
-<span class="c"># Output:</span>
-<span class="c"># "line 1"</span>
-<span class="c"># "line 2"</span>
-
-
-<span class="c"># Or, combine -s and -R to slurp the input lines into a single string.</span>
-<span class="c">#</span>
-<span class="o">(</span><span class="nb">echo </span>line 1<span class="p">;</span> <span class="nb">echo </span>line 2<span class="o">)</span> | jq <span class="nt">-sR</span> <span class="nb">.</span>
-
-<span class="c"># Output:</span>
-<span class="c"># "line 1\nline2\n"</span>
-
-
-<span class="c"># Inputs can also come from a JSON file specified at the command line:</span>
-<span class="c">#</span>
-<span class="nb">echo</span> <span class="s1">'"hello"'</span> <span class="o">&gt;</span> hello.json
-jq <span class="nb">.</span> hello.json
-
-<span class="c"># Output:</span>
-<span class="c"># "hello"</span>
-
-
-<span class="c"># Passing a value into a jq program can be done with the `--arg` option.</span>
-<span class="c"># Below, `val` is the variable name to bind the value, `123`, to.</span>
-<span class="c"># The variable is then referenced as `$val`.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="nt">--arg</span> val 123 <span class="s1">'$val'</span>  <span class="c"># $val is the string "123" here</span>
-
-<span class="c"># Output:</span>
-<span class="c"># "123"</span>
-
-
-<span class="c"># If you need to pass a JSON value, use `--argjson`</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="nt">--argjson</span> val 123 <span class="s1">'$val'</span>  <span class="c"># $val is a number</span>
-
-<span class="c"># Output:</span>
-<span class="c"># 123</span>
-
-
-<span class="c"># Using `--arg` or `--argjson` is an useful way of building JSON output from</span>
-<span class="c"># existing input.</span>
-<span class="c">#</span>
-jq <span class="nt">--arg</span> text <span class="s2">"</span><span class="si">$(</span><span class="nb">date</span><span class="p">;</span> <span class="nb">echo</span> <span class="s2">"Have a nice day!"</span><span class="si">)</span><span class="s2">"</span> <span class="nt">-n</span> <span class="s1">'{ "today": $text }'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># {</span>
-<span class="c">#   "today": "Sun Apr 10 09:53:07 PM EDT 2022\nHave a nice day!"</span>
-<span class="c"># }</span>
-
-
-<span class="c"># Instead of outputting values as JSON, you can use the `-r` option to print</span>
-<span class="c"># string values unquoted / unescaped. Non-string values are still printed as</span>
-<span class="c"># JSON.</span>
-<span class="c">#</span>
-<span class="nb">echo</span> <span class="s1">'"hello" 2 [1, "two", null] {}'</span> | jq <span class="nt">-r</span> <span class="nb">.</span>
-
-<span class="c"># Output:</span>
-<span class="c"># hello</span>
-<span class="c"># 2</span>
-<span class="c"># [</span>
-<span class="c">#   1,</span>
-<span class="c">#   "two",</span>
-<span class="c">#   null</span>
-<span class="c"># ]</span>
-<span class="c"># {}</span>
-
-
-<span class="c"># Inside a string in jq, `\(expr)` can be used to substitute the output of</span>
-<span class="c"># `expr` into the surrounding string context.</span>
-<span class="c">#</span>
-jq <span class="nt">-rn</span> <span class="s1">'"1 + 2 = \(1+2)"'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># 1 + 2 = 3</span>
-
-
-<span class="c"># The `-r` option is most useful for generating text outputs to be processed</span>
-<span class="c"># down in a shell pipeline, especially when combined with an intepolated</span>
-<span class="c"># string that is prefixed the `@sh` prefix operator.</span>
-<span class="c">#</span>
-<span class="c"># The `@sh` operator escapes the outputs of `\(...)` inside a string with</span>
-<span class="c"># single quotes so that each resulting string of `\(...)` can be evaluated</span>
-<span class="c"># by the shell as a single word / token / argument without special</span>
-<span class="c"># interpretations.</span>
-<span class="c">#</span>
-<span class="nv">env_vars</span><span class="o">=</span><span class="si">$(</span>
-    <span class="nb">echo</span> <span class="s1">'{"var1": "value one", "var2": "value\ntwo"}'</span> <span class="se">\</span>
-     |
-    jq <span class="nt">-r</span> <span class="s1">'
-      "export " + @sh "var1=\(.var1) var2=\(.var2)"
-      #                     ^^^^^^^^      ^^^^^^^^
-      #                  "'</span>value one<span class="s1">'"  "'</span>value<span class="se">\n</span>two<span class="s1">'"
-      #
-      # NOTE: The + (plus) operator here concatenates strings.
-    '</span>
-<span class="si">)</span>
-<span class="nb">echo</span> <span class="s2">"</span><span class="nv">$env_vars</span><span class="s2">"</span>
-<span class="nb">eval</span> <span class="s2">"</span><span class="nv">$env_vars</span><span class="s2">"</span>
-<span class="nb">declare</span> <span class="nt">-p</span> var1 var2
-
-<span class="c"># Output:</span>
-<span class="c"># export var1='value one' var2='value</span>
-<span class="c"># two'</span>
-<span class="c"># declare -- var1="value one"</span>
-<span class="c"># declare -- var2="value</span>
-<span class="c"># two"</span>
-
-<span class="c"># There are other string `@prefix` operators (e.g., @base64, @uri, @csv, ...)</span>
-<span class="c"># that might be useful to you. See `man jq` for details.</span>
-
-
-<span class="c"># The comma (`,`) operator in jq evaluates each operand and generates multiple</span>
-<span class="c"># outputs:</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'"one", 2, ["three"], {"four": 4}'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># "one"</span>
-<span class="c"># 2</span>
-<span class="c"># [</span>
-<span class="c">#   "three"</span>
-<span class="c"># ]</span>
-<span class="c"># {</span>
-<span class="c">#   "four": 4</span>
-<span class="c"># }</span>
-
-
-<span class="c"># Any JSON value is a valid jq expression that evaluates to the JSON value</span>
-<span class="c"># itself.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'1, "one", [1, 2], {"one": 1}, null, true, false'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># 1</span>
-<span class="c"># "one"</span>
-<span class="c"># [</span>
-<span class="c">#   1,</span>
-<span class="c">#   2</span>
-<span class="c"># ]</span>
-<span class="c"># {</span>
-<span class="c">#   "one": 1</span>
-<span class="c"># }</span>
-<span class="c"># null</span>
-<span class="c"># true</span>
-<span class="c"># false</span>
-
-
-<span class="c"># Any jq expression can be used where a JSON value is expected, even as object</span>
-<span class="c"># keys. (though parenthesis might be required for object keys or values)</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'[2*3, 8-1, 16/2], {("tw" + "o"): (1 + 1)}'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># [</span>
-<span class="c">#   6,</span>
-<span class="c">#   7,</span>
-<span class="c">#   8</span>
-<span class="c"># ]</span>
-<span class="c"># {</span>
-<span class="c">#   "two": 2</span>
-<span class="c"># }</span>
-
-
-<span class="c"># As a shortcut, if a JSON object key looks like a valid identifier (matching</span>
-<span class="c"># the regex `^[a-zA-Z_][a-zA-Z_0-9]*$`), quotes can be omitted.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'{ key_1: "value1" }'</span>
-
-<span class="c"># If a JSON object's key's value is ommited, it is looked up in the current</span>
-<span class="c"># input using the key: (see next example for the meaning of `... | ...`)</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'{c: 3} | {a: 1, "b", c}'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># {</span>
-<span class="c">#   "a": 1,</span>
-<span class="c">#   "b": null,</span>
-<span class="c">#   "c": 3</span>
-<span class="c"># }</span>
-
-
-<span class="c"># jq programs are more commonly written as a series of expressions (filters)</span>
-<span class="c"># connected by the pipe (`|`) operator, which makes the output of its left</span>
-<span class="c"># filter the input to its right filter.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'1 | . + 2 | . + 3'</span>  <span class="c"># first dot is 1; second dot is 3</span>
-
-<span class="c"># Output:</span>
-<span class="c"># 6</span>
-
-<span class="c"># If an expression evaluates to multiple outputs, then jq will iterate through</span>
-<span class="c"># them and propagate each output down the pipeline, and generate multiple</span>
-<span class="c"># outputs in the end.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'1, 2, 3 | ., 4 | .'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># 1</span>
-<span class="c"># 4</span>
-<span class="c"># 2</span>
-<span class="c"># 4</span>
-<span class="c"># 3</span>
-<span class="c"># 4</span>
-
-<span class="c"># The flows of the data in the last example can be visualized like this:</span>
-<span class="c"># (number prefixed with `*` indicates the current output)</span>
-<span class="c">#</span>
-<span class="c"># *1,  2,  3 | *1,  4 | *1</span>
-<span class="c">#  1,  2,  3 |  1, *4 | *4</span>
-<span class="c">#  1, *2,  3 | *2,  4 | *2</span>
-<span class="c">#  1,  2,  3 |  2, *4 | *4</span>
-<span class="c">#  1,  2, *3 | *3,  4 | *3</span>
-<span class="c">#  1,  2,  3 |  3, *4 | *4</span>
-<span class="c">#</span>
-<span class="c">#</span>
-<span class="c"># To put it another way, the evaluation of the above example is very similar</span>
-<span class="c"># to the following pieces of code in other programming languages:</span>
-<span class="c">#</span>
-<span class="c"># In Python:</span>
-<span class="c">#</span>
-<span class="c">#   for first_dot in 1, 2, 3:</span>
-<span class="c">#       for second_dot in first_dot, 4:</span>
-<span class="c">#           print(second_dot)</span>
-<span class="c">#</span>
-<span class="c"># In Ruby:</span>
-<span class="c">#</span>
-<span class="c">#   [1, 2, 3].each do |dot|</span>
-<span class="c">#     [dot, 4].each { |dot| puts dot }</span>
-<span class="c">#   end</span>
-<span class="c">#</span>
-<span class="c"># In Javascript:</span>
-<span class="c">#</span>
-<span class="c">#   [1, 2, 3].forEach(dot =&gt; {</span>
-<span class="c">#       [dot, 4].forEach(dot =&gt; console.log(dot))</span>
-<span class="c">#   })</span>
-<span class="c">#</span>
-
-
-<span class="c"># Below are some examples of array index and object attribute lookups using</span>
-<span class="c"># the `[expr]` operator after an expression. If `expr` is a number then it's</span>
-<span class="c"># an array index lookup; otherwise, it should be a string, in which case it's</span>
-<span class="c"># an object attribute lookup:</span>
-
-<span class="c"># Array index lookup</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'[2, {"four": 4}, 6][1 - 1]'</span> <span class="c"># =&gt; 2</span>
-jq <span class="nt">-n</span> <span class="s1">'[2, {"four": 4}, 6][0]'</span>     <span class="c"># =&gt; 2</span>
-jq <span class="nt">-n</span> <span class="s1">'[2, {"four": 4}, 6] | .[0]'</span> <span class="c"># =&gt; 2</span>
-
-<span class="c"># You can chain the lookups since they are just expressions.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'[2, {"four": 4}, 6][1]["fo" + "ur"]'</span> <span class="c"># =&gt; 4</span>
-
-<span class="c"># For object attributes, you can also use the `.key` shortcut.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'[2, {"four": 4}, 6][1].four'</span>  <span class="c"># =&gt; 4</span>
-
-<span class="c"># Use `."key"` if the key is not a valid identifier.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'[2, {"f o u r": 4}, 6][1]."f o u r"'</span> <span class="c"># =&gt; 4</span>
-
-<span class="c"># Array index lookup returns null if the index is not found.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'[2, {"four": 4}, 6][99]'</span> <span class="c"># =&gt; null</span>
-
-<span class="c"># Object attribute lookup returns null if the key is not found.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'[2, {"four": 4}, 6][1].whatever'</span> <span class="c"># =&gt; null</span>
-
-<span class="c"># The alternative operator `//` can be used to provide a default</span>
-<span class="c"># value when the result of the left operand is either `null` or `false`.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'.unknown_key // 7'</span> <span class="c"># =&gt; 7</span>
-
-<span class="c"># If the thing before the lookup operator (`[expr]`) is neither an array</span>
-<span class="c"># or an object, then you will get an error:</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'123 | .[0]'</span>     <span class="c"># =&gt; jq: error (at &lt;unknown&gt;): Cannot index number with number</span>
-jq <span class="nt">-n</span> <span class="s1">'"abc" | .name'</span>  <span class="c"># =&gt; jq: error (at &lt;unknown&gt;): Cannot index string with string "name"</span>
-jq <span class="nt">-n</span> <span class="s1">'{"a": 97} | .[0]'</span>    <span class="c"># =&gt; jq: error (at &lt;unknown&gt;): Cannot index object with number</span>
-jq <span class="nt">-n</span> <span class="s1">'[89, 64] | .["key"]'</span> <span class="c"># =&gt; jq: error (at &lt;unknown&gt;): Cannot index array with string "key"</span>
-
-<span class="c"># You can, however, append a `?` to a lookup to make jq return `empty`</span>
-<span class="c"># instead when such error happens.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'123 | .[0]?'</span>    <span class="c"># no output since it's empty.</span>
-jq <span class="nt">-n</span> <span class="s1">'"abc" | .name?'</span> <span class="c"># no output since it's empty.</span>
-
-<span class="c"># The alternative operator (`//`) also works with `empty`:</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'123 | .[0]? // 99'</span>           <span class="c"># =&gt; 99</span>
-jq <span class="nt">-n</span> <span class="s1">'"abc" | .name? // "unknown"'</span> <span class="c"># =&gt; "unknown"</span>
-
-<span class="c"># NOTE: `empty` is actually a built-in function in jq.</span>
-<span class="c"># With the nested loop explanation we illustrated earlier before,</span>
-<span class="c"># `empty` is like the `continue` or the `next` keyword that skips</span>
-<span class="c"># the current iteration of the loop in some programming languages.</span>
-
-
-<span class="c"># Strings and arrays can be sliced with the same syntax (`[i:j]`, but no</span>
-<span class="c"># steppings) and semantic as found in the Python programming language:</span>
-<span class="c">#</span>
-<span class="c">#                0   1    2    3    4   5 ... infinite</span>
-<span class="c">#        array = ["a", "b", "c", "d"]</span>
-<span class="c"># -infinite ... -4  -3   -2   -1</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'["Peter", "Jerry"][1]'</span>            <span class="c"># =&gt; "Jerry"</span>
-jq <span class="nt">-n</span> <span class="s1">'["Peter", "Jerry"][-1]'</span>           <span class="c"># =&gt; "Jerry"</span>
-jq <span class="nt">-n</span> <span class="s1">'["Peter", "Jerry", "Tom"][1:]'</span>    <span class="c"># =&gt; ["Jerry", "Tom"]</span>
-jq <span class="nt">-n</span> <span class="s1">'["Peter", "Jerry", "Tom"][:1+1]'</span>  <span class="c"># =&gt; ["Peter", "Jerry"]</span>
-jq <span class="nt">-n</span> <span class="s1">'["Peter", "Jerry", "Tom"][1:99]'</span>  <span class="c"># =&gt; ["Jerry", "Tom"]</span>
-
-
-<span class="c"># If the lookup index or key is ommited then jq iterates through</span>
-<span class="c"># the collection, generating one output value from each iteration.</span>
-<span class="c">#</span>
-<span class="c"># These examples produce the same outputs.</span>
-<span class="c">#</span>
-<span class="nb">echo </span>1 2 3 | jq <span class="nb">.</span>
-jq <span class="nt">-n</span> <span class="s1">'1, 2, 3'</span>
-jq <span class="nt">-n</span> <span class="s1">'[1, 2, 3][]'</span>
-jq <span class="nt">-n</span> <span class="s1">'{a: 1, b: 2, c: 3}[]'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># 1</span>
-<span class="c"># 2</span>
-<span class="c"># 3</span>
-
-
-<span class="c"># You can build an array out of multiple outputs.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'{values: [{a: 1, b: 2, c: 3}[] | . * 2]}'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># {</span>
-<span class="c">#   "values": [</span>
-<span class="c">#     2,</span>
-<span class="c">#     4,</span>
-<span class="c">#     6</span>
-<span class="c">#   ]</span>
-<span class="c"># }</span>
-
-
-<span class="c"># If multiple outputs are not contained, then we'd get multiple outputs</span>
-<span class="c"># in the end.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'{values: ({a: 1, b: 2, c: 3}[] | . * 2)}'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># {</span>
-<span class="c">#   "values": 2</span>
-<span class="c"># }</span>
-<span class="c"># {</span>
-<span class="c">#   "values": 4</span>
-<span class="c"># }</span>
-<span class="c"># {</span>
-<span class="c">#   "values": 6</span>
-<span class="c"># }</span>
-
-
-<span class="c"># Conditional `if ... then ... else ... end` in jq is an expression, so</span>
-<span class="c"># both the `then` part and the `else` part are required. In jq, only</span>
-<span class="c"># two values, `null` and `false`, are false; all other values are true.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'if 1 &gt; 2 | not and 1 &lt;= 2 then "Makes sense" else "WAT?!" end'</span>
-
-<span class="c"># Output</span>
-<span class="c"># "Makes sense"</span>
-
-<span class="c"># Notice that `not` is a built-in function that takes zero arguments,</span>
-<span class="c"># that's why it's used as a filter to negate its input value.</span>
-<span class="c"># We'll talk about functions soon.</span>
-
-<span class="c"># Another example using a conditional:</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'1, 2, 3, 4, 5 | if . % 2 != 0 then . else empty end'</span>
-
-<span class="c"># Output</span>
-<span class="c"># 1</span>
-<span class="c"># 3</span>
-<span class="c"># 5</span>
-
-<span class="c"># The `empty` above is a built-in function that takes 0 arguments and</span>
-<span class="c"># generates no outputs. Let's see more examples of built-in functions.</span>
-
-<span class="c"># The above conditional example can be written using the `select/1` built-in</span>
-<span class="c"># function (`/1` indicates the number of arguments expected by the function).</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'1, 2, 3, 4, 5 | select(. % 2 != 0)'</span>  <span class="c"># NOTE: % gives the remainder.</span>
-
-<span class="c"># Output</span>
-<span class="c"># 1</span>
-<span class="c"># 3</span>
-<span class="c"># 5</span>
-
-
-<span class="c"># Function arguments in jq are passed with call-by-name semantic, which</span>
-<span class="c"># means, an argument is not evaulated at call site, but instead, is</span>
-<span class="c"># treated as a lambda expression with the calling context of the call</span>
-<span class="c"># site as its scope for variable and function references used in the</span>
-<span class="c"># expression.</span>
-<span class="c">#</span>
-<span class="c"># In the above example, the expression `. % 2 != 0` is what's passed to</span>
-<span class="c"># `select/1` as the argument, not `true` or `false`, which is what would</span>
-<span class="c"># have been the case had the (boolean) expression was evaluated before it's</span>
-<span class="c"># passed to the function.</span>
-
-
-<span class="c"># The `range/1`, `range/2`, and `range/3` built-in functions generate</span>
-<span class="c"># integers within a given range.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'[range(3)]'</span>         <span class="c"># =&gt; [0, 1, 2]</span>
-jq <span class="nt">-n</span> <span class="s1">'[range(0; 4)]'</span>      <span class="c"># =&gt; [0, 1, 2, 3]</span>
-jq <span class="nt">-n</span> <span class="s1">'[range(2; 10; 2)]'</span>  <span class="c"># =&gt; [2, 4, 6, 8]</span>
-
-<span class="c"># Notice that `;` (semicolon) is used to separate function arguments.</span>
-
-
-<span class="c"># The `map/1` function applies a given expression to each element of</span>
-<span class="c"># the current input (array) and outputs a new array.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'[range(1; 6) | select(. % 2 != 0)] | map(. * 2)'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># [</span>
-<span class="c">#   2,</span>
-<span class="c">#   6,</span>
-<span class="c">#   10</span>
-<span class="c"># ]</span>
-
-<span class="c"># Without using `select/1` and `map/1`, we could have also written the</span>
-<span class="c"># above example like this:</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'[range(1; 6) | if . % 2 != 0 then . else empty end | . * 2]'</span>
-
-
-<span class="c"># `keys/0` returns an array of keys of the current input. For an object,</span>
-<span class="c"># these are the object's attribute names; for an array, these are the</span>
-<span class="c"># array indices.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'[range(2; 10; 2)] | keys'</span>   <span class="c"># =&gt; [0, 1, 2, 3]</span>
-jq <span class="nt">-n</span> <span class="s1">'{a: 1, b: 2, c: 3} | keys'</span>  <span class="c"># =&gt; ["a", "b", "c"]</span>
-
-<span class="c"># `values/0` returns an array of values of the current input. For an object,</span>
-<span class="c"># these are the object's attribute values; for an array, these are the</span>
-<span class="c"># elements of the array.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'[range(2; 10; 2)] | values'</span>   <span class="c"># =&gt; [2, 4, 6, 8]</span>
-jq <span class="nt">-n</span> <span class="s1">'{a: 1, b: 2, c: 3} | values'</span>  <span class="c"># =&gt; [1, 2, 3]</span>
-
-
-<span class="c"># `to_entries/0` returns an array of key-value objects of the current input</span>
-<span class="c"># object.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'{a: 1, b: 2, c: 3} | to_entries'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># [</span>
-<span class="c">#   {</span>
-<span class="c">#     "key": "a",</span>
-<span class="c">#     "value": 1</span>
-<span class="c">#   },</span>
-<span class="c">#   {</span>
-<span class="c">#     "key": "b",</span>
-<span class="c">#     "value": 2</span>
-<span class="c">#   },</span>
-<span class="c">#   {</span>
-<span class="c">#     "key": "c",</span>
-<span class="c">#     "value": 3</span>
-<span class="c">#   }</span>
-<span class="c"># ]</span>
-
-
-<span class="c"># Here's how you can turn an object's attribute into environment variables</span>
-<span class="c"># using what we have learned so far.</span>
-<span class="c">#</span>
-<span class="nv">env_vars</span><span class="o">=</span><span class="si">$(</span>
-    jq <span class="nt">-rn</span> <span class="s1">'{var1: "1 2  3   4", var2: "line1\nline2\n"}
-            | to_entries[]
-            | "export " + @sh "\(.key)=\(.value)"
-           '</span>
-<span class="si">)</span>
-<span class="nb">eval</span> <span class="s2">"</span><span class="nv">$env_vars</span><span class="s2">"</span>
-<span class="nb">declare</span> <span class="nt">-p</span> var1 var2
-
-<span class="c"># Output:</span>
-<span class="c"># declare -x var1="1 2  3   4"</span>
-<span class="c"># declare -x var2="line1</span>
-<span class="c"># line2</span>
-<span class="c"># "</span>
-
-
-<span class="c"># `from_entries/0` is the opposite of `to_entries/0` in that it takes an</span>
-<span class="c"># an array of key-value objects and turn that into an object with keys</span>
-<span class="c"># and values from the `key` and `value` attributes of the objects.</span>
-<span class="c">#</span>
-<span class="c"># It's useful together with `to_entries/0` when you need to iterate and</span>
-<span class="c"># do something to each attribute of an object.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'{a: 1, b: 2, c: 3} | to_entries | map(.value *= 2) | from_entries'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># {</span>
-<span class="c">#   "a": 2,</span>
-<span class="c">#   "b": 4,</span>
-<span class="c">#   "c": 6</span>
-<span class="c"># }</span>
-
-
-<span class="c"># The example above can be further shortened with the  `with_entries/1` built-in:</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'{a: 1, b: 2, c: 3} | with_entries(.value *= 2)'</span>
-
-
-<span class="c"># The `group_by/1` generates an array of groups (arrays) from the current</span>
-<span class="c"># input (array). The classification is done by applying the expression argument</span>
-<span class="c"># to each member of the input array.</span>
-<span class="c">#</span>
-<span class="c"># Let's look at a contrived example (Note that `tostring`, `tonumber`,</span>
-<span class="c"># `length` and `max` are all built-in jq functions. Feel free to look</span>
-<span class="c"># them up in the jq manual):</span>
-<span class="c">#</span>
-<span class="c"># Generate some random numbers.</span>
-<span class="nv">numbers</span><span class="o">=</span><span class="si">$(</span><span class="nb">echo</span> <span class="nv">$RANDOM</span><span class="o">{</span>,,,,,,,,,,,,,,,,,,,,<span class="o">}</span><span class="si">)</span>
-<span class="c">#</span>
-<span class="c"># Feed the numbers to jq, classifying them into groups and calculating their</span>
-<span class="c"># averages, and finally generate a report.</span>
-<span class="c">#</span>
-<span class="nb">echo</span> <span class="nv">$numbers</span> | jq <span class="nt">-rs</span> <span class="s1">'  # Slurp the numbers into an array.
-[
-  [ map(tostring)          # Turn it into an array of strings.
-    | group_by(.[0:1])     # Group the numbers by their first digits.
-    | .[]                  # Iterate through the array of arrays (groups).
-    | map(tonumber)        # Turn each group back to an array of numbers.
-  ] # Finally, contain all groups in an array.
-
-  | sort_by([length, max]) # Sort the groups by their sizes.
-    # If two groups have the same size then the one with the largest
-    # number wins (is bigger).
-
-  | to_entries[]           # Enumerate the array, generating key-value objects.
-  |                        # For each object, generate two lines:
-  "Group \(.key): \(.value | sort | join(" "))"   + "\n" +
-  "Average: \(      .value | (add / length)  )"
-
-] # Contain the group+average lines in an array.
-  # Join the array elements by separator lines (dashes) to produce the report.
-| join("\n" + "-"*78 + "\n")
-'</span>
-
-<span class="c"># Output:</span>
-<span class="c">#</span>
-<span class="c"># Group 0: 3267</span>
-<span class="c"># Average: 3267</span>
-<span class="c"># ------------------------------------------------------------------------------</span>
-<span class="c"># Group 1: 7854</span>
-<span class="c"># Average: 7854</span>
-<span class="c"># ------------------------------------------------------------------------------</span>
-<span class="c"># Group 2: 4415 4447</span>
-<span class="c"># Average: 4431</span>
-<span class="c"># ------------------------------------------------------------------------------</span>
-<span class="c"># Group 3: 681 6426</span>
-<span class="c"># Average: 3553.5</span>
-<span class="c"># ------------------------------------------------------------------------------</span>
-<span class="c"># Group 4: 21263 21361 21801 21832 22947 23523 29174</span>
-<span class="c"># Average: 23128.714285714286</span>
-<span class="c"># ------------------------------------------------------------------------------</span>
-<span class="c"># Group 5: 10373 12698 13132 13924 17444 17963 18934 18979</span>
-<span class="c"># Average: 15430.875</span>
-
-
-<span class="c"># The `add/1` built-in "reduces" an array of values to a single value.</span>
-<span class="c"># You can think of it as sticking the `+` operator in between each value of</span>
-<span class="c"># the collection. Here are some examples:</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'[1, 2, 3, 4, 5] | add'</span>  <span class="c"># =&gt; 15</span>
-jq <span class="nt">-n</span> <span class="s1">'["a", "b", "c"] | add'</span>  <span class="c"># =&gt; "abc"</span>
-
-<span class="c"># `+` concatenates arrays</span>
-jq <span class="nt">-n</span> <span class="s1">'[["a"], ["b"], ["c"]] | add'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># [</span>
-<span class="c">#   "a",</span>
-<span class="c">#   "b",</span>
-<span class="c">#   "c"</span>
-<span class="c"># ]</span>
-
-<span class="c"># `+` merges objects non-recursively.</span>
-jq <span class="nt">-n</span> <span class="s1">'[{a: 1, b: {c: 3}}, {b: 2, c: 4}] | add'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># {</span>
-<span class="c">#   "a": 1,</span>
-<span class="c">#   "b": 2,</span>
-<span class="c">#   "c": 4</span>
-<span class="c"># }</span>
-
-
-<span class="c"># jq provides a special syntax for writing an expression that reduces</span>
-<span class="c"># the outputs generated by a given expresion to a single value.</span>
-<span class="c"># It has this form:</span>
-<span class="c">#</span>
-<span class="c">#   reduce outputs_expr as $var (initial_value; reduction_expr)</span>
-<span class="c">#</span>
-<span class="c"># Examples:</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'reduce range(1; 6) as $i (0; . + $i)'</span>             <span class="c"># =&gt; 15</span>
-jq <span class="nt">-n</span> <span class="s1">'reduce (1, 2, 3, 4, 5) as $i (0; . + $i)'</span>         <span class="c"># =&gt; 15</span>
-jq <span class="nt">-n</span> <span class="s1">'[1, 2, 3, 4, 5] | reduce .[] as $i (0; . + $i)'</span>   <span class="c"># =&gt; 15</span>
-jq <span class="nt">-n</span> <span class="s1">'["a", "b", "c"] | reduce .[] as $i (""; . + $i)'</span>  <span class="c"># =&gt; "abc"</span>
-
-<span class="c"># Notice the `.` in the `reduction_expr` is the `initial_value` at first,</span>
-<span class="c"># and then it becomes the result of applying the `reduction_expr` as</span>
-<span class="c"># we iterate through the values of `outputs_expr`. The expression:</span>
-<span class="c">#</span>
-<span class="c">#    reduce (1, 2, 3, 4, 5) as $i (0; . + $i)</span>
-<span class="c">#</span>
-<span class="c"># can be thought of as doing:</span>
-<span class="c">#</span>
-<span class="c">#    0 + 1 | . + 2 | . + 3 | . + 4 | . + 5</span>
-<span class="c">#</span>
-
-
-<span class="c"># The `*` operator when used on two objects, merges both recursively.</span>
-<span class="c"># Therefore, to merge JSON objects recursively, you can use `reduce`</span>
-<span class="c"># with the `*` operator. For example:</span>
-<span class="c">#</span>
-<span class="nb">echo</span> <span class="s1">'
-  {"a": 1,  "b": {"c": 3}}
-  {         "b": {"d": 4}}
-  {"a": 99, "e": 5       }
-'</span> | jq <span class="nt">-s</span> <span class="s1">'reduce .[] as $m ({}; . * $m)'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># {</span>
-<span class="c">#   "a": 99,</span>
-<span class="c">#   "b": {</span>
-<span class="c">#     "c": 3,</span>
-<span class="c">#     "d": 4</span>
-<span class="c">#   },</span>
-<span class="c">#   "e": 5</span>
-<span class="c"># }</span>
-
-
-<span class="c"># jq has variable assignment in the form of `expr as $var`, which binds</span>
-<span class="c"># the value of `expr` to `$var`, and `$var` is immutable. Further more,</span>
-<span class="c"># `... as ...` doesn't change the input of the next filter; its introduction</span>
-<span class="c"># in a filter pipeline is only for establishing the binding of a value to a</span>
-<span class="c"># variable, and its scope extends to the filters following its definition.</span>
-<span class="c"># (i.e., to look up a variable's definition, scan to the left of the filter</span>
-<span class="c"># chain from the expression using it until you find the definition)</span>
-<span class="c">#</span>
-jq <span class="nt">-rn</span> <span class="s1">'[1, 2, 3, 4, 5]
-        | (.[0] + .[-1])      as $sum     # Always put ( ) around the binding `expr` to avoid surprises.
-        | ($sum * length / 2) as $result  # The current input at this step is still the initial array.
-        | "The result is: \($result)"     # Same.
-'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># The result is: 15</span>
-
-
-<span class="c"># With the `expr as $var` form, if multiple values are generated by `expr`</span>
-<span class="c"># then jq will iterate through them and bind each value to `$var` in turn</span>
-<span class="c"># for the rest of the pipeline.</span>
-<span class="c">#</span>
-jq <span class="nt">-rn</span> <span class="s1">'range(2; 4) as $i
-        | range(1; 6) as $j
-          | "\($i) * \($j) = \($i * $j)"
-'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># 2 * 1 = 2</span>
-<span class="c"># 2 * 2 = 4</span>
-<span class="c"># 2 * 3 = 6</span>
-<span class="c"># 2 * 4 = 8</span>
-<span class="c"># 2 * 5 = 10</span>
-<span class="c"># 3 * 1 = 3</span>
-<span class="c"># 3 * 2 = 6</span>
-<span class="c"># 3 * 3 = 9</span>
-<span class="c"># 3 * 4 = 12</span>
-<span class="c"># 3 * 5 = 15</span>
-
-
-<span class="c"># It's sometimes useful to bind the initial input to a variable at the</span>
-<span class="c"># start of a program, so that you can refer to it later down the pipeline.</span>
-<span class="c">#</span>
-jq <span class="nt">-rn</span> <span class="s2">"</span><span class="si">$(</span><span class="nb">cat</span> <span class="o">&lt;&lt;</span><span class="sh">'</span><span class="no">EOF</span><span class="sh">'
-    {lookup:  {a: 1, b: 2, c: 3},
-     bonuses: {a: 5, b: 2, c: 9}
-    }
-    | . as </span><span class="nv">$doc</span><span class="sh">
-    | .bonuses
-    | to_entries[]
-    | "</span><span class="se">\(</span><span class="sh">.key)'s total is </span><span class="se">\(</span><span class="nv">$doc</span><span class="sh">.lookup[.key] + .value)"
-</span><span class="no">EOF
-</span><span class="si">)</span><span class="s2">"</span>
-
-<span class="c"># Output:</span>
-<span class="c"># a's total is 6</span>
-<span class="c"># b's total is 4</span>
-<span class="c"># c's total is 12</span>
-
-
-<span class="c"># jq supports destructing during varible binding. This lets you extract values</span>
-<span class="c"># from an array or an object and bind them to variables.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'[range(5)] | . as [$first, $second] | $second'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># 1</span>
-
-jq <span class="nt">-n</span> <span class="s1">'{ name: "Tom", numbers: [1, 2, 3], age: 32}
-       | . as {
-            name: $who,                  # bind .name to $who
-            $name,                       # shorthand for `name: $name`
-            numbers: [$first, $second],
-         }
-       | $name, $second, $first, $who
-'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># "Tom"</span>
-<span class="c"># 2</span>
-<span class="c"># 1</span>
-<span class="c"># "Tom"</span>
-
-
-<span class="c"># In jq, values can be assigned to an array index or object key via the</span>
-<span class="c"># assignment operator, `=`. The same current input is given to both sides</span>
-<span class="c"># of the assignment operator, and the assignment itself evaluates to the</span>
-<span class="c"># current input. In other words, the assignment expression is evaluated</span>
-<span class="c"># for its side effect, and doesn't generate a new output.</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'.a = 1 | .b = .a + 1'</span>  <span class="c"># =&gt; {"a": 1, "b": 2}</span>
-
-<span class="c"># Note that input is `null` due to `jq -n`, so `.` is `null` in the first</span>
-<span class="c"># filter, and assiging to a key under `null` turns it into an object with</span>
-<span class="c"># the key. The same input (now an object) then gets piped to the next filter,</span>
-<span class="c"># which then sets the `b` key to the value of the `a` key plus `1`, which is `2`.</span>
-<span class="c">#</span>
-
-<span class="c"># Another example:</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'.a=1, .a.b=2'</span>   <span class="c"># =&gt; {"a": 1} {"a": {"b": 2}}</span>
-
-<span class="c"># In the above example, two objects are generated because both assignments</span>
-<span class="c"># received `null` as their inputs, and each operand of the comma operator</span>
-<span class="c"># is evaluated independently. Notice also how you can easily generate</span>
-<span class="c"># nested objects.</span>
-
-
-<span class="c"># In addition to the assignment operator, jq also has operators like:</span>
-<span class="c"># `+=`, `-=`, `*=`, and '/=', ... etc. Basically, `a op= b` is a shorthand</span>
-<span class="c"># for `a = a op b`, and they are handy for updating an object attribute or</span>
-<span class="c"># an item in an array based on its current value. Examples:</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'.a.b.c = 3 | .a.b.c = .a.b.c + 1'</span> <span class="c"># =&gt; {"a": {"b": {"c": 4}}}</span>
-jq <span class="nt">-n</span> <span class="s1">'.a.b.c = 3 | .a.b.c += 1'</span>         <span class="c"># =&gt; {"a": {"b": {"c": 4}}}</span>
-
-
-<span class="c"># To delete a value, use `del/1`, which takes a path expression that specifies</span>
-<span class="c"># the locations of the things to be deleted. Example:</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'{a: 1, b: {c: 2}, d: [3, 4, 5]} | del(.b.c, .d[1]) | .b.x = 6'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># {</span>
-<span class="c">#   "a": 1,</span>
-<span class="c">#   "b": {</span>
-<span class="c">#     "x": 6</span>
-<span class="c">#   },</span>
-<span class="c">#   "d": [</span>
-<span class="c">#     3,</span>
-<span class="c">#     5</span>
-<span class="c">#   ]</span>
-<span class="c"># }</span>
-
-
-<span class="c"># Other than using jq's built-in functions, you can define your own.</span>
-<span class="c"># In fact, many built-in functions are defined using jq (see the link</span>
-<span class="c"># to jq's built-in functions at the end of the doc).</span>
-<span class="c">#</span>
-jq <span class="nt">-n</span> <span class="s1">'
-    def my_select(expr): if expr then . else empty end;
-    def my_map(expr): [.[] | expr];
-    def sum: reduce .[] as $x (0; . + $x);
-    def my_range($from; $to):
-        if $from &gt;= $to then
-            empty
-        else
-            $from, my_range($from + 1; $to)
-        end
-    ;
-    [my_range(1; 6)] | my_map(my_select(. % 2 != 0)) | sum
-'</span>
-
-<span class="c"># Output:</span>
-<span class="c"># 9</span>
-
-<span class="c"># Some notes about function definitons:</span>
-<span class="c">#</span>
-<span class="c"># - Functions are usually defined at the beginning, so that they are available</span>
-<span class="c">#   to the rest of the jq program.</span>
-<span class="c">#</span>
-<span class="c"># - Each function definion should end with a `;` (semicolon).</span>
-<span class="c">#</span>
-<span class="c"># - It's also possible to define a function within another, though it's not shown here.</span>
-<span class="c">#</span>
-<span class="c"># - Function parameters are separated by `;` (semicolor). This is consistent with</span>
-<span class="c">#   passing multiple arguments when calling a function.</span>
-<span class="c">#</span>
-<span class="c"># - A function can call itself; in fact, jq has TCO (Tail Call Optimization).</span>
-<span class="c">#</span>
-<span class="c"># - `def f($a; $b): ...;` is a shorthand for: `def f(a; b): a as $a | b as $b | ...`</span>
-</code></pre></div>
+<div class="highlight"><pre><span></span><span class="c1"># When running jq from the command line, jq program code can be specified as the</span>
+<span class="c1"># first argument after any options to `jq`. We often quote such jq program with</span>
+<span class="c1"># single quotes (`&#39;`) to prevent any special interpretation from the command line</span>
+<span class="c1"># shell.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;# Comments start with # until the end of line.</span>
+<span class="s1">       # The -n option sets the input to the value, `null`, and prevents `jq`</span>
+<span class="s1">       # from reading inputs from external sources.</span>
+<span class="s1">&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># null</span>
+
+
+<span class="c1"># By default jq reads from *STDIN* a stream of JSON inputs (values). It</span>
+<span class="c1"># processes each input with the jq program (filters) specified at the command</span>
+<span class="c1"># line, and prints the outputs of processing each input with the program to</span>
+<span class="c1"># *STDOUT*.</span>
+<span class="c1">#</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;</span>
+<span class="s1">  &quot;hello&quot; 123 [</span>
+<span class="s1">    &quot;one&quot;,</span>
+<span class="s1">    &quot;two&quot;,</span>
+<span class="s1">    &quot;three&quot;</span>
+<span class="s1">  ]</span>
+<span class="s1">  { &quot;name&quot;: &quot;jq&quot; }</span>
+<span class="s1">&#39;</span><span class="w"> </span><span class="p">|</span>
+<span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.  # &lt;-- the jq program here is the single dot (.), called the identity</span>
+<span class="s1">        # operator, which stands for the current input.</span>
+<span class="s1">&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># &quot;hello&quot;</span>
+<span class="c1"># 123</span>
+<span class="c1"># [</span>
+<span class="c1">#   &quot;one&quot;,</span>
+<span class="c1">#   &quot;two&quot;,</span>
+<span class="c1">#   &quot;three&quot;</span>
+<span class="c1"># ]</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;name&quot;: &quot;jq&quot;</span>
+<span class="c1"># }</span>
+
+
+<span class="c1"># Notice that jq pretty-prints the outputs by default, therefore, piping</span>
+<span class="c1"># to `jq` is a simple way to format a response from some REST API endpoint</span>
+<span class="c1"># that returns JSON. E.g., `curl -s https://freegeoip.app/json/ | jq`</span>
+
+
+<span class="c1"># Instead of processing each JSON input with a jq program, you can also</span>
+<span class="c1"># ask jq to slurp them up as an array.</span>
+<span class="c1">#</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;1 &quot;two&quot; 3&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-s<span class="w"> </span>.
+
+<span class="c1"># Output:</span>
+<span class="c1"># [</span>
+<span class="c1">#   1,</span>
+<span class="c1">#   &quot;two&quot;,</span>
+<span class="c1">#   3</span>
+<span class="c1"># ]</span>
+
+
+<span class="c1"># Or, treat each line as a string.</span>
+<span class="c1">#</span>
+<span class="o">(</span><span class="nb">echo</span><span class="w"> </span>line<span class="w"> </span><span class="m">1</span><span class="p">;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span>line<span class="w"> </span><span class="m">2</span><span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-R<span class="w"> </span>.
+
+<span class="c1"># Output:</span>
+<span class="c1"># &quot;line 1&quot;</span>
+<span class="c1"># &quot;line 2&quot;</span>
+
+
+<span class="c1"># Or, combine -s and -R to slurp the input lines into a single string.</span>
+<span class="c1">#</span>
+<span class="o">(</span><span class="nb">echo</span><span class="w"> </span>line<span class="w"> </span><span class="m">1</span><span class="p">;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span>line<span class="w"> </span><span class="m">2</span><span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-sR<span class="w"> </span>.
+
+<span class="c1"># Output:</span>
+<span class="c1"># &quot;line 1\nline2\n&quot;</span>
+
+
+<span class="c1"># Inputs can also come from a JSON file specified at the command line:</span>
+<span class="c1">#</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;&quot;hello&quot;&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>hello.json
+jq<span class="w"> </span>.<span class="w"> </span>hello.json
+
+<span class="c1"># Output:</span>
+<span class="c1"># &quot;hello&quot;</span>
+
+
+<span class="c1"># Passing a value into a jq program can be done with the `--arg` option.</span>
+<span class="c1"># Below, `val` is the variable name to bind the value, `123`, to.</span>
+<span class="c1"># The variable is then referenced as `$val`.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span>--arg<span class="w"> </span>val<span class="w"> </span><span class="m">123</span><span class="w"> </span><span class="s1">&#39;$val&#39;</span><span class="w">  </span><span class="c1"># $val is the string &quot;123&quot; here</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># &quot;123&quot;</span>
+
+
+<span class="c1"># If you need to pass a JSON value, use `--argjson`</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span>--argjson<span class="w"> </span>val<span class="w"> </span><span class="m">123</span><span class="w"> </span><span class="s1">&#39;$val&#39;</span><span class="w">  </span><span class="c1"># $val is a number</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># 123</span>
+
+
+<span class="c1"># Using `--arg` or `--argjson` is an useful way of building JSON output from</span>
+<span class="c1"># existing input.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>--arg<span class="w"> </span>text<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>date<span class="p">;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Have a nice day!&quot;</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;{ &quot;today&quot;: $text }&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;today&quot;: &quot;Sun Apr 10 09:53:07 PM EDT 2022\nHave a nice day!&quot;</span>
+<span class="c1"># }</span>
+
+
+<span class="c1"># Instead of outputting values as JSON, you can use the `-r` option to print</span>
+<span class="c1"># string values unquoted / unescaped. Non-string values are still printed as</span>
+<span class="c1"># JSON.</span>
+<span class="c1">#</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;&quot;hello&quot; 2 [1, &quot;two&quot;, null] {}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span>.
+
+<span class="c1"># Output:</span>
+<span class="c1"># hello</span>
+<span class="c1"># 2</span>
+<span class="c1"># [</span>
+<span class="c1">#   1,</span>
+<span class="c1">#   &quot;two&quot;,</span>
+<span class="c1">#   null</span>
+<span class="c1"># ]</span>
+<span class="c1"># {}</span>
+
+
+<span class="c1"># Inside a string in jq, `\(expr)` can be used to substitute the output of</span>
+<span class="c1"># `expr` into the surrounding string context.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-rn<span class="w"> </span><span class="s1">&#39;&quot;1 + 2 = \(1+2)&quot;&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># 1 + 2 = 3</span>
+
+
+<span class="c1"># The `-r` option is most useful for generating text outputs to be processed</span>
+<span class="c1"># down in a shell pipeline, especially when combined with an intepolated</span>
+<span class="c1"># string that is prefixed the `@sh` prefix operator.</span>
+<span class="c1">#</span>
+<span class="c1"># The `@sh` operator escapes the outputs of `\(...)` inside a string with</span>
+<span class="c1"># single quotes so that each resulting string of `\(...)` can be evaluated</span>
+<span class="c1"># by the shell as a single word / token / argument without special</span>
+<span class="c1"># interpretations.</span>
+<span class="c1">#</span>
+<span class="nv">env_vars</span><span class="o">=</span><span class="k">$(</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;{&quot;var1&quot;: &quot;value one&quot;, &quot;var2&quot;: &quot;value\ntwo&quot;}&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">     </span><span class="p">|</span>
+<span class="w">    </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s1">&#39;</span>
+<span class="s1">      &quot;export &quot; + @sh &quot;var1=\(.var1) var2=\(.var2)&quot;</span>
+<span class="s1">      #                     ^^^^^^^^      ^^^^^^^^</span>
+<span class="s1">      #                  &quot;&#39;</span>value<span class="w"> </span>one<span class="s1">&#39;&quot;  &quot;&#39;</span>value<span class="se">\n</span>two<span class="s1">&#39;&quot;</span>
+<span class="s1">      #</span>
+<span class="s1">      # NOTE: The + (plus) operator here concatenates strings.</span>
+<span class="s1">    &#39;</span>
+<span class="k">)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$env_vars</span><span class="s2">&quot;</span>
+<span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$env_vars</span><span class="s2">&quot;</span>
+<span class="nb">declare</span><span class="w"> </span>-p<span class="w"> </span>var1<span class="w"> </span>var2
+
+<span class="c1"># Output:</span>
+<span class="c1"># export var1=&#39;value one&#39; var2=&#39;value</span>
+<span class="c1"># two&#39;</span>
+<span class="c1"># declare -- var1=&quot;value one&quot;</span>
+<span class="c1"># declare -- var2=&quot;value</span>
+<span class="c1"># two&quot;</span>
+
+<span class="c1"># There are other string `@prefix` operators (e.g., @base64, @uri, @csv, ...)</span>
+<span class="c1"># that might be useful to you. See `man jq` for details.</span>
+
+
+<span class="c1"># The comma (`,`) operator in jq evaluates each operand and generates multiple</span>
+<span class="c1"># outputs:</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;&quot;one&quot;, 2, [&quot;three&quot;], {&quot;four&quot;: 4}&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># &quot;one&quot;</span>
+<span class="c1"># 2</span>
+<span class="c1"># [</span>
+<span class="c1">#   &quot;three&quot;</span>
+<span class="c1"># ]</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;four&quot;: 4</span>
+<span class="c1"># }</span>
+
+
+<span class="c1"># Any JSON value is a valid jq expression that evaluates to the JSON value</span>
+<span class="c1"># itself.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;1, &quot;one&quot;, [1, 2], {&quot;one&quot;: 1}, null, true, false&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># 1</span>
+<span class="c1"># &quot;one&quot;</span>
+<span class="c1"># [</span>
+<span class="c1">#   1,</span>
+<span class="c1">#   2</span>
+<span class="c1"># ]</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;one&quot;: 1</span>
+<span class="c1"># }</span>
+<span class="c1"># null</span>
+<span class="c1"># true</span>
+<span class="c1"># false</span>
+
+
+<span class="c1"># Any jq expression can be used where a JSON value is expected, even as object</span>
+<span class="c1"># keys. (though parenthesis might be required for object keys or values)</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[2*3, 8-1, 16/2], {(&quot;tw&quot; + &quot;o&quot;): (1 + 1)}&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># [</span>
+<span class="c1">#   6,</span>
+<span class="c1">#   7,</span>
+<span class="c1">#   8</span>
+<span class="c1"># ]</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;two&quot;: 2</span>
+<span class="c1"># }</span>
+
+
+<span class="c1"># As a shortcut, if a JSON object key looks like a valid identifier (matching</span>
+<span class="c1"># the regex `^[a-zA-Z_][a-zA-Z_0-9]*$`), quotes can be omitted.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;{ key_1: &quot;value1&quot; }&#39;</span>
+
+<span class="c1"># If a JSON object&#39;s key&#39;s value is ommited, it is looked up in the current</span>
+<span class="c1"># input using the key: (see next example for the meaning of `... | ...`)</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;{c: 3} | {a: 1, &quot;b&quot;, c}&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;a&quot;: 1,</span>
+<span class="c1">#   &quot;b&quot;: null,</span>
+<span class="c1">#   &quot;c&quot;: 3</span>
+<span class="c1"># }</span>
+
+
+<span class="c1"># jq programs are more commonly written as a series of expressions (filters)</span>
+<span class="c1"># connected by the pipe (`|`) operator, which makes the output of its left</span>
+<span class="c1"># filter the input to its right filter.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;1 | . + 2 | . + 3&#39;</span><span class="w">  </span><span class="c1"># first dot is 1; second dot is 3</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># 6</span>
+
+<span class="c1"># If an expression evaluates to multiple outputs, then jq will iterate through</span>
+<span class="c1"># them and propagate each output down the pipeline, and generate multiple</span>
+<span class="c1"># outputs in the end.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;1, 2, 3 | ., 4 | .&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># 1</span>
+<span class="c1"># 4</span>
+<span class="c1"># 2</span>
+<span class="c1"># 4</span>
+<span class="c1"># 3</span>
+<span class="c1"># 4</span>
+
+<span class="c1"># The flows of the data in the last example can be visualized like this:</span>
+<span class="c1"># (number prefixed with `*` indicates the current output)</span>
+<span class="c1">#</span>
+<span class="c1"># *1,  2,  3 | *1,  4 | *1</span>
+<span class="c1">#  1,  2,  3 |  1, *4 | *4</span>
+<span class="c1">#  1, *2,  3 | *2,  4 | *2</span>
+<span class="c1">#  1,  2,  3 |  2, *4 | *4</span>
+<span class="c1">#  1,  2, *3 | *3,  4 | *3</span>
+<span class="c1">#  1,  2,  3 |  3, *4 | *4</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># To put it another way, the evaluation of the above example is very similar</span>
+<span class="c1"># to the following pieces of code in other programming languages:</span>
+<span class="c1">#</span>
+<span class="c1"># In Python:</span>
+<span class="c1">#</span>
+<span class="c1">#   for first_dot in 1, 2, 3:</span>
+<span class="c1">#       for second_dot in first_dot, 4:</span>
+<span class="c1">#           print(second_dot)</span>
+<span class="c1">#</span>
+<span class="c1"># In Ruby:</span>
+<span class="c1">#</span>
+<span class="c1">#   [1, 2, 3].each do |dot|</span>
+<span class="c1">#     [dot, 4].each { |dot| puts dot }</span>
+<span class="c1">#   end</span>
+<span class="c1">#</span>
+<span class="c1"># In Javascript:</span>
+<span class="c1">#</span>
+<span class="c1">#   [1, 2, 3].forEach(dot =&gt; {</span>
+<span class="c1">#       [dot, 4].forEach(dot =&gt; console.log(dot))</span>
+<span class="c1">#   })</span>
+<span class="c1">#</span>
+
+
+<span class="c1"># Below are some examples of array index and object attribute lookups using</span>
+<span class="c1"># the `[expr]` operator after an expression. If `expr` is a number then it&#39;s</span>
+<span class="c1"># an array index lookup; otherwise, it should be a string, in which case it&#39;s</span>
+<span class="c1"># an object attribute lookup:</span>
+
+<span class="c1"># Array index lookup</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[2, {&quot;four&quot;: 4}, 6][1 - 1]&#39;</span><span class="w"> </span><span class="c1"># =&gt; 2</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[2, {&quot;four&quot;: 4}, 6][0]&#39;</span><span class="w">     </span><span class="c1"># =&gt; 2</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[2, {&quot;four&quot;: 4}, 6] | .[0]&#39;</span><span class="w"> </span><span class="c1"># =&gt; 2</span>
+
+<span class="c1"># You can chain the lookups since they are just expressions.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[2, {&quot;four&quot;: 4}, 6][1][&quot;fo&quot; + &quot;ur&quot;]&#39;</span><span class="w"> </span><span class="c1"># =&gt; 4</span>
+
+<span class="c1"># For object attributes, you can also use the `.key` shortcut.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[2, {&quot;four&quot;: 4}, 6][1].four&#39;</span><span class="w">  </span><span class="c1"># =&gt; 4</span>
+
+<span class="c1"># Use `.&quot;key&quot;` if the key is not a valid identifier.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[2, {&quot;f o u r&quot;: 4}, 6][1].&quot;f o u r&quot;&#39;</span><span class="w"> </span><span class="c1"># =&gt; 4</span>
+
+<span class="c1"># Array index lookup returns null if the index is not found.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[2, {&quot;four&quot;: 4}, 6][99]&#39;</span><span class="w"> </span><span class="c1"># =&gt; null</span>
+
+<span class="c1"># Object attribute lookup returns null if the key is not found.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[2, {&quot;four&quot;: 4}, 6][1].whatever&#39;</span><span class="w"> </span><span class="c1"># =&gt; null</span>
+
+<span class="c1"># The alternative operator `//` can be used to provide a default</span>
+<span class="c1"># value when the result of the left operand is either `null` or `false`.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;.unknown_key // 7&#39;</span><span class="w"> </span><span class="c1"># =&gt; 7</span>
+
+<span class="c1"># If the thing before the lookup operator (`[expr]`) is neither an array</span>
+<span class="c1"># or an object, then you will get an error:</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;123 | .[0]&#39;</span><span class="w">     </span><span class="c1"># =&gt; jq: error (at &lt;unknown&gt;): Cannot index number with number</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;&quot;abc&quot; | .name&#39;</span><span class="w">  </span><span class="c1"># =&gt; jq: error (at &lt;unknown&gt;): Cannot index string with string &quot;name&quot;</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;{&quot;a&quot;: 97} | .[0]&#39;</span><span class="w">    </span><span class="c1"># =&gt; jq: error (at &lt;unknown&gt;): Cannot index object with number</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[89, 64] | .[&quot;key&quot;]&#39;</span><span class="w"> </span><span class="c1"># =&gt; jq: error (at &lt;unknown&gt;): Cannot index array with string &quot;key&quot;</span>
+
+<span class="c1"># You can, however, append a `?` to a lookup to make jq return `empty`</span>
+<span class="c1"># instead when such error happens.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;123 | .[0]?&#39;</span><span class="w">    </span><span class="c1"># no output since it&#39;s empty.</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;&quot;abc&quot; | .name?&#39;</span><span class="w"> </span><span class="c1"># no output since it&#39;s empty.</span>
+
+<span class="c1"># The alternative operator (`//`) also works with `empty`:</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;123 | .[0]? // 99&#39;</span><span class="w">           </span><span class="c1"># =&gt; 99</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;&quot;abc&quot; | .name? // &quot;unknown&quot;&#39;</span><span class="w"> </span><span class="c1"># =&gt; &quot;unknown&quot;</span>
+
+<span class="c1"># NOTE: `empty` is actually a built-in function in jq.</span>
+<span class="c1"># With the nested loop explanation we illustrated earlier before,</span>
+<span class="c1"># `empty` is like the `continue` or the `next` keyword that skips</span>
+<span class="c1"># the current iteration of the loop in some programming languages.</span>
+
+
+<span class="c1"># Strings and arrays can be sliced with the same syntax (`[i:j]`, but no</span>
+<span class="c1"># steppings) and semantic as found in the Python programming language:</span>
+<span class="c1">#</span>
+<span class="c1">#                0   1    2    3    4   5 ... infinite</span>
+<span class="c1">#        array = [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;]</span>
+<span class="c1"># -infinite ... -4  -3   -2   -1</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[&quot;Peter&quot;, &quot;Jerry&quot;][1]&#39;</span><span class="w">            </span><span class="c1"># =&gt; &quot;Jerry&quot;</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[&quot;Peter&quot;, &quot;Jerry&quot;][-1]&#39;</span><span class="w">           </span><span class="c1"># =&gt; &quot;Jerry&quot;</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[&quot;Peter&quot;, &quot;Jerry&quot;, &quot;Tom&quot;][1:]&#39;</span><span class="w">    </span><span class="c1"># =&gt; [&quot;Jerry&quot;, &quot;Tom&quot;]</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[&quot;Peter&quot;, &quot;Jerry&quot;, &quot;Tom&quot;][:1+1]&#39;</span><span class="w">  </span><span class="c1"># =&gt; [&quot;Peter&quot;, &quot;Jerry&quot;]</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[&quot;Peter&quot;, &quot;Jerry&quot;, &quot;Tom&quot;][1:99]&#39;</span><span class="w">  </span><span class="c1"># =&gt; [&quot;Jerry&quot;, &quot;Tom&quot;]</span>
+
+
+<span class="c1"># If the lookup index or key is ommited then jq iterates through</span>
+<span class="c1"># the collection, generating one output value from each iteration.</span>
+<span class="c1">#</span>
+<span class="c1"># These examples produce the same outputs.</span>
+<span class="c1">#</span>
+<span class="nb">echo</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>.
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;1, 2, 3&#39;</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[1, 2, 3][]&#39;</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;{a: 1, b: 2, c: 3}[]&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># 1</span>
+<span class="c1"># 2</span>
+<span class="c1"># 3</span>
+
+
+<span class="c1"># You can build an array out of multiple outputs.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;{values: [{a: 1, b: 2, c: 3}[] | . * 2]}&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;values&quot;: [</span>
+<span class="c1">#     2,</span>
+<span class="c1">#     4,</span>
+<span class="c1">#     6</span>
+<span class="c1">#   ]</span>
+<span class="c1"># }</span>
+
+
+<span class="c1"># If multiple outputs are not contained, then we&#39;d get multiple outputs</span>
+<span class="c1"># in the end.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;{values: ({a: 1, b: 2, c: 3}[] | . * 2)}&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;values&quot;: 2</span>
+<span class="c1"># }</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;values&quot;: 4</span>
+<span class="c1"># }</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;values&quot;: 6</span>
+<span class="c1"># }</span>
+
+
+<span class="c1"># Conditional `if ... then ... else ... end` in jq is an expression, so</span>
+<span class="c1"># both the `then` part and the `else` part are required. In jq, only</span>
+<span class="c1"># two values, `null` and `false`, are false; all other values are true.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;if 1 &gt; 2 | not and 1 &lt;= 2 then &quot;Makes sense&quot; else &quot;WAT?!&quot; end&#39;</span>
+
+<span class="c1"># Output</span>
+<span class="c1"># &quot;Makes sense&quot;</span>
+
+<span class="c1"># Notice that `not` is a built-in function that takes zero arguments,</span>
+<span class="c1"># that&#39;s why it&#39;s used as a filter to negate its input value.</span>
+<span class="c1"># We&#39;ll talk about functions soon.</span>
+
+<span class="c1"># Another example using a conditional:</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;1, 2, 3, 4, 5 | if . % 2 != 0 then . else empty end&#39;</span>
+
+<span class="c1"># Output</span>
+<span class="c1"># 1</span>
+<span class="c1"># 3</span>
+<span class="c1"># 5</span>
+
+<span class="c1"># The `empty` above is a built-in function that takes 0 arguments and</span>
+<span class="c1"># generates no outputs. Let&#39;s see more examples of built-in functions.</span>
+
+<span class="c1"># The above conditional example can be written using the `select/1` built-in</span>
+<span class="c1"># function (`/1` indicates the number of arguments expected by the function).</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;1, 2, 3, 4, 5 | select(. % 2 != 0)&#39;</span><span class="w">  </span><span class="c1"># NOTE: % gives the remainder.</span>
+
+<span class="c1"># Output</span>
+<span class="c1"># 1</span>
+<span class="c1"># 3</span>
+<span class="c1"># 5</span>
+
+
+<span class="c1"># Function arguments in jq are passed with call-by-name semantic, which</span>
+<span class="c1"># means, an argument is not evaulated at call site, but instead, is</span>
+<span class="c1"># treated as a lambda expression with the calling context of the call</span>
+<span class="c1"># site as its scope for variable and function references used in the</span>
+<span class="c1"># expression.</span>
+<span class="c1">#</span>
+<span class="c1"># In the above example, the expression `. % 2 != 0` is what&#39;s passed to</span>
+<span class="c1"># `select/1` as the argument, not `true` or `false`, which is what would</span>
+<span class="c1"># have been the case had the (boolean) expression was evaluated before it&#39;s</span>
+<span class="c1"># passed to the function.</span>
+
+
+<span class="c1"># The `range/1`, `range/2`, and `range/3` built-in functions generate</span>
+<span class="c1"># integers within a given range.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[range(3)]&#39;</span><span class="w">         </span><span class="c1"># =&gt; [0, 1, 2]</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[range(0; 4)]&#39;</span><span class="w">      </span><span class="c1"># =&gt; [0, 1, 2, 3]</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[range(2; 10; 2)]&#39;</span><span class="w">  </span><span class="c1"># =&gt; [2, 4, 6, 8]</span>
+
+<span class="c1"># Notice that `;` (semicolon) is used to separate function arguments.</span>
+
+
+<span class="c1"># The `map/1` function applies a given expression to each element of</span>
+<span class="c1"># the current input (array) and outputs a new array.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[range(1; 6) | select(. % 2 != 0)] | map(. * 2)&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># [</span>
+<span class="c1">#   2,</span>
+<span class="c1">#   6,</span>
+<span class="c1">#   10</span>
+<span class="c1"># ]</span>
+
+<span class="c1"># Without using `select/1` and `map/1`, we could have also written the</span>
+<span class="c1"># above example like this:</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[range(1; 6) | if . % 2 != 0 then . else empty end | . * 2]&#39;</span>
+
+
+<span class="c1"># `keys/0` returns an array of keys of the current input. For an object,</span>
+<span class="c1"># these are the object&#39;s attribute names; for an array, these are the</span>
+<span class="c1"># array indices.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[range(2; 10; 2)] | keys&#39;</span><span class="w">   </span><span class="c1"># =&gt; [0, 1, 2, 3]</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;{a: 1, b: 2, c: 3} | keys&#39;</span><span class="w">  </span><span class="c1"># =&gt; [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]</span>
+
+<span class="c1"># `values/0` returns an array of values of the current input. For an object,</span>
+<span class="c1"># these are the object&#39;s attribute values; for an array, these are the</span>
+<span class="c1"># elements of the array.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[range(2; 10; 2)] | values&#39;</span><span class="w">   </span><span class="c1"># =&gt; [2, 4, 6, 8]</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;{a: 1, b: 2, c: 3} | values&#39;</span><span class="w">  </span><span class="c1"># =&gt; [1, 2, 3]</span>
+
+
+<span class="c1"># `to_entries/0` returns an array of key-value objects of the current input</span>
+<span class="c1"># object.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;{a: 1, b: 2, c: 3} | to_entries&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># [</span>
+<span class="c1">#   {</span>
+<span class="c1">#     &quot;key&quot;: &quot;a&quot;,</span>
+<span class="c1">#     &quot;value&quot;: 1</span>
+<span class="c1">#   },</span>
+<span class="c1">#   {</span>
+<span class="c1">#     &quot;key&quot;: &quot;b&quot;,</span>
+<span class="c1">#     &quot;value&quot;: 2</span>
+<span class="c1">#   },</span>
+<span class="c1">#   {</span>
+<span class="c1">#     &quot;key&quot;: &quot;c&quot;,</span>
+<span class="c1">#     &quot;value&quot;: 3</span>
+<span class="c1">#   }</span>
+<span class="c1"># ]</span>
+
+
+<span class="c1"># Here&#39;s how you can turn an object&#39;s attribute into environment variables</span>
+<span class="c1"># using what we have learned so far.</span>
+<span class="c1">#</span>
+<span class="nv">env_vars</span><span class="o">=</span><span class="k">$(</span>
+<span class="w">    </span>jq<span class="w"> </span>-rn<span class="w"> </span><span class="s1">&#39;{var1: &quot;1 2  3   4&quot;, var2: &quot;line1\nline2\n&quot;}</span>
+<span class="s1">            | to_entries[]</span>
+<span class="s1">            | &quot;export &quot; + @sh &quot;\(.key)=\(.value)&quot;</span>
+<span class="s1">           &#39;</span>
+<span class="k">)</span>
+<span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$env_vars</span><span class="s2">&quot;</span>
+<span class="nb">declare</span><span class="w"> </span>-p<span class="w"> </span>var1<span class="w"> </span>var2
+
+<span class="c1"># Output:</span>
+<span class="c1"># declare -x var1=&quot;1 2  3   4&quot;</span>
+<span class="c1"># declare -x var2=&quot;line1</span>
+<span class="c1"># line2</span>
+<span class="c1"># &quot;</span>
+
+
+<span class="c1"># `from_entries/0` is the opposite of `to_entries/0` in that it takes an</span>
+<span class="c1"># an array of key-value objects and turn that into an object with keys</span>
+<span class="c1"># and values from the `key` and `value` attributes of the objects.</span>
+<span class="c1">#</span>
+<span class="c1"># It&#39;s useful together with `to_entries/0` when you need to iterate and</span>
+<span class="c1"># do something to each attribute of an object.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;{a: 1, b: 2, c: 3} | to_entries | map(.value *= 2) | from_entries&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;a&quot;: 2,</span>
+<span class="c1">#   &quot;b&quot;: 4,</span>
+<span class="c1">#   &quot;c&quot;: 6</span>
+<span class="c1"># }</span>
+
+
+<span class="c1"># The example above can be further shortened with the  `with_entries/1` built-in:</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;{a: 1, b: 2, c: 3} | with_entries(.value *= 2)&#39;</span>
+
+
+<span class="c1"># The `group_by/1` generates an array of groups (arrays) from the current</span>
+<span class="c1"># input (array). The classification is done by applying the expression argument</span>
+<span class="c1"># to each member of the input array.</span>
+<span class="c1">#</span>
+<span class="c1"># Let&#39;s look at a contrived example (Note that `tostring`, `tonumber`,</span>
+<span class="c1"># `length` and `max` are all built-in jq functions. Feel free to look</span>
+<span class="c1"># them up in the jq manual):</span>
+<span class="c1">#</span>
+<span class="c1"># Generate some random numbers.</span>
+<span class="nv">numbers</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$RANDOM</span><span class="o">{</span>,,,,,,,,,,,,,,,,,,,,<span class="o">}</span><span class="k">)</span>
+<span class="c1">#</span>
+<span class="c1"># Feed the numbers to jq, classifying them into groups and calculating their</span>
+<span class="c1"># averages, and finally generate a report.</span>
+<span class="c1">#</span>
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$numbers</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-rs<span class="w"> </span><span class="s1">&#39;  # Slurp the numbers into an array.</span>
+<span class="s1">[</span>
+<span class="s1">  [ map(tostring)          # Turn it into an array of strings.</span>
+<span class="s1">    | group_by(.[0:1])     # Group the numbers by their first digits.</span>
+<span class="s1">    | .[]                  # Iterate through the array of arrays (groups).</span>
+<span class="s1">    | map(tonumber)        # Turn each group back to an array of numbers.</span>
+<span class="s1">  ] # Finally, contain all groups in an array.</span>
+
+<span class="s1">  | sort_by([length, max]) # Sort the groups by their sizes.</span>
+<span class="s1">    # If two groups have the same size then the one with the largest</span>
+<span class="s1">    # number wins (is bigger).</span>
+
+<span class="s1">  | to_entries[]           # Enumerate the array, generating key-value objects.</span>
+<span class="s1">  |                        # For each object, generate two lines:</span>
+<span class="s1">  &quot;Group \(.key): \(.value | sort | join(&quot; &quot;))&quot;   + &quot;\n&quot; +</span>
+<span class="s1">  &quot;Average: \(      .value | (add / length)  )&quot;</span>
+
+<span class="s1">] # Contain the group+average lines in an array.</span>
+<span class="s1">  # Join the array elements by separator lines (dashes) to produce the report.</span>
+<span class="s1">| join(&quot;\n&quot; + &quot;-&quot;*78 + &quot;\n&quot;)</span>
+<span class="s1">&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1">#</span>
+<span class="c1"># Group 0: 3267</span>
+<span class="c1"># Average: 3267</span>
+<span class="c1"># ------------------------------------------------------------------------------</span>
+<span class="c1"># Group 1: 7854</span>
+<span class="c1"># Average: 7854</span>
+<span class="c1"># ------------------------------------------------------------------------------</span>
+<span class="c1"># Group 2: 4415 4447</span>
+<span class="c1"># Average: 4431</span>
+<span class="c1"># ------------------------------------------------------------------------------</span>
+<span class="c1"># Group 3: 681 6426</span>
+<span class="c1"># Average: 3553.5</span>
+<span class="c1"># ------------------------------------------------------------------------------</span>
+<span class="c1"># Group 4: 21263 21361 21801 21832 22947 23523 29174</span>
+<span class="c1"># Average: 23128.714285714286</span>
+<span class="c1"># ------------------------------------------------------------------------------</span>
+<span class="c1"># Group 5: 10373 12698 13132 13924 17444 17963 18934 18979</span>
+<span class="c1"># Average: 15430.875</span>
+
+
+<span class="c1"># The `add/1` built-in &quot;reduces&quot; an array of values to a single value.</span>
+<span class="c1"># You can think of it as sticking the `+` operator in between each value of</span>
+<span class="c1"># the collection. Here are some examples:</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[1, 2, 3, 4, 5] | add&#39;</span><span class="w">  </span><span class="c1"># =&gt; 15</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[&quot;a&quot;, &quot;b&quot;, &quot;c&quot;] | add&#39;</span><span class="w">  </span><span class="c1"># =&gt; &quot;abc&quot;</span>
+
+<span class="c1"># `+` concatenates arrays</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[[&quot;a&quot;], [&quot;b&quot;], [&quot;c&quot;]] | add&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># [</span>
+<span class="c1">#   &quot;a&quot;,</span>
+<span class="c1">#   &quot;b&quot;,</span>
+<span class="c1">#   &quot;c&quot;</span>
+<span class="c1"># ]</span>
+
+<span class="c1"># `+` merges objects non-recursively.</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[{a: 1, b: {c: 3}}, {b: 2, c: 4}] | add&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;a&quot;: 1,</span>
+<span class="c1">#   &quot;b&quot;: 2,</span>
+<span class="c1">#   &quot;c&quot;: 4</span>
+<span class="c1"># }</span>
+
+
+<span class="c1"># jq provides a special syntax for writing an expression that reduces</span>
+<span class="c1"># the outputs generated by a given expresion to a single value.</span>
+<span class="c1"># It has this form:</span>
+<span class="c1">#</span>
+<span class="c1">#   reduce outputs_expr as $var (initial_value; reduction_expr)</span>
+<span class="c1">#</span>
+<span class="c1"># Examples:</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;reduce range(1; 6) as $i (0; . + $i)&#39;</span><span class="w">             </span><span class="c1"># =&gt; 15</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;reduce (1, 2, 3, 4, 5) as $i (0; . + $i)&#39;</span><span class="w">         </span><span class="c1"># =&gt; 15</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[1, 2, 3, 4, 5] | reduce .[] as $i (0; . + $i)&#39;</span><span class="w">   </span><span class="c1"># =&gt; 15</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[&quot;a&quot;, &quot;b&quot;, &quot;c&quot;] | reduce .[] as $i (&quot;&quot;; . + $i)&#39;</span><span class="w">  </span><span class="c1"># =&gt; &quot;abc&quot;</span>
+
+<span class="c1"># Notice the `.` in the `reduction_expr` is the `initial_value` at first,</span>
+<span class="c1"># and then it becomes the result of applying the `reduction_expr` as</span>
+<span class="c1"># we iterate through the values of `outputs_expr`. The expression:</span>
+<span class="c1">#</span>
+<span class="c1">#    reduce (1, 2, 3, 4, 5) as $i (0; . + $i)</span>
+<span class="c1">#</span>
+<span class="c1"># can be thought of as doing:</span>
+<span class="c1">#</span>
+<span class="c1">#    0 + 1 | . + 2 | . + 3 | . + 4 | . + 5</span>
+<span class="c1">#</span>
+
+
+<span class="c1"># The `*` operator when used on two objects, merges both recursively.</span>
+<span class="c1"># Therefore, to merge JSON objects recursively, you can use `reduce`</span>
+<span class="c1"># with the `*` operator. For example:</span>
+<span class="c1">#</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;</span>
+<span class="s1">  {&quot;a&quot;: 1,  &quot;b&quot;: {&quot;c&quot;: 3}}</span>
+<span class="s1">  {         &quot;b&quot;: {&quot;d&quot;: 4}}</span>
+<span class="s1">  {&quot;a&quot;: 99, &quot;e&quot;: 5       }</span>
+<span class="s1">&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;reduce .[] as $m ({}; . * $m)&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;a&quot;: 99,</span>
+<span class="c1">#   &quot;b&quot;: {</span>
+<span class="c1">#     &quot;c&quot;: 3,</span>
+<span class="c1">#     &quot;d&quot;: 4</span>
+<span class="c1">#   },</span>
+<span class="c1">#   &quot;e&quot;: 5</span>
+<span class="c1"># }</span>
+
+
+<span class="c1"># jq has variable assignment in the form of `expr as $var`, which binds</span>
+<span class="c1"># the value of `expr` to `$var`, and `$var` is immutable. Further more,</span>
+<span class="c1"># `... as ...` doesn&#39;t change the input of the next filter; its introduction</span>
+<span class="c1"># in a filter pipeline is only for establishing the binding of a value to a</span>
+<span class="c1"># variable, and its scope extends to the filters following its definition.</span>
+<span class="c1"># (i.e., to look up a variable&#39;s definition, scan to the left of the filter</span>
+<span class="c1"># chain from the expression using it until you find the definition)</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-rn<span class="w"> </span><span class="s1">&#39;[1, 2, 3, 4, 5]</span>
+<span class="s1">        | (.[0] + .[-1])      as $sum     # Always put ( ) around the binding `expr` to avoid surprises.</span>
+<span class="s1">        | ($sum * length / 2) as $result  # The current input at this step is still the initial array.</span>
+<span class="s1">        | &quot;The result is: \($result)&quot;     # Same.</span>
+<span class="s1">&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># The result is: 15</span>
+
+
+<span class="c1"># With the `expr as $var` form, if multiple values are generated by `expr`</span>
+<span class="c1"># then jq will iterate through them and bind each value to `$var` in turn</span>
+<span class="c1"># for the rest of the pipeline.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-rn<span class="w"> </span><span class="s1">&#39;range(2; 4) as $i</span>
+<span class="s1">        | range(1; 6) as $j</span>
+<span class="s1">          | &quot;\($i) * \($j) = \($i * $j)&quot;</span>
+<span class="s1">&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># 2 * 1 = 2</span>
+<span class="c1"># 2 * 2 = 4</span>
+<span class="c1"># 2 * 3 = 6</span>
+<span class="c1"># 2 * 4 = 8</span>
+<span class="c1"># 2 * 5 = 10</span>
+<span class="c1"># 3 * 1 = 3</span>
+<span class="c1"># 3 * 2 = 6</span>
+<span class="c1"># 3 * 3 = 9</span>
+<span class="c1"># 3 * 4 = 12</span>
+<span class="c1"># 3 * 5 = 15</span>
+
+
+<span class="c1"># It&#39;s sometimes useful to bind the initial input to a variable at the</span>
+<span class="c1"># start of a program, so that you can refer to it later down the pipeline.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-rn<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>cat<span class="w"> </span><span class="s">&lt;&lt;&#39;EOF&#39;</span>
+<span class="s">    {lookup:  {a: 1, b: 2, c: 3},</span>
+<span class="s">     bonuses: {a: 5, b: 2, c: 9}</span>
+<span class="s">    }</span>
+<span class="s">    | . as $doc</span>
+<span class="s">    | .bonuses</span>
+<span class="s">    | to_entries[]</span>
+<span class="s">    | &quot;\(.key)&#39;s total is \($doc.lookup[.key] + .value)&quot;</span>
+<span class="s">EOF</span>
+<span class="k">)</span><span class="s2">&quot;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># a&#39;s total is 6</span>
+<span class="c1"># b&#39;s total is 4</span>
+<span class="c1"># c&#39;s total is 12</span>
+
+
+<span class="c1"># jq supports destructing during varible binding. This lets you extract values</span>
+<span class="c1"># from an array or an object and bind them to variables.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;[range(5)] | . as [$first, $second] | $second&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># 1</span>
+
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;{ name: &quot;Tom&quot;, numbers: [1, 2, 3], age: 32}</span>
+<span class="s1">       | . as {</span>
+<span class="s1">            name: $who,                  # bind .name to $who</span>
+<span class="s1">            $name,                       # shorthand for `name: $name`</span>
+<span class="s1">            numbers: [$first, $second],</span>
+<span class="s1">         }</span>
+<span class="s1">       | $name, $second, $first, $who</span>
+<span class="s1">&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># &quot;Tom&quot;</span>
+<span class="c1"># 2</span>
+<span class="c1"># 1</span>
+<span class="c1"># &quot;Tom&quot;</span>
+
+
+<span class="c1"># In jq, values can be assigned to an array index or object key via the</span>
+<span class="c1"># assignment operator, `=`. The same current input is given to both sides</span>
+<span class="c1"># of the assignment operator, and the assignment itself evaluates to the</span>
+<span class="c1"># current input. In other words, the assignment expression is evaluated</span>
+<span class="c1"># for its side effect, and doesn&#39;t generate a new output.</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;.a = 1 | .b = .a + 1&#39;</span><span class="w">  </span><span class="c1"># =&gt; {&quot;a&quot;: 1, &quot;b&quot;: 2}</span>
+
+<span class="c1"># Note that input is `null` due to `jq -n`, so `.` is `null` in the first</span>
+<span class="c1"># filter, and assiging to a key under `null` turns it into an object with</span>
+<span class="c1"># the key. The same input (now an object) then gets piped to the next filter,</span>
+<span class="c1"># which then sets the `b` key to the value of the `a` key plus `1`, which is `2`.</span>
+<span class="c1">#</span>
+
+<span class="c1"># Another example:</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;.a=1, .a.b=2&#39;</span><span class="w">   </span><span class="c1"># =&gt; {&quot;a&quot;: 1} {&quot;a&quot;: {&quot;b&quot;: 2}}</span>
+
+<span class="c1"># In the above example, two objects are generated because both assignments</span>
+<span class="c1"># received `null` as their inputs, and each operand of the comma operator</span>
+<span class="c1"># is evaluated independently. Notice also how you can easily generate</span>
+<span class="c1"># nested objects.</span>
+
+
+<span class="c1"># In addition to the assignment operator, jq also has operators like:</span>
+<span class="c1"># `+=`, `-=`, `*=`, and &#39;/=&#39;, ... etc. Basically, `a op= b` is a shorthand</span>
+<span class="c1"># for `a = a op b`, and they are handy for updating an object attribute or</span>
+<span class="c1"># an item in an array based on its current value. Examples:</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;.a.b.c = 3 | .a.b.c = .a.b.c + 1&#39;</span><span class="w"> </span><span class="c1"># =&gt; {&quot;a&quot;: {&quot;b&quot;: {&quot;c&quot;: 4}}}</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;.a.b.c = 3 | .a.b.c += 1&#39;</span><span class="w">         </span><span class="c1"># =&gt; {&quot;a&quot;: {&quot;b&quot;: {&quot;c&quot;: 4}}}</span>
+
+
+<span class="c1"># To delete a value, use `del/1`, which takes a path expression that specifies</span>
+<span class="c1"># the locations of the things to be deleted. Example:</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;{a: 1, b: {c: 2}, d: [3, 4, 5]} | del(.b.c, .d[1]) | .b.x = 6&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;a&quot;: 1,</span>
+<span class="c1">#   &quot;b&quot;: {</span>
+<span class="c1">#     &quot;x&quot;: 6</span>
+<span class="c1">#   },</span>
+<span class="c1">#   &quot;d&quot;: [</span>
+<span class="c1">#     3,</span>
+<span class="c1">#     5</span>
+<span class="c1">#   ]</span>
+<span class="c1"># }</span>
+
+
+<span class="c1"># Other than using jq&#39;s built-in functions, you can define your own.</span>
+<span class="c1"># In fact, many built-in functions are defined using jq (see the link</span>
+<span class="c1"># to jq&#39;s built-in functions at the end of the doc).</span>
+<span class="c1">#</span>
+jq<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;</span>
+<span class="s1">    def my_select(expr): if expr then . else empty end;</span>
+<span class="s1">    def my_map(expr): [.[] | expr];</span>
+<span class="s1">    def sum: reduce .[] as $x (0; . + $x);</span>
+<span class="s1">    def my_range($from; $to):</span>
+<span class="s1">        if $from &gt;= $to then</span>
+<span class="s1">            empty</span>
+<span class="s1">        else</span>
+<span class="s1">            $from, my_range($from + 1; $to)</span>
+<span class="s1">        end</span>
+<span class="s1">    ;</span>
+<span class="s1">    [my_range(1; 6)] | my_map(my_select(. % 2 != 0)) | sum</span>
+<span class="s1">&#39;</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># 9</span>
+
+<span class="c1"># Some notes about function definitons:</span>
+<span class="c1">#</span>
+<span class="c1"># - Functions are usually defined at the beginning, so that they are available</span>
+<span class="c1">#   to the rest of the jq program.</span>
+<span class="c1">#</span>
+<span class="c1"># - Each function definion should end with a `;` (semicolon).</span>
+<span class="c1">#</span>
+<span class="c1"># - It&#39;s also possible to define a function within another, though it&#39;s not shown here.</span>
+<span class="c1">#</span>
+<span class="c1"># - Function parameters are separated by `;` (semicolor). This is consistent with</span>
+<span class="c1">#   passing multiple arguments when calling a function.</span>
+<span class="c1">#</span>
+<span class="c1"># - A function can call itself; in fact, jq has TCO (Tail Call Optimization).</span>
+<span class="c1">#</span>
+<span class="c1"># - `def f($a; $b): ...;` is a shorthand for: `def f(a; b): a as $a | b as $b | ...`</span>
+</pre></div>
 <h2>Further Reading</h2>
 
 <ul>

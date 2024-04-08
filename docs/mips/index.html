@@ -92,369 +92,369 @@ Hennessy in 1981. These RISC processors are used in embedded systems such as
 gateways and routers.</p>
 
 <p><a href="https://en.wikipedia.org/wiki/MIPS_architecture">Read More</a></p>
-<div class="highlight"><pre class="highlight plaintext"><code># Comments are denoted with a '#'
-
-# Everything that occurs after a '#' will be ignored by the assembler's lexer.
-
-# Programs typically contain a .data and .text sections
-
-.data # Section where data is stored in memory (allocated in RAM), similar to
-      # variables in higher-level languages
-
-  # Declarations follow a ( label: .type value(s) ) form of declaration
-  hello_world: .asciiz "Hello World\n"      # Declare a null terminated string
-  num1: .word 42                            # Integers are referred to as words
-                                            # (32-bit value)
-
-  arr1: .word 1, 2, 3, 4, 5                 # Array of words
-  arr2: .byte 'a', 'b'                      # Array of chars (1 byte each)
-  buffer: .space 60                         # Allocates space in the RAM 
-                                            # (not cleared to 0)
-
-  # Datatype sizes
-  _byte: .byte 'a'                          # 1 byte
-  _halfword: .half 53                       # 2 bytes
-  _word: .word 3                            # 4 bytes
-  _float: .float 3.14                       # 4 bytes
-  _double: .double 7.0                      # 8 bytes
-
-  .align 2                                  # Memory alignment of data, where
-                                            # number indicates byte alignment
-                                            # in powers of 2. (.align 2
-                                            # represents word alignment since
-                                            # 2^2 = 4 bytes)
-
-.text                                       # Section that contains 
-                                            # instructions and program logic
-.globl _main                                # Declares an instruction label as
-                                            # global, making it accessible to
-                                            # other files
-
-  _main:                                    # MIPS programs execute 
-                                            # instructions sequentially, where 
-                                            # the code under this label will be
-                                            # executed first
-
-    # Let's print "hello world"
-    la $a0, hello_world                     # Load address of string stored
-                                            # in memory
-    li $v0, 4                               # Load the syscall value (number
-                                            # indicating which syscall to make)
-    syscall                                 # Perform the specified syscall
-                                            # with the given argument ($a0)
-
-    # Registers (used to hold data during program execution)
-    # $t0 - $t9                             # Temporary registers used for 
-                                            # intermediate calculations inside 
-                                            # subroutines (not saved across 
-                                            # function calls)
-
-    # $s0 - $s7                             # Saved registers where values are 
-                                            # saved across subroutine calls. 
-                                            # Typically saved in stack
-
-    # $a0 - $a3                             # Argument registers for passing in 
-                                            # arguments for subroutines
-    # $v0 - $v1                             # Return registers for returning 
-                                            # values to caller function
-
-    # Types of load/store instructions
-    la $t0, label                           # Copy the address of a value in
-                                            # memory specified by the label
-                                            # into register $t0
-    lw $t0, label                           # Copy a word value from memory
-    lw $t1, 4($s0)                          # Copy a word value from an address
-                                            # stored in a register with an
-                                            # offset of 4 bytes (addr + 4)
-    lb $t2, label                           # Copy a byte value to the 
-                                            # lower order portion of 
-                                            # the register $t2
-    lb $t2, 0($s0)                          # Copy a byte value from the source
-                                            # address in $s0 with offset 0
-    # Same idea with 'lh' for halfwords
-
-    sw $t0, label                           # Store word value into
-                                            # memory address mapped by label
-    sw $t0, 8($s0)                          # Store word value into address 
-                                            # specified in $s0 and offset of
-                                            # 8 bytes
-    # Same idea using 'sb' and 'sh' for bytes and halfwords. 'sa' does not exist
-
-### Math ###
-  _math:
-    # Remember to load your values into a register
-    lw $t0, num                             # From the data section
-    li $t0, 5                               # Or from an immediate (constant)
-    li $t1, 6
-    add $t2, $t0, $t1                       # $t2 = $t0 + $t1
-    sub $t2, $t0, $t1                       # $t2 = $t0 - $t1
-    mul $t2, $t0, $t1                       # $t2 = $t0 * $t1
-    div $t2, $t0, $t1                       # $t2 = $t0 / $t1 (Might not be 
-                                            # supported in some versions of MARS)
-    div $t0, $t1                            # Performs $t0 / $t1. Get the 
-                                            # quotient using 'mflo' and 
-                                            # remainder using 'mfhi'
-
-    # Bitwise Shifting
-    sll $t0, $t0, 2                         # Bitwise shift to the left with 
-                                            # immediate (constant value) of 2
-    sllv $t0, $t1, $t2                      # Shift left by a variable amount
-                                            # in register
-    srl $t0, $t0, 5                         # Bitwise shift to the right (does 
-                                            # not sign preserve, sign-extends 
-                                            # with 0)
-    srlv $t0, $t1, $t2                      # Shift right by a variable amount 
-                                            # in a register
-    sra $t0, $t0, 7                         # Bitwise arithmetic shift to  
-                                            # the right (preserves sign)
-    srav $t0, $t1, $t2                      # Shift right by a variable amount 
-                                            # in a register
-
-    # Bitwise operators
-    and $t0, $t1, $t2                       # Bitwise AND
-    andi $t0, $t1, 0xFFF                    # Bitwise AND with immediate
-    or $t0, $t1, $t2                        # Bitwise OR
-    ori $t0, $t1, 0xFFF                     # Bitwise OR with immediate
-    xor $t0, $t1, $t2                       # Bitwise XOR
-    xori $t0, $t1, 0xFFF                    # Bitwise XOR with immediate
-    nor $t0, $t1, $t2                       # Bitwise NOR
-
-## BRANCHING ##
-  _branching:
-    # The basic format of these branching instructions typically follow &lt;instr&gt;
-    # &lt;reg1&gt; &lt;reg2&gt; &lt;label&gt; where label is the label we want to jump to if the
-    # given conditional evaluates to true
-    # Sometimes it is easier to write the conditional logic backward, as seen
-    # in the simple if statement example below
-
-    beq $t0, $t1, reg_eq                    # Will branch to reg_eq if
-                                            # $t0 == $t1, otherwise
-                                            # execute the next line
-    bne $t0, $t1, reg_neq                   # Branches when $t0 != $t1
-    b branch_target                         # Unconditional branch, will 
-                                            # always execute
-    beqz $t0, req_eq_zero                   # Branches when $t0 == 0
-    bnez $t0, req_neq_zero                  # Branches when $t0 != 0
-    bgt $t0, $t1, t0_gt_t1                  # Branches when $t0 &gt; $t1
-    bge $t0, $t1, t0_gte_t1                 # Branches when $t0 &gt;= $t1
-    bgtz $t0, t0_gt0                        # Branches when $t0 &gt; 0
-    blt $t0, $t1, t0_gt_t1                  # Branches when $t0 &lt; $t1
-    ble $t0, $t1, t0_gte_t1                 # Branches when $t0 &lt;= $t1
-    bltz $t0, t0_lt0                        # Branches when $t0 &lt; 0
-    slt $s0, $t0, $t1                       # "Set on Less Than"
-                                            # when $t0 &lt; $t1 with result in $s0 
-                                            # (1 for true)
-
-    # Simple if statement
-    # if (i == j)
-    #     f = g + h;
-    #  f = f - i;
-
-    # Let $s0 = f, $s1 = g, $s2 = h, $s3 = i, $s4 = j
-    bne $s3, $s4, L1 # if (i !=j)
-    add $s0, $s1, $s2 # f = g + h
-
-    L1:
-      sub $s0, $s0, $s3 # f = f - i
-
-    # Below is an example of finding the max of 3 numbers
-    # A direct translation in Java from MIPS logic:
-    # if (a &gt; b)
-    #   if (a &gt; c)
-    #     max = a;
-    #   else
-    #     max = c;
-    # else
-    #   if (b &gt; c)
-    #     max = b;
-    #   else
-    #     max = c;
-
-    # Let $s0 = a, $s1 = b, $s2 = c, $v0 = return register
-    ble $s0, $s1, a_LTE_b                   # if(a &lt;= b) branch(a_LTE_b)
-    ble $s0, $s2, max_C                     # if(a &gt; b &amp;&amp; a &lt;=c) branch(max_C)
-    move $v0, $s0                           # else [a &gt; b &amp;&amp; a &gt; c] max = a
-    j done                                  # Jump to the end of the program
-
-    a_LTE_b:                                # Label for when a &lt;= b
-      ble $s1, $s2, max_C                   # if(a &lt;= b &amp;&amp; b &lt;= c) branch(max_C)
-      move $v0, $s1                         # if(a &lt;= b &amp;&amp; b &gt; c) max = b
-      j done                                # Jump to done
-
-    max_C:
-      move $v0, $s2                         # max = c
-
-    done:                                   # End of program
-
-## LOOPS ##
-  _loops:
-    # The basic structure of loops is having an exit condition and a jump 
-    # instruction to continue its execution
-    li $t0, 0
-    while:
-      bgt $t0, 9, end_while                 # While $t0 is less than 10, 
-                                            # keep iterating
-      #actual loop content would go here
-      addi $t0, $t0, 1                      # Increment the value
-      j while                               # Jump back to the beginning of 
-                                            # the loop
-    end_while:
-
-    # 2D Matrix Traversal
-    # Assume that $a0 stores the address of an integer matrix which is 3 x 3
-    li $t0, 0                               # Counter for i
-    li $t1, 0                               # Counter for j
-    matrix_row:
-      bgt $t0, 3, matrix_row_end
-
-      matrix_col:
-        bgt $t1, 3, matrix_col_end
-
-        # Do stuff
-
-        addi $t1, $t1, 1                  # Increment the col counter
-      matrix_col_end:
-
-      # Do stuff
-
-      addi $t0, $t0, 1
-    matrix_row_end:
-
-## FUNCTIONS ##
-  _functions:
-    # Functions are callable procedures that can accept arguments and return 
-    # values all denoted with labels, like above
-
-    main:                                 # Programs begin with main func
-      jal return_1                        # jal will store the current PC in $ra
-                                          # and then jump to return_1
-
-      # What if we want to pass in args?
-      # First we must pass in our parameters to the argument registers
-      li $a0, 1
-      li $a1, 2
-      jal sum                             # Now we can call the function
-
-      # How about recursion?
-      # This is a bit more work since we need to make sure we save and restore
-      # the previous PC in $ra since jal will automatically overwrite 
-      # on each call
-      li $a0, 3
-      jal fact
-
-      li $v0, 10
-      syscall
-
-    # This function returns 1
-    return_1:
-      li $v0, 1                           # Load val in return register $v0
-      jr $ra                              # Jump back to old PC to continue exec
-
-
-    # Function with 2 args
-    sum:
-      add $v0, $a0, $a1
-      jr $ra                              # Return
-
-    # Recursive function to find factorial
-    fact:
-      addi $sp, $sp, -8                   # Allocate space in stack
-      sw $s0, ($sp)                       # Store reg that holds current num
-      sw $ra, 4($sp)                      # Store previous PC
-
-      li $v0, 1                           # Init return value
-      beq $a0, 0, fact_done               # Finish if param is 0
-
-      # Otherwise, continue recursion
-      move $s0, $a0                       # Copy $a0 to $s0
-      sub $a0, $a0, 1
-      jal fact
-
-      mul $v0, $s0, $v0                   # Multiplication is done
-
-      fact_done:
-        lw $s0, ($sp)
-        lw $ra, 4($sp)                     # Restore the PC
-        addi $sp, $sp, 8
-
-        jr $ra
-
-## MACROS ##
-  _macros:
-    # Macros are extremely useful for substituting repeated code blocks with a
-    # single label for better readability
-    # These are in no means substitutes for functions
-    # These must be declared before it is used
-
-    # Macro for printing newlines (since these can be very repetitive)
-    .macro println()
-      la $a0, newline                     # New line string stored here
-      li $v0, 4
-      syscall
-    .end_macro
-
-    println()                             # Assembler will copy that block of
-                                          # code here before running
-
-    # Parameters can be passed in through macros.
-    # These are denoted by a '%' sign with any name you choose
-    .macro print_int(%num)
-      li $v0, 1
-      lw $a0, %num
-      syscall
-    .end_macro
-
-    li $t0, 1
-    print_int($t0)
-
-    # We can also pass in immediates for macros
-    .macro immediates(%a, %b)
-      add $t0, %a, %b
-    .end_macro
-
-    immediates(3, 5)
-
-    # Along with passing in labels
-    .macro print(%string)
-      la $a0, %string
-      li $v0, 4
-      syscall
-    .end_macro
-
-    print(hello_world)
-
-## ARRAYS ##
-.data
-  list: .word 3, 0, 1, 2, 6                 # This is an array of words
-  char_arr: .asciiz "hello"                 # This is a char array
-  buffer: .space 128                        # Allocates a block in memory, does
-                                            # not automatically clear
-                                            # These blocks of memory are aligned
-                                            # next to each other
-
-.text
-  la $s0, list                              # Load address of list
-  li $t0, 0                                 # Counter
-  li $t1, 5                                 # Length of the list
-
-  loop:
-    bge $t0, $t1, end_loop
-
-    lw $a0, ($s0)
-    li $v0, 1
-    syscall                                 # Print the number
-
-    addi $s0, $s0, 4                        # Size of a word is 4 bytes
-    addi $t0, $t0, 1                        # Increment
-    j loop
-  end_loop:
-
-## INCLUDE ##
-# You do this to import external files into your program (behind the scenes, 
-# it really just takes whatever code that is in that file and places it where
-# the include statement is)
-.include "somefile.asm"
-</code></pre></div>
+<div class="highlight"><pre><span></span><span class="c1"># Comments are denoted with a &#39;#&#39;</span>
+
+<span class="c1"># Everything that occurs after a &#39;#&#39; will be ignored by the assembler&#39;s lexer.</span>
+
+<span class="c1"># Programs typically contain a .data and .text sections</span>
+
+<span class="na">.data</span><span class="w"> </span><span class="c1"># Section where data is stored in memory (allocated in RAM), similar to</span>
+<span class="w">      </span><span class="c1"># variables in higher-level languages</span>
+
+<span class="w">  </span><span class="c1"># Declarations follow a ( label: .type value(s) ) form of declaration</span>
+<span class="w">  </span><span class="nl">hello_world:</span><span class="w"> </span><span class="na">.asciiz</span><span class="w"> </span><span class="s">&quot;Hello World\n&quot;</span><span class="w">      </span><span class="c1"># Declare a null terminated string</span>
+<span class="w">  </span><span class="nl">num1:</span><span class="w"> </span><span class="na">.word</span><span class="w"> </span><span class="mi">42</span><span class="w">                            </span><span class="c1"># Integers are referred to as words</span>
+<span class="w">                                            </span><span class="c1"># (32-bit value)</span>
+
+<span class="w">  </span><span class="nl">arr1:</span><span class="w"> </span><span class="na">.word</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="w">                 </span><span class="c1"># Array of words</span>
+<span class="w">  </span><span class="nl">arr2:</span><span class="w"> </span><span class="na">.byte</span><span class="w"> </span><span class="err">&#39;</span><span class="no">a</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="no">b</span><span class="err">&#39;</span><span class="w">                      </span><span class="c1"># Array of chars (1 byte each)</span>
+<span class="w">  </span><span class="nl">buffer:</span><span class="w"> </span><span class="na">.space</span><span class="w"> </span><span class="mi">60</span><span class="w">                         </span><span class="c1"># Allocates space in the RAM </span>
+<span class="w">                                            </span><span class="c1"># (not cleared to 0)</span>
+
+<span class="w">  </span><span class="c1"># Datatype sizes</span>
+<span class="w">  </span><span class="nl">_byte:</span><span class="w"> </span><span class="na">.byte</span><span class="w"> </span><span class="err">&#39;</span><span class="no">a</span><span class="err">&#39;</span><span class="w">                          </span><span class="c1"># 1 byte</span>
+<span class="w">  </span><span class="nl">_halfword:</span><span class="w"> </span><span class="na">.half</span><span class="w"> </span><span class="mi">53</span><span class="w">                       </span><span class="c1"># 2 bytes</span>
+<span class="w">  </span><span class="nl">_word:</span><span class="w"> </span><span class="na">.word</span><span class="w"> </span><span class="mi">3</span><span class="w">                            </span><span class="c1"># 4 bytes</span>
+<span class="w">  </span><span class="nl">_float:</span><span class="w"> </span><span class="na">.float</span><span class="w"> </span><span class="mi">3</span><span class="no">.14</span><span class="w">                       </span><span class="c1"># 4 bytes</span>
+<span class="w">  </span><span class="nl">_double:</span><span class="w"> </span><span class="na">.double</span><span class="w"> </span><span class="mi">7</span><span class="no">.0</span><span class="w">                      </span><span class="c1"># 8 bytes</span>
+
+<span class="w">  </span><span class="na">.align</span><span class="w"> </span><span class="mi">2</span><span class="w">                                  </span><span class="c1"># Memory alignment of data, where</span>
+<span class="w">                                            </span><span class="c1"># number indicates byte alignment</span>
+<span class="w">                                            </span><span class="c1"># in powers of 2. (.align 2</span>
+<span class="w">                                            </span><span class="c1"># represents word alignment since</span>
+<span class="w">                                            </span><span class="c1"># 2^2 = 4 bytes)</span>
+
+<span class="na">.text</span><span class="w">                                       </span><span class="c1"># Section that contains </span>
+<span class="w">                                            </span><span class="c1"># instructions and program logic</span>
+<span class="na">.globl</span><span class="w"> </span><span class="no">_main</span><span class="w">                                </span><span class="c1"># Declares an instruction label as</span>
+<span class="w">                                            </span><span class="c1"># global, making it accessible to</span>
+<span class="w">                                            </span><span class="c1"># other files</span>
+
+<span class="w">  </span><span class="nl">_main:</span><span class="w">                                    </span><span class="c1"># MIPS programs execute </span>
+<span class="w">                                            </span><span class="c1"># instructions sequentially, where </span>
+<span class="w">                                            </span><span class="c1"># the code under this label will be</span>
+<span class="w">                                            </span><span class="c1"># executed first</span>
+
+<span class="w">    </span><span class="c1"># Let&#39;s print &quot;hello world&quot;</span>
+<span class="w">    </span><span class="nf">la</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="no">hello_world</span><span class="w">                     </span><span class="c1"># Load address of string stored</span>
+<span class="w">                                            </span><span class="c1"># in memory</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="w">                               </span><span class="c1"># Load the syscall value (number</span>
+<span class="w">                                            </span><span class="c1"># indicating which syscall to make)</span>
+<span class="w">    </span><span class="nf">syscall</span><span class="w">                                 </span><span class="c1"># Perform the specified syscall</span>
+<span class="w">                                            </span><span class="c1"># with the given argument ($a0)</span>
+
+<span class="w">    </span><span class="c1"># Registers (used to hold data during program execution)</span>
+<span class="w">    </span><span class="c1"># $t0 - $t9                             # Temporary registers used for </span>
+<span class="w">                                            </span><span class="c1"># intermediate calculations inside </span>
+<span class="w">                                            </span><span class="c1"># subroutines (not saved across </span>
+<span class="w">                                            </span><span class="c1"># function calls)</span>
+
+<span class="w">    </span><span class="c1"># $s0 - $s7                             # Saved registers where values are </span>
+<span class="w">                                            </span><span class="c1"># saved across subroutine calls. </span>
+<span class="w">                                            </span><span class="c1"># Typically saved in stack</span>
+
+<span class="w">    </span><span class="c1"># $a0 - $a3                             # Argument registers for passing in </span>
+<span class="w">                                            </span><span class="c1"># arguments for subroutines</span>
+<span class="w">    </span><span class="c1"># $v0 - $v1                             # Return registers for returning </span>
+<span class="w">                                            </span><span class="c1"># values to caller function</span>
+
+<span class="w">    </span><span class="c1"># Types of load/store instructions</span>
+<span class="w">    </span><span class="nf">la</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">label</span><span class="w">                           </span><span class="c1"># Copy the address of a value in</span>
+<span class="w">                                            </span><span class="c1"># memory specified by the label</span>
+<span class="w">                                            </span><span class="c1"># into register $t0</span>
+<span class="w">    </span><span class="nf">lw</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">label</span><span class="w">                           </span><span class="c1"># Copy a word value from memory</span>
+<span class="w">    </span><span class="nf">lw</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">(</span><span class="no">$s0</span><span class="p">)</span><span class="w">                          </span><span class="c1"># Copy a word value from an address</span>
+<span class="w">                                            </span><span class="c1"># stored in a register with an</span>
+<span class="w">                                            </span><span class="c1"># offset of 4 bytes (addr + 4)</span>
+<span class="w">    </span><span class="nf">lb</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="no">label</span><span class="w">                           </span><span class="c1"># Copy a byte value to the </span>
+<span class="w">                                            </span><span class="c1"># lower order portion of </span>
+<span class="w">                                            </span><span class="c1"># the register $t2</span>
+<span class="w">    </span><span class="nf">lb</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">(</span><span class="no">$s0</span><span class="p">)</span><span class="w">                          </span><span class="c1"># Copy a byte value from the source</span>
+<span class="w">                                            </span><span class="c1"># address in $s0 with offset 0</span>
+<span class="w">    </span><span class="c1"># Same idea with &#39;lh&#39; for halfwords</span>
+
+<span class="w">    </span><span class="nf">sw</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">label</span><span class="w">                           </span><span class="c1"># Store word value into</span>
+<span class="w">                                            </span><span class="c1"># memory address mapped by label</span>
+<span class="w">    </span><span class="nf">sw</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">(</span><span class="no">$s0</span><span class="p">)</span><span class="w">                          </span><span class="c1"># Store word value into address </span>
+<span class="w">                                            </span><span class="c1"># specified in $s0 and offset of</span>
+<span class="w">                                            </span><span class="c1"># 8 bytes</span>
+<span class="w">    </span><span class="c1"># Same idea using &#39;sb&#39; and &#39;sh&#39; for bytes and halfwords. &#39;sa&#39; does not exist</span>
+
+<span class="c1">### Math ###</span>
+<span class="w">  </span><span class="nl">_math:</span>
+<span class="w">    </span><span class="c1"># Remember to load your values into a register</span>
+<span class="w">    </span><span class="nf">lw</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">num</span><span class="w">                             </span><span class="c1"># From the data section</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="w">                               </span><span class="c1"># Or from an immediate (constant)</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span>
+<span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                       </span><span class="c1"># $t2 = $t0 + $t1</span>
+<span class="w">    </span><span class="nf">sub</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                       </span><span class="c1"># $t2 = $t0 - $t1</span>
+<span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                       </span><span class="c1"># $t2 = $t0 * $t1</span>
+<span class="w">    </span><span class="nf">div</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                       </span><span class="c1"># $t2 = $t0 / $t1 (Might not be </span>
+<span class="w">                                            </span><span class="c1"># supported in some versions of MARS)</span>
+<span class="w">    </span><span class="nf">div</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                            </span><span class="c1"># Performs $t0 / $t1. Get the </span>
+<span class="w">                                            </span><span class="c1"># quotient using &#39;mflo&#39; and </span>
+<span class="w">                                            </span><span class="c1"># remainder using &#39;mfhi&#39;</span>
+
+<span class="w">    </span><span class="c1"># Bitwise Shifting</span>
+<span class="w">    </span><span class="nf">sll</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="w">                         </span><span class="c1"># Bitwise shift to the left with </span>
+<span class="w">                                            </span><span class="c1"># immediate (constant value) of 2</span>
+<span class="w">    </span><span class="nf">sllv</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                      </span><span class="c1"># Shift left by a variable amount</span>
+<span class="w">                                            </span><span class="c1"># in register</span>
+<span class="w">    </span><span class="nf">srl</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="w">                         </span><span class="c1"># Bitwise shift to the right (does </span>
+<span class="w">                                            </span><span class="c1"># not sign preserve, sign-extends </span>
+<span class="w">                                            </span><span class="c1"># with 0)</span>
+<span class="w">    </span><span class="nf">srlv</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                      </span><span class="c1"># Shift right by a variable amount </span>
+<span class="w">                                            </span><span class="c1"># in a register</span>
+<span class="w">    </span><span class="nf">sra</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="w">                         </span><span class="c1"># Bitwise arithmetic shift to  </span>
+<span class="w">                                            </span><span class="c1"># the right (preserves sign)</span>
+<span class="w">    </span><span class="nf">srav</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                      </span><span class="c1"># Shift right by a variable amount </span>
+<span class="w">                                            </span><span class="c1"># in a register</span>
+
+<span class="w">    </span><span class="c1"># Bitwise operators</span>
+<span class="w">    </span><span class="nf">and</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                       </span><span class="c1"># Bitwise AND</span>
+<span class="w">    </span><span class="nf">andi</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">0xFFF</span><span class="w">                    </span><span class="c1"># Bitwise AND with immediate</span>
+<span class="w">    </span><span class="nf">or</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                        </span><span class="c1"># Bitwise OR</span>
+<span class="w">    </span><span class="nf">ori</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">0xFFF</span><span class="w">                     </span><span class="c1"># Bitwise OR with immediate</span>
+<span class="w">    </span><span class="nf">xor</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                       </span><span class="c1"># Bitwise XOR</span>
+<span class="w">    </span><span class="nf">xori</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">0xFFF</span><span class="w">                    </span><span class="c1"># Bitwise XOR with immediate</span>
+<span class="w">    </span><span class="nf">nor</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                       </span><span class="c1"># Bitwise NOR</span>
+
+<span class="c1">## BRANCHING ##</span>
+<span class="w">  </span><span class="nl">_branching:</span>
+<span class="w">    </span><span class="c1"># The basic format of these branching instructions typically follow &lt;instr&gt;</span>
+<span class="w">    </span><span class="c1"># &lt;reg1&gt; &lt;reg2&gt; &lt;label&gt; where label is the label we want to jump to if the</span>
+<span class="w">    </span><span class="c1"># given conditional evaluates to true</span>
+<span class="w">    </span><span class="c1"># Sometimes it is easier to write the conditional logic backward, as seen</span>
+<span class="w">    </span><span class="c1"># in the simple if statement example below</span>
+
+<span class="w">    </span><span class="nf">beq</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">reg_eq</span><span class="w">                    </span><span class="c1"># Will branch to reg_eq if</span>
+<span class="w">                                            </span><span class="c1"># $t0 == $t1, otherwise</span>
+<span class="w">                                            </span><span class="c1"># execute the next line</span>
+<span class="w">    </span><span class="nf">bne</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">reg_neq</span><span class="w">                   </span><span class="c1"># Branches when $t0 != $t1</span>
+<span class="w">    </span><span class="nf">b</span><span class="w"> </span><span class="no">branch_target</span><span class="w">                         </span><span class="c1"># Unconditional branch, will </span>
+<span class="w">                                            </span><span class="c1"># always execute</span>
+<span class="w">    </span><span class="nf">beqz</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">req_eq_zero</span><span class="w">                   </span><span class="c1"># Branches when $t0 == 0</span>
+<span class="w">    </span><span class="nf">bnez</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">req_neq_zero</span><span class="w">                  </span><span class="c1"># Branches when $t0 != 0</span>
+<span class="w">    </span><span class="nf">bgt</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">t0_gt_t1</span><span class="w">                  </span><span class="c1"># Branches when $t0 &gt; $t1</span>
+<span class="w">    </span><span class="nf">bge</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">t0_gte_t1</span><span class="w">                 </span><span class="c1"># Branches when $t0 &gt;= $t1</span>
+<span class="w">    </span><span class="nf">bgtz</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">t0_gt0</span><span class="w">                        </span><span class="c1"># Branches when $t0 &gt; 0</span>
+<span class="w">    </span><span class="nf">blt</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">t0_gt_t1</span><span class="w">                  </span><span class="c1"># Branches when $t0 &lt; $t1</span>
+<span class="w">    </span><span class="nf">ble</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">t0_gte_t1</span><span class="w">                 </span><span class="c1"># Branches when $t0 &lt;= $t1</span>
+<span class="w">    </span><span class="nf">bltz</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">t0_lt0</span><span class="w">                        </span><span class="c1"># Branches when $t0 &lt; 0</span>
+<span class="w">    </span><span class="nf">slt</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                       </span><span class="c1"># &quot;Set on Less Than&quot;</span>
+<span class="w">                                            </span><span class="c1"># when $t0 &lt; $t1 with result in $s0 </span>
+<span class="w">                                            </span><span class="c1"># (1 for true)</span>
+
+<span class="w">    </span><span class="c1"># Simple if statement</span>
+<span class="w">    </span><span class="c1"># if (i == j)</span>
+<span class="w">    </span><span class="c1">#     f = g + h;</span>
+<span class="w">    </span><span class="c1">#  f = f - i;</span>
+
+<span class="w">    </span><span class="c1"># Let $s0 = f, $s1 = g, $s2 = h, $s3 = i, $s4 = j</span>
+<span class="w">    </span><span class="nf">bne</span><span class="w"> </span><span class="no">$s3</span><span class="p">,</span><span class="w"> </span><span class="no">$s4</span><span class="p">,</span><span class="w"> </span><span class="no">L1</span><span class="w"> </span><span class="c1"># if (i !=j)</span>
+<span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s1</span><span class="p">,</span><span class="w"> </span><span class="no">$s2</span><span class="w"> </span><span class="c1"># f = g + h</span>
+
+<span class="w">    </span><span class="nl">L1:</span>
+<span class="w">      </span><span class="nf">sub</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s3</span><span class="w"> </span><span class="c1"># f = f - i</span>
+
+<span class="w">    </span><span class="c1"># Below is an example of finding the max of 3 numbers</span>
+<span class="w">    </span><span class="c1"># A direct translation in Java from MIPS logic:</span>
+<span class="w">    </span><span class="c1"># if (a &gt; b)</span>
+<span class="w">    </span><span class="c1">#   if (a &gt; c)</span>
+<span class="w">    </span><span class="c1">#     max = a;</span>
+<span class="w">    </span><span class="c1">#   else</span>
+<span class="w">    </span><span class="c1">#     max = c;</span>
+<span class="w">    </span><span class="c1"># else</span>
+<span class="w">    </span><span class="c1">#   if (b &gt; c)</span>
+<span class="w">    </span><span class="c1">#     max = b;</span>
+<span class="w">    </span><span class="c1">#   else</span>
+<span class="w">    </span><span class="c1">#     max = c;</span>
+
+<span class="w">    </span><span class="c1"># Let $s0 = a, $s1 = b, $s2 = c, $v0 = return register</span>
+<span class="w">    </span><span class="nf">ble</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s1</span><span class="p">,</span><span class="w"> </span><span class="no">a_LTE_b</span><span class="w">                   </span><span class="c1"># if(a &lt;= b) branch(a_LTE_b)</span>
+<span class="w">    </span><span class="nf">ble</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s2</span><span class="p">,</span><span class="w"> </span><span class="no">max_C</span><span class="w">                     </span><span class="c1"># if(a &gt; b &amp;&amp; a &lt;=c) branch(max_C)</span>
+<span class="w">    </span><span class="nf">move</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="no">$s0</span><span class="w">                           </span><span class="c1"># else [a &gt; b &amp;&amp; a &gt; c] max = a</span>
+<span class="w">    </span><span class="nf">j</span><span class="w"> </span><span class="no">done</span><span class="w">                                  </span><span class="c1"># Jump to the end of the program</span>
+
+<span class="w">    </span><span class="nl">a_LTE_b:</span><span class="w">                                </span><span class="c1"># Label for when a &lt;= b</span>
+<span class="w">      </span><span class="nf">ble</span><span class="w"> </span><span class="no">$s1</span><span class="p">,</span><span class="w"> </span><span class="no">$s2</span><span class="p">,</span><span class="w"> </span><span class="no">max_C</span><span class="w">                   </span><span class="c1"># if(a &lt;= b &amp;&amp; b &lt;= c) branch(max_C)</span>
+<span class="w">      </span><span class="nf">move</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="no">$s1</span><span class="w">                         </span><span class="c1"># if(a &lt;= b &amp;&amp; b &gt; c) max = b</span>
+<span class="w">      </span><span class="nf">j</span><span class="w"> </span><span class="no">done</span><span class="w">                                </span><span class="c1"># Jump to done</span>
+
+<span class="w">    </span><span class="nl">max_C:</span>
+<span class="w">      </span><span class="nf">move</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="no">$s2</span><span class="w">                         </span><span class="c1"># max = c</span>
+
+<span class="w">    </span><span class="nl">done:</span><span class="w">                                   </span><span class="c1"># End of program</span>
+
+<span class="c1">## LOOPS ##</span>
+<span class="w">  </span><span class="nl">_loops:</span>
+<span class="w">    </span><span class="c1"># The basic structure of loops is having an exit condition and a jump </span>
+<span class="w">    </span><span class="c1"># instruction to continue its execution</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">    </span><span class="nl">while:</span>
+<span class="w">      </span><span class="nf">bgt</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="no">end_while</span><span class="w">                 </span><span class="c1"># While $t0 is less than 10, </span>
+<span class="w">                                            </span><span class="c1"># keep iterating</span>
+<span class="w">      </span><span class="c1">#actual loop content would go here</span>
+<span class="w">      </span><span class="nf">addi</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                      </span><span class="c1"># Increment the value</span>
+<span class="w">      </span><span class="nf">j</span><span class="w"> </span><span class="no">while</span><span class="w">                               </span><span class="c1"># Jump back to the beginning of </span>
+<span class="w">                                            </span><span class="c1"># the loop</span>
+<span class="w">    </span><span class="nl">end_while:</span>
+
+<span class="w">    </span><span class="c1"># 2D Matrix Traversal</span>
+<span class="w">    </span><span class="c1"># Assume that $a0 stores the address of an integer matrix which is 3 x 3</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">                               </span><span class="c1"># Counter for i</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">                               </span><span class="c1"># Counter for j</span>
+<span class="w">    </span><span class="nl">matrix_row:</span>
+<span class="w">      </span><span class="nf">bgt</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="no">matrix_row_end</span>
+
+<span class="w">      </span><span class="nl">matrix_col:</span>
+<span class="w">        </span><span class="nf">bgt</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="no">matrix_col_end</span>
+
+<span class="w">        </span><span class="c1"># Do stuff</span>
+
+<span class="w">        </span><span class="nf">addi</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                  </span><span class="c1"># Increment the col counter</span>
+<span class="w">      </span><span class="nl">matrix_col_end:</span>
+
+<span class="w">      </span><span class="c1"># Do stuff</span>
+
+<span class="w">      </span><span class="nf">addi</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="nl">matrix_row_end:</span>
+
+<span class="c1">## FUNCTIONS ##</span>
+<span class="w">  </span><span class="nl">_functions:</span>
+<span class="w">    </span><span class="c1"># Functions are callable procedures that can accept arguments and return </span>
+<span class="w">    </span><span class="c1"># values all denoted with labels, like above</span>
+
+<span class="w">    </span><span class="nl">main:</span><span class="w">                                 </span><span class="c1"># Programs begin with main func</span>
+<span class="w">      </span><span class="nf">jal</span><span class="w"> </span><span class="no">return_1</span><span class="w">                        </span><span class="c1"># jal will store the current PC in $ra</span>
+<span class="w">                                          </span><span class="c1"># and then jump to return_1</span>
+
+<span class="w">      </span><span class="c1"># What if we want to pass in args?</span>
+<span class="w">      </span><span class="c1"># First we must pass in our parameters to the argument registers</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$a1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">      </span><span class="nf">jal</span><span class="w"> </span><span class="no">sum</span><span class="w">                             </span><span class="c1"># Now we can call the function</span>
+
+<span class="w">      </span><span class="c1"># How about recursion?</span>
+<span class="w">      </span><span class="c1"># This is a bit more work since we need to make sure we save and restore</span>
+<span class="w">      </span><span class="c1"># the previous PC in $ra since jal will automatically overwrite </span>
+<span class="w">      </span><span class="c1"># on each call</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">      </span><span class="nf">jal</span><span class="w"> </span><span class="no">fact</span>
+
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">      </span><span class="nf">syscall</span>
+
+<span class="w">    </span><span class="c1"># This function returns 1</span>
+<span class="w">    </span><span class="nl">return_1:</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                           </span><span class="c1"># Load val in return register $v0</span>
+<span class="w">      </span><span class="nf">jr</span><span class="w"> </span><span class="no">$ra</span><span class="w">                              </span><span class="c1"># Jump back to old PC to continue exec</span>
+
+
+<span class="w">    </span><span class="c1"># Function with 2 args</span>
+<span class="w">    </span><span class="nl">sum:</span>
+<span class="w">      </span><span class="nf">add</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="no">$a1</span>
+<span class="w">      </span><span class="nf">jr</span><span class="w"> </span><span class="no">$ra</span><span class="w">                              </span><span class="c1"># Return</span>
+
+<span class="w">    </span><span class="c1"># Recursive function to find factorial</span>
+<span class="w">    </span><span class="nl">fact:</span>
+<span class="w">      </span><span class="nf">addi</span><span class="w"> </span><span class="no">$sp</span><span class="p">,</span><span class="w"> </span><span class="no">$sp</span><span class="p">,</span><span class="w"> </span><span class="mi">-8</span><span class="w">                   </span><span class="c1"># Allocate space in stack</span>
+<span class="w">      </span><span class="nf">sw</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="no">$sp</span><span class="p">)</span><span class="w">                       </span><span class="c1"># Store reg that holds current num</span>
+<span class="w">      </span><span class="nf">sw</span><span class="w"> </span><span class="no">$ra</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">(</span><span class="no">$sp</span><span class="p">)</span><span class="w">                      </span><span class="c1"># Store previous PC</span>
+
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                           </span><span class="c1"># Init return value</span>
+<span class="w">      </span><span class="nf">beq</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="no">fact_done</span><span class="w">               </span><span class="c1"># Finish if param is 0</span>
+
+<span class="w">      </span><span class="c1"># Otherwise, continue recursion</span>
+<span class="w">      </span><span class="nf">move</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$a0</span><span class="w">                       </span><span class="c1"># Copy $a0 to $s0</span>
+<span class="w">      </span><span class="nf">sub</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="nf">jal</span><span class="w"> </span><span class="no">fact</span>
+
+<span class="w">      </span><span class="nf">mul</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$v0</span><span class="w">                   </span><span class="c1"># Multiplication is done</span>
+
+<span class="w">      </span><span class="nl">fact_done:</span>
+<span class="w">        </span><span class="nf">lw</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="no">$sp</span><span class="p">)</span>
+<span class="w">        </span><span class="nf">lw</span><span class="w"> </span><span class="no">$ra</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">(</span><span class="no">$sp</span><span class="p">)</span><span class="w">                     </span><span class="c1"># Restore the PC</span>
+<span class="w">        </span><span class="nf">addi</span><span class="w"> </span><span class="no">$sp</span><span class="p">,</span><span class="w"> </span><span class="no">$sp</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span>
+
+<span class="w">        </span><span class="nf">jr</span><span class="w"> </span><span class="no">$ra</span>
+
+<span class="c1">## MACROS ##</span>
+<span class="w">  </span><span class="nl">_macros:</span>
+<span class="w">    </span><span class="c1"># Macros are extremely useful for substituting repeated code blocks with a</span>
+<span class="w">    </span><span class="c1"># single label for better readability</span>
+<span class="w">    </span><span class="c1"># These are in no means substitutes for functions</span>
+<span class="w">    </span><span class="c1"># These must be declared before it is used</span>
+
+<span class="w">    </span><span class="c1"># Macro for printing newlines (since these can be very repetitive)</span>
+<span class="w">    </span><span class="na">.macro</span><span class="w"> </span><span class="no">println</span><span class="p">()</span>
+<span class="w">      </span><span class="nf">la</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="no">newline</span><span class="w">                     </span><span class="c1"># New line string stored here</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">      </span><span class="nf">syscall</span>
+<span class="w">    </span><span class="na">.end_macro</span>
+
+<span class="w">    </span><span class="nf">println</span><span class="p">()</span><span class="w">                             </span><span class="c1"># Assembler will copy that block of</span>
+<span class="w">                                          </span><span class="c1"># code here before running</span>
+
+<span class="w">    </span><span class="c1"># Parameters can be passed in through macros.</span>
+<span class="w">    </span><span class="c1"># These are denoted by a &#39;%&#39; sign with any name you choose</span>
+<span class="w">    </span><span class="na">.macro</span><span class="w"> </span><span class="no">print_int</span><span class="p">(</span><span class="nv">%num</span><span class="p">)</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="nf">lw</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="nv">%num</span>
+<span class="w">      </span><span class="nf">syscall</span>
+<span class="w">    </span><span class="na">.end_macro</span>
+
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="nf">print_int</span><span class="p">(</span><span class="no">$t0</span><span class="p">)</span>
+
+<span class="w">    </span><span class="c1"># We can also pass in immediates for macros</span>
+<span class="w">    </span><span class="na">.macro</span><span class="w"> </span><span class="no">immediates</span><span class="p">(</span><span class="nv">%a</span><span class="p">,</span><span class="w"> </span><span class="nv">%b</span><span class="p">)</span>
+<span class="w">      </span><span class="nf">add</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="nv">%a</span><span class="p">,</span><span class="w"> </span><span class="nv">%b</span>
+<span class="w">    </span><span class="na">.end_macro</span>
+
+<span class="w">    </span><span class="nf">immediates</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+
+<span class="w">    </span><span class="c1"># Along with passing in labels</span>
+<span class="w">    </span><span class="na">.macro</span><span class="w"> </span><span class="no">print</span><span class="p">(</span><span class="nv">%string</span><span class="p">)</span>
+<span class="w">      </span><span class="nf">la</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="nv">%string</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">      </span><span class="nf">syscall</span>
+<span class="w">    </span><span class="na">.end_macro</span>
+
+<span class="w">    </span><span class="nf">print</span><span class="p">(</span><span class="no">hello_world</span><span class="p">)</span>
+
+<span class="c1">## ARRAYS ##</span>
+<span class="na">.data</span>
+<span class="w">  </span><span class="nl">list:</span><span class="w"> </span><span class="na">.word</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="w">                 </span><span class="c1"># This is an array of words</span>
+<span class="w">  </span><span class="nl">char_arr:</span><span class="w"> </span><span class="na">.asciiz</span><span class="w"> </span><span class="s">&quot;hello&quot;</span><span class="w">                 </span><span class="c1"># This is a char array</span>
+<span class="w">  </span><span class="nl">buffer:</span><span class="w"> </span><span class="na">.space</span><span class="w"> </span><span class="mi">128</span><span class="w">                        </span><span class="c1"># Allocates a block in memory, does</span>
+<span class="w">                                            </span><span class="c1"># not automatically clear</span>
+<span class="w">                                            </span><span class="c1"># These blocks of memory are aligned</span>
+<span class="w">                                            </span><span class="c1"># next to each other</span>
+
+<span class="na">.text</span>
+<span class="w">  </span><span class="nf">la</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">list</span><span class="w">                              </span><span class="c1"># Load address of list</span>
+<span class="w">  </span><span class="nf">li</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">                                 </span><span class="c1"># Counter</span>
+<span class="w">  </span><span class="nf">li</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="w">                                 </span><span class="c1"># Length of the list</span>
+
+<span class="w">  </span><span class="nl">loop:</span>
+<span class="w">    </span><span class="nf">bge</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">end_loop</span>
+
+<span class="w">    </span><span class="nf">lw</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="no">$s0</span><span class="p">)</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="nf">syscall</span><span class="w">                                 </span><span class="c1"># Print the number</span>
+
+<span class="w">    </span><span class="nf">addi</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="w">                        </span><span class="c1"># Size of a word is 4 bytes</span>
+<span class="w">    </span><span class="nf">addi</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                        </span><span class="c1"># Increment</span>
+<span class="w">    </span><span class="nf">j</span><span class="w"> </span><span class="no">loop</span>
+<span class="w">  </span><span class="nl">end_loop:</span>
+
+<span class="c1">## INCLUDE ##</span>
+<span class="c1"># You do this to import external files into your program (behind the scenes, </span>
+<span class="c1"># it really just takes whatever code that is in that file and places it where</span>
+<span class="c1"># the include statement is)</span>
+<span class="na">.include</span><span class="w"> </span><span class="s">&quot;somefile.asm&quot;</span>
+</pre></div>
     <hr>
     <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/mips.html.markdown">pull request</a> yourself!
     </p>

@@ -89,356 +89,356 @@
     <p>Мова ассемблера MIPS (англ. Microprocessor without Interlocked Pipeline Stages) була написана для роботи з мікропроцесорами MIPS, парадигма яких була описана в 1981 році <a href="https://uk.wikipedia.org/wiki/Джон_Лерой_Геннессі">Джоном Геннессі</a>. Ці RISC процесори використовуються у таких вбудованих системах, як маршрутизатори та мережеві шлюзи.</p>
 
 <p><a href="https://en.wikipedia.org/wiki/MIPS_architecture">Детальніше</a></p>
-<div class="highlight"><pre class="highlight plaintext"><code># Коментарі позначені як'#'
-
-# Всі символи після '#' ігноруються лексичним аналізатором асемблера.
-
-# Зазвичай програми поділяються на .data та .text частини
-
-.data # У цьому розділі дані зберігаються у пам'яті, виділеній в RAM, подібно до змінних
-       # в мовах програмування вищого рівня
-
-  # Змінна оголошується наступним чином: [назва]: .[тип] [значення] 
-  # Наприклад:
-  hello_world: .asciiz "Hello World\n"      # Оголосити текстову змінну
-  num1: .word 42                            # word - це чисельний тип 32-бітного розряду
-
-  arr1: .word 1, 2, 3, 4, 5                 # Масив чисел
-  arr2: .byte 'a', 'b'                      # Масив буквених символів (розмір кожного - 1 байт)
-  buffer: .space 60                         # Виділити місце в RAM 
-                                            # (не очищується, тобто не заповнюється 0)
-
-  # Розміри типів даних
-  _byte: .byte 'a'                          # 1 байт
-  _halfword: .half 53                       # 2 байти
-  _word: .word 3                            # 4 байти
-  _float: .float 3.14                       # 4 байти
-  _double: .double 7.0                      # 8 байтів
-
-  .align 2                                  # Вирівнювання пам'яті даних, де число
-                                            # показує кількість байтів, вирівнених 
-                                            # у степені 2. (.align 2 означає 
-                                            # чисельне (word) вирівнювання оскільки 
-                                            # 2^2 = 4 байти)
-
-.text                                       # Розділ, що містить інструкції та
-                                            # логіку програми
-
-.globl _main                                # Оголошує назву інструкції як 
-                                            # глобальну, тобто, яка є доступною для
-                                            # всіх інших файлів
-
-  _main:                                    # програми MIPS виконують інструкції
-                                            # послідовно, тобто першочергово код
-                                            # буде виконуватись після цієї позначки
-
-    # Виведемо на екран "hello world"
-    la $a0, hello_world                     # Завантажує адресу тексту у пам'яті
-    li $v0, 4                               # Завантажує значення системної
-                                            # команди (вказуючи тип функціоналу)
-    syscall                                 # Виконує зазначену системну команду
-                                            # з обраним аргументом ($a0)
-
-    # Регістри (використовуються, щоб тримати дані протягом виконання програми)
-    # $t0 - $t9                             # Тимчасові регістри використовуються
-                                            # для проміжних обчислень всередині
-                                            # підпрограм (не зберігаються між 
-                                            # викликами функцій)
-
-    # $s0 - $s7                             # Збережені регістри, у яких значення 
-                                            # зберігаються між викликами підпрограм.
-                                            # Зазвичай зберігаються у стеку.
-
-    # $a0 - $a3                             # Регістри для передачі аргументів для 
-                                            # підпрограм
-    # $v0 - $v1                             # Регістри для значень, що повертаються
-                                            # від викликаної функції
-
-    # Типи інструкції завантаження / збереження
-    la $t0, label                           # Скопіювати адресу в пам'яті, де 
-                                            # зберігається значення змінної label 
-                                            # в регістр $t0
-    lw $t0, label                           # Скопіювати чисельне значення з пам'яті
-    lw $t1, 4($s0)                          # Скопіювати чисельне значення з адреси
-                                            # пам'яті регістра зі зміщенням в 
-                                            # 4 байти (адреса + 4)
-    lb $t2, label                           # Скопіювати буквений символ в частину
-                                            # нижчого порядку регістра $t2
-    lb $t2, 0($s0)                          # Скопіювати буквений символ з адреси
-                                            # в $s0 із зсувом 0
-    # Подібне використання і 'lh' для halfwords
-
-    sw $t0, label                           # Зберегти чисельне значення в адресу в 
-                                            # пам'яті, що відповідає змінній label
-    sw $t0, 8($s0)                          # Зберегти чисельне значення в адресу, 
-                                            # що зазначена у $s0, та зі зсувом у 8 байтів
-    # Така ж ідея використання 'sb' та 'sh' для буквених символів та halfwords. 
-    # 'sa' не існує
-
-
-### Математичні операції ###
-  _math:
-    # Пам'ятаємо, що попередньо потрібно завантажити дані в пам'ять
-    lw $t0, num                             # Із розділа з даними
-    li $t0, 5                               # Або безпосередньо з константи
-    li $t1, 6
-    add $t2, $t0, $t1                       # $t2 = $t0 + $t1
-    sub $t2, $t0, $t1                       # $t2 = $t0 - $t1
-    mul $t2, $t0, $t1                       # $t2 = $t0 * $t1
-    div $t2, $t0, $t1                       # $t2 = $t0 / $t1 (Може не підтримуватись
-                                            # деякими версіями MARS)
-    div $t0, $t1                            # Виконує $t0 / $t1. Отримати частку можна
-                                            # за допомогою команди 'mflo', остаток - 'mfhi'
-
-    # Бітовий зсув
-    sll $t0, $t0, 2                         # Побітовий зсув вліво на 2. Біти вищого порядку
-                                            # не зберігаються, нищого - заповнюються 0
-    sllv $t0, $t1, $t2                      # Зсув вліво зі змінною кількістю у
-                                            # регістрі
-    srl $t0, $t0, 5                         # Побітовий зсув вправо на 5 (не зберігає 
-                                            # біти, біти зліва заповнюються 0)
-    srlv $t0, $t1, $t2                      # Зсув вправо зі змінною кількістю у
-                                            # регістрі
-    sra $t0, $t0, 7                         # Побітовий арифметичний зсув вправо 
-                                            # (зберігає біти)
-    srav $t0, $t1, $t2                      # Зсув вправо зі змінною кількістю у 
-                                            # регістрі зі збереження значеннь бітів
-
-    # Побітові операції
-    and $t0, $t1, $t2                       # Побітове І (AND)
-    andi $t0, $t1, 0xFFF                    # Побітове І з безпосереднім значенням
-    or $t0, $t1, $t2                        # Побітове АБО (OR)
-    ori $t0, $t1, 0xFFF                     # Побітове АБО з безпосереднім значенням
-    xor $t0, $t1, $t2                       # Побітова виключна диз'юнкція (XOR)
-    xori $t0, $t1, 0xFFF                    # Побітове XOR з безпосереднім значенням
-    nor $t0, $t1, $t2                       # Побітова стрілка Пірса (NOR)
-
-## Розгалуження ##
-  _branching:
-    # В основному інструкції розгалуження мають наступну форму:
-    # &lt;instr&gt; &lt;reg1&gt; &lt;reg2&gt; &lt;label&gt;
-    # де label - це назва змінної, в яку ми хочемо перейти, якщо зазначене твердження
-    # правдиве
-
-    beq $t0, $t1, reg_eq                    # Перейдемо у розгалуження reg_eq
-                                            # якщо $t0 == $t1, інакше -
-                                            # виконати наступний рядок
-    bne $t0, $t1, reg_neq                   # Розгалужується, якщо $t0 != $t1
-    b branch_target                         # Розгалуження без умови завжди виконується
-    beqz $t0, req_eq_zero                   # Розгалужується, якщо $t0 == 0
-    bnez $t0, req_neq_zero                  # Розгалужується, якщо $t0 != 0
-    bgt $t0, $t1, t0_gt_t1                  # Розгалужується, якщо $t0 &gt; $t1
-    bge $t0, $t1, t0_gte_t1                 # Розгалужується, якщо $t0 &gt;= $t1
-    bgtz $t0, t0_gt0                        # Розгалужується, якщо $t0 &gt; 0
-    blt $t0, $t1, t0_gt_t1                  # Розгалужується, якщо $t0 &lt; $t1
-    ble $t0, $t1, t0_gte_t1                 # Розгалужується, якщо $t0 &lt;= $t1
-    bltz $t0, t0_lt0                        # Розгалужується, якщо $t0 &lt; 0
-    slt $s0, $t0, $t1                       # Інструкція, що посилає сигнал коли
-                                            # $t0 &lt; $t1, результат зберігається в $s0 
-                                            # (1 - правдиве твердження)
-
-    # Просте твердження якщо (if)
-    # if (i == j)
-    #     f = g + h;
-    #  f = f - i;
-
-    # Нехай $s0 = f, $s1 = g, $s2 = h, $s3 = i, $s4 = j
-    bne $s3, $s4, L1 # if (i !=j)
-    add $s0, $s1, $s2 # f = g + h
-
-    L1:
-      sub $s0, $s0, $s3 # f = f - i
-
-    # Нижче наведений приклад знаходження максимального значення з 3 чисел
-    # Пряма трансляція в Java з логіки MIPS:
-    # if (a &gt; b)
-    #   if (a &gt; c)
-    #     max = a;
-    #   else
-    #     max = c;
-    # else
-    #     max = b;
-    #   else
-    #     max = c;
-
-    # Нехай $s0 = a, $s1 = b, $s2 = c, $v0 = повернути регістр
-    ble $s0, $s1, a_LTE_b                   # якщо (a &lt;= b) розгалуження(a_LTE_b)
-    ble $s0, $s2, max_C                     # якщо (a &gt; b &amp;&amp; a &lt;=c) розгалуження(max_C)
-    move $v0, $s0                           # інакше [a &gt; b &amp;&amp; a &gt; c] max = a
-    j done                                  # Перейти в кінець програми
-
-    a_LTE_b:                                # Мітка розгалуження, коли a &lt;= b
-      ble $s1, $s2, max_C                   # якщо (a &lt;= b &amp;&amp; b &lt;= c) розгалуження(max_C)
-      move $v0, $s1                         # якщо (a &lt;= b &amp;&amp; b &gt; c) max = b
-      j done                                # Перейти в кінець програми
-
-    max_C:
-      move $v0, $s2                         # max = c
-
-    done:                                   # Кінець програми
-
-## Цикли ##
-  _loops:
-    # Цикл складається з умови виходу та з інструкції переходу після його завершення
-    li $t0, 0
-    while:
-      bgt $t0, 10, end_while                # Коли $t0 менше 10, продовжувати ітерації
-      addi $t0, $t0, 1                      # Збільшити значення
-      j while                               # Перейти на початок циклу
-    end_while:
-
-    # Транспонування 2D матриці
-    # Припустимо, що $a0 зберігає адресу цілочисельної матриці розмірністю 3 x 3
-    li $t0, 0                               # Лічильник для i
-    li $t1, 0                               # Лічильник для j
-    matrix_row:
-      bgt $t0, 3, matrix_row_end
-
-      matrix_col:
-        bgt $t1, 3, matrix_col_end
-
-        # ...
-
-        addi $t1, $t1, 1                  # Збільшити лічильник стовпця (col)
-      matrix_col_end:
-
-      # ...
-
-      addi $t0, $t0, 1
-    matrix_row_end:
-
-## Функції ##
-  _functions:
-    # Функції - це процедури, що викликаються, приймають аргументи та повертають значення
-
-    main:                                 # Програма починається з головної функції
-      jal return_1                        # jal збереже поточний ПЦ (програмний центр) в $ra,
-                                          # а потім перейде до return_1
-
-      # Як передати аргументи?
-      # По-перше, ми маємо передати значення аргументів у регістри аргументів
-      li $a0, 1
-      li $a1, 2
-      jal sum                             # Тепер ми можемо викликати функцію
-
-      # Як щодо рекурсії?
-      # Тут потрібно дещо більше роботи оскільки ми маємо впевнитись, що ми збережемо
-      # та зчитаємо попередній ПЦ в $ra, оскільки jal автоматично перепише її при виклику
-      li $a0, 3
-      jal fact
-
-      li $v0, 10
-      syscall
-
-    # Ця функція повертає 1
-    return_1:
-      li $v0, 1                           # Завантажити val в регіст $v0
-      jr $ra                              # Повернутись до попереднього ПЦ і продовжити виконання 
-
-
-    # Функція з двома аргументами
-    sum:
-      add $v0, $a0, $a1
-      jr $ra                              # Повернутись
-
-    # Рекурсивна функція, яка знаходить факторіал
-    fact:
-      addi $sp, $sp, -8                   # Виділити місце в стеку
-      sw $s0, ($sp)                       # Зберегти регістр, що містить поточне число
-      sw $ra, 4($sp)                      # Зберегти попередній ПЦ
-
-      li $v0, 1                           # Проініціалізувати значення, що повертатиметься
-      beq $a0, 0, fact_done               # Закінчити, якщо параметр 0
-
-      # Інакше, продовжити рекурсію
-      move $s0, $a0                       # Скопіювати $a0 в $s0
-      sub $a0, $a0, 1
-      jal fact
-
-      mul $v0, $s0, $v0                   # Множення
-
-      fact_done:
-        lw $s0, ($sp)
-        lw $ra, ($sp)                     # Відновити ПЦ
-        addi $sp, $sp, 8
-
-        jr $ra
-
-## Макроси ##
-  _macros:
-    # Макроси надзвичайно корисні для заміни блоків коду, що повторюються, за допомогою
-    # однієї змінної, для покращення читабельності
-    # Це не заміна функцій.
-    # Вони мають бути оголошені перед використанням
-
-    # Макрос для виведення нових рядків (оскільки операція досить часто виконується)
-    .macro println()
-      la $a0, newline                     # Значення нового рядка зберігатиметься тут
-      li $v0, 4
-      syscall
-    .end_macro
-
-    println()                             # Асемблер скопіює цей блок коду сюди
-                                          # перед тим, як виконувати його
-
-    # Можна передавати параметри у макроси.
-    # Параметри позначаються знаком '%' з довільною назвою
-    .macro print_int(%num)
-      li $v0, 1
-      lw $a0, %num
-      syscall
-    .end_macro
-
-    li $t0, 1
-    print_int($t0)
-
-    # Значення також можна передавати безпосередньо в макроси
-    .macro immediates(%a, %b)
-      add $t0, %a, %b
-    .end_macro
-
-    immediates(3, 5)
-
-    # Одночасно із назвами змінних
-    .macro print(%string)
-      la $a0, %string
-      li $v0, 4
-      syscall
-    .end_macro
-
-    print(hello_world)
-
-## Масиви ##
-.data
-  list: .word 3, 0, 1, 2, 6                 # Це масив чисел
-  char_arr: .asciiz "hello"                 # Це текстовий масив
-  buffer: .space 128                        # Виділяє блок пам'яті, що
-                                            # автоматично не очищується
-                                            # Ці блоки пам'яті вирівнені
-                                            # вирівнені поруч один з одним
-
-.text
-  la $s0, list                              # Завантажити адресу списку
-  li $t0, 0                                 # Лічильник
-  li $t1, 5                                 # Довжина списку
-
-  loop:
-    bgt $t0, $t1, end_loop
-
-    lw $a0, ($s0)
-    li $v0, 1
-    syscall                                 # Вивести число
-
-    addi $s0, $s0, 4                        # Розмір числа - 4 байти
-    addi $t0, $t0, 1                        # Збільшити
-    j loop
-  end_loop:
-
-## Включення ##
-# Потрібно для імпорту сторонніх файлів у програму (насправді, код з цього файлу 
-# копіюється та вставляється в місце, де оголошений імпорт)
-.include "somefile.asm"
-</code></pre></div>
+<div class="highlight"><pre><span></span><span class="c1"># Коментарі позначені як&#39;#&#39;</span>
+
+<span class="c1"># Всі символи після &#39;#&#39; ігноруються лексичним аналізатором асемблера.</span>
+
+<span class="c1"># Зазвичай програми поділяються на .data та .text частини</span>
+
+<span class="na">.data</span><span class="w"> </span><span class="c1"># У цьому розділі дані зберігаються у пам&#39;яті, виділеній в RAM, подібно до змінних</span>
+<span class="w">       </span><span class="c1"># в мовах програмування вищого рівня</span>
+
+<span class="w">  </span><span class="c1"># Змінна оголошується наступним чином: [назва]: .[тип] [значення] </span>
+<span class="w">  </span><span class="c1"># Наприклад:</span>
+<span class="w">  </span><span class="nl">hello_world:</span><span class="w"> </span><span class="na">.asciiz</span><span class="w"> </span><span class="s">&quot;Hello World\n&quot;</span><span class="w">      </span><span class="c1"># Оголосити текстову змінну</span>
+<span class="w">  </span><span class="nl">num1:</span><span class="w"> </span><span class="na">.word</span><span class="w"> </span><span class="mi">42</span><span class="w">                            </span><span class="c1"># word - це чисельний тип 32-бітного розряду</span>
+
+<span class="w">  </span><span class="nl">arr1:</span><span class="w"> </span><span class="na">.word</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="w">                 </span><span class="c1"># Масив чисел</span>
+<span class="w">  </span><span class="nl">arr2:</span><span class="w"> </span><span class="na">.byte</span><span class="w"> </span><span class="err">&#39;</span><span class="no">a</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;</span><span class="no">b</span><span class="err">&#39;</span><span class="w">                      </span><span class="c1"># Масив буквених символів (розмір кожного - 1 байт)</span>
+<span class="w">  </span><span class="nl">buffer:</span><span class="w"> </span><span class="na">.space</span><span class="w"> </span><span class="mi">60</span><span class="w">                         </span><span class="c1"># Виділити місце в RAM </span>
+<span class="w">                                            </span><span class="c1"># (не очищується, тобто не заповнюється 0)</span>
+
+<span class="w">  </span><span class="c1"># Розміри типів даних</span>
+<span class="w">  </span><span class="nl">_byte:</span><span class="w"> </span><span class="na">.byte</span><span class="w"> </span><span class="err">&#39;</span><span class="no">a</span><span class="err">&#39;</span><span class="w">                          </span><span class="c1"># 1 байт</span>
+<span class="w">  </span><span class="nl">_halfword:</span><span class="w"> </span><span class="na">.half</span><span class="w"> </span><span class="mi">53</span><span class="w">                       </span><span class="c1"># 2 байти</span>
+<span class="w">  </span><span class="nl">_word:</span><span class="w"> </span><span class="na">.word</span><span class="w"> </span><span class="mi">3</span><span class="w">                            </span><span class="c1"># 4 байти</span>
+<span class="w">  </span><span class="nl">_float:</span><span class="w"> </span><span class="na">.float</span><span class="w"> </span><span class="mi">3</span><span class="no">.14</span><span class="w">                       </span><span class="c1"># 4 байти</span>
+<span class="w">  </span><span class="nl">_double:</span><span class="w"> </span><span class="na">.double</span><span class="w"> </span><span class="mi">7</span><span class="no">.0</span><span class="w">                      </span><span class="c1"># 8 байтів</span>
+
+<span class="w">  </span><span class="na">.align</span><span class="w"> </span><span class="mi">2</span><span class="w">                                  </span><span class="c1"># Вирівнювання пам&#39;яті даних, де число</span>
+<span class="w">                                            </span><span class="c1"># показує кількість байтів, вирівнених </span>
+<span class="w">                                            </span><span class="c1"># у степені 2. (.align 2 означає </span>
+<span class="w">                                            </span><span class="c1"># чисельне (word) вирівнювання оскільки </span>
+<span class="w">                                            </span><span class="c1"># 2^2 = 4 байти)</span>
+
+<span class="na">.text</span><span class="w">                                       </span><span class="c1"># Розділ, що містить інструкції та</span>
+<span class="w">                                            </span><span class="c1"># логіку програми</span>
+
+<span class="na">.globl</span><span class="w"> </span><span class="no">_main</span><span class="w">                                </span><span class="c1"># Оголошує назву інструкції як </span>
+<span class="w">                                            </span><span class="c1"># глобальну, тобто, яка є доступною для</span>
+<span class="w">                                            </span><span class="c1"># всіх інших файлів</span>
+
+<span class="w">  </span><span class="nl">_main:</span><span class="w">                                    </span><span class="c1"># програми MIPS виконують інструкції</span>
+<span class="w">                                            </span><span class="c1"># послідовно, тобто першочергово код</span>
+<span class="w">                                            </span><span class="c1"># буде виконуватись після цієї позначки</span>
+
+<span class="w">    </span><span class="c1"># Виведемо на екран &quot;hello world&quot;</span>
+<span class="w">    </span><span class="nf">la</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="no">hello_world</span><span class="w">                     </span><span class="c1"># Завантажує адресу тексту у пам&#39;яті</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="w">                               </span><span class="c1"># Завантажує значення системної</span>
+<span class="w">                                            </span><span class="c1"># команди (вказуючи тип функціоналу)</span>
+<span class="w">    </span><span class="nf">syscall</span><span class="w">                                 </span><span class="c1"># Виконує зазначену системну команду</span>
+<span class="w">                                            </span><span class="c1"># з обраним аргументом ($a0)</span>
+
+<span class="w">    </span><span class="c1"># Регістри (використовуються, щоб тримати дані протягом виконання програми)</span>
+<span class="w">    </span><span class="c1"># $t0 - $t9                             # Тимчасові регістри використовуються</span>
+<span class="w">                                            </span><span class="c1"># для проміжних обчислень всередині</span>
+<span class="w">                                            </span><span class="c1"># підпрограм (не зберігаються між </span>
+<span class="w">                                            </span><span class="c1"># викликами функцій)</span>
+
+<span class="w">    </span><span class="c1"># $s0 - $s7                             # Збережені регістри, у яких значення </span>
+<span class="w">                                            </span><span class="c1"># зберігаються між викликами підпрограм.</span>
+<span class="w">                                            </span><span class="c1"># Зазвичай зберігаються у стеку.</span>
+
+<span class="w">    </span><span class="c1"># $a0 - $a3                             # Регістри для передачі аргументів для </span>
+<span class="w">                                            </span><span class="c1"># підпрограм</span>
+<span class="w">    </span><span class="c1"># $v0 - $v1                             # Регістри для значень, що повертаються</span>
+<span class="w">                                            </span><span class="c1"># від викликаної функції</span>
+
+<span class="w">    </span><span class="c1"># Типи інструкції завантаження / збереження</span>
+<span class="w">    </span><span class="nf">la</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">label</span><span class="w">                           </span><span class="c1"># Скопіювати адресу в пам&#39;яті, де </span>
+<span class="w">                                            </span><span class="c1"># зберігається значення змінної label </span>
+<span class="w">                                            </span><span class="c1"># в регістр $t0</span>
+<span class="w">    </span><span class="nf">lw</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">label</span><span class="w">                           </span><span class="c1"># Скопіювати чисельне значення з пам&#39;яті</span>
+<span class="w">    </span><span class="nf">lw</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">(</span><span class="no">$s0</span><span class="p">)</span><span class="w">                          </span><span class="c1"># Скопіювати чисельне значення з адреси</span>
+<span class="w">                                            </span><span class="c1"># пам&#39;яті регістра зі зміщенням в </span>
+<span class="w">                                            </span><span class="c1"># 4 байти (адреса + 4)</span>
+<span class="w">    </span><span class="nf">lb</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="no">label</span><span class="w">                           </span><span class="c1"># Скопіювати буквений символ в частину</span>
+<span class="w">                                            </span><span class="c1"># нижчого порядку регістра $t2</span>
+<span class="w">    </span><span class="nf">lb</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">(</span><span class="no">$s0</span><span class="p">)</span><span class="w">                          </span><span class="c1"># Скопіювати буквений символ з адреси</span>
+<span class="w">                                            </span><span class="c1"># в $s0 із зсувом 0</span>
+<span class="w">    </span><span class="c1"># Подібне використання і &#39;lh&#39; для halfwords</span>
+
+<span class="w">    </span><span class="nf">sw</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">label</span><span class="w">                           </span><span class="c1"># Зберегти чисельне значення в адресу в </span>
+<span class="w">                                            </span><span class="c1"># пам&#39;яті, що відповідає змінній label</span>
+<span class="w">    </span><span class="nf">sw</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">(</span><span class="no">$s0</span><span class="p">)</span><span class="w">                          </span><span class="c1"># Зберегти чисельне значення в адресу, </span>
+<span class="w">                                            </span><span class="c1"># що зазначена у $s0, та зі зсувом у 8 байтів</span>
+<span class="w">    </span><span class="c1"># Така ж ідея використання &#39;sb&#39; та &#39;sh&#39; для буквених символів та halfwords. </span>
+<span class="w">    </span><span class="c1"># &#39;sa&#39; не існує</span>
+
+
+<span class="c1">### Математичні операції ###</span>
+<span class="w">  </span><span class="nl">_math:</span>
+<span class="w">    </span><span class="c1"># Пам&#39;ятаємо, що попередньо потрібно завантажити дані в пам&#39;ять</span>
+<span class="w">    </span><span class="nf">lw</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">num</span><span class="w">                             </span><span class="c1"># Із розділа з даними</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="w">                               </span><span class="c1"># Або безпосередньо з константи</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span>
+<span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                       </span><span class="c1"># $t2 = $t0 + $t1</span>
+<span class="w">    </span><span class="nf">sub</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                       </span><span class="c1"># $t2 = $t0 - $t1</span>
+<span class="w">    </span><span class="nf">mul</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                       </span><span class="c1"># $t2 = $t0 * $t1</span>
+<span class="w">    </span><span class="nf">div</span><span class="w"> </span><span class="no">$t2</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                       </span><span class="c1"># $t2 = $t0 / $t1 (Може не підтримуватись</span>
+<span class="w">                                            </span><span class="c1"># деякими версіями MARS)</span>
+<span class="w">    </span><span class="nf">div</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                            </span><span class="c1"># Виконує $t0 / $t1. Отримати частку можна</span>
+<span class="w">                                            </span><span class="c1"># за допомогою команди &#39;mflo&#39;, остаток - &#39;mfhi&#39;</span>
+
+<span class="w">    </span><span class="c1"># Бітовий зсув</span>
+<span class="w">    </span><span class="nf">sll</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="w">                         </span><span class="c1"># Побітовий зсув вліво на 2. Біти вищого порядку</span>
+<span class="w">                                            </span><span class="c1"># не зберігаються, нищого - заповнюються 0</span>
+<span class="w">    </span><span class="nf">sllv</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                      </span><span class="c1"># Зсув вліво зі змінною кількістю у</span>
+<span class="w">                                            </span><span class="c1"># регістрі</span>
+<span class="w">    </span><span class="nf">srl</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="w">                         </span><span class="c1"># Побітовий зсув вправо на 5 (не зберігає </span>
+<span class="w">                                            </span><span class="c1"># біти, біти зліва заповнюються 0)</span>
+<span class="w">    </span><span class="nf">srlv</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                      </span><span class="c1"># Зсув вправо зі змінною кількістю у</span>
+<span class="w">                                            </span><span class="c1"># регістрі</span>
+<span class="w">    </span><span class="nf">sra</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="w">                         </span><span class="c1"># Побітовий арифметичний зсув вправо </span>
+<span class="w">                                            </span><span class="c1"># (зберігає біти)</span>
+<span class="w">    </span><span class="nf">srav</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                      </span><span class="c1"># Зсув вправо зі змінною кількістю у </span>
+<span class="w">                                            </span><span class="c1"># регістрі зі збереження значеннь бітів</span>
+
+<span class="w">    </span><span class="c1"># Побітові операції</span>
+<span class="w">    </span><span class="nf">and</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                       </span><span class="c1"># Побітове І (AND)</span>
+<span class="w">    </span><span class="nf">andi</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">0xFFF</span><span class="w">                    </span><span class="c1"># Побітове І з безпосереднім значенням</span>
+<span class="w">    </span><span class="nf">or</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                        </span><span class="c1"># Побітове АБО (OR)</span>
+<span class="w">    </span><span class="nf">ori</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">0xFFF</span><span class="w">                     </span><span class="c1"># Побітове АБО з безпосереднім значенням</span>
+<span class="w">    </span><span class="nf">xor</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                       </span><span class="c1"># Побітова виключна диз&#39;юнкція (XOR)</span>
+<span class="w">    </span><span class="nf">xori</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">0xFFF</span><span class="w">                    </span><span class="c1"># Побітове XOR з безпосереднім значенням</span>
+<span class="w">    </span><span class="nf">nor</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t2</span><span class="w">                       </span><span class="c1"># Побітова стрілка Пірса (NOR)</span>
+
+<span class="c1">## Розгалуження ##</span>
+<span class="w">  </span><span class="nl">_branching:</span>
+<span class="w">    </span><span class="c1"># В основному інструкції розгалуження мають наступну форму:</span>
+<span class="w">    </span><span class="c1"># &lt;instr&gt; &lt;reg1&gt; &lt;reg2&gt; &lt;label&gt;</span>
+<span class="w">    </span><span class="c1"># де label - це назва змінної, в яку ми хочемо перейти, якщо зазначене твердження</span>
+<span class="w">    </span><span class="c1"># правдиве</span>
+
+<span class="w">    </span><span class="nf">beq</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">reg_eq</span><span class="w">                    </span><span class="c1"># Перейдемо у розгалуження reg_eq</span>
+<span class="w">                                            </span><span class="c1"># якщо $t0 == $t1, інакше -</span>
+<span class="w">                                            </span><span class="c1"># виконати наступний рядок</span>
+<span class="w">    </span><span class="nf">bne</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">reg_neq</span><span class="w">                   </span><span class="c1"># Розгалужується, якщо $t0 != $t1</span>
+<span class="w">    </span><span class="nf">b</span><span class="w"> </span><span class="no">branch_target</span><span class="w">                         </span><span class="c1"># Розгалуження без умови завжди виконується</span>
+<span class="w">    </span><span class="nf">beqz</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">req_eq_zero</span><span class="w">                   </span><span class="c1"># Розгалужується, якщо $t0 == 0</span>
+<span class="w">    </span><span class="nf">bnez</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">req_neq_zero</span><span class="w">                  </span><span class="c1"># Розгалужується, якщо $t0 != 0</span>
+<span class="w">    </span><span class="nf">bgt</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">t0_gt_t1</span><span class="w">                  </span><span class="c1"># Розгалужується, якщо $t0 &gt; $t1</span>
+<span class="w">    </span><span class="nf">bge</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">t0_gte_t1</span><span class="w">                 </span><span class="c1"># Розгалужується, якщо $t0 &gt;= $t1</span>
+<span class="w">    </span><span class="nf">bgtz</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">t0_gt0</span><span class="w">                        </span><span class="c1"># Розгалужується, якщо $t0 &gt; 0</span>
+<span class="w">    </span><span class="nf">blt</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">t0_gt_t1</span><span class="w">                  </span><span class="c1"># Розгалужується, якщо $t0 &lt; $t1</span>
+<span class="w">    </span><span class="nf">ble</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">t0_gte_t1</span><span class="w">                 </span><span class="c1"># Розгалужується, якщо $t0 &lt;= $t1</span>
+<span class="w">    </span><span class="nf">bltz</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">t0_lt0</span><span class="w">                        </span><span class="c1"># Розгалужується, якщо $t0 &lt; 0</span>
+<span class="w">    </span><span class="nf">slt</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="w">                       </span><span class="c1"># Інструкція, що посилає сигнал коли</span>
+<span class="w">                                            </span><span class="c1"># $t0 &lt; $t1, результат зберігається в $s0 </span>
+<span class="w">                                            </span><span class="c1"># (1 - правдиве твердження)</span>
+
+<span class="w">    </span><span class="c1"># Просте твердження якщо (if)</span>
+<span class="w">    </span><span class="c1"># if (i == j)</span>
+<span class="w">    </span><span class="c1">#     f = g + h;</span>
+<span class="w">    </span><span class="c1">#  f = f - i;</span>
+
+<span class="w">    </span><span class="c1"># Нехай $s0 = f, $s1 = g, $s2 = h, $s3 = i, $s4 = j</span>
+<span class="w">    </span><span class="nf">bne</span><span class="w"> </span><span class="no">$s3</span><span class="p">,</span><span class="w"> </span><span class="no">$s4</span><span class="p">,</span><span class="w"> </span><span class="no">L1</span><span class="w"> </span><span class="c1"># if (i !=j)</span>
+<span class="w">    </span><span class="nf">add</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s1</span><span class="p">,</span><span class="w"> </span><span class="no">$s2</span><span class="w"> </span><span class="c1"># f = g + h</span>
+
+<span class="w">    </span><span class="nl">L1:</span>
+<span class="w">      </span><span class="nf">sub</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s3</span><span class="w"> </span><span class="c1"># f = f - i</span>
+
+<span class="w">    </span><span class="c1"># Нижче наведений приклад знаходження максимального значення з 3 чисел</span>
+<span class="w">    </span><span class="c1"># Пряма трансляція в Java з логіки MIPS:</span>
+<span class="w">    </span><span class="c1"># if (a &gt; b)</span>
+<span class="w">    </span><span class="c1">#   if (a &gt; c)</span>
+<span class="w">    </span><span class="c1">#     max = a;</span>
+<span class="w">    </span><span class="c1">#   else</span>
+<span class="w">    </span><span class="c1">#     max = c;</span>
+<span class="w">    </span><span class="c1"># else</span>
+<span class="w">    </span><span class="c1">#     max = b;</span>
+<span class="w">    </span><span class="c1">#   else</span>
+<span class="w">    </span><span class="c1">#     max = c;</span>
+
+<span class="w">    </span><span class="c1"># Нехай $s0 = a, $s1 = b, $s2 = c, $v0 = повернути регістр</span>
+<span class="w">    </span><span class="nf">ble</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s1</span><span class="p">,</span><span class="w"> </span><span class="no">a_LTE_b</span><span class="w">                   </span><span class="c1"># якщо (a &lt;= b) розгалуження(a_LTE_b)</span>
+<span class="w">    </span><span class="nf">ble</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s2</span><span class="p">,</span><span class="w"> </span><span class="no">max_C</span><span class="w">                     </span><span class="c1"># якщо (a &gt; b &amp;&amp; a &lt;=c) розгалуження(max_C)</span>
+<span class="w">    </span><span class="nf">move</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="no">$s0</span><span class="w">                           </span><span class="c1"># інакше [a &gt; b &amp;&amp; a &gt; c] max = a</span>
+<span class="w">    </span><span class="nf">j</span><span class="w"> </span><span class="no">done</span><span class="w">                                  </span><span class="c1"># Перейти в кінець програми</span>
+
+<span class="w">    </span><span class="nl">a_LTE_b:</span><span class="w">                                </span><span class="c1"># Мітка розгалуження, коли a &lt;= b</span>
+<span class="w">      </span><span class="nf">ble</span><span class="w"> </span><span class="no">$s1</span><span class="p">,</span><span class="w"> </span><span class="no">$s2</span><span class="p">,</span><span class="w"> </span><span class="no">max_C</span><span class="w">                   </span><span class="c1"># якщо (a &lt;= b &amp;&amp; b &lt;= c) розгалуження(max_C)</span>
+<span class="w">      </span><span class="nf">move</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="no">$s1</span><span class="w">                         </span><span class="c1"># якщо (a &lt;= b &amp;&amp; b &gt; c) max = b</span>
+<span class="w">      </span><span class="nf">j</span><span class="w"> </span><span class="no">done</span><span class="w">                                </span><span class="c1"># Перейти в кінець програми</span>
+
+<span class="w">    </span><span class="nl">max_C:</span>
+<span class="w">      </span><span class="nf">move</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="no">$s2</span><span class="w">                         </span><span class="c1"># max = c</span>
+
+<span class="w">    </span><span class="nl">done:</span><span class="w">                                   </span><span class="c1"># Кінець програми</span>
+
+<span class="c1">## Цикли ##</span>
+<span class="w">  </span><span class="nl">_loops:</span>
+<span class="w">    </span><span class="c1"># Цикл складається з умови виходу та з інструкції переходу після його завершення</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">    </span><span class="nl">while:</span>
+<span class="w">      </span><span class="nf">bgt</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="no">end_while</span><span class="w">                </span><span class="c1"># Коли $t0 менше 10, продовжувати ітерації</span>
+<span class="w">      </span><span class="nf">addi</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                      </span><span class="c1"># Збільшити значення</span>
+<span class="w">      </span><span class="nf">j</span><span class="w"> </span><span class="no">while</span><span class="w">                               </span><span class="c1"># Перейти на початок циклу</span>
+<span class="w">    </span><span class="nl">end_while:</span>
+
+<span class="w">    </span><span class="c1"># Транспонування 2D матриці</span>
+<span class="w">    </span><span class="c1"># Припустимо, що $a0 зберігає адресу цілочисельної матриці розмірністю 3 x 3</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">                               </span><span class="c1"># Лічильник для i</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">                               </span><span class="c1"># Лічильник для j</span>
+<span class="w">    </span><span class="nl">matrix_row:</span>
+<span class="w">      </span><span class="nf">bgt</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="no">matrix_row_end</span>
+
+<span class="w">      </span><span class="nl">matrix_col:</span>
+<span class="w">        </span><span class="nf">bgt</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="no">matrix_col_end</span>
+
+<span class="w">        </span><span class="c1"># ...</span>
+
+<span class="w">        </span><span class="nf">addi</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                  </span><span class="c1"># Збільшити лічильник стовпця (col)</span>
+<span class="w">      </span><span class="nl">matrix_col_end:</span>
+
+<span class="w">      </span><span class="c1"># ...</span>
+
+<span class="w">      </span><span class="nf">addi</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="nl">matrix_row_end:</span>
+
+<span class="c1">## Функції ##</span>
+<span class="w">  </span><span class="nl">_functions:</span>
+<span class="w">    </span><span class="c1"># Функції - це процедури, що викликаються, приймають аргументи та повертають значення</span>
+
+<span class="w">    </span><span class="nl">main:</span><span class="w">                                 </span><span class="c1"># Програма починається з головної функції</span>
+<span class="w">      </span><span class="nf">jal</span><span class="w"> </span><span class="no">return_1</span><span class="w">                        </span><span class="c1"># jal збереже поточний ПЦ (програмний центр) в $ra,</span>
+<span class="w">                                          </span><span class="c1"># а потім перейде до return_1</span>
+
+<span class="w">      </span><span class="c1"># Як передати аргументи?</span>
+<span class="w">      </span><span class="c1"># По-перше, ми маємо передати значення аргументів у регістри аргументів</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$a1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">      </span><span class="nf">jal</span><span class="w"> </span><span class="no">sum</span><span class="w">                             </span><span class="c1"># Тепер ми можемо викликати функцію</span>
+
+<span class="w">      </span><span class="c1"># Як щодо рекурсії?</span>
+<span class="w">      </span><span class="c1"># Тут потрібно дещо більше роботи оскільки ми маємо впевнитись, що ми збережемо</span>
+<span class="w">      </span><span class="c1"># та зчитаємо попередній ПЦ в $ra, оскільки jal автоматично перепише її при виклику</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">      </span><span class="nf">jal</span><span class="w"> </span><span class="no">fact</span>
+
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">      </span><span class="nf">syscall</span>
+
+<span class="w">    </span><span class="c1"># Ця функція повертає 1</span>
+<span class="w">    </span><span class="nl">return_1:</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                           </span><span class="c1"># Завантажити val в регіст $v0</span>
+<span class="w">      </span><span class="nf">jr</span><span class="w"> </span><span class="no">$ra</span><span class="w">                              </span><span class="c1"># Повернутись до попереднього ПЦ і продовжити виконання </span>
+
+
+<span class="w">    </span><span class="c1"># Функція з двома аргументами</span>
+<span class="w">    </span><span class="nl">sum:</span>
+<span class="w">      </span><span class="nf">add</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="no">$a1</span>
+<span class="w">      </span><span class="nf">jr</span><span class="w"> </span><span class="no">$ra</span><span class="w">                              </span><span class="c1"># Повернутись</span>
+
+<span class="w">    </span><span class="c1"># Рекурсивна функція, яка знаходить факторіал</span>
+<span class="w">    </span><span class="nl">fact:</span>
+<span class="w">      </span><span class="nf">addi</span><span class="w"> </span><span class="no">$sp</span><span class="p">,</span><span class="w"> </span><span class="no">$sp</span><span class="p">,</span><span class="w"> </span><span class="mi">-8</span><span class="w">                   </span><span class="c1"># Виділити місце в стеку</span>
+<span class="w">      </span><span class="nf">sw</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="no">$sp</span><span class="p">)</span><span class="w">                       </span><span class="c1"># Зберегти регістр, що містить поточне число</span>
+<span class="w">      </span><span class="nf">sw</span><span class="w"> </span><span class="no">$ra</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">(</span><span class="no">$sp</span><span class="p">)</span><span class="w">                      </span><span class="c1"># Зберегти попередній ПЦ</span>
+
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                           </span><span class="c1"># Проініціалізувати значення, що повертатиметься</span>
+<span class="w">      </span><span class="nf">beq</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="no">fact_done</span><span class="w">               </span><span class="c1"># Закінчити, якщо параметр 0</span>
+
+<span class="w">      </span><span class="c1"># Інакше, продовжити рекурсію</span>
+<span class="w">      </span><span class="nf">move</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$a0</span><span class="w">                       </span><span class="c1"># Скопіювати $a0 в $s0</span>
+<span class="w">      </span><span class="nf">sub</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="nf">jal</span><span class="w"> </span><span class="no">fact</span>
+
+<span class="w">      </span><span class="nf">mul</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$v0</span><span class="w">                   </span><span class="c1"># Множення</span>
+
+<span class="w">      </span><span class="nl">fact_done:</span>
+<span class="w">        </span><span class="nf">lw</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="no">$sp</span><span class="p">)</span>
+<span class="w">        </span><span class="nf">lw</span><span class="w"> </span><span class="no">$ra</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="no">$sp</span><span class="p">)</span><span class="w">                     </span><span class="c1"># Відновити ПЦ</span>
+<span class="w">        </span><span class="nf">addi</span><span class="w"> </span><span class="no">$sp</span><span class="p">,</span><span class="w"> </span><span class="no">$sp</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span>
+
+<span class="w">        </span><span class="nf">jr</span><span class="w"> </span><span class="no">$ra</span>
+
+<span class="c1">## Макроси ##</span>
+<span class="w">  </span><span class="nl">_macros:</span>
+<span class="w">    </span><span class="c1"># Макроси надзвичайно корисні для заміни блоків коду, що повторюються, за допомогою</span>
+<span class="w">    </span><span class="c1"># однієї змінної, для покращення читабельності</span>
+<span class="w">    </span><span class="c1"># Це не заміна функцій.</span>
+<span class="w">    </span><span class="c1"># Вони мають бути оголошені перед використанням</span>
+
+<span class="w">    </span><span class="c1"># Макрос для виведення нових рядків (оскільки операція досить часто виконується)</span>
+<span class="w">    </span><span class="na">.macro</span><span class="w"> </span><span class="no">println</span><span class="p">()</span>
+<span class="w">      </span><span class="nf">la</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="no">newline</span><span class="w">                     </span><span class="c1"># Значення нового рядка зберігатиметься тут</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">      </span><span class="nf">syscall</span>
+<span class="w">    </span><span class="na">.end_macro</span>
+
+<span class="w">    </span><span class="nf">println</span><span class="p">()</span><span class="w">                             </span><span class="c1"># Асемблер скопіює цей блок коду сюди</span>
+<span class="w">                                          </span><span class="c1"># перед тим, як виконувати його</span>
+
+<span class="w">    </span><span class="c1"># Можна передавати параметри у макроси.</span>
+<span class="w">    </span><span class="c1"># Параметри позначаються знаком &#39;%&#39; з довільною назвою</span>
+<span class="w">    </span><span class="na">.macro</span><span class="w"> </span><span class="no">print_int</span><span class="p">(</span><span class="nv">%num</span><span class="p">)</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="nf">lw</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="nv">%num</span>
+<span class="w">      </span><span class="nf">syscall</span>
+<span class="w">    </span><span class="na">.end_macro</span>
+
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="nf">print_int</span><span class="p">(</span><span class="no">$t0</span><span class="p">)</span>
+
+<span class="w">    </span><span class="c1"># Значення також можна передавати безпосередньо в макроси</span>
+<span class="w">    </span><span class="na">.macro</span><span class="w"> </span><span class="no">immediates</span><span class="p">(</span><span class="nv">%a</span><span class="p">,</span><span class="w"> </span><span class="nv">%b</span><span class="p">)</span>
+<span class="w">      </span><span class="nf">add</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="nv">%a</span><span class="p">,</span><span class="w"> </span><span class="nv">%b</span>
+<span class="w">    </span><span class="na">.end_macro</span>
+
+<span class="w">    </span><span class="nf">immediates</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+
+<span class="w">    </span><span class="c1"># Одночасно із назвами змінних</span>
+<span class="w">    </span><span class="na">.macro</span><span class="w"> </span><span class="no">print</span><span class="p">(</span><span class="nv">%string</span><span class="p">)</span>
+<span class="w">      </span><span class="nf">la</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="nv">%string</span>
+<span class="w">      </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">      </span><span class="nf">syscall</span>
+<span class="w">    </span><span class="na">.end_macro</span>
+
+<span class="w">    </span><span class="nf">print</span><span class="p">(</span><span class="no">hello_world</span><span class="p">)</span>
+
+<span class="c1">## Масиви ##</span>
+<span class="na">.data</span>
+<span class="w">  </span><span class="nl">list:</span><span class="w"> </span><span class="na">.word</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="w">                 </span><span class="c1"># Це масив чисел</span>
+<span class="w">  </span><span class="nl">char_arr:</span><span class="w"> </span><span class="na">.asciiz</span><span class="w"> </span><span class="s">&quot;hello&quot;</span><span class="w">                 </span><span class="c1"># Це текстовий масив</span>
+<span class="w">  </span><span class="nl">buffer:</span><span class="w"> </span><span class="na">.space</span><span class="w"> </span><span class="mi">128</span><span class="w">                        </span><span class="c1"># Виділяє блок пам&#39;яті, що</span>
+<span class="w">                                            </span><span class="c1"># автоматично не очищується</span>
+<span class="w">                                            </span><span class="c1"># Ці блоки пам&#39;яті вирівнені</span>
+<span class="w">                                            </span><span class="c1"># вирівнені поруч один з одним</span>
+
+<span class="na">.text</span>
+<span class="w">  </span><span class="nf">la</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">list</span><span class="w">                              </span><span class="c1"># Завантажити адресу списку</span>
+<span class="w">  </span><span class="nf">li</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w">                                 </span><span class="c1"># Лічильник</span>
+<span class="w">  </span><span class="nf">li</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="w">                                 </span><span class="c1"># Довжина списку</span>
+
+<span class="w">  </span><span class="nl">loop:</span>
+<span class="w">    </span><span class="nf">bgt</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t1</span><span class="p">,</span><span class="w"> </span><span class="no">end_loop</span>
+
+<span class="w">    </span><span class="nf">lw</span><span class="w"> </span><span class="no">$a0</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="no">$s0</span><span class="p">)</span>
+<span class="w">    </span><span class="nf">li</span><span class="w"> </span><span class="no">$v0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="nf">syscall</span><span class="w">                                 </span><span class="c1"># Вивести число</span>
+
+<span class="w">    </span><span class="nf">addi</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="no">$s0</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="w">                        </span><span class="c1"># Розмір числа - 4 байти</span>
+<span class="w">    </span><span class="nf">addi</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="no">$t0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w">                        </span><span class="c1"># Збільшити</span>
+<span class="w">    </span><span class="nf">j</span><span class="w"> </span><span class="no">loop</span>
+<span class="w">  </span><span class="nl">end_loop:</span>
+
+<span class="c1">## Включення ##</span>
+<span class="c1"># Потрібно для імпорту сторонніх файлів у програму (насправді, код з цього файлу </span>
+<span class="c1"># копіюється та вставляється в місце, де оголошений імпорт)</span>
+<span class="na">.include</span><span class="w"> </span><span class="s">&quot;somefile.asm&quot;</span>
+</pre></div>
     <hr>
     <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/uk-ua/mips-ua.html.markdown">pull request</a> yourself!
     </p>

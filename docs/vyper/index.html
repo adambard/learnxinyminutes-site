@@ -200,736 +200,736 @@ features are typically marked, and subject to change. Pull requests welcome.</p>
 <em>None of the following code should be used in production as-is!</em></p>
 
 <h2>Example</h2>
-<div class="highlight"><pre class="highlight python"><code><span class="c1"># First, a simple todo list contract
-# Implements CRUD operations for tasks
-</span>
-<span class="c1"># todo.vy (note .vy extension)
-### **** START EXAMPLE **** ###
-</span>
-<span class="c1"># Start with Natspec comment
-# used for documentation
-</span>
-<span class="c1"># @title SimpleBank v1
-# @author kennyp
-# @notice This is a simple bank.
-</span>
-<span class="c1"># Vyper contracts must obey a particular order:
-#   struct -&gt; interface -&gt; events -&gt; globals and constants -&gt; functions
-# Additionally, like Python, Vyper functions must be defined in the file
-#    before they're called.
-</span>
-<span class="c1"># Structs
-</span>
+<div class="highlight"><pre><span></span><span class="c1"># First, a simple todo list contract</span>
+<span class="c1"># Implements CRUD operations for tasks</span>
+
+<span class="c1"># todo.vy (note .vy extension)</span>
+<span class="c1">### **** START EXAMPLE **** ###</span>
+
+<span class="c1"># Start with Natspec comment</span>
+<span class="c1"># used for documentation</span>
+
+<span class="c1"># @title SimpleBank v1</span>
+<span class="c1"># @author kennyp</span>
+<span class="c1"># @notice This is a simple bank.</span>
+
+<span class="c1"># Vyper contracts must obey a particular order:</span>
+<span class="c1">#   struct -&gt; interface -&gt; events -&gt; globals and constants -&gt; functions</span>
+<span class="c1"># Additionally, like Python, Vyper functions must be defined in the file</span>
+<span class="c1">#    before they&#39;re called.</span>
+
+<span class="c1"># Structs</span>
+
 <span class="n">struct</span> <span class="n">Task</span><span class="p">:</span>
     <span class="n">done</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="n">deleted</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="n">task</span><span class="p">:</span> <span class="n">string</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="n">bytes32</span>
 
-<span class="c1"># Interfaces
-</span>
+<span class="c1"># Interfaces</span>
+
 <span class="n">contract</span> <span class="n">AnotherContract</span><span class="p">():</span>
     <span class="k">def</span> <span class="nf">fetch</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">bytes32</span><span class="p">:</span> <span class="n">constant</span>
     <span class="k">def</span> <span class="nf">inform</span><span class="p">(</span><span class="n">_taskId</span><span class="p">:</span> <span class="n">uint256</span><span class="p">,</span> <span class="n">_status</span><span class="p">:</span> <span class="n">uint256</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="n">modifying</span>
 
-<span class="c1"># Events
-</span>
-<span class="c1"># Events - publicize actions to external listeners
-# `indexed` means that it's easier to search/filter on this field
-</span><span class="n">TaskStatus</span><span class="p">:</span> <span class="n">event</span><span class="p">({</span><span class="n">_taskId</span><span class="p">:</span> <span class="n">indexed</span><span class="p">(</span><span class="n">uint256</span><span class="p">),</span> <span class="n">_status</span><span class="p">:</span> <span class="n">uint256</span><span class="p">})</span>
+<span class="c1"># Events</span>
 
-<span class="c1"># Global Variables
-</span>
-<span class="c1"># State variables are values which are permanently stored in contract storage
-# State vars consist of any value persisting beyond any function's scope
-#   and are permanently stored in contract storage
-</span>
-<span class="c1"># You can define your own, custom, unmutable constants
-</span><span class="n">CREATED</span><span class="p">:</span> <span class="n">constant</span><span class="p">(</span><span class="n">uint256</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1"># Events - publicize actions to external listeners</span>
+<span class="c1"># `indexed` means that it&#39;s easier to search/filter on this field</span>
+<span class="n">TaskStatus</span><span class="p">:</span> <span class="n">event</span><span class="p">({</span><span class="n">_taskId</span><span class="p">:</span> <span class="n">indexed</span><span class="p">(</span><span class="n">uint256</span><span class="p">),</span> <span class="n">_status</span><span class="p">:</span> <span class="n">uint256</span><span class="p">})</span>
+
+<span class="c1"># Global Variables</span>
+
+<span class="c1"># State variables are values which are permanently stored in contract storage</span>
+<span class="c1"># State vars consist of any value persisting beyond any function&#39;s scope</span>
+<span class="c1">#   and are permanently stored in contract storage</span>
+
+<span class="c1"># You can define your own, custom, unmutable constants</span>
+<span class="n">CREATED</span><span class="p">:</span> <span class="n">constant</span><span class="p">(</span><span class="n">uint256</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">COMPLETED</span><span class="p">:</span> <span class="n">constant</span><span class="p">(</span><span class="n">uint256</span><span class="p">)</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">DELETED</span><span class="p">:</span> <span class="n">constant</span><span class="p">(</span><span class="n">uint256</span><span class="p">)</span> <span class="o">=</span> <span class="mi">2</span>
 
-<span class="c1"># The `public` built-in allows for this address to be read externally
-#   without defining a `get()` constant function
-</span><span class="n">owner</span><span class="p">:</span> <span class="n">public</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="c1"># The `public` built-in allows for this address to be read externally</span>
+<span class="c1">#   without defining a `get()` constant function</span>
+<span class="n">owner</span><span class="p">:</span> <span class="n">public</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
 <span class="n">other</span><span class="p">:</span> <span class="n">public</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
 
-<span class="c1"># uint256 means "unsigned positive integer between 0 and 2^256 - 1"
-# Overflow protection is built-in to Vyper
-</span><span class="n">taskCount</span><span class="p">:</span> <span class="n">uint256</span>
-<span class="n">tasks</span><span class="p">:</span> <span class="nb">map</span><span class="p">(</span><span class="n">uint256</span><span class="p">,</span> <span class="n">Task</span><span class="p">)</span> <span class="c1"># dictionary: key=uint256, value: Task struct
-</span>
-<span class="c1"># Private Functions
-</span>
-<span class="c1"># Start each function with Pythonic decorators
-# These decorators resemble Natspec but are actually enforced by Vyper's compiler
-# These decorators are:
-# @public XOR @private (either one or the other)
-#   @public (if any contract/user can call it)
-#   @private (if only internal functions can call it)
-# @payable (if the function is payable i.e. accepting ETH)
-# @constant (if the function is not modifying anything on-chain)
-</span><span class="o">@</span><span class="n">private</span>
+<span class="c1"># uint256 means &quot;unsigned positive integer between 0 and 2^256 - 1&quot;</span>
+<span class="c1"># Overflow protection is built-in to Vyper</span>
+<span class="n">taskCount</span><span class="p">:</span> <span class="n">uint256</span>
+<span class="n">tasks</span><span class="p">:</span> <span class="nb">map</span><span class="p">(</span><span class="n">uint256</span><span class="p">,</span> <span class="n">Task</span><span class="p">)</span> <span class="c1"># dictionary: key=uint256, value: Task struct</span>
+
+<span class="c1"># Private Functions</span>
+
+<span class="c1"># Start each function with Pythonic decorators</span>
+<span class="c1"># These decorators resemble Natspec but are actually enforced by Vyper&#39;s compiler</span>
+<span class="c1"># These decorators are:</span>
+<span class="c1"># @public XOR @private (either one or the other)</span>
+<span class="c1">#   @public (if any contract/user can call it)</span>
+<span class="c1">#   @private (if only internal functions can call it)</span>
+<span class="c1"># @payable (if the function is payable i.e. accepting ETH)</span>
+<span class="c1"># @constant (if the function is not modifying anything on-chain)</span>
+<span class="nd">@private</span>
 <span class="k">def</span> <span class="nf">_changeTaskStatus</span><span class="p">(</span> \
         <span class="n">_sender</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span> \
         <span class="n">_taskId</span><span class="p">:</span> <span class="n">uint256</span><span class="p">,</span> \
         <span class="n">_status</span><span class="p">:</span> <span class="n">uint256</span><span class="p">,</span> \
     <span class="p">):</span>
-    <span class="c1"># backslashes (\) allow for multi-line code
-</span>    <span class="c1"># Natspec comments are particularly helpful for documentation and readability
-</span>    <span class="c1"># Natspec can be included using familiar Pythonic docstring syntax
-</span>    <span class="s">"""
-    @notice
-    @dev `_sender` MUST be `self.owner`
-    @param _sender Who is triggering this function
-    @param _task The description of the task (only useful when task added)
-    """</span>
-    <span class="c1"># NOTE: Private functions do not have access to `msg.sender`
-</span>    <span class="c1"># SIDE NOTE: `msg.sender` refers to whoever immediately called the function of
-</span>    <span class="c1">#   immediate scope. In other words, if I call a function that calls another
-</span>    <span class="c1">#   in-contract, public function, then `msg.sender` turns from my address to
-</span>    <span class="c1">#   the address of the current contract.
-</span>    <span class="k">assert</span> <span class="n">_sender</span> <span class="o">==</span> <span class="bp">self</span><span class="p">.</span><span class="n">owner</span> <span class="c1"># failed assertions cause calls/transactions to fail
-</span>    <span class="c1"># Note that unlike Solidity, `self.` is required to query the contract's state
-</span>    <span class="c1"># Control flow is Pythonic, as is much of Vyper:
-</span>    <span class="n">_task</span><span class="p">:</span> <span class="n">string</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span> <span class="c1"># initialized to default value
-</span>    <span class="n">_data</span><span class="p">:</span> <span class="n">bytes32</span> <span class="o">=</span> <span class="n">sha3</span><span class="p">(</span><span class="n">convert</span><span class="p">(</span><span class="n">_sender</span><span class="p">,</span> <span class="n">bytes32</span><span class="p">))</span> <span class="c1"># owner is obfuscated (but still visible in logs)
-</span>    <span class="k">if</span> <span class="n">_status</span> <span class="o">==</span> <span class="n">CREATED</span><span class="p">:</span> <span class="c1"># control flow mimics python
-</span>        <span class="c1"># How a new struct is instantiated:
-</span>        <span class="bp">self</span><span class="p">.</span><span class="n">tasks</span><span class="p">[</span><span class="n">_taskId</span><span class="p">]</span> <span class="o">=</span> <span class="n">Task</span><span class="p">({</span> \
-            <span class="n">done</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span> <span class="n">deleted</span><span class="p">:</span> <span class="bp">False</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">_task</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="n">_data</span> \
+    <span class="c1"># backslashes (\) allow for multi-line code</span>
+    <span class="c1"># Natspec comments are particularly helpful for documentation and readability</span>
+    <span class="c1"># Natspec can be included using familiar Pythonic docstring syntax</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    @notice</span>
+<span class="sd">    @dev `_sender` MUST be `self.owner`</span>
+<span class="sd">    @param _sender Who is triggering this function</span>
+<span class="sd">    @param _task The description of the task (only useful when task added)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># NOTE: Private functions do not have access to `msg.sender`</span>
+    <span class="c1"># SIDE NOTE: `msg.sender` refers to whoever immediately called the function of</span>
+    <span class="c1">#   immediate scope. In other words, if I call a function that calls another</span>
+    <span class="c1">#   in-contract, public function, then `msg.sender` turns from my address to</span>
+    <span class="c1">#   the address of the current contract.</span>
+    <span class="k">assert</span> <span class="n">_sender</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="c1"># failed assertions cause calls/transactions to fail</span>
+    <span class="c1"># Note that unlike Solidity, `self.` is required to query the contract&#39;s state</span>
+    <span class="c1"># Control flow is Pythonic, as is much of Vyper:</span>
+    <span class="n">_task</span><span class="p">:</span> <span class="n">string</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span> <span class="c1"># initialized to default value</span>
+    <span class="n">_data</span><span class="p">:</span> <span class="n">bytes32</span> <span class="o">=</span> <span class="n">sha3</span><span class="p">(</span><span class="n">convert</span><span class="p">(</span><span class="n">_sender</span><span class="p">,</span> <span class="n">bytes32</span><span class="p">))</span> <span class="c1"># owner is obfuscated (but still visible in logs)</span>
+    <span class="k">if</span> <span class="n">_status</span> <span class="o">==</span> <span class="n">CREATED</span><span class="p">:</span> <span class="c1"># control flow mimics python</span>
+        <span class="c1"># How a new struct is instantiated:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">[</span><span class="n">_taskId</span><span class="p">]</span> <span class="o">=</span> <span class="n">Task</span><span class="p">({</span> \
+            <span class="n">done</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="n">deleted</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">_task</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="n">_data</span> \
         <span class="p">})</span>
     <span class="k">elif</span> <span class="n">_status</span> <span class="o">==</span> <span class="n">COMPLETED</span><span class="p">:</span>
-        <span class="c1"># Modifying an existing struct:
-</span>        <span class="bp">self</span><span class="p">.</span><span class="n">tasks</span><span class="p">[</span><span class="n">_taskId</span><span class="p">].</span><span class="n">done</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="c1"># Modifying an existing struct:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">[</span><span class="n">_taskId</span><span class="p">]</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">elif</span> <span class="n">_status</span> <span class="o">==</span> <span class="n">DELETED</span><span class="p">:</span>
-        <span class="bp">self</span><span class="p">.</span><span class="n">tasks</span><span class="p">[</span><span class="n">_taskId</span><span class="p">].</span><span class="n">deleted</span> <span class="o">=</span> <span class="bp">True</span>
-    <span class="n">AnotherContract</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">other</span><span class="p">).</span><span class="n">inform</span><span class="p">(</span><span class="n">_taskId</span><span class="p">,</span> <span class="n">_status</span><span class="p">)</span> <span class="c1"># modifying external call
-</span>    <span class="n">log</span><span class="p">.</span><span class="n">TaskStatus</span><span class="p">(</span><span class="n">_taskId</span><span class="p">,</span> <span class="n">_status</span><span class="p">)</span> <span class="c1"># emit an event
-</span>
-<span class="c1"># Public Functions
-</span>
-<span class="c1"># Pythonic constructor - can receive none or many arguments
-</span><span class="o">@</span><span class="n">public</span>
-<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">_owner</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span> <span class="n">_other_contract</span><span class="p">:</span> <span class="n">address</span><span class="p">):</span>
-    <span class="s">"""
-    @dev Called once and only upon contract depoyment
-    """</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">_owner</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">other</span> <span class="o">=</span> <span class="n">_other_contract</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">[</span><span class="n">_taskId</span><span class="p">]</span><span class="o">.</span><span class="n">deleted</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">AnotherContract</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">inform</span><span class="p">(</span><span class="n">_taskId</span><span class="p">,</span> <span class="n">_status</span><span class="p">)</span> <span class="c1"># modifying external call</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">TaskStatus</span><span class="p">(</span><span class="n">_taskId</span><span class="p">,</span> <span class="n">_status</span><span class="p">)</span> <span class="c1"># emit an event</span>
 
-<span class="c1"># NOTE: Pythonic whitespace rules are mandated in Vyper
-</span>
-<span class="o">@</span><span class="n">public</span>
+<span class="c1"># Public Functions</span>
+
+<span class="c1"># Pythonic constructor - can receive none or many arguments</span>
+<span class="nd">@public</span>
+<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">_owner</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span> <span class="n">_other_contract</span><span class="p">:</span> <span class="n">address</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    @dev Called once and only upon contract depoyment</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">owner</span> <span class="o">=</span> <span class="n">_owner</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">other</span> <span class="o">=</span> <span class="n">_other_contract</span>
+
+<span class="c1"># NOTE: Pythonic whitespace rules are mandated in Vyper</span>
+
+<span class="nd">@public</span>
 <span class="k">def</span> <span class="nf">addTask</span><span class="p">(</span><span class="n">_task</span><span class="p">:</span> <span class="n">string</span><span class="p">[</span><span class="mi">100</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">uint256</span><span class="p">:</span>
-    <span class="s">"""
-    @notice Adds a task to contract
-    @param _task Description of task
-    @return Id of newly minted task
-    """</span>
-    <span class="c1"># msg.sender gives the address of who/what contract is calling this function
-</span>    <span class="bp">self</span><span class="p">.</span><span class="n">_changeTaskStatus</span><span class="p">(</span><span class="n">msg</span><span class="p">.</span><span class="n">sender</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">taskCount</span><span class="p">,</span> <span class="n">CREATED</span><span class="p">)</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">tasks</span><span class="p">[</span><span class="bp">self</span><span class="p">.</span><span class="n">taskCount</span><span class="p">].</span><span class="n">task</span> <span class="o">=</span> <span class="n">_task</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">taskCount</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">taskCount</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    @notice Adds a task to contract</span>
+<span class="sd">    @param _task Description of task</span>
+<span class="sd">    @return Id of newly minted task</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># msg.sender gives the address of who/what contract is calling this function</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_changeTaskStatus</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">taskCount</span><span class="p">,</span> <span class="n">CREATED</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">taskCount</span><span class="p">]</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="n">_task</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">taskCount</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">taskCount</span> <span class="o">-</span> <span class="mi">1</span>
 
-<span class="o">@</span><span class="n">public</span>
+<span class="nd">@public</span>
 <span class="k">def</span> <span class="nf">addSpecialTask</span><span class="p">(</span><span class="n">_task</span><span class="p">:</span> <span class="n">string</span><span class="p">[</span><span class="mi">100</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">uint256</span><span class="p">:</span>
-    <span class="s">"""
-    @notice Adds a task with metadata pulled from elsewhere
-    @param _task Description of task
-    @return Id of newly minted task
-    """</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">_changeTaskStatus</span><span class="p">(</span><span class="n">msg</span><span class="p">.</span><span class="n">sender</span><span class="p">,</span> <span class="bp">self</span><span class="p">.</span><span class="n">taskCount</span><span class="p">,</span> <span class="n">CREATED</span><span class="p">)</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">tasks</span><span class="p">[</span><span class="bp">self</span><span class="p">.</span><span class="n">taskCount</span><span class="p">].</span><span class="n">task</span> <span class="o">=</span> <span class="n">_task</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">tasks</span><span class="p">[</span><span class="bp">self</span><span class="p">.</span><span class="n">taskCount</span><span class="p">].</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">AnotherContract</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">other</span><span class="p">).</span><span class="n">fetch</span><span class="p">()</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">taskCount</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">taskCount</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    @notice Adds a task with metadata pulled from elsewhere</span>
+<span class="sd">    @param _task Description of task</span>
+<span class="sd">    @return Id of newly minted task</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_changeTaskStatus</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">taskCount</span><span class="p">,</span> <span class="n">CREATED</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">taskCount</span><span class="p">]</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="n">_task</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">taskCount</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">AnotherContract</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">taskCount</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">taskCount</span> <span class="o">-</span> <span class="mi">1</span>
 
-<span class="o">@</span><span class="n">public</span>
+<span class="nd">@public</span>
 <span class="k">def</span> <span class="nf">completeTask</span><span class="p">(</span><span class="n">_taskId</span><span class="p">:</span> <span class="n">uint256</span><span class="p">):</span>
-    <span class="s">"""
-    @notice Marks a task as "completed"
-    @param _taskId Id of task to complete
-    """</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">_changeTaskStatus</span><span class="p">(</span><span class="n">msg</span><span class="p">.</span><span class="n">sender</span><span class="p">,</span> <span class="n">_taskId</span><span class="p">,</span> <span class="n">COMPLETED</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    @notice Marks a task as &quot;completed&quot;</span>
+<span class="sd">    @param _taskId Id of task to complete</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_changeTaskStatus</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="n">_taskId</span><span class="p">,</span> <span class="n">COMPLETED</span><span class="p">)</span>
 
-<span class="o">@</span><span class="n">public</span>
+<span class="nd">@public</span>
 <span class="k">def</span> <span class="nf">deleteTask</span><span class="p">(</span><span class="n">_taskId</span><span class="p">:</span> <span class="n">uint256</span><span class="p">):</span>
-    <span class="s">"""
-    @notice Adds a task to contract
-    @param _taskId Id of task to delete
-    """</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">_changeTaskStatus</span><span class="p">(</span><span class="n">msg</span><span class="p">.</span><span class="n">sender</span><span class="p">,</span> <span class="n">_taskId</span><span class="p">,</span> <span class="n">DELETED</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    @notice Adds a task to contract</span>
+<span class="sd">    @param _taskId Id of task to delete</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_changeTaskStatus</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="n">_taskId</span><span class="p">,</span> <span class="n">DELETED</span><span class="p">)</span>
 
-<span class="o">@</span><span class="n">public</span>
-<span class="o">@</span><span class="n">constant</span> <span class="c1"># allows function to run locally/off blockchain
-</span><span class="k">def</span> <span class="nf">getTask</span><span class="p">(</span><span class="n">_taskId</span><span class="p">:</span> <span class="n">uint256</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">string</span><span class="p">[</span><span class="mi">100</span><span class="p">]:</span>
-    <span class="s">"""
-    @notice Getter for a task's description
-    @param _taskId Id of task with desired description
-    @return Description of task
-    """</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">tasks</span><span class="p">[</span><span class="n">_taskId</span><span class="p">].</span><span class="n">task</span>
+<span class="nd">@public</span>
+<span class="nd">@constant</span> <span class="c1"># allows function to run locally/off blockchain</span>
+<span class="k">def</span> <span class="nf">getTask</span><span class="p">(</span><span class="n">_taskId</span><span class="p">:</span> <span class="n">uint256</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">string</span><span class="p">[</span><span class="mi">100</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    @notice Getter for a task&#39;s description</span>
+<span class="sd">    @param _taskId Id of task with desired description</span>
+<span class="sd">    @return Description of task</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="p">[</span><span class="n">_taskId</span><span class="p">]</span><span class="o">.</span><span class="n">task</span>
 
-<span class="c1">### **** END EXAMPLE **** ###
-</span>
+<span class="c1">### **** END EXAMPLE **** ###</span>
 
-<span class="c1"># Now, the basics of Vyper
-</span>
 
-<span class="c1"># ---
-</span>
+<span class="c1"># Now, the basics of Vyper</span>
 
-<span class="c1"># 1. DATA TYPES AND ASSOCIATED METHODS
-# uint256 used for currency amount and for dates (in unix time)
-</span><span class="n">x</span><span class="p">:</span> <span class="n">uint256</span>
 
-<span class="c1"># int of 128 bits, cannot be changed after contract deployment
-# with 'constant', compiler replaces each occurrence with actual value
-</span><span class="n">a</span><span class="p">:</span> <span class="n">constant</span><span class="p">(</span><span class="n">int128</span><span class="p">)</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="c1"># ---</span>
 
-<span class="c1"># All state variables (those outside a function)
-#   are by default 'internal' and accessible inside contract
-# Need to explicitly set to 'public' to allow external contracts to access
-#   A getter is automatically created, but NOT a setter
-# Can only be called in the contract's scope (not within functions)
-# Add 'public' field to indicate publicly/externally accessible
-</span><span class="n">a</span><span class="p">:</span> <span class="n">public</span><span class="p">(</span><span class="n">int128</span><span class="p">)</span>
 
-<span class="c1"># No random functions built in, use other contracts for randomness
-</span>
-<span class="c1"># Type casting is limited but exists
-</span><span class="n">b</span><span class="p">:</span> <span class="n">int128</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="c1"># 1. DATA TYPES AND ASSOCIATED METHODS</span>
+<span class="c1"># uint256 used for currency amount and for dates (in unix time)</span>
+<span class="n">x</span><span class="p">:</span> <span class="n">uint256</span>
+
+<span class="c1"># int of 128 bits, cannot be changed after contract deployment</span>
+<span class="c1"># with &#39;constant&#39;, compiler replaces each occurrence with actual value</span>
+<span class="n">a</span><span class="p">:</span> <span class="n">constant</span><span class="p">(</span><span class="n">int128</span><span class="p">)</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1"># All state variables (those outside a function)</span>
+<span class="c1">#   are by default &#39;internal&#39; and accessible inside contract</span>
+<span class="c1"># Need to explicitly set to &#39;public&#39; to allow external contracts to access</span>
+<span class="c1">#   A getter is automatically created, but NOT a setter</span>
+<span class="c1"># Can only be called in the contract&#39;s scope (not within functions)</span>
+<span class="c1"># Add &#39;public&#39; field to indicate publicly/externally accessible</span>
+<span class="n">a</span><span class="p">:</span> <span class="n">public</span><span class="p">(</span><span class="n">int128</span><span class="p">)</span>
+
+<span class="c1"># No random functions built in, use other contracts for randomness</span>
+
+<span class="c1"># Type casting is limited but exists</span>
+<span class="n">b</span><span class="p">:</span> <span class="n">int128</span> <span class="o">=</span> <span class="mi">5</span>
 <span class="n">x</span><span class="p">:</span> <span class="n">uint256</span> <span class="o">=</span> <span class="n">convert</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">uint256</span><span class="p">)</span>
 
-<span class="c1"># Types of accounts:
-# Contract Account: f(creator_addr, num_transactions)=address set on contract creation
-# External Account: (person/external entity): f(public_key)=address
-</span>
-<span class="c1"># Addresses - An address type can hold an Ethereum address which
-#   equates to 20 bytes or 160 bits. It returns in hexadecimal notation
-#   with a leading 0x. No arithmetic allowed
-</span><span class="n">owner</span><span class="p">:</span> <span class="n">public</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="c1"># Types of accounts:</span>
+<span class="c1"># Contract Account: f(creator_addr, num_transactions)=address set on contract creation</span>
+<span class="c1"># External Account: (person/external entity): f(public_key)=address</span>
 
-<span class="c1"># Members can be invoked on all addresses:
-</span><span class="n">owner</span><span class="p">.</span><span class="n">balance</span> <span class="c1"># returns balance of address as `wei_value`
-</span><span class="n">owner</span><span class="p">.</span><span class="n">codesize</span> <span class="c1"># returns code size of address as `int128`
-</span><span class="n">owner</span><span class="p">.</span><span class="n">is_contract</span> <span class="c1"># `True` if Contract Account
-</span>
-<span class="c1"># All addresses can be sent ether via `send()` built-in
-</span><span class="o">@</span><span class="n">public</span>
-<span class="o">@</span><span class="n">payable</span>
+<span class="c1"># Addresses - An address type can hold an Ethereum address which</span>
+<span class="c1">#   equates to 20 bytes or 160 bits. It returns in hexadecimal notation</span>
+<span class="c1">#   with a leading 0x. No arithmetic allowed</span>
+<span class="n">owner</span><span class="p">:</span> <span class="n">public</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+
+<span class="c1"># Members can be invoked on all addresses:</span>
+<span class="n">owner</span><span class="o">.</span><span class="n">balance</span> <span class="c1"># returns balance of address as `wei_value`</span>
+<span class="n">owner</span><span class="o">.</span><span class="n">codesize</span> <span class="c1"># returns code size of address as `int128`</span>
+<span class="n">owner</span><span class="o">.</span><span class="n">is_contract</span> <span class="c1"># `True` if Contract Account</span>
+
+<span class="c1"># All addresses can be sent ether via `send()` built-in</span>
+<span class="nd">@public</span>
+<span class="nd">@payable</span>
 <span class="k">def</span> <span class="nf">sendWei</span><span class="p">(</span><span class="n">any_addr</span><span class="p">:</span> <span class="n">address</span><span class="p">):</span>
-    <span class="n">send</span><span class="p">(</span><span class="n">any_addr</span><span class="p">,</span> <span class="n">msg</span><span class="p">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">send</span><span class="p">(</span><span class="n">any_addr</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
-<span class="c1"># Bytes available
-</span><span class="n">a</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="c1"># Bytes available</span>
+<span class="n">a</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
 <span class="n">b</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span>
 <span class="n">c</span><span class="p">:</span> <span class="n">bytes32</span>
-<span class="c1"># `b` and `c` are 2 different types
-</span>
-<span class="c1"># Bytes are preferable to strings since Vyper currently offers better
-#   support for bytes i.e. more built-ins to deal with `bytes32`, `bytes32`
-#   can be returned from functions and strings[] can't be, UTF8 (string encoding)
-#   uses more storage, etc.
-</span>
-<span class="c1"># There are no dynamically sized bytes, similar to how there are no
-#   dynamic arrays
-</span>
-<span class="c1"># Fixed-size byte arrays (Strings)
-</span><span class="n">a</span><span class="p">:</span> <span class="n">string</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span>
+<span class="c1"># `b` and `c` are 2 different types</span>
+
+<span class="c1"># Bytes are preferable to strings since Vyper currently offers better</span>
+<span class="c1">#   support for bytes i.e. more built-ins to deal with `bytes32`, `bytes32`</span>
+<span class="c1">#   can be returned from functions and strings[] can&#39;t be, UTF8 (string encoding)</span>
+<span class="c1">#   uses more storage, etc.</span>
+
+<span class="c1"># There are no dynamically sized bytes, similar to how there are no</span>
+<span class="c1">#   dynamic arrays</span>
+
+<span class="c1"># Fixed-size byte arrays (Strings)</span>
+<span class="n">a</span><span class="p">:</span> <span class="n">string</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span>
 <span class="n">b</span><span class="p">:</span> <span class="n">string</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span>
-<span class="n">c</span><span class="p">:</span> <span class="n">string</span><span class="p">[</span><span class="mi">108</span><span class="p">]</span> <span class="o">=</span> <span class="n">concat</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="c1"># check the latest docs for more built-ins
-</span>
-<span class="c1"># Time
-</span><span class="n">t1</span><span class="p">:</span> <span class="n">timedelta</span>
+<span class="n">c</span><span class="p">:</span> <span class="n">string</span><span class="p">[</span><span class="mi">108</span><span class="p">]</span> <span class="o">=</span> <span class="n">concat</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="c1"># check the latest docs for more built-ins</span>
+
+<span class="c1"># Time</span>
+<span class="n">t1</span><span class="p">:</span> <span class="n">timedelta</span>
 <span class="n">t2</span><span class="p">:</span> <span class="n">timestamp</span>
-<span class="c1"># Both types are built-in "custom type" variants of `uint256`
-# `timedelta` values can be added but not `timestamp` values
-</span>
-<span class="c1"># Money
-</span><span class="n">m</span><span class="p">:</span> <span class="n">wei_value</span>
-<span class="c1"># Also has the base type `uint256` like `timestamp` and `timedelta`
-# 1 unit of WEI (a small amount of ETH i.e. ether)
-</span>
-<span class="c1"># Custom types
-# specify units used in the contract:
-</span><span class="n">units</span><span class="p">:</span> <span class="p">{</span>
-    <span class="n">cm</span><span class="p">:</span> <span class="s">"centimeter"</span><span class="p">,</span>
-    <span class="n">km</span><span class="p">:</span> <span class="s">"kilometer"</span>
+<span class="c1"># Both types are built-in &quot;custom type&quot; variants of `uint256`</span>
+<span class="c1"># `timedelta` values can be added but not `timestamp` values</span>
+
+<span class="c1"># Money</span>
+<span class="n">m</span><span class="p">:</span> <span class="n">wei_value</span>
+<span class="c1"># Also has the base type `uint256` like `timestamp` and `timedelta`</span>
+<span class="c1"># 1 unit of WEI (a small amount of ETH i.e. ether)</span>
+
+<span class="c1"># Custom types</span>
+<span class="c1"># specify units used in the contract:</span>
+<span class="n">units</span><span class="p">:</span> <span class="p">{</span>
+    <span class="n">cm</span><span class="p">:</span> <span class="s2">&quot;centimeter&quot;</span><span class="p">,</span>
+    <span class="n">km</span><span class="p">:</span> <span class="s2">&quot;kilometer&quot;</span>
 <span class="p">}</span>
-<span class="c1"># usage:
-</span><span class="n">a</span><span class="p">:</span> <span class="n">int128</span><span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+<span class="c1"># usage:</span>
+<span class="n">a</span><span class="p">:</span> <span class="n">int128</span><span class="p">(</span><span class="n">cm</span><span class="p">)</span>
 <span class="n">b</span><span class="p">:</span> <span class="n">uint256</span><span class="p">(</span><span class="n">km</span><span class="p">)</span>
 
-<span class="c1"># BY DEFAULT: all values are set to 0 on instantiation
-</span>
-<span class="c1"># `clear()` can be called on most types
-#   Does NOT destroy value, but sets value to 0, the initial value
-</span>
+<span class="c1"># BY DEFAULT: all values are set to 0 on instantiation</span>
 
-<span class="c1"># ---
-</span>
+<span class="c1"># `clear()` can be called on most types</span>
+<span class="c1">#   Does NOT destroy value, but sets value to 0, the initial value</span>
 
-<span class="c1"># 2. DATA STRUCTURES
-# Arrays
-</span><span class="n">bytes32</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="n">nicknames</span><span class="p">;</span> <span class="c1"># static array
-</span><span class="n">bytes32</span><span class="p">[]</span> <span class="n">names</span><span class="p">;</span> <span class="c1"># dynamic array
-</span><span class="n">uint</span> <span class="n">newLength</span> <span class="o">=</span> <span class="n">names</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="s">"John"</span><span class="p">);</span> <span class="c1"># adding returns new length of the array
-# Length
-</span><span class="n">names</span><span class="p">.</span><span class="n">length</span><span class="p">;</span> <span class="c1"># get length
-</span><span class="n">names</span><span class="p">.</span><span class="n">length</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="c1"># lengths can be set (for dynamic arrays in storage only)
-</span>
-<span class="c1"># Multidimensional Arrays
-# At initialization, array dimensions must be hard-coded or constants
-# Initialize a 10-column by 3-row, multidimensional fixed array
-</span><span class="n">ls</span><span class="p">:</span> <span class="p">(</span><span class="n">uint256</span><span class="p">[</span><span class="mi">10</span><span class="p">])[</span><span class="mi">3</span><span class="p">]</span> <span class="c1"># parentheses are optional
-</span><span class="o">@</span><span class="n">public</span>
+
+<span class="c1"># ---</span>
+
+
+<span class="c1"># 2. DATA STRUCTURES</span>
+<span class="c1"># Arrays</span>
+<span class="n">bytes32</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="n">nicknames</span><span class="p">;</span> <span class="c1"># static array</span>
+<span class="n">bytes32</span><span class="p">[]</span> <span class="n">names</span><span class="p">;</span> <span class="c1"># dynamic array</span>
+<span class="n">uint</span> <span class="n">newLength</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="s2">&quot;John&quot;</span><span class="p">);</span> <span class="c1"># adding returns new length of the array</span>
+<span class="c1"># Length</span>
+<span class="n">names</span><span class="o">.</span><span class="n">length</span><span class="p">;</span> <span class="c1"># get length</span>
+<span class="n">names</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="c1"># lengths can be set (for dynamic arrays in storage only)</span>
+
+<span class="c1"># Multidimensional Arrays</span>
+<span class="c1"># At initialization, array dimensions must be hard-coded or constants</span>
+<span class="c1"># Initialize a 10-column by 3-row, multidimensional fixed array</span>
+<span class="n">ls</span><span class="p">:</span> <span class="p">(</span><span class="n">uint256</span><span class="p">[</span><span class="mi">10</span><span class="p">])[</span><span class="mi">3</span><span class="p">]</span> <span class="c1"># parentheses are optional</span>
+<span class="nd">@public</span>
 <span class="k">def</span> <span class="nf">setToThree</span><span class="p">():</span>
-    <span class="c1"># Multidimensional Array Access and Write
-</span>    <span class="c1"># access indices are reversed
-</span>    <span class="c1"># set element in row 2 (3rd row) column 5 (6th column) to 3
-</span>    <span class="bp">self</span><span class="p">.</span><span class="n">ls</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="c1"># Multidimensional Array Access and Write</span>
+    <span class="c1"># access indices are reversed</span>
+    <span class="c1"># set element in row 2 (3rd row) column 5 (6th column) to 3</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">ls</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
 
-<span class="c1"># Dictionaries (any simple type to any other type including structs)
-</span><span class="n">theMap</span><span class="p">:</span> <span class="nb">map</span><span class="p">(</span><span class="n">uint256</span><span class="p">,</span> <span class="n">bytes32</span><span class="p">)</span>
-<span class="n">theMap</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">sha3</span><span class="p">(</span><span class="s">"charles"</span><span class="p">)</span>
-<span class="c1"># theMap[255] result is 0, all non-set key values return zeroes
-# To make read public, make a getter that accesses the mapping
-</span><span class="o">@</span><span class="n">public</span>
+<span class="c1"># Dictionaries (any simple type to any other type including structs)</span>
+<span class="n">theMap</span><span class="p">:</span> <span class="nb">map</span><span class="p">(</span><span class="n">uint256</span><span class="p">,</span> <span class="n">bytes32</span><span class="p">)</span>
+<span class="n">theMap</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">sha3</span><span class="p">(</span><span class="s2">&quot;charles&quot;</span><span class="p">)</span>
+<span class="c1"># theMap[255] result is 0, all non-set key values return zeroes</span>
+<span class="c1"># To make read public, make a getter that accesses the mapping</span>
+<span class="nd">@public</span>
 <span class="k">def</span> <span class="nf">getMap</span><span class="p">(</span><span class="n">_idx</span><span class="p">:</span> <span class="n">uint256</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bytes32</span><span class="p">:</span>
-    <span class="s">"""
-    @notice Get the value of `theMap` at `_idx`
-    """</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">theMap</span><span class="p">[</span><span class="n">_idx</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    @notice Get the value of `theMap` at `_idx`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">theMap</span><span class="p">[</span><span class="n">_idx</span><span class="p">]</span>
 
-<span class="bp">self</span><span class="p">.</span><span class="n">getMap</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="c1"># returns sha3("charles") in bytes32
-</span>
-<span class="c1"># Nested mappings
-</span><span class="n">aMap</span><span class="p">:</span> <span class="nb">map</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">uint256</span><span class="p">))</span>
-<span class="c1"># NOTE: Mappings are only allowed as state variables
-# NOTE: Mappings are not iterable; can only be accessed
-</span>
-<span class="c1"># To delete (reset the mapping's value to default at a key)
-</span><span class="n">clear</span><span class="p">(</span><span class="n">balances</span><span class="p">[</span><span class="s">"John"</span><span class="p">])</span>
-<span class="n">clear</span><span class="p">(</span><span class="n">balances</span><span class="p">);</span> <span class="c1"># sets all elements to 0
-</span>
-<span class="c1"># Unlike other languages, CANNOT iterate through all elements in
-#   mapping, without knowing source keys - can build data structure
-#   on top to do this
-</span>
-<span class="c1"># Structs
-</span><span class="n">struct</span> <span class="n">Struct</span><span class="p">:</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">getMap</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="c1"># returns sha3(&quot;charles&quot;) in bytes32</span>
+
+<span class="c1"># Nested mappings</span>
+<span class="n">aMap</span><span class="p">:</span> <span class="nb">map</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">uint256</span><span class="p">))</span>
+<span class="c1"># NOTE: Mappings are only allowed as state variables</span>
+<span class="c1"># NOTE: Mappings are not iterable; can only be accessed</span>
+
+<span class="c1"># To delete (reset the mapping&#39;s value to default at a key)</span>
+<span class="n">clear</span><span class="p">(</span><span class="n">balances</span><span class="p">[</span><span class="s2">&quot;John&quot;</span><span class="p">])</span>
+<span class="n">clear</span><span class="p">(</span><span class="n">balances</span><span class="p">);</span> <span class="c1"># sets all elements to 0</span>
+
+<span class="c1"># Unlike other languages, CANNOT iterate through all elements in</span>
+<span class="c1">#   mapping, without knowing source keys - can build data structure</span>
+<span class="c1">#   on top to do this</span>
+
+<span class="c1"># Structs</span>
+<span class="n">struct</span> <span class="n">Struct</span><span class="p">:</span>
     <span class="n">owner</span><span class="p">:</span> <span class="n">address</span>
-    <span class="n">_balance</span><span class="p">:</span> <span class="n">uint256</span> <span class="c1"># balance is a reserved keyword, is a member for addresses
-</span>
+    <span class="n">_balance</span><span class="p">:</span> <span class="n">uint256</span> <span class="c1"># balance is a reserved keyword, is a member for addresses</span>
+
 <span class="n">exampleStruct</span><span class="p">:</span> <span class="n">Struct</span>
 
-<span class="o">@</span><span class="n">public</span>
+<span class="nd">@public</span>
 <span class="k">def</span> <span class="nf">foo</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">uint256</span><span class="p">:</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">exampleStruct</span> <span class="o">=</span> <span class="n">Struct</span><span class="p">({</span><span class="n">owner</span><span class="p">:</span> <span class="n">msg</span><span class="p">.</span><span class="n">sender</span><span class="p">,</span> <span class="n">_balance</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">exampleStruct</span><span class="p">.</span><span class="n">_balance</span> <span class="o">=</span> <span class="mi">10</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">exampleStruct</span><span class="p">.</span><span class="n">_balance</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1"># set to new value
-</span>    <span class="n">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">exampleStruct</span><span class="p">.</span><span class="n">_balance</span><span class="p">)</span>
-    <span class="n">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">exampleStruct</span><span class="p">)</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">exampleStruct</span><span class="p">.</span><span class="n">_balance</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">exampleStruct</span> <span class="o">=</span> <span class="n">Struct</span><span class="p">({</span><span class="n">owner</span><span class="p">:</span> <span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">,</span> <span class="n">_balance</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">exampleStruct</span><span class="o">.</span><span class="n">_balance</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">exampleStruct</span><span class="o">.</span><span class="n">_balance</span> <span class="o">=</span> <span class="mi">5</span> <span class="c1"># set to new value</span>
+    <span class="n">clear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exampleStruct</span><span class="o">.</span><span class="n">_balance</span><span class="p">)</span>
+    <span class="n">clear</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exampleStruct</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exampleStruct</span><span class="o">.</span><span class="n">_balance</span>
 
 
-<span class="c1"># Data locations: Memory vs. storage vs. calldata - all complex types (arrays,
-# structs) have a data location
-# 'memory' does not persist, 'storage' does
-# Default is 'storage' for local and state variables; 'memory' for func params
-# stack holds small local variables
-</span>
-<span class="c1"># for most types, can explicitly set which data location to use
-</span>
+<span class="c1"># Data locations: Memory vs. storage vs. calldata - all complex types (arrays,</span>
+<span class="c1"># structs) have a data location</span>
+<span class="c1"># &#39;memory&#39; does not persist, &#39;storage&#39; does</span>
+<span class="c1"># Default is &#39;storage&#39; for local and state variables; &#39;memory&#39; for func params</span>
+<span class="c1"># stack holds small local variables</span>
 
-<span class="c1"># ---
-</span>
+<span class="c1"># for most types, can explicitly set which data location to use</span>
 
-<span class="c1"># 3. SIMPLE OPERATORS
-# Comparisons, bit operators and arithmetic operators are provided
-# exponentiation: **
-# modulo: %
-# maximum: max(x, y)
-# AND: bitwise_and(x, y)
-# bitwise shift: shift(x, _shift)
-#   where x,y are uint256
-#         _shift is int128
-</span>
-<span class="c1"># 4. GLOBAL VARIABLES OF NOTE
-# ** self **
-</span><span class="bp">self</span> <span class="c1"># address of contract
-# often used at end of contract life to transfer remaining balance to party:
-</span><span class="bp">self</span><span class="p">.</span><span class="n">balance</span> <span class="c1"># balance of current contract
-</span><span class="bp">self</span><span class="p">.</span><span class="n">someFunction</span><span class="p">()</span> <span class="c1"># calls func externally via call, not via internal jump
-</span>
-<span class="c1"># ** msg - Current message received by the contract **
-# Ethereum programmers take NOTE: this `msg` object is smaller than elsewhere
-</span><span class="n">msg</span><span class="p">.</span><span class="n">sender</span> <span class="c1"># address of sender
-</span><span class="n">msg</span><span class="p">.</span><span class="n">value</span> <span class="c1"># amount of ether provided to this contract in wei, the function should be marked `@payable`
-</span><span class="n">msg</span><span class="p">.</span><span class="n">gas</span> <span class="c1"># remaining gas
-</span>
-<span class="c1"># ** tx - This transaction **
-# Ethereum programmers take NOTE: this `tx` object is smaller than elsewhere
-</span><span class="n">tx</span><span class="p">.</span><span class="n">origin</span> <span class="c1"># address of sender of the transaction
-</span>
-<span class="c1"># ** block - Information about current block **
-</span><span class="n">block</span><span class="p">.</span><span class="n">timestamp</span> <span class="c1"># time at current block (uses Unix time)
-# Note that `block.timestamp` can be manipulated by miners, so be careful
-</span><span class="n">block</span><span class="p">.</span><span class="n">number</span> <span class="c1"># current block number
-</span><span class="n">block</span><span class="p">.</span><span class="n">difficulty</span> <span class="c1"># current block difficulty
-</span>
-<span class="c1"># ** storage - Persistent storage hash **
-</span><span class="n">storage</span><span class="p">[</span><span class="s">'abc'</span><span class="p">]</span> <span class="o">=</span> <span class="s">'def'</span><span class="p">;</span> <span class="c1"># maps 256 bit words to 256 bit words
-</span>
 
-<span class="c1"># ---
-</span>
+<span class="c1"># ---</span>
 
-<span class="c1"># 5. FUNCTIONS AND MORE
-</span>
-<span class="c1"># A. FUNCTIONS
-# Simple function
-</span><span class="n">function</span> <span class="n">increment</span><span class="p">(</span><span class="n">uint</span> <span class="n">x</span><span class="p">)</span> <span class="n">returns</span> <span class="p">(</span><span class="n">uint</span><span class="p">)</span> <span class="p">{</span>
+
+<span class="c1"># 3. SIMPLE OPERATORS</span>
+<span class="c1"># Comparisons, bit operators and arithmetic operators are provided</span>
+<span class="c1"># exponentiation: **</span>
+<span class="c1"># modulo: %</span>
+<span class="c1"># maximum: max(x, y)</span>
+<span class="c1"># AND: bitwise_and(x, y)</span>
+<span class="c1"># bitwise shift: shift(x, _shift)</span>
+<span class="c1">#   where x,y are uint256</span>
+<span class="c1">#         _shift is int128</span>
+
+<span class="c1"># 4. GLOBAL VARIABLES OF NOTE</span>
+<span class="c1"># ** self **</span>
+<span class="bp">self</span> <span class="c1"># address of contract</span>
+<span class="c1"># often used at end of contract life to transfer remaining balance to party:</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">balance</span> <span class="c1"># balance of current contract</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">someFunction</span><span class="p">()</span> <span class="c1"># calls func externally via call, not via internal jump</span>
+
+<span class="c1"># ** msg - Current message received by the contract **</span>
+<span class="c1"># Ethereum programmers take NOTE: this `msg` object is smaller than elsewhere</span>
+<span class="n">msg</span><span class="o">.</span><span class="n">sender</span> <span class="c1"># address of sender</span>
+<span class="n">msg</span><span class="o">.</span><span class="n">value</span> <span class="c1"># amount of ether provided to this contract in wei, the function should be marked `@payable`</span>
+<span class="n">msg</span><span class="o">.</span><span class="n">gas</span> <span class="c1"># remaining gas</span>
+
+<span class="c1"># ** tx - This transaction **</span>
+<span class="c1"># Ethereum programmers take NOTE: this `tx` object is smaller than elsewhere</span>
+<span class="n">tx</span><span class="o">.</span><span class="n">origin</span> <span class="c1"># address of sender of the transaction</span>
+
+<span class="c1"># ** block - Information about current block **</span>
+<span class="n">block</span><span class="o">.</span><span class="n">timestamp</span> <span class="c1"># time at current block (uses Unix time)</span>
+<span class="c1"># Note that `block.timestamp` can be manipulated by miners, so be careful</span>
+<span class="n">block</span><span class="o">.</span><span class="n">number</span> <span class="c1"># current block number</span>
+<span class="n">block</span><span class="o">.</span><span class="n">difficulty</span> <span class="c1"># current block difficulty</span>
+
+<span class="c1"># ** storage - Persistent storage hash **</span>
+<span class="n">storage</span><span class="p">[</span><span class="s1">&#39;abc&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;def&#39;</span><span class="p">;</span> <span class="c1"># maps 256 bit words to 256 bit words</span>
+
+
+<span class="c1"># ---</span>
+
+
+<span class="c1"># 5. FUNCTIONS AND MORE</span>
+
+<span class="c1"># A. FUNCTIONS</span>
+<span class="c1"># Simple function</span>
+<span class="n">function</span> <span class="n">increment</span><span class="p">(</span><span class="n">uint</span> <span class="n">x</span><span class="p">)</span> <span class="n">returns</span> <span class="p">(</span><span class="n">uint</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">x</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
     <span class="k">return</span> <span class="n">x</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="c1"># Functions can return many arguments
-</span><span class="o">@</span><span class="n">public</span>
-<span class="o">@</span><span class="n">constant</span>
+<span class="c1"># Functions can return many arguments</span>
+<span class="nd">@public</span>
+<span class="nd">@constant</span>
 <span class="k">def</span> <span class="nf">increment</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">uint256</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">uint256</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">uint256</span><span class="p">,</span> <span class="n">uint256</span><span class="p">):</span>
     <span class="n">x</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="n">y</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">return</span>  <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-<span class="c1"># Call previous function
-</span><span class="o">@</span><span class="n">public</span>
-<span class="o">@</span><span class="n">constant</span>
+<span class="c1"># Call previous function</span>
+<span class="nd">@public</span>
+<span class="nd">@constant</span>
 <span class="k">def</span> <span class="nf">willCall</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">uint256</span><span class="p">,</span> <span class="n">uint256</span><span class="p">):</span>
-    <span class="k">return</span>  <span class="bp">self</span><span class="p">.</span><span class="n">increment</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span>  <span class="bp">self</span><span class="o">.</span><span class="n">increment</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 
-<span class="c1"># One should never have to call a function / hold any logic outside
-#   outside the scope of a function in Vyper
-</span>
-<span class="c1"># '@constant'
-# indicates that function does not/cannot change persistent vars
-# Constant function execute locally, not on blockchain
-</span><span class="n">y</span><span class="p">:</span> <span class="n">uint256</span>
-<span class="o">@</span><span class="n">public</span>
-<span class="o">@</span><span class="n">constant</span>
+<span class="c1"># One should never have to call a function / hold any logic outside</span>
+<span class="c1">#   outside the scope of a function in Vyper</span>
+
+<span class="c1"># &#39;@constant&#39;</span>
+<span class="c1"># indicates that function does not/cannot change persistent vars</span>
+<span class="c1"># Constant function execute locally, not on blockchain</span>
+<span class="n">y</span><span class="p">:</span> <span class="n">uint256</span>
+<span class="nd">@public</span>
+<span class="nd">@constant</span>
 <span class="k">def</span> <span class="nf">increment</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">uint256</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">uint256</span><span class="p">:</span>
     <span class="n">x</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="n">y</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c1"># this line would fail
-</span>    <span class="c1"># y is a state variable =&gt; can't be changed in a constant function
-</span>
+    <span class="n">y</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c1"># this line would fail</span>
+    <span class="c1"># y is a state variable =&gt; can&#39;t be changed in a constant function</span>
 
-<span class="c1"># 'Function Decorators'
-# Used like python decorators but are REQUIRED by Vyper
-# @public - visible externally and internally (default for function)
-# @private - only visible in the current contract
-# @constant - doesn't change state
-# @payable - receive ether/ETH
-# @nonrentant(&lt;unique_key&gt;) - Function can only be called once, both externally
-#                             and internally. Used to prevent reentrancy attacks
-</span>
-<span class="c1"># Functions hare not hoisted
-# Functions cannot be assigned to a variable
-# Functions cannot be recursive
-</span>
-<span class="c1"># All functions that receive ether must be marked 'payable'
-</span><span class="o">@</span><span class="n">public</span>
-<span class="o">@</span><span class="n">payable</span>
+
+<span class="c1"># &#39;Function Decorators&#39;</span>
+<span class="c1"># Used like python decorators but are REQUIRED by Vyper</span>
+<span class="c1"># @public - visible externally and internally (default for function)</span>
+<span class="c1"># @private - only visible in the current contract</span>
+<span class="c1"># @constant - doesn&#39;t change state</span>
+<span class="c1"># @payable - receive ether/ETH</span>
+<span class="c1"># @nonrentant(&lt;unique_key&gt;) - Function can only be called once, both externally</span>
+<span class="c1">#                             and internally. Used to prevent reentrancy attacks</span>
+
+<span class="c1"># Functions hare not hoisted</span>
+<span class="c1"># Functions cannot be assigned to a variable</span>
+<span class="c1"># Functions cannot be recursive</span>
+
+<span class="c1"># All functions that receive ether must be marked &#39;payable&#39;</span>
+<span class="nd">@public</span>
+<span class="nd">@payable</span>
 <span class="k">def</span> <span class="nf">depositEther</span><span class="p">():</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">balances</span><span class="p">[</span><span class="n">msg</span><span class="p">.</span><span class="n">sender</span><span class="p">]</span> <span class="o">+=</span> <span class="n">msg</span><span class="p">.</span><span class="n">value</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">balances</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">]</span> <span class="o">+=</span> <span class="n">msg</span><span class="o">.</span><span class="n">value</span>
 
 
-<span class="c1"># B. EVENTS
-# Events are notify external parties; easy to search and
-#   access events from outside blockchain (with lightweight clients)
-#   typically declare after contract parameters
-</span>
-<span class="c1"># Declare
-</span><span class="n">LogSent</span><span class="p">:</span> <span class="n">event</span><span class="p">({</span><span class="n">_from</span><span class="p">:</span> <span class="n">indexed</span><span class="p">(</span><span class="n">address</span><span class="p">),</span> <span class="n">address</span><span class="p">:</span> <span class="n">indexed</span><span class="p">(</span><span class="n">_to</span><span class="p">),</span> <span class="n">_amount</span><span class="p">:</span> <span class="n">uint256</span><span class="p">})</span>
-<span class="c1"># Call
-</span><span class="n">log</span><span class="p">.</span><span class="n">LogSent</span><span class="p">(</span><span class="k">from</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">amount</span><span class="p">)</span>
+<span class="c1"># B. EVENTS</span>
+<span class="c1"># Events are notify external parties; easy to search and</span>
+<span class="c1">#   access events from outside blockchain (with lightweight clients)</span>
+<span class="c1">#   typically declare after contract parameters</span>
+
+<span class="c1"># Declare</span>
+<span class="n">LogSent</span><span class="p">:</span> <span class="n">event</span><span class="p">({</span><span class="n">_from</span><span class="p">:</span> <span class="n">indexed</span><span class="p">(</span><span class="n">address</span><span class="p">),</span> <span class="n">address</span><span class="p">:</span> <span class="n">indexed</span><span class="p">(</span><span class="n">_to</span><span class="p">),</span> <span class="n">_amount</span><span class="p">:</span> <span class="n">uint256</span><span class="p">})</span>
+<span class="c1"># Call</span>
+<span class="n">log</span><span class="o">.</span><span class="n">LogSent</span><span class="p">(</span><span class="n">from</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">amount</span><span class="p">)</span>
 
 <span class="o">/**</span>
 <span class="n">For</span> <span class="n">an</span> <span class="n">external</span> <span class="n">party</span> <span class="p">(</span><span class="n">a</span> <span class="n">contract</span> <span class="ow">or</span> <span class="n">external</span> <span class="n">entity</span><span class="p">),</span> <span class="n">to</span> <span class="n">watch</span> <span class="n">using</span>
 <span class="n">the</span> <span class="n">Web3</span> <span class="n">Javascript</span> <span class="n">library</span><span class="p">:</span>
 
-<span class="c1"># The following is Javascript code, not Vyper code
-</span><span class="n">Coin</span><span class="p">.</span><span class="n">LogSent</span><span class="p">().</span><span class="n">watch</span><span class="p">({},</span> <span class="s">''</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="p">{</span>
+<span class="c1"># The following is Javascript code, not Vyper code</span>
+<span class="n">Coin</span><span class="o">.</span><span class="n">LogSent</span><span class="p">()</span><span class="o">.</span><span class="n">watch</span><span class="p">({},</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="err">!</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">console</span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="s">"Coin transfer: "</span> <span class="o">+</span> <span class="n">result</span><span class="p">.</span><span class="n">args</span><span class="p">.</span><span class="n">amount</span> <span class="o">+</span>
-            <span class="s">" coins were sent from "</span> <span class="o">+</span> <span class="n">result</span><span class="p">.</span><span class="n">args</span><span class="p">.</span><span class="k">from</span> <span class="o">+</span>
-            <span class="s">" to "</span> <span class="o">+</span> <span class="n">result</span><span class="p">.</span><span class="n">args</span><span class="p">.</span><span class="n">to</span> <span class="o">+</span> <span class="s">"."</span><span class="p">);</span>
-        <span class="n">console</span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="s">"Balances now:</span><span class="se">\n</span><span class="s">"</span> <span class="o">+</span>
-            <span class="s">"Sender: "</span> <span class="o">+</span> <span class="n">Coin</span><span class="p">.</span><span class="n">balances</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="n">args</span><span class="p">.</span><span class="k">from</span><span class="p">)</span> <span class="o">+</span>
-            <span class="s">"Receiver: "</span> <span class="o">+</span> <span class="n">Coin</span><span class="p">.</span><span class="n">balances</span><span class="p">.</span><span class="n">call</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="n">args</span><span class="p">.</span><span class="n">to</span><span class="p">));</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Coin transfer: &quot;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">amount</span> <span class="o">+</span>
+            <span class="s2">&quot; coins were sent from &quot;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="kn">from</span> <span class="o">+</span>
+            <span class="s2">&quot; to &quot;</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">to</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="p">);</span>
+        <span class="n">console</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Balances now:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span>
+            <span class="s2">&quot;Sender: &quot;</span> <span class="o">+</span> <span class="n">Coin</span><span class="o">.</span><span class="n">balances</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">from</span><span class="p">)</span> <span class="o">+</span>
+            <span class="s2">&quot;Receiver: &quot;</span> <span class="o">+</span> <span class="n">Coin</span><span class="o">.</span><span class="n">balances</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">to</span><span class="p">));</span>
     <span class="p">}</span>
 <span class="p">}</span>
 <span class="o">**/</span>
 
-<span class="c1"># Common paradigm for one contract to depend on another (e.g., a
-#   contract that depends on current exchange rate provided by another)
-</span>
+<span class="c1"># Common paradigm for one contract to depend on another (e.g., a</span>
+<span class="c1">#   contract that depends on current exchange rate provided by another)</span>
 
-<span class="c1"># ---
-</span>
 
-<span class="c1"># 6. BRANCHING AND LOOPS
-</span>
-<span class="c1"># All basic logic blocks from Python work - including if/elif/else, for,
-#   while, break, continue, return - but no switch
-</span>
-<span class="c1"># Syntax same as Python, but no type conversion from non-boolean
-# to boolean (comparison operators must be used to get the boolean val)
-</span>
-<span class="c1"># REMEMBER: Vyper does not allow resursive calls or infinite loops
-</span>
+<span class="c1"># ---</span>
 
-<span class="c1"># ---
-</span>
 
-<span class="c1"># 7. OBJECTS/CONTRACTS
-# REMEMBER: Vyper does not allow for inheritance or imports
-</span>
-<span class="c1"># A. CALLING EXTERNAL CONTRACTS
-# You must define an interface to an external contract in the current contract
-</span>
+<span class="c1"># 6. BRANCHING AND LOOPS</span>
+
+<span class="c1"># All basic logic blocks from Python work - including if/elif/else, for,</span>
+<span class="c1">#   while, break, continue, return - but no switch</span>
+
+<span class="c1"># Syntax same as Python, but no type conversion from non-boolean</span>
+<span class="c1"># to boolean (comparison operators must be used to get the boolean val)</span>
+
+<span class="c1"># REMEMBER: Vyper does not allow resursive calls or infinite loops</span>
+
+
+<span class="c1"># ---</span>
+
+
+<span class="c1"># 7. OBJECTS/CONTRACTS</span>
+<span class="c1"># REMEMBER: Vyper does not allow for inheritance or imports</span>
+
+<span class="c1"># A. CALLING EXTERNAL CONTRACTS</span>
+<span class="c1"># You must define an interface to an external contract in the current contract</span>
+
 <span class="n">contract</span> <span class="n">InfoFeed</span><span class="p">():</span>
     <span class="k">def</span> <span class="nf">getInfo</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">uint256</span><span class="p">:</span> <span class="n">constant</span>
 
 <span class="n">info</span><span class="p">:</span> <span class="n">uint256</span>
 
-<span class="o">@</span><span class="n">public</span>
-<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">_source</span><span class="p">:</span> <span class="n">address</span><span class="p">):</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">InfoFeed</span><span class="p">(</span><span class="n">_source</span><span class="p">).</span><span class="n">getInfo</span><span class="p">()</span>
+<span class="nd">@public</span>
+<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">_source</span><span class="p">:</span> <span class="n">address</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">InfoFeed</span><span class="p">(</span><span class="n">_source</span><span class="p">)</span><span class="o">.</span><span class="n">getInfo</span><span class="p">()</span>
 
 
-<span class="c1"># B. ERC20 BUILT-IN
-# Using the `ERC20` keyword implies that the contract at the address
-#   follows the ERC20 token standard, allowing you to safely call
-#   functions like `transfer()`, etc.
-</span>
+<span class="c1"># B. ERC20 BUILT-IN</span>
+<span class="c1"># Using the `ERC20` keyword implies that the contract at the address</span>
+<span class="c1">#   follows the ERC20 token standard, allowing you to safely call</span>
+<span class="c1">#   functions like `transfer()`, etc.</span>
+
 <span class="n">tokenAddress</span><span class="p">:</span> <span class="n">address</span><span class="p">(</span><span class="n">ERC20</span><span class="p">)</span>
 
-<span class="o">@</span><span class="n">public</span>
+<span class="nd">@public</span>
 <span class="k">def</span> <span class="nf">transferIt</span><span class="p">(</span><span class="n">_to</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span> <span class="n">_amt</span><span class="p">:</span> <span class="n">uint256</span><span class="p">(</span><span class="n">wei</span><span class="p">)):</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">tokenAddress</span><span class="p">.</span><span class="n">transfer</span><span class="p">(</span><span class="n">_to</span><span class="p">,</span> <span class="n">_amt</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tokenAddress</span><span class="o">.</span><span class="n">transfer</span><span class="p">(</span><span class="n">_to</span><span class="p">,</span> <span class="n">_amt</span><span class="p">)</span>
 
 
-<span class="c1"># C. FOLLOWING AN INTERFACE
-# Vyper is experimenting with using the following syntax at the top of
-#   a `.vy` file to specify what interfaces are followed by the contract
-# This allows interfaces to be better organized, registered, and recognized
-</span>
-<span class="kn">import</span> <span class="nn">interfaces.some_interface</span> <span class="k">as</span> <span class="n">SomeInterface</span>
+<span class="c1"># C. FOLLOWING AN INTERFACE</span>
+<span class="c1"># Vyper is experimenting with using the following syntax at the top of</span>
+<span class="c1">#   a `.vy` file to specify what interfaces are followed by the contract</span>
+<span class="c1"># This allows interfaces to be better organized, registered, and recognized</span>
+
+<span class="kn">import</span> <span class="nn">interfaces.some_interface</span> <span class="k">as</span> <span class="nn">SomeInterface</span>
 <span class="n">implements</span><span class="p">:</span> <span class="n">SomeInterface</span>
-<span class="c1"># &lt;rest of contract&gt;
-</span>
+<span class="c1"># &lt;rest of contract&gt;</span>
 
-<span class="c1"># ---
-</span>
 
-<span class="c1"># 8. OTHER KEYWORDS
-</span>
-<span class="c1"># A. selfdestruct()
-# selfdestruct current contract, sending funds to address (often creator)
-</span><span class="n">selfdestruct</span><span class="p">(</span><span class="n">SOME_ADDRESS</span><span class="p">);</span>
+<span class="c1"># ---</span>
 
-<span class="c1"># removes storage/code from current/future blocks
-# helps thin clients, but previous data persists in blockchain
-</span>
-<span class="c1"># Common pattern, lets owner end the contract and receive remaining funds
-</span><span class="o">@</span><span class="n">public</span>
+
+<span class="c1"># 8. OTHER KEYWORDS</span>
+
+<span class="c1"># A. selfdestruct()</span>
+<span class="c1"># selfdestruct current contract, sending funds to address (often creator)</span>
+<span class="n">selfdestruct</span><span class="p">(</span><span class="n">SOME_ADDRESS</span><span class="p">);</span>
+
+<span class="c1"># removes storage/code from current/future blocks</span>
+<span class="c1"># helps thin clients, but previous data persists in blockchain</span>
+
+<span class="c1"># Common pattern, lets owner end the contract and receive remaining funds</span>
+<span class="nd">@public</span>
 <span class="k">def</span> <span class="nf">endItAll</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">assert</span> <span class="n">msg</span><span class="p">.</span><span class="n">sender</span> <span class="o">==</span> <span class="bp">self</span><span class="p">.</span><span class="n">creator</span> <span class="c1"># Only let the contract creator do this
-</span>    <span class="n">selfdestruct</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">creator</span><span class="p">)</span> <span class="c1"># Makes contract inactive, returns funds
-</span>
-<span class="c1"># May want to deactivate contract manually, rather than selfdestruct
-#   (ether sent to selfdestructed contract is lost)
-</span>
+    <span class="k">assert</span> <span class="n">msg</span><span class="o">.</span><span class="n">sender</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">creator</span> <span class="c1"># Only let the contract creator do this</span>
+    <span class="n">selfdestruct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">creator</span><span class="p">)</span> <span class="c1"># Makes contract inactive, returns funds</span>
 
-<span class="c1"># B. sha3()
-# Encrypts strings and other data
-# Very important on the blockchain
-# Takes 1 argument, `concat()` can be called beforehand
-# All strings passed are concatenated before hash action
-</span><span class="n">sha3</span><span class="p">(</span><span class="n">concat</span><span class="p">(</span><span class="s">"ab"</span><span class="p">,</span> <span class="s">"cd"</span><span class="p">))</span> <span class="c1"># returns bytes32
-</span>
+<span class="c1"># May want to deactivate contract manually, rather than selfdestruct</span>
+<span class="c1">#   (ether sent to selfdestructed contract is lost)</span>
 
-<span class="c1"># ---
-</span>
 
-<span class="c1"># 9. CONTRACT DESIGN NOTES
-</span>
-<span class="c1"># A. Obfuscation
-# All variables are publicly viewable on blockchain, so anything
-#   that is private needs to be obfuscated (e.g., hashed w/secret)
-# Oftentimes, a "commit-reveal" scheme is employed
-</span>
-<span class="c1"># Step 1. Commit
-# Place a commitment by sending output of `sha3()`
-</span><span class="n">sha3</span><span class="p">(</span><span class="s">"a secret"</span><span class="p">);</span> <span class="c1"># bytes32 commit
-</span><span class="n">sha3</span><span class="p">(</span><span class="n">concat</span><span class="p">(</span><span class="s">"secret"</span><span class="p">,</span> <span class="s">"other secret"</span><span class="p">,</span> <span class="s">"salt"</span><span class="p">));</span> <span class="c1"># commit multiple things
-# The `sha3()` calculation should occur off-chain, only the bytes32
-#   output should be inputted into some `commit()` function
-</span><span class="n">commits</span><span class="p">:</span> <span class="nb">map</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">bytes32</span><span class="p">)</span>
-<span class="o">@</span><span class="n">public</span>
+<span class="c1"># B. sha3()</span>
+<span class="c1"># Encrypts strings and other data</span>
+<span class="c1"># Very important on the blockchain</span>
+<span class="c1"># Takes 1 argument, `concat()` can be called beforehand</span>
+<span class="c1"># All strings passed are concatenated before hash action</span>
+<span class="n">sha3</span><span class="p">(</span><span class="n">concat</span><span class="p">(</span><span class="s2">&quot;ab&quot;</span><span class="p">,</span> <span class="s2">&quot;cd&quot;</span><span class="p">))</span> <span class="c1"># returns bytes32</span>
+
+
+<span class="c1"># ---</span>
+
+
+<span class="c1"># 9. CONTRACT DESIGN NOTES</span>
+
+<span class="c1"># A. Obfuscation</span>
+<span class="c1"># All variables are publicly viewable on blockchain, so anything</span>
+<span class="c1">#   that is private needs to be obfuscated (e.g., hashed w/secret)</span>
+<span class="c1"># Oftentimes, a &quot;commit-reveal&quot; scheme is employed</span>
+
+<span class="c1"># Step 1. Commit</span>
+<span class="c1"># Place a commitment by sending output of `sha3()`</span>
+<span class="n">sha3</span><span class="p">(</span><span class="s2">&quot;a secret&quot;</span><span class="p">);</span> <span class="c1"># bytes32 commit</span>
+<span class="n">sha3</span><span class="p">(</span><span class="n">concat</span><span class="p">(</span><span class="s2">&quot;secret&quot;</span><span class="p">,</span> <span class="s2">&quot;other secret&quot;</span><span class="p">,</span> <span class="s2">&quot;salt&quot;</span><span class="p">));</span> <span class="c1"># commit multiple things</span>
+<span class="c1"># The `sha3()` calculation should occur off-chain, only the bytes32</span>
+<span class="c1">#   output should be inputted into some `commit()` function</span>
+<span class="n">commits</span><span class="p">:</span> <span class="nb">map</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">bytes32</span><span class="p">)</span>
+<span class="nd">@public</span>
 <span class="k">def</span> <span class="nf">commit</span><span class="p">(</span><span class="n">commitment</span><span class="p">:</span> <span class="n">bytes32</span><span class="p">):</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">commits</span><span class="p">[</span><span class="n">msg</span><span class="p">.</span><span class="n">sender</span><span class="p">]</span> <span class="o">=</span> <span class="n">commitment</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">commits</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">]</span> <span class="o">=</span> <span class="n">commitment</span>
 
-<span class="c1"># Step 2. Reveal
-# Send your previously committed data so the contract can check
-#   if your commitment was honest
-</span><span class="o">@</span><span class="n">public</span>
+<span class="c1"># Step 2. Reveal</span>
+<span class="c1"># Send your previously committed data so the contract can check</span>
+<span class="c1">#   if your commitment was honest</span>
+<span class="nd">@public</span>
 <span class="k">def</span> <span class="nf">reveal</span><span class="p">(</span><span class="n">_secret</span><span class="p">:</span> <span class="n">string</span><span class="p">[</span><span class="mi">100</span><span class="p">],</span> <span class="n">_salt</span><span class="p">:</span> <span class="n">string</span><span class="p">[</span><span class="mi">100</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">sha3</span><span class="p">(</span><span class="n">concat</span><span class="p">(</span><span class="n">_secret</span><span class="p">,</span> <span class="n">_salt</span><span class="p">))</span> <span class="o">==</span> <span class="bp">self</span><span class="p">.</span><span class="n">commits</span><span class="p">[</span><span class="n">msg</span><span class="p">.</span><span class="n">sender</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">sha3</span><span class="p">(</span><span class="n">concat</span><span class="p">(</span><span class="n">_secret</span><span class="p">,</span> <span class="n">_salt</span><span class="p">))</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">commits</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span><span class="p">]</span>
 
 
-<span class="c1"># B. Storage optimization
-# Writing to blockchain can be expensive, as data stored forever; encourages
-#   smart ways to use memory (eventually, compilation will be better, but for now
-#   benefits to planning data structures - and storing min amount in blockchain)
-</span>
-<span class="c1"># Cost can often be high for items like multidimensional arrays
-#   (cost is for storing data - not declaring unfilled variables)
-</span>
+<span class="c1"># B. Storage optimization</span>
+<span class="c1"># Writing to blockchain can be expensive, as data stored forever; encourages</span>
+<span class="c1">#   smart ways to use memory (eventually, compilation will be better, but for now</span>
+<span class="c1">#   benefits to planning data structures - and storing min amount in blockchain)</span>
 
-<span class="c1"># C. Data access in blockchain
-# Cannot restrict human or computer from reading contents of
-#   transaction or transaction's state
-</span>
-<span class="c1"># While 'private' prevents other *contracts* from reading data
-#   directly - any other party can still read data in blockchain
-</span>
-<span class="c1"># All data to start of time is stored in blockchain, so
-#   anyone can observe all previous data and changes
-</span>
+<span class="c1"># Cost can often be high for items like multidimensional arrays</span>
+<span class="c1">#   (cost is for storing data - not declaring unfilled variables)</span>
 
-<span class="c1"># D. Cron Job
-# Contracts must be manually called to handle time-based scheduling;
-#   can create external code to regularly ping or provide incentives
-#   (ether) for others to ping
-</span>
 
-<span class="c1"># E. Observer Pattern
-# An Observer Pattern lets you register as a subscriber and
-#   register a function which is called by the oracle (note, the oracle
-#   pays for this action to be run)
-# Some similarities to subscription in Pub/sub
-</span>
-<span class="c1"># This is an abstract contract, both client and server classes import,
-#   the client should implement
-</span>
-<span class="c1">### **** START EXAMPLE **** ###
-</span>
+<span class="c1"># C. Data access in blockchain</span>
+<span class="c1"># Cannot restrict human or computer from reading contents of</span>
+<span class="c1">#   transaction or transaction&#39;s state</span>
+
+<span class="c1"># While &#39;private&#39; prevents other *contracts* from reading data</span>
+<span class="c1">#   directly - any other party can still read data in blockchain</span>
+
+<span class="c1"># All data to start of time is stored in blockchain, so</span>
+<span class="c1">#   anyone can observe all previous data and changes</span>
+
+
+<span class="c1"># D. Cron Job</span>
+<span class="c1"># Contracts must be manually called to handle time-based scheduling;</span>
+<span class="c1">#   can create external code to regularly ping or provide incentives</span>
+<span class="c1">#   (ether) for others to ping</span>
+
+
+<span class="c1"># E. Observer Pattern</span>
+<span class="c1"># An Observer Pattern lets you register as a subscriber and</span>
+<span class="c1">#   register a function which is called by the oracle (note, the oracle</span>
+<span class="c1">#   pays for this action to be run)</span>
+<span class="c1"># Some similarities to subscription in Pub/sub</span>
+
+<span class="c1"># This is an abstract contract, both client and server classes import,</span>
+<span class="c1">#   the client should implement</span>
+
+<span class="c1">### **** START EXAMPLE **** ###</span>
+
 <span class="n">contract</span> <span class="n">SomeOracleCallback</span><span class="p">():</span>
     <span class="k">def</span> <span class="nf">oracleCallback</span><span class="p">(</span><span class="n">_value</span><span class="p">:</span> <span class="n">uint256</span><span class="p">,</span> <span class="n">_time</span><span class="p">:</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">_info</span><span class="p">:</span> <span class="n">bytes32</span><span class="p">):</span> <span class="n">modifying</span>
 
 <span class="n">MAX_SUBS</span><span class="p">:</span> <span class="n">constant</span><span class="p">(</span><span class="n">uint256</span><span class="p">)</span> <span class="o">=</span> <span class="mi">100</span>
-<span class="n">numSubs</span><span class="p">:</span> <span class="n">public</span><span class="p">(</span><span class="n">uint256</span><span class="p">)</span> <span class="c1"># number of subscribers
-</span><span class="n">subs</span><span class="p">:</span> <span class="nb">map</span><span class="p">(</span><span class="n">uint256</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span> <span class="c1"># enumerates subscribers
-</span>
-<span class="o">@</span><span class="n">public</span>
-<span class="k">def</span> <span class="nf">addSub</span><span class="p">(</span><span class="n">_sub</span><span class="p">:</span> <span class="n">address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">uint256</span><span class="p">:</span>
-    <span class="s">"""
-    @notice Add subscriber
-    @param _sub Address to add
-    @return Id of newly added subscriber
-    """</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">subs</span><span class="p">[</span><span class="bp">self</span><span class="p">.</span><span class="n">numSubs</span><span class="p">]</span> <span class="o">=</span> <span class="n">_sub</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">numSubs</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="p">.</span><span class="n">numSubs</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="n">numSubs</span><span class="p">:</span> <span class="n">public</span><span class="p">(</span><span class="n">uint256</span><span class="p">)</span> <span class="c1"># number of subscribers</span>
+<span class="n">subs</span><span class="p">:</span> <span class="nb">map</span><span class="p">(</span><span class="n">uint256</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span> <span class="c1"># enumerates subscribers</span>
 
-<span class="o">@</span><span class="n">private</span>
+<span class="nd">@public</span>
+<span class="k">def</span> <span class="nf">addSub</span><span class="p">(</span><span class="n">_sub</span><span class="p">:</span> <span class="n">address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">uint256</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    @notice Add subscriber</span>
+<span class="sd">    @param _sub Address to add</span>
+<span class="sd">    @return Id of newly added subscriber</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">subs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">numSubs</span><span class="p">]</span> <span class="o">=</span> <span class="n">_sub</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">numSubs</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">numSubs</span> <span class="o">-</span> <span class="mi">1</span>
+
+<span class="nd">@private</span>
 <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="n">_value</span><span class="p">:</span> <span class="n">uint256</span><span class="p">,</span> <span class="n">_time</span><span class="p">:</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">_info</span><span class="p">:</span> <span class="n">bytes32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="s">"""
-    @notice Notify all subscribers
-    @dev Check `numSubs` first; Watch out for gas costs!
-    @param _value whatever
-    @param _time what have you
-    @param _info what else
-    @return True upon successful completion
-    """</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    @notice Notify all subscribers</span>
+<span class="sd">    @dev Check `numSubs` first; Watch out for gas costs!</span>
+<span class="sd">    @param _value whatever</span>
+<span class="sd">    @param _time what have you</span>
+<span class="sd">    @param _info what else</span>
+<span class="sd">    @return True upon successful completion</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">j</span><span class="p">:</span> <span class="n">uint256</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_SUBS</span><span class="p">):</span>
-        <span class="n">j</span> <span class="o">=</span> <span class="n">convert</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">uint256</span><span class="p">)</span> <span class="c1"># `i` is int128 by default
-</span>        <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="bp">self</span><span class="p">.</span><span class="n">numSubs</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">True</span>
-        <span class="n">SomeOracleCallback</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">subs</span><span class="p">[</span><span class="n">j</span><span class="p">]).</span><span class="n">oracleCallback</span><span class="p">(</span><span class="n">_value</span><span class="p">,</span> <span class="n">_time</span><span class="p">,</span> <span class="n">_info</span><span class="p">)</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="n">convert</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">uint256</span><span class="p">)</span> <span class="c1"># `i` is int128 by default</span>
+        <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">numSubs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="n">SomeOracleCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subs</span><span class="p">[</span><span class="n">j</span><span class="p">])</span><span class="o">.</span><span class="n">oracleCallback</span><span class="p">(</span><span class="n">_value</span><span class="p">,</span> <span class="n">_time</span><span class="p">,</span> <span class="n">_info</span><span class="p">)</span>
 
-<span class="o">@</span><span class="n">public</span>
+<span class="nd">@public</span>
 <span class="k">def</span> <span class="nf">doSomething</span><span class="p">():</span>
-    <span class="s">"""
-    @notice Do something and notify subscribers
-    """</span>
-    <span class="c1"># ...something...
-</span>    <span class="n">whatever</span><span class="p">:</span> <span class="n">uint256</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    @notice Do something and notify subscribers</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># ...something...</span>
+    <span class="n">whatever</span><span class="p">:</span> <span class="n">uint256</span> <span class="o">=</span> <span class="mi">6</span>
     <span class="n">what_have_you</span><span class="p">:</span> <span class="n">timestamp</span>
-    <span class="n">what_else</span><span class="p">:</span> <span class="n">bytes32</span> <span class="o">=</span> <span class="n">sha3</span><span class="p">(</span><span class="s">"6"</span><span class="p">)</span>
-    <span class="bp">self</span><span class="p">.</span><span class="n">notify</span><span class="p">(</span><span class="n">whatever</span><span class="p">,</span> <span class="n">what_have_you</span><span class="p">,</span> <span class="n">what_else</span><span class="p">)</span>
+    <span class="n">what_else</span><span class="p">:</span> <span class="n">bytes32</span> <span class="o">=</span> <span class="n">sha3</span><span class="p">(</span><span class="s2">&quot;6&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="n">whatever</span><span class="p">,</span> <span class="n">what_have_you</span><span class="p">,</span> <span class="n">what_else</span><span class="p">)</span>
 
-<span class="c1"># Now, your client contract can addSubscriber by importing SomeOracleCallback
-# and registering with Some Oracle
-</span>
-<span class="c1">### **** END EXAMPLE **** ###
-</span>
+<span class="c1"># Now, your client contract can addSubscriber by importing SomeOracleCallback</span>
+<span class="c1"># and registering with Some Oracle</span>
 
-<span class="c1"># ---
-</span>
+<span class="c1">### **** END EXAMPLE **** ###</span>
 
-<span class="c1"># 10. SECURITY
-# Bugs can be disastrous in Ethereum contracts - and even popular patterns in
-#   Vyper may be found to be antipatterns
-</span>
-<span class="c1"># See security links at the end of this doc
-</span>
 
-<span class="c1"># ---
-</span>
+<span class="c1"># ---</span>
 
-<span class="c1"># 11. STYLE NOTES
-# Based on Python's PEP8 style guide
-# Full Style guide: http:#solidity.readthedocs.io/en/develop/style-guide.html
-</span>
-<span class="c1"># Quick summary:
-# 4 spaces for indentation
-# Two lines separate contract declarations (and other top level declarations)
-# Avoid extraneous spaces in parentheses
-# Can omit curly braces for one line statement (if, for, etc)
-# else should be placed on own line
-</span>
-<span class="c1"># Specific to Vyper:
-# arguments: snake_case
-# events, interfaces, structs: PascalCase
-# public functions: camelCase
-# private functions: _prefaceWithUnderscore
-</span>
 
-<span class="c1"># ---
-</span>
+<span class="c1"># 10. SECURITY</span>
+<span class="c1"># Bugs can be disastrous in Ethereum contracts - and even popular patterns in</span>
+<span class="c1">#   Vyper may be found to be antipatterns</span>
 
-<span class="c1"># 12. NATSPEC COMMENTS
-# used for documentation, commenting, and external UIs
-</span>
-<span class="c1"># Contract natspec - always above contract definition
-# @title Contract title
-# @author Author name
-</span>
-<span class="c1"># Function natspec
-# Should include in docstring of functions in typical Pythonic fashion
-# @notice Information about what function does; shown when function to execute
-# @dev Function documentation for developer
-</span>
-<span class="c1"># Function parameter/return value natspec
-# @param someParam Some description of what the param does
-# @return Description of the return value
-</span></code></pre></div>
+<span class="c1"># See security links at the end of this doc</span>
+
+
+<span class="c1"># ---</span>
+
+
+<span class="c1"># 11. STYLE NOTES</span>
+<span class="c1"># Based on Python&#39;s PEP8 style guide</span>
+<span class="c1"># Full Style guide: http:#solidity.readthedocs.io/en/develop/style-guide.html</span>
+
+<span class="c1"># Quick summary:</span>
+<span class="c1"># 4 spaces for indentation</span>
+<span class="c1"># Two lines separate contract declarations (and other top level declarations)</span>
+<span class="c1"># Avoid extraneous spaces in parentheses</span>
+<span class="c1"># Can omit curly braces for one line statement (if, for, etc)</span>
+<span class="c1"># else should be placed on own line</span>
+
+<span class="c1"># Specific to Vyper:</span>
+<span class="c1"># arguments: snake_case</span>
+<span class="c1"># events, interfaces, structs: PascalCase</span>
+<span class="c1"># public functions: camelCase</span>
+<span class="c1"># private functions: _prefaceWithUnderscore</span>
+
+
+<span class="c1"># ---</span>
+
+
+<span class="c1"># 12. NATSPEC COMMENTS</span>
+<span class="c1"># used for documentation, commenting, and external UIs</span>
+
+<span class="c1"># Contract natspec - always above contract definition</span>
+<span class="c1"># @title Contract title</span>
+<span class="c1"># @author Author name</span>
+
+<span class="c1"># Function natspec</span>
+<span class="c1"># Should include in docstring of functions in typical Pythonic fashion</span>
+<span class="c1"># @notice Information about what function does; shown when function to execute</span>
+<span class="c1"># @dev Function documentation for developer</span>
+
+<span class="c1"># Function parameter/return value natspec</span>
+<span class="c1"># @param someParam Some description of what the param does</span>
+<span class="c1"># @return Description of the return value</span>
+</pre></div>
 <h2>Additional resources</h2>
 
 <ul>

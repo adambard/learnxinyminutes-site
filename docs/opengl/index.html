@@ -92,220 +92,220 @@ focusing on modern OpenGL from 3.3 and above, ignoring &ldquo;immediate-mode&rdq
 VBO&rsquo;s without use of Shaders.
 I will be using C++ with SFML for window, image and context creation aswell as GLEW
 for modern OpenGL extensions, though there are many other librarys available.</p>
-<div class="highlight"><pre class="highlight cpp"><code><span class="c1">// Creating an SFML window and OpenGL basic setup.</span>
-<span class="cp">#include</span> <span class="cpf">&lt;GL/glew.h&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;GL/gl.h&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;SFML/Graphics.h&gt;</span><span class="cp">
-#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
-</span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// First we tell SFML how to setup our OpenGL context.</span>
-    <span class="n">sf</span><span class="o">::</span><span class="n">ContextSettings</span> <span class="n">context</span><span class="p">{</span> <span class="mi">24</span><span class="p">,</span>   <span class="c1">// depth buffer bits</span>
-                                  <span class="mi">8</span><span class="p">,</span>   <span class="c1">// stencil buffer bits</span>
-                                  <span class="mi">4</span><span class="p">,</span>   <span class="c1">// MSAA samples</span>
-                                  <span class="mi">3</span><span class="p">,</span>   <span class="c1">// major opengl version</span>
-                                  <span class="mi">3</span> <span class="p">};</span> <span class="c1">// minor opengl version</span>
-    <span class="c1">// Now we create the window, enable VSync</span>
-    <span class="c1">// and set the window active for OpenGL.</span>
-    <span class="n">sf</span><span class="o">::</span><span class="n">Window</span> <span class="n">window</span><span class="p">{</span> <span class="n">sf</span><span class="o">::</span><span class="n">VideoMode</span><span class="p">{</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">768</span> <span class="p">},</span>
-                       <span class="s">"opengl window"</span><span class="p">,</span>
-                       <span class="n">sf</span><span class="o">::</span><span class="n">Style</span><span class="o">::</span><span class="n">Default</span><span class="p">,</span>
-               <span class="n">context</span> <span class="p">};</span>
-    <span class="n">window</span><span class="p">.</span><span class="n">setVerticalSyncEnabled</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
-    <span class="n">window</span><span class="p">.</span><span class="n">setActive</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
-    <span class="c1">// After that we initialise GLEW and check if an error occurred.</span>
-    <span class="n">GLenum</span> <span class="n">error</span><span class="p">;</span>
-    <span class="n">glewExperimental</span> <span class="o">=</span> <span class="n">GL_TRUE</span><span class="p">;</span>
-    <span class="k">if</span> <span class="p">((</span><span class="n">err</span> <span class="o">=</span> <span class="n">glewInit</span><span class="p">())</span> <span class="o">!=</span> <span class="n">GLEW_OK</span><span class="p">)</span>
-        <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">glewGetErrorString</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-    <span class="c1">// Here we set the color glClear will clear the buffers with.</span>
-    <span class="n">glClearColor</span><span class="p">(</span><span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>    <span class="c1">// red</span>
-                 <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>    <span class="c1">// green</span>
-                 <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>    <span class="c1">// blue</span>
-                 <span class="mf">1.0</span><span class="n">f</span><span class="p">);</span>   <span class="c1">// alpha</span>
-    <span class="c1">// Now we can start the event loop, poll for events and draw objects.</span>
-    <span class="n">sf</span><span class="o">::</span><span class="n">Event</span> <span class="n">event</span><span class="p">{</span> <span class="p">};</span>
-    <span class="k">while</span> <span class="p">(</span><span class="n">window</span><span class="p">.</span><span class="n">isOpen</span><span class="p">())</span> <span class="p">{</span>
-        <span class="k">while</span> <span class="p">(</span><span class="n">window</span><span class="p">.</span><span class="n">pollEvent</span><span class="p">(</span><span class="n">event</span><span class="p">))</span> <span class="p">{</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">sf</span><span class="o">::</span><span class="n">Event</span><span class="o">::</span><span class="n">Closed</span><span class="p">)</span>
-                <span class="n">window</span><span class="p">.</span><span class="n">close</span><span class="p">;</span>
-        <span class="p">}</span>
-        <span class="c1">// Tell OpenGL to clear the color buffer</span>
-        <span class="c1">// and the depth buffer, this will clear our window.</span>
-        <span class="n">glClear</span><span class="p">(</span><span class="n">GL_COLOR_BUFFER_BIT</span> <span class="o">|</span> <span class="n">GL_DEPTH_BUFFER_BIT</span><span class="p">);</span>
-        <span class="c1">// Flip front- and backbuffer.</span>
-        <span class="n">window</span><span class="p">.</span><span class="n">display</span><span class="p">();</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="c1">// Creating an SFML window and OpenGL basic setup.</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;GL/glew.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;GL/gl.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;SFML/Graphics.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// First we tell SFML how to setup our OpenGL context.</span>
+<span class="w">    </span><span class="n">sf</span><span class="o">::</span><span class="n">ContextSettings</span><span class="w"> </span><span class="n">context</span><span class="p">{</span><span class="w"> </span><span class="mi">24</span><span class="p">,</span><span class="w">   </span><span class="c1">// depth buffer bits</span>
+<span class="w">                                  </span><span class="mi">8</span><span class="p">,</span><span class="w">   </span><span class="c1">// stencil buffer bits</span>
+<span class="w">                                  </span><span class="mi">4</span><span class="p">,</span><span class="w">   </span><span class="c1">// MSAA samples</span>
+<span class="w">                                  </span><span class="mi">3</span><span class="p">,</span><span class="w">   </span><span class="c1">// major opengl version</span>
+<span class="w">                                  </span><span class="mi">3</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// minor opengl version</span>
+<span class="w">    </span><span class="c1">// Now we create the window, enable VSync</span>
+<span class="w">    </span><span class="c1">// and set the window active for OpenGL.</span>
+<span class="w">    </span><span class="n">sf</span><span class="o">::</span><span class="n">Window</span><span class="w"> </span><span class="n">window</span><span class="p">{</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">VideoMode</span><span class="p">{</span><span class="w"> </span><span class="mi">1024</span><span class="p">,</span><span class="w"> </span><span class="mi">768</span><span class="w"> </span><span class="p">},</span>
+<span class="w">                       </span><span class="s">&quot;opengl window&quot;</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">sf</span><span class="o">::</span><span class="n">Style</span><span class="o">::</span><span class="n">Default</span><span class="p">,</span>
+<span class="w">               </span><span class="n">context</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="n">window</span><span class="p">.</span><span class="n">setVerticalSyncEnabled</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+<span class="w">    </span><span class="n">window</span><span class="p">.</span><span class="n">setActive</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// After that we initialise GLEW and check if an error occurred.</span>
+<span class="w">    </span><span class="n">GLenum</span><span class="w"> </span><span class="n">error</span><span class="p">;</span>
+<span class="w">    </span><span class="n">glewExperimental</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GL_TRUE</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glewInit</span><span class="p">())</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">GLEW_OK</span><span class="p">)</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">glewGetErrorString</span><span class="p">(</span><span class="n">err</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// Here we set the color glClear will clear the buffers with.</span>
+<span class="w">    </span><span class="n">glClearColor</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span><span class="w">    </span><span class="c1">// red</span>
+<span class="w">                 </span><span class="mf">0.0f</span><span class="p">,</span><span class="w">    </span><span class="c1">// green</span>
+<span class="w">                 </span><span class="mf">0.0f</span><span class="p">,</span><span class="w">    </span><span class="c1">// blue</span>
+<span class="w">                 </span><span class="mf">1.0f</span><span class="p">);</span><span class="w">   </span><span class="c1">// alpha</span>
+<span class="w">    </span><span class="c1">// Now we can start the event loop, poll for events and draw objects.</span>
+<span class="w">    </span><span class="n">sf</span><span class="o">::</span><span class="n">Event</span><span class="w"> </span><span class="n">event</span><span class="p">{</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">window</span><span class="p">.</span><span class="n">isOpen</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">window</span><span class="p">.</span><span class="n">pollEvent</span><span class="p">(</span><span class="n">event</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">type</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">sf</span><span class="o">::</span><span class="n">Event</span><span class="o">::</span><span class="n">Closed</span><span class="p">)</span>
+<span class="w">                </span><span class="n">window</span><span class="p">.</span><span class="n">close</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="c1">// Tell OpenGL to clear the color buffer</span>
+<span class="w">        </span><span class="c1">// and the depth buffer, this will clear our window.</span>
+<span class="w">        </span><span class="n">glClear</span><span class="p">(</span><span class="n">GL_COLOR_BUFFER_BIT</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">GL_DEPTH_BUFFER_BIT</span><span class="p">);</span>
+<span class="w">        </span><span class="c1">// Flip front- and backbuffer.</span>
+<span class="w">        </span><span class="n">window</span><span class="p">.</span><span class="n">display</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre></div>
+</pre></div>
 <h2>Loading Shaders</h2>
 
 <p>After creating a window and our event loop we should create a function,
 that sets up our shader program.</p>
-<div class="highlight"><pre class="highlight cpp"><code><span class="n">GLuint</span> <span class="nf">createShaderProgram</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">vertexShaderPath</span><span class="p">,</span>
-                           <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">fragmentShaderPath</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Load the vertex shader source.</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">stringstream</span> <span class="n">ss</span><span class="p">{</span> <span class="p">};</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">vertexShaderSource</span><span class="p">{</span> <span class="p">};</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">fragmentShaderSource</span><span class="p">{</span> <span class="p">};</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">ifstream</span> <span class="n">file</span><span class="p">{</span> <span class="n">vertexShaderPath</span> <span class="p">};</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="n">is_open</span><span class="p">())</span> <span class="p">{</span>
-        <span class="n">ss</span> <span class="o">&lt;&lt;</span> <span class="n">file</span><span class="p">.</span><span class="n">rdbuf</span><span class="p">();</span>
-        <span class="n">vertexShaderSource</span> <span class="o">=</span> <span class="n">ss</span><span class="p">.</span><span class="n">str</span><span class="p">();</span>
-        <span class="n">file</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
-    <span class="p">}</span>
-    <span class="c1">// Clear the stringstream and load the fragment shader source.</span>
-    <span class="n">ss</span><span class="p">.</span><span class="n">str</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">{</span> <span class="p">});</span>
-    <span class="n">file</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">fragmentShaderPath</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="n">is_open</span><span class="p">())</span> <span class="p">{</span>
-        <span class="n">ss</span> <span class="o">&lt;&lt;</span> <span class="n">file</span><span class="p">.</span><span class="n">rdbuf</span><span class="p">();</span>
-        <span class="n">fragmentShaderSource</span> <span class="o">=</span> <span class="n">ss</span><span class="p">.</span><span class="n">str</span><span class="p">();</span>
-        <span class="n">file</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
-    <span class="p">}</span>
-    <span class="c1">// Create the program.</span>
-    <span class="n">GLuint</span> <span class="n">program</span> <span class="o">=</span> <span class="n">glCreateProgram</span><span class="p">();</span>
-    <span class="c1">// Create the shaders.</span>
-    <span class="n">GLuint</span> <span class="n">vertexShader</span> <span class="o">=</span> <span class="n">glCreateShader</span><span class="p">(</span><span class="n">GL_VERTEX_SHADER</span><span class="p">);</span>
-    <span class="n">GLuint</span> <span class="n">fragmentShader</span> <span class="o">=</span> <span class="n">glCreateShader</span><span class="p">(</span><span class="n">GL_FRAGMENT_SHADER</span><span class="p">);</span>
-    <span class="c1">// Now we can load the shader source into the shader objects and compile them.</span>
-    <span class="c1">// Because glShaderSource() wants a const char* const*,</span>
-    <span class="c1">// we must first create a const char* and then pass the reference.</span>
-    <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">cVertexSource</span> <span class="o">=</span> <span class="n">vertexShaderSource</span><span class="p">.</span><span class="n">c_str</span><span class="p">();</span>
-    <span class="n">glShaderSource</span><span class="p">(</span><span class="n">vertexShader</span><span class="p">,</span>     <span class="c1">// shader</span>
-                   <span class="mi">1</span><span class="p">,</span>                <span class="c1">// number of strings</span>
-                   <span class="o">&amp;</span><span class="n">cVertexSource</span><span class="p">,</span>   <span class="c1">// strings</span>
-                   <span class="nb">nullptr</span><span class="p">);</span>         <span class="c1">// length of strings (nullptr for 1)</span>
-    <span class="n">glCompileShader</span><span class="p">(</span><span class="n">vertexShader</span><span class="p">);</span>
-    <span class="c1">// Now we have to do the same for the fragment shader.</span>
-    <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">cFragmentSource</span> <span class="o">=</span> <span class="n">fragmentShaderSource</span><span class="p">.</span><span class="n">c_str</span><span class="p">();</span>
-    <span class="n">glShaderSource</span><span class="p">(</span><span class="n">fragmentShader</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">cFragmentSource</span><span class="p">,</span> <span class="nb">nullptr</span><span class="p">);</span>
-    <span class="n">glCompileShader</span><span class="p">(</span><span class="n">fragmentShader</span><span class="p">);</span>
-    <span class="c1">// After attaching the source and compiling the shaders,</span>
-    <span class="c1">// we attach them to the program;</span>
-    <span class="n">glAttachShader</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="n">vertexShader</span><span class="p">);</span>
-    <span class="n">glAttachShader</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="n">fragmentShader</span><span class="p">);</span>
-    <span class="n">glLinkProgram</span><span class="p">(</span><span class="n">program</span><span class="p">);</span>
-    <span class="c1">// After linking the shaders we should detach and delete</span>
-    <span class="c1">// them to prevent memory leak.</span>
-    <span class="n">glDetachShader</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="n">vertexShader</span><span class="p">);</span>
-    <span class="n">glDetachShader</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="n">fragmentShader</span><span class="p">);</span>
-    <span class="n">glDeleteShader</span><span class="p">(</span><span class="n">vertexShader</span><span class="p">);</span>
-    <span class="n">glDeleteShader</span><span class="p">(</span><span class="n">fragmentShader</span><span class="p">);</span>
-    <span class="c1">// With everything done we can return the completed program.</span>
-    <span class="k">return</span> <span class="n">program</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="n">GLuint</span><span class="w"> </span><span class="nf">createShaderProgram</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">vertexShaderPath</span><span class="p">,</span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fragmentShaderPath</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Load the vertex shader source.</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">stringstream</span><span class="w"> </span><span class="n">ss</span><span class="p">{</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">vertexShaderSource</span><span class="p">{</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">fragmentShaderSource</span><span class="p">{</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">ifstream</span><span class="w"> </span><span class="n">file</span><span class="p">{</span><span class="w"> </span><span class="n">vertexShaderPath</span><span class="w"> </span><span class="p">};</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="n">is_open</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ss</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">file</span><span class="p">.</span><span class="n">rdbuf</span><span class="p">();</span>
+<span class="w">        </span><span class="n">vertexShaderSource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ss</span><span class="p">.</span><span class="n">str</span><span class="p">();</span>
+<span class="w">        </span><span class="n">file</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="c1">// Clear the stringstream and load the fragment shader source.</span>
+<span class="w">    </span><span class="n">ss</span><span class="p">.</span><span class="n">str</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">{</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="n">file</span><span class="p">.</span><span class="n">open</span><span class="p">(</span><span class="n">fragmentShaderPath</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">file</span><span class="p">.</span><span class="n">is_open</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ss</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">file</span><span class="p">.</span><span class="n">rdbuf</span><span class="p">();</span>
+<span class="w">        </span><span class="n">fragmentShaderSource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ss</span><span class="p">.</span><span class="n">str</span><span class="p">();</span>
+<span class="w">        </span><span class="n">file</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="c1">// Create the program.</span>
+<span class="w">    </span><span class="n">GLuint</span><span class="w"> </span><span class="n">program</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glCreateProgram</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">// Create the shaders.</span>
+<span class="w">    </span><span class="n">GLuint</span><span class="w"> </span><span class="n">vertexShader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glCreateShader</span><span class="p">(</span><span class="n">GL_VERTEX_SHADER</span><span class="p">);</span>
+<span class="w">    </span><span class="n">GLuint</span><span class="w"> </span><span class="n">fragmentShader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glCreateShader</span><span class="p">(</span><span class="n">GL_FRAGMENT_SHADER</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Now we can load the shader source into the shader objects and compile them.</span>
+<span class="w">    </span><span class="c1">// Because glShaderSource() wants a const char* const*,</span>
+<span class="w">    </span><span class="c1">// we must first create a const char* and then pass the reference.</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">cVertexSource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vertexShaderSource</span><span class="p">.</span><span class="n">c_str</span><span class="p">();</span>
+<span class="w">    </span><span class="n">glShaderSource</span><span class="p">(</span><span class="n">vertexShader</span><span class="p">,</span><span class="w">     </span><span class="c1">// shader</span>
+<span class="w">                   </span><span class="mi">1</span><span class="p">,</span><span class="w">                </span><span class="c1">// number of strings</span>
+<span class="w">                   </span><span class="o">&amp;</span><span class="n">cVertexSource</span><span class="p">,</span><span class="w">   </span><span class="c1">// strings</span>
+<span class="w">                   </span><span class="k">nullptr</span><span class="p">);</span><span class="w">         </span><span class="c1">// length of strings (nullptr for 1)</span>
+<span class="w">    </span><span class="n">glCompileShader</span><span class="p">(</span><span class="n">vertexShader</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Now we have to do the same for the fragment shader.</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">cFragmentSource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fragmentShaderSource</span><span class="p">.</span><span class="n">c_str</span><span class="p">();</span>
+<span class="w">    </span><span class="n">glShaderSource</span><span class="p">(</span><span class="n">fragmentShader</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">cFragmentSource</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glCompileShader</span><span class="p">(</span><span class="n">fragmentShader</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// After attaching the source and compiling the shaders,</span>
+<span class="w">    </span><span class="c1">// we attach them to the program;</span>
+<span class="w">    </span><span class="n">glAttachShader</span><span class="p">(</span><span class="n">program</span><span class="p">,</span><span class="w"> </span><span class="n">vertexShader</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glAttachShader</span><span class="p">(</span><span class="n">program</span><span class="p">,</span><span class="w"> </span><span class="n">fragmentShader</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glLinkProgram</span><span class="p">(</span><span class="n">program</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// After linking the shaders we should detach and delete</span>
+<span class="w">    </span><span class="c1">// them to prevent memory leak.</span>
+<span class="w">    </span><span class="n">glDetachShader</span><span class="p">(</span><span class="n">program</span><span class="p">,</span><span class="w"> </span><span class="n">vertexShader</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glDetachShader</span><span class="p">(</span><span class="n">program</span><span class="p">,</span><span class="w"> </span><span class="n">fragmentShader</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glDeleteShader</span><span class="p">(</span><span class="n">vertexShader</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glDeleteShader</span><span class="p">(</span><span class="n">fragmentShader</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// With everything done we can return the completed program.</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">program</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre></div>
+</pre></div>
 <p>If you want to check the compilation log you can add the following between <code>glCompileShader()</code> and <code>glAttachShader()</code>.</p>
-<div class="highlight"><pre class="highlight cpp"><code><span class="n">GLint</span> <span class="n">logSize</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">GLchar</span><span class="o">&gt;</span> <span class="n">logText</span><span class="p">{</span> <span class="p">};</span>
-<span class="n">glGetShaderiv</span><span class="p">(</span><span class="n">vertexShader</span><span class="p">,</span>         <span class="c1">// shader</span>
-              <span class="n">GL_INFO_LOG_LENGTH</span><span class="p">,</span>   <span class="c1">// requested parameter</span>
-              <span class="o">&amp;</span><span class="n">logSize</span><span class="p">);</span>            <span class="c1">// return object</span>
-<span class="k">if</span> <span class="p">(</span><span class="n">logSize</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">logText</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">logSize</span><span class="p">);</span>
-    <span class="n">glGetShaderInfoLog</span><span class="p">(</span><span class="n">vertexShader</span><span class="p">,</span>      <span class="c1">// shader</span>
-                       <span class="n">logSize</span><span class="p">,</span>           <span class="c1">// buffer length</span>
-                       <span class="o">&amp;</span><span class="n">logSize</span><span class="p">,</span>          <span class="c1">// returned length</span>
-                       <span class="n">logText</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>   <span class="c1">// buffer</span>
-    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">logText</span><span class="p">.</span><span class="n">data</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="n">GLint</span><span class="w"> </span><span class="n">logSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">GLchar</span><span class="o">&gt;</span><span class="w"> </span><span class="n">logText</span><span class="p">{</span><span class="w"> </span><span class="p">};</span>
+<span class="n">glGetShaderiv</span><span class="p">(</span><span class="n">vertexShader</span><span class="p">,</span><span class="w">         </span><span class="c1">// shader</span>
+<span class="w">              </span><span class="n">GL_INFO_LOG_LENGTH</span><span class="p">,</span><span class="w">   </span><span class="c1">// requested parameter</span>
+<span class="w">              </span><span class="o">&amp;</span><span class="n">logSize</span><span class="p">);</span><span class="w">            </span><span class="c1">// return object</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">logSize</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">logText</span><span class="p">.</span><span class="n">resize</span><span class="p">(</span><span class="n">logSize</span><span class="p">);</span>
+<span class="w">    </span><span class="n">glGetShaderInfoLog</span><span class="p">(</span><span class="n">vertexShader</span><span class="p">,</span><span class="w">      </span><span class="c1">// shader</span>
+<span class="w">                       </span><span class="n">logSize</span><span class="p">,</span><span class="w">           </span><span class="c1">// buffer length</span>
+<span class="w">                       </span><span class="o">&amp;</span><span class="n">logSize</span><span class="p">,</span><span class="w">          </span><span class="c1">// returned length</span>
+<span class="w">                       </span><span class="n">logText</span><span class="p">.</span><span class="n">data</span><span class="p">());</span><span class="w">   </span><span class="c1">// buffer</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">logText</span><span class="p">.</span><span class="n">data</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre></div>
+</pre></div>
 <p>The same is possible after <code>glLinkProgram()</code>, just replace <code>glGetShaderiv()</code> with <code>glGetProgramiv()</code>
 and <code>glGetShaderInfoLog()</code> with <code>glGetProgramInfoLog()</code>.</p>
-<div class="highlight"><pre class="highlight cpp"><code><span class="c1">// Now we can create a shader program with a vertex and a fragment shader.</span>
+<div class="highlight"><pre><span></span><span class="c1">// Now we can create a shader program with a vertex and a fragment shader.</span>
 <span class="c1">// ...</span>
-<span class="n">glClearColor</span><span class="p">(</span><span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">);</span>
+<span class="n">glClearColor</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">);</span>
 
-<span class="n">GLuint</span> <span class="n">program</span> <span class="o">=</span> <span class="n">createShaderProgram</span><span class="p">(</span><span class="s">"vertex.glsl"</span><span class="p">,</span> <span class="s">"fragment.glsl"</span><span class="p">);</span>
+<span class="n">GLuint</span><span class="w"> </span><span class="n">program</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">createShaderProgram</span><span class="p">(</span><span class="s">&quot;vertex.glsl&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;fragment.glsl&quot;</span><span class="p">);</span>
 
-<span class="n">sf</span><span class="o">::</span><span class="n">Event</span> <span class="n">event</span><span class="p">{</span> <span class="p">};</span>
+<span class="n">sf</span><span class="o">::</span><span class="n">Event</span><span class="w"> </span><span class="n">event</span><span class="p">{</span><span class="w"> </span><span class="p">};</span>
 <span class="c1">// ...</span>
 <span class="c1">// We also have to delete the program at the end of the application.</span>
 <span class="c1">// ...</span>
-    <span class="p">}</span>
-    <span class="n">glDeleteProgram</span><span class="p">(</span><span class="n">program</span><span class="p">);</span>   
-    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">glDeleteProgram</span><span class="p">(</span><span class="n">program</span><span class="p">);</span><span class="w">   </span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="c1">// ...</span>
-</code></pre></div>
+</pre></div>
 <p>Ofcourse we have to create the vertex and fragment shader before we can load them,
 so lets create two basic shaders.</p>
 
 <p><strong>Vertex Shader</strong></p>
-<div class="highlight"><pre class="highlight glsl"><code><span class="c1">// Declare which version of GLSL we use.</span>
+<div class="highlight"><pre><span></span><span class="c1">// Declare which version of GLSL we use.</span>
 <span class="c1">// Here we declare, that we want to use the OpenGL 3.3 version of GLSL.</span>
-<span class="cp">#version 330 core
-</span><span class="c1">// At attribute location 0 we want an input variable of type vec3,</span>
+<span class="cp">#version 330 core</span>
+<span class="c1">// At attribute location 0 we want an input variable of type vec3,</span>
 <span class="c1">// that contains the position of the vertex.</span>
-<span class="c1">// Setting the location is optional, if you don't set it you can ask for the</span>
+<span class="c1">// Setting the location is optional, if you don&#39;t set it you can ask for the</span>
 <span class="c1">// location with glGetAttribLocation().</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec3</span> <span class="n">position</span><span class="p">;</span>
-<span class="c1">// Every shader starts in it's main function.</span>
-<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// gl_Position is a predefined variable that holds</span>
-    <span class="c1">// the final vertex position.</span>
-    <span class="c1">// It consists of a x, y, z and w coordinate.</span>
-    <span class="nb">gl_Position</span> <span class="o">=</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">position</span><span class="p">;</span>
+<span class="c1">// Every shader starts in it&#39;s main function.</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// gl_Position is a predefined variable that holds</span>
+<span class="w">    </span><span class="c1">// the final vertex position.</span>
+<span class="w">    </span><span class="c1">// It consists of a x, y, z and w coordinate.</span>
+<span class="w">    </span><span class="nb">gl_Position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
 <span class="p">}</span>
-</code></pre></div>
+</pre></div>
 <p><strong>Fragment Shader</strong></p>
-<div class="highlight"><pre class="highlight glsl"><code><span class="cp">#version 330 core
-</span><span class="c1">// The fragment shader does not have a predefined variable for</span>
+<div class="highlight"><pre><span></span><span class="cp">#version 330 core</span>
+<span class="c1">// The fragment shader does not have a predefined variable for</span>
 <span class="c1">// the vertex color, so we have to define a output vec4,</span>
 <span class="c1">// that holds the final vertex color.</span>
-<span class="k">out</span> <span class="kt">vec4</span> <span class="n">outColor</span><span class="p">;</span>
+<span class="k">out</span><span class="w"> </span><span class="kt">vec4</span><span class="w"> </span><span class="n">outColor</span><span class="p">;</span>
 
-<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// We simply set the output color to red.</span>
-    <span class="c1">// The parameters are red, green, blue and alpha.</span>
-    <span class="n">outColor</span> <span class="o">=</span> <span class="kt">vec4</span><span class="p">(</span><span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// We simply set the output color to red.</span>
+<span class="w">    </span><span class="c1">// The parameters are red, green, blue and alpha.</span>
+<span class="w">    </span><span class="n">outColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
 <span class="p">}</span>
-</code></pre></div>
+</pre></div>
 <h2>VAO and VBO</h2>
 
 <p>Now we need to define some vertex position we can pass to our shaders. Lets define a simple 2D quad.</p>
-<div class="highlight"><pre class="highlight cpp"><code><span class="c1">// The vertex data is defined in a counter-clockwise way,</span>
+<div class="highlight"><pre><span></span><span class="c1">// The vertex data is defined in a counter-clockwise way,</span>
 <span class="c1">// as this is the default front face.</span>
-<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span> <span class="n">vertexData</span> <span class="p">{</span>
-    <span class="o">-</span><span class="mf">0.5</span><span class="n">f</span><span class="p">,</span>  <span class="mf">0.5</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>
-    <span class="o">-</span><span class="mf">0.5</span><span class="n">f</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>
-     <span class="mf">0.5</span><span class="n">f</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>
-     <span class="mf">0.5</span><span class="n">f</span><span class="p">,</span>  <span class="mf">0.5</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertexData</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="mf">-0.5f</span><span class="p">,</span><span class="w">  </span><span class="mf">0.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span>
+<span class="w">    </span><span class="mf">-0.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span>
+<span class="w">     </span><span class="mf">0.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span>
+<span class="w">     </span><span class="mf">0.5f</span><span class="p">,</span><span class="w">  </span><span class="mf">0.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span>
 <span class="p">};</span>
 <span class="c1">// If you want to use a clockwise definition, you can simply call</span>
 <span class="n">glFrontFace</span><span class="p">(</span><span class="n">GL_CW</span><span class="p">);</span>
 <span class="c1">// Next we need to define a Vertex Array Object (VAO).</span>
 <span class="c1">// The VAO stores the current state while its active.</span>
-<span class="n">GLuint</span> <span class="n">vao</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<span class="n">glGenVertexArrays</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">vao</span><span class="p">);</span>
+<span class="n">GLuint</span><span class="w"> </span><span class="n">vao</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">glGenVertexArrays</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">vao</span><span class="p">);</span>
 <span class="n">glBindVertexArray</span><span class="p">(</span><span class="n">vao</span><span class="p">);</span>
 <span class="c1">// With the VAO active we can now create a Vertex Buffer Object (VBO).</span>
 <span class="c1">// The VBO stores our vertex data.</span>
-<span class="n">GLuint</span> <span class="n">vbo</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<span class="n">glGenBuffers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">vbo</span><span class="p">);</span>
-<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span> <span class="n">vbo</span><span class="p">);</span>
+<span class="n">GLuint</span><span class="w"> </span><span class="n">vbo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">glGenBuffers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">vbo</span><span class="p">);</span>
+<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">vbo</span><span class="p">);</span>
 <span class="c1">// For reading and copying there are also GL_*_READ and GL_*_COPY,</span>
 <span class="c1">// if your data changes more often use GL_DYNAMIC_* or GL_STREAM_*.</span>
-<span class="n">glBufferData</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span>     <span class="c1">// target buffer</span>
-             <span class="k">sizeof</span><span class="p">(</span><span class="n">vertexData</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">vertexData</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span>   <span class="c1">// size</span>
-             <span class="n">vertexData</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span>   <span class="c1">// data</span>
-             <span class="n">GL_STATIC_DRAW</span><span class="p">);</span>     <span class="c1">// usage</span>
+<span class="n">glBufferData</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w">     </span><span class="c1">// target buffer</span>
+<span class="w">             </span><span class="k">sizeof</span><span class="p">(</span><span class="n">vertexData</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">vertexData</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span><span class="w">   </span><span class="c1">// size</span>
+<span class="w">             </span><span class="n">vertexData</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w">   </span><span class="c1">// data</span>
+<span class="w">             </span><span class="n">GL_STATIC_DRAW</span><span class="p">);</span><span class="w">     </span><span class="c1">// usage</span>
 <span class="c1">// After filling the VBO link it to the location 0 in our vertex shader,</span>
 <span class="c1">// which holds the vertex position.</span>
 <span class="c1">// ...</span>
-<span class="c1">// To ask for the attribute location, if you haven't set it:</span>
-<span class="n">GLint</span> <span class="n">posLocation</span> <span class="o">=</span> <span class="n">glGetAttribLocation</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="s">"position"</span><span class="p">);</span>
+<span class="c1">// To ask for the attribute location, if you haven&#39;t set it:</span>
+<span class="n">GLint</span><span class="w"> </span><span class="n">posLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glGetAttribLocation</span><span class="p">(</span><span class="n">program</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;position&quot;</span><span class="p">);</span>
 <span class="c1">// ..</span>
 <span class="n">glEnableVertexAttribArray</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-<span class="n">glVertexAttribPointer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span>       <span class="c1">// location and size</span>
-                      <span class="n">GL_FLOAT</span><span class="p">,</span>   <span class="c1">// type of data</span>
-                      <span class="n">GL_FALSE</span><span class="p">,</span>   <span class="c1">// normalized (always false for floats)</span>
-                      <span class="mi">0</span><span class="p">,</span>          <span class="c1">// stride (interleaved arrays)</span>
-                      <span class="nb">nullptr</span><span class="p">);</span>   <span class="c1">// offset (interleaved arrays)</span>
+<span class="n">glVertexAttribPointer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w">       </span><span class="c1">// location and size</span>
+<span class="w">                      </span><span class="n">GL_FLOAT</span><span class="p">,</span><span class="w">   </span><span class="c1">// type of data</span>
+<span class="w">                      </span><span class="n">GL_FALSE</span><span class="p">,</span><span class="w">   </span><span class="c1">// normalized (always false for floats)</span>
+<span class="w">                      </span><span class="mi">0</span><span class="p">,</span><span class="w">          </span><span class="c1">// stride (interleaved arrays)</span>
+<span class="w">                      </span><span class="k">nullptr</span><span class="p">);</span><span class="w">   </span><span class="c1">// offset (interleaved arrays)</span>
 <span class="c1">// Everything should now be saved in our VAO and we can unbind it and the VBO.</span>
 <span class="n">glBindVertexArray</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
 <span class="c1">// Now we can draw the vertex data in our render loop.</span>
 <span class="c1">// ...</span>
 <span class="n">glClear</span><span class="p">(</span><span class="n">GL_COLOR_BUFFER_BIT</span><span class="p">);</span>
@@ -314,80 +314,80 @@ so lets create two basic shaders.</p>
 <span class="c1">// Binding the VAO loads the data we need.</span>
 <span class="n">glBindVertexArray</span><span class="p">(</span><span class="n">vao</span><span class="p">);</span>
 <span class="c1">// We want to draw a quad starting at index 0 of the VBO using 4 indices.</span>
-<span class="n">glDrawArrays</span><span class="p">(</span><span class="n">GL_QUADS</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
+<span class="n">glDrawArrays</span><span class="p">(</span><span class="n">GL_QUADS</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span>
 <span class="n">glBindVertexArray</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 <span class="n">window</span><span class="p">.</span><span class="n">display</span><span class="p">();</span>
 <span class="c1">// ...</span>
 <span class="c1">// Ofcource we have to delete the allocated memory for the VAO and VBO at</span>
 <span class="c1">// the end of our application.</span>
 <span class="c1">// ...</span>
-<span class="n">glDeleteBuffers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">vbo</span><span class="p">);</span>
-<span class="n">glDeleteVertexArrays</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">vao</span><span class="p">);</span>
+<span class="n">glDeleteBuffers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">vbo</span><span class="p">);</span>
+<span class="n">glDeleteVertexArrays</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">vao</span><span class="p">);</span>
 <span class="n">glDeleteProgram</span><span class="p">(</span><span class="n">program</span><span class="p">);</span>
-<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="c1">// ...</span>
-</code></pre></div>
+</pre></div>
 <p>You can find the current code here: <a href="https://pastebin.com/W8jdmVHD">OpenGL - 1</a>.</p>
 
 <h2>More VBO&rsquo;s and Color</h2>
 
 <p>Let&rsquo;s create another VBO for some colors.</p>
-<div class="highlight"><pre class="highlight cpp"><code><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span> <span class="n">colorData</span> <span class="p">{</span>
-    <span class="mf">1.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>
-    <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>
-    <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">,</span>
-    <span class="mf">1.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span>
+<div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">colorData</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="mf">1.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span>
+<span class="w">    </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span>
+<span class="w">    </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">,</span>
+<span class="w">    </span><span class="mf">1.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span>
 <span class="p">};</span>
-</code></pre></div>
+</pre></div>
 <p>Next we can simply change some previous parameters to create a second VBO for our colors.</p>
-<div class="highlight"><pre class="highlight cpp"><code><span class="c1">// ...</span>
-<span class="n">GLuint</span> <span class="n">vbo</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
-<span class="n">glGenBuffers</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">vbo</span><span class="p">);</span>
-<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span> <span class="n">vbo</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<div class="highlight"><pre><span></span><span class="c1">// ...</span>
+<span class="n">GLuint</span><span class="w"> </span><span class="n">vbo</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="n">glGenBuffers</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">vbo</span><span class="p">);</span>
+<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">vbo</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
 <span class="c1">// ...</span>
-<span class="n">glDeleteBuffers</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">vbo</span><span class="p">);</span>
-<span class="o">/</span> <span class="p">...</span>
+<span class="n">glDeleteBuffers</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">vbo</span><span class="p">);</span>
+<span class="o">/</span><span class="w"> </span><span class="p">...</span>
 <span class="c1">// With these changes made we now have to load our color data into the new VBO</span>
 <span class="c1">// ...</span>
-<span class="n">glVertexAttribPointer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">GL_FLOAT</span><span class="p">,</span> <span class="n">GL_FALSE</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">nullptr</span><span class="p">);</span>
+<span class="n">glVertexAttribPointer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FLOAT</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FALSE</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
 
-<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span> <span class="n">vbo</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
-<span class="n">glBufferData</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">colorData</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">colorData</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span>
-             <span class="n">colorData</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">GL_STATIC_DRAW</span><span class="p">);</span>
+<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">vbo</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+<span class="n">glBufferData</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">colorData</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">colorData</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span>
+<span class="w">             </span><span class="n">colorData</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="n">GL_STATIC_DRAW</span><span class="p">);</span>
 <span class="n">glEnableVertexAttribArray</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-<span class="n">glVertexAttribPointer</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">GL_FLOAT</span><span class="p">,</span> <span class="n">GL_FALSE</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">nullptr</span><span class="p">);</span>
+<span class="n">glVertexAttribPointer</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FLOAT</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FALSE</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
 
-<span class="n">glBindVertexArray</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>  
+<span class="n">glBindVertexArray</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w">  </span>
 <span class="c1">// ...</span>
-</code></pre></div>
+</pre></div>
 <p>Next we have to change our vertex shader to pass the color data to the fragment shader.<br>
 <strong>Vertex Shader</strong></p>
-<div class="highlight"><pre class="highlight glsl"><code><span class="cp">#version 330 core
-</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec3</span> <span class="n">position</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="cp">#version 330 core</span>
+
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">position</span><span class="p">;</span>
 <span class="c1">// The new location has to differ from any other input variable.</span>
 <span class="c1">// It is the same index we need to pass to</span>
 <span class="c1">// glEnableVertexAttribArray() and glVertexAttribPointer().</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec3</span> <span class="n">color</span><span class="p">;</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">color</span><span class="p">;</span>
 
-<span class="k">out</span> <span class="kt">vec3</span> <span class="n">fColor</span><span class="p">;</span>
+<span class="k">out</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">fColor</span><span class="p">;</span>
 
-<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">fColor</span> <span class="o">=</span> <span class="n">color</span><span class="p">;</span>
-    <span class="nb">gl_Position</span> <span class="o">=</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">fColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">color</span><span class="p">;</span>
+<span class="w">    </span><span class="nb">gl_Position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
 <span class="p">}</span>
-</code></pre></div>
+</pre></div>
 <p><strong>Fragment Shader</strong></p>
-<div class="highlight"><pre class="highlight glsl"><code><span class="cp">#version 330 core
-</span>
-<span class="k">in</span> <span class="kt">vec3</span> <span class="n">fColor</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="cp">#version 330 core</span>
 
-<span class="k">out</span> <span class="kt">vec4</span> <span class="n">outColor</span><span class="p">;</span>
+<span class="k">in</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">fColor</span><span class="p">;</span>
 
-<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">outColor</span> <span class="o">=</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">fColor</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+<span class="k">out</span><span class="w"> </span><span class="kt">vec4</span><span class="w"> </span><span class="n">outColor</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">outColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="n">fColor</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
 <span class="p">}</span>
-</code></pre></div>
+</pre></div>
 <p>We define a new input variable <code>color</code> which represents our color data, this data
 is passed on to <code>fColor</code>, which is an output variable of our vertex shader and
 becomes an input variable for our fragment shader.
@@ -395,19 +395,19 @@ It is imporatant that variables passed between shaders have the exact same name
 and type.</p>
 
 <h2>Handling VBO&rsquo;s</h2>
-<div class="highlight"><pre class="highlight cpp"><code><span class="c1">// If you want to completely clear and refill a VBO use glBufferData(),</span>
+<div class="highlight"><pre><span></span><span class="c1">// If you want to completely clear and refill a VBO use glBufferData(),</span>
 <span class="c1">// just like we did before.</span>
 <span class="c1">// ...</span>
-<span class="c1">// There are two mains ways to update a subset of a VBO's data.</span>
+<span class="c1">// There are two mains ways to update a subset of a VBO&#39;s data.</span>
 <span class="c1">// To update a VBO with existing data</span>
-<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span> <span class="n">newSubData</span> <span class="p">{</span>
-    <span class="o">-</span><span class="mf">0.25</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.5</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">newSubData</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="mf">-0.25f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span>
 <span class="p">};</span>
-<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span> <span class="n">vbo</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
-<span class="n">glBufferSubData</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span>      <span class="c1">// target buffer</span>
-                <span class="mi">0</span><span class="p">,</span>                    <span class="c1">// offset</span>
-                <span class="k">sizeof</span><span class="p">(</span><span class="n">newSubData</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">newSubData</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span>   <span class="c1">// size</span>
-                <span class="n">newSubData</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>   <span class="c1">// data</span>
+<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">vbo</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="n">glBufferSubData</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w">      </span><span class="c1">// target buffer</span>
+<span class="w">                </span><span class="mi">0</span><span class="p">,</span><span class="w">                    </span><span class="c1">// offset</span>
+<span class="w">                </span><span class="k">sizeof</span><span class="p">(</span><span class="n">newSubData</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">newSubData</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span><span class="w">   </span><span class="c1">// size</span>
+<span class="w">                </span><span class="n">newSubData</span><span class="p">.</span><span class="n">data</span><span class="p">());</span><span class="w">   </span><span class="c1">// data</span>
 <span class="c1">// This would update the first three values in our vbo[0] buffer.</span>
 <span class="c1">// If you want to update starting at a specific location just set the second</span>
 <span class="c1">// parameter to that value and multiply by the types size.</span>
@@ -415,64 +415,64 @@ and type.</p>
 <span class="c1">// If you are streaming data, for example from a file,</span>
 <span class="c1">// it is faster to directly pass the data to the buffer.</span>
 <span class="c1">// Other access values are GL_READ_ONLY and GL_READ_WRITE.</span>
-<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span> <span class="n">vbo</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">vbo</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
 <span class="c1">// You can static_cast&lt;float*&gt;() the void* to be more safe.</span>
-<span class="kt">void</span><span class="o">*</span> <span class="n">Ptr</span> <span class="o">=</span> <span class="n">glMapBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span>   <span class="c1">// buffer to map</span>
-                        <span class="n">GL_WRITE_ONLY</span><span class="p">);</span>    <span class="c1">// access to buffer</span>
-<span class="n">memcpy</span><span class="p">(</span><span class="n">Ptr</span><span class="p">,</span> <span class="n">newSubData</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">newSubData</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">newSubData</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+<span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">Ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glMapBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w">   </span><span class="c1">// buffer to map</span>
+<span class="w">                        </span><span class="n">GL_WRITE_ONLY</span><span class="p">);</span><span class="w">    </span><span class="c1">// access to buffer</span>
+<span class="n">memcpy</span><span class="p">(</span><span class="n">Ptr</span><span class="p">,</span><span class="w"> </span><span class="n">newSubData</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">newSubData</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">newSubData</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
 <span class="c1">// To copy to a specific location add a destination offset to memcpy().</span>
 <span class="n">glUnmapBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">);</span>
 <span class="c1">// ...</span>
 <span class="c1">// There is also a way to copy data from one buffer to another,</span>
-<span class="c1">// If we have two VBO's vbo[0] and vbo[1], we can copy like so</span>
+<span class="c1">// If we have two VBO&#39;s vbo[0] and vbo[1], we can copy like so</span>
 <span class="c1">// You can also read from GL_ARRAY_BUFFER.</span>
-<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_COPY_READ_BUFFER</span><span class="p">,</span> <span class="n">vbo</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_COPY_READ_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">vbo</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
 <span class="c1">// GL_COPY_READ_BUFFER and GL_COPY_WRITE_BUFFER are specifically for</span>
 <span class="c1">// copying buffer data.</span>
-<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_COPY_WRITE_BUFFER</span><span class="p">,</span> <span class="n">vbo</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
-<span class="n">glCopyBufferSubData</span><span class="p">(</span><span class="n">GL_COPY_READ_BUFFER</span><span class="p">,</span>    <span class="c1">// read buffer</span>
-                    <span class="n">GL_COPY_WRITE_BUFFER</span><span class="p">,</span>   <span class="c1">// write buffer</span>
-                    <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>                   <span class="c1">// read and write offset</span>
-                    <span class="k">sizeof</span><span class="p">(</span><span class="n">vbo</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mi">3</span><span class="p">);</span>    <span class="c1">// copy size</span>
+<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_COPY_WRITE_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">vbo</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+<span class="n">glCopyBufferSubData</span><span class="p">(</span><span class="n">GL_COPY_READ_BUFFER</span><span class="p">,</span><span class="w">    </span><span class="c1">// read buffer</span>
+<span class="w">                    </span><span class="n">GL_COPY_WRITE_BUFFER</span><span class="p">,</span><span class="w">   </span><span class="c1">// write buffer</span>
+<span class="w">                    </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">                   </span><span class="c1">// read and write offset</span>
+<span class="w">                    </span><span class="k">sizeof</span><span class="p">(</span><span class="n">vbo</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span><span class="w">    </span><span class="c1">// copy size</span>
 <span class="c1">// This will copy the first three elements from vbo[0] to vbo[1].</span>
-</code></pre></div>
+</pre></div>
 <h2>Uniforms</h2>
 
 <p><strong>Fragment Shader</strong></p>
-<div class="highlight"><pre class="highlight glsl"><code><span class="c1">// Uniforms are variables like in and out, however,</span>
+<div class="highlight"><pre><span></span><span class="c1">// Uniforms are variables like in and out, however,</span>
 <span class="c1">// we can change them easily by passing new values with glUniform().</span>
 <span class="c1">// Lets define a time variable in our fragment shader.</span>
-<span class="cp">#version 330 core
-</span><span class="c1">// Unlike a in/out variable we can use a uniform in every shader,</span>
+<span class="cp">#version 330 core</span>
+<span class="c1">// Unlike a in/out variable we can use a uniform in every shader,</span>
 <span class="c1">// without the need to pass it to the next one, they are global.</span>
-<span class="c1">// Don't use locations already used for attributes!</span>
+<span class="c1">// Don&#39;t use locations already used for attributes!</span>
 <span class="c1">// Uniform layout locations require OpenGL 4.3!</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="k">uniform</span> <span class="kt">float</span> <span class="n">time</span><span class="p">;</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="k">uniform</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">time</span><span class="p">;</span>
 
-<span class="k">in</span> <span class="kt">vec3</span> <span class="n">fColor</span><span class="p">;</span>
+<span class="k">in</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">fColor</span><span class="p">;</span>
 
-<span class="k">out</span> <span class="kt">vec4</span> <span class="n">outColor</span><span class="p">;</span>
+<span class="k">out</span><span class="w"> </span><span class="kt">vec4</span><span class="w"> </span><span class="n">outColor</span><span class="p">;</span>
 
-<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// Create a sine wave from 0 to 1 based on the time passed to the shader.</span>
-    <span class="kt">float</span> <span class="n">factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">sin</span><span class="p">(</span><span class="n">time</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
-    <span class="n">outColor</span> <span class="o">=</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">fColor</span><span class="p">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">factor</span><span class="p">,</span> <span class="n">fColor</span><span class="p">.</span><span class="n">g</span> <span class="o">*</span> <span class="n">factor</span><span class="p">,</span> <span class="n">fColor</span><span class="p">.</span><span class="n">b</span> <span class="o">*</span> <span class="n">factor</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Create a sine wave from 0 to 1 based on the time passed to the shader.</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">factor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">sin</span><span class="p">(</span><span class="n">time</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">    </span><span class="n">outColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="n">fColor</span><span class="p">.</span><span class="n">r</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">factor</span><span class="p">,</span><span class="w"> </span><span class="n">fColor</span><span class="p">.</span><span class="n">g</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">factor</span><span class="p">,</span><span class="w"> </span><span class="n">fColor</span><span class="p">.</span><span class="n">b</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">factor</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
 <span class="p">}</span>
-</code></pre></div>
+</pre></div>
 <p>Back to our source code.</p>
-<div class="highlight"><pre class="highlight cpp"><code><span class="c1">// If we haven't set the layout location, we can ask for it.</span>
-<span class="n">GLint</span> <span class="n">timeLocation</span> <span class="o">=</span> <span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="s">"time"</span><span class="p">);</span>
+<div class="highlight"><pre><span></span><span class="c1">// If we haven&#39;t set the layout location, we can ask for it.</span>
+<span class="n">GLint</span><span class="w"> </span><span class="n">timeLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">program</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;time&quot;</span><span class="p">);</span>
 <span class="c1">// ...</span>
 <span class="c1">// Also we should define a Timer counting the current time.</span>
-<span class="n">sf</span><span class="o">::</span><span class="n">Clock</span> <span class="n">clock</span><span class="p">{</span> <span class="p">};</span>
+<span class="n">sf</span><span class="o">::</span><span class="n">Clock</span><span class="w"> </span><span class="n">clock</span><span class="p">{</span><span class="w"> </span><span class="p">};</span>
 <span class="c1">// In out render loop we can now update the uniform every frame.</span>
-    <span class="c1">// ...</span>
-    <span class="n">window</span><span class="p">.</span><span class="n">display</span><span class="p">();</span>
-    <span class="n">glUniform1f</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span>   <span class="c1">// location</span>
-                <span class="n">clock</span><span class="p">.</span><span class="n">getElapsedTime</span><span class="p">().</span><span class="n">asSeconds</span><span class="p">());</span>   <span class="c1">// data</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="n">window</span><span class="p">.</span><span class="n">display</span><span class="p">();</span>
+<span class="w">    </span><span class="n">glUniform1f</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w">   </span><span class="c1">// location</span>
+<span class="w">                </span><span class="n">clock</span><span class="p">.</span><span class="n">getElapsedTime</span><span class="p">().</span><span class="n">asSeconds</span><span class="p">());</span><span class="w">   </span><span class="c1">// data</span>
 <span class="p">}</span>
 <span class="c1">// ...</span>
-</code></pre></div>
+</pre></div>
 <p>With the time getting updated every frame the quad should now be changing from
 fully colored to pitch black.
 There are different types of glUniform() you can find simple documentation here:
@@ -482,211 +482,211 @@ There are different types of glUniform() you can find simple documentation here:
 
 <p>Element Array Buffers or more commonly Index Buffer Objects (IBO) allow us to use the
 same vertex data again which makes drawing a lot easier and faster. here&rsquo;s an example:</p>
-<div class="highlight"><pre class="highlight cpp"><code><span class="c1">// Lets create a quad from two rectangles.</span>
+<div class="highlight"><pre><span></span><span class="c1">// Lets create a quad from two rectangles.</span>
 <span class="c1">// We can simply use the old vertex data from before.</span>
 <span class="c1">// First, we have to create the IBO.</span>
 <span class="c1">// The index is referring to the first declaration in the VBO.</span>
-<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="o">&gt;</span> <span class="n">iboData</span> <span class="p">{</span>
-    <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>
-    <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">iboData</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span>
 <span class="p">};</span>
-<span class="c1">// That's it, as you can see we could reuse 0 - the top left</span>
+<span class="c1">// That&#39;s it, as you can see we could reuse 0 - the top left</span>
 <span class="c1">// and 2 - the bottom right.</span>
 <span class="c1">// Now that we have our data, we have to fill it into a buffer.</span>
 <span class="c1">// Note that this has to happen between the two glBindVertexArray() calls,</span>
 <span class="c1">// so it gets saved into the VAO.</span>
-<span class="n">GLuint</span> <span class="n">ibo</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<span class="n">glGenBufferrs</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ibo</span><span class="p">);</span>
-<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ELEMENT_ARRAY_BUFFER</span><span class="p">,</span> <span class="n">ibo</span><span class="p">);</span>
-<span class="n">glBufferData</span><span class="p">(</span><span class="n">GL_ELEMENT_ARRAY_BUFFER</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">iboData</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">iboData</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span>
-             <span class="n">iboData</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">GL_STATIC_DRAW</span><span class="p">);</span>
+<span class="n">GLuint</span><span class="w"> </span><span class="n">ibo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">glGenBufferrs</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ibo</span><span class="p">);</span>
+<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ELEMENT_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">ibo</span><span class="p">);</span>
+<span class="n">glBufferData</span><span class="p">(</span><span class="n">GL_ELEMENT_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">iboData</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">iboData</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span>
+<span class="w">             </span><span class="n">iboData</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="n">GL_STATIC_DRAW</span><span class="p">);</span>
 <span class="c1">// Next in our render loop, we replace glDrawArrays() with:</span>
-<span class="n">glDrawElements</span><span class="p">(</span><span class="n">GL_TRIANGLES</span><span class="p">,</span> <span class="n">iboData</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">GL_UNSIGNED_INT</span><span class="p">,</span> <span class="nb">nullptr</span><span class="p">);</span>
+<span class="n">glDrawElements</span><span class="p">(</span><span class="n">GL_TRIANGLES</span><span class="p">,</span><span class="w"> </span><span class="n">iboData</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="n">GL_UNSIGNED_INT</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
 <span class="c1">// Remember to delete the allocated memory for the IBO.</span>
-</code></pre></div>
+</pre></div>
 <p>You can find the current code here: <a href="https://pastebin.com/R3Z9ACDE">OpenGL - 2</a>.</p>
 
 <h2>Textures</h2>
 
 <p>To load out texture we first need a library that loads the data, for simplicity I will be
 using SFML, however there are a lot of librarys for loading image data.</p>
-<div class="highlight"><pre class="highlight cpp"><code><span class="c1">// Lets save we have a texture called "my_tex.tga", we can load it with:</span>
-<span class="n">sf</span><span class="o">::</span><span class="n">Image</span> <span class="n">image</span><span class="p">;</span>
-<span class="n">image</span><span class="p">.</span><span class="n">loadFromFile</span><span class="p">(</span><span class="s">"my_tex.tga"</span><span class="p">);</span>
-<span class="c1">// We have to flip the texture around the y-Axis, because OpenGL's texture</span>
+<div class="highlight"><pre><span></span><span class="c1">// Lets save we have a texture called &quot;my_tex.tga&quot;, we can load it with:</span>
+<span class="n">sf</span><span class="o">::</span><span class="n">Image</span><span class="w"> </span><span class="n">image</span><span class="p">;</span>
+<span class="n">image</span><span class="p">.</span><span class="n">loadFromFile</span><span class="p">(</span><span class="s">&quot;my_tex.tga&quot;</span><span class="p">);</span>
+<span class="c1">// We have to flip the texture around the y-Axis, because OpenGL&#39;s texture</span>
 <span class="c1">// origin is the bottom left corner, not the top left.</span>
 <span class="n">image</span><span class="p">.</span><span class="n">flipVertically</span><span class="p">();</span>
 <span class="c1">// After loading it we have to create a OpenGL texture.</span>
-<span class="n">GLuint</span> <span class="n">texture</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-<span class="n">glGenTextures</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">texture</span><span class="p">);</span>
-<span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span> <span class="n">texture</span><span class="p">);</span>
+<span class="n">GLuint</span><span class="w"> </span><span class="n">texture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">glGenTextures</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">texture</span><span class="p">);</span>
+<span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">texture</span><span class="p">);</span>
 <span class="c1">// Specify what happens when the coordinates are out of range.</span>
-<span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span> <span class="n">GL_TEXTURE_WRAP_S</span><span class="p">,</span> <span class="n">GL_REPEAT</span><span class="p">);</span>
-<span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span> <span class="n">GL_TEXTURE_WRAP_T</span><span class="p">,</span> <span class="n">GL_REPEAT</span><span class="p">);</span>
+<span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">GL_TEXTURE_WRAP_S</span><span class="p">,</span><span class="w"> </span><span class="n">GL_REPEAT</span><span class="p">);</span>
+<span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">GL_TEXTURE_WRAP_T</span><span class="p">,</span><span class="w"> </span><span class="n">GL_REPEAT</span><span class="p">);</span>
 <span class="c1">// Specify the filtering if the object is very large.</span>
-<span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span> <span class="n">GL_TEXTURE_MIN_FILTER</span><span class="p">,</span> <span class="n">GL_LINEAR</span><span class="p">);</span>
-<span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span> <span class="n">GL_TEXTURE_MAG_FILTER</span><span class="p">,</span> <span class="n">GL_LINEAR</span><span class="p">);</span>
+<span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">GL_TEXTURE_MIN_FILTER</span><span class="p">,</span><span class="w"> </span><span class="n">GL_LINEAR</span><span class="p">);</span>
+<span class="n">glTexParameteri</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">GL_TEXTURE_MAG_FILTER</span><span class="p">,</span><span class="w"> </span><span class="n">GL_LINEAR</span><span class="p">);</span>
 <span class="c1">// Load the image data to the texture.</span>
-<span class="n">glTexImage2D</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">GL_RGBA</span><span class="p">,</span> <span class="n">image</span><span class="p">.</span><span class="n">getSize</span><span class="p">().</span><span class="n">x</span><span class="p">,</span> <span class="n">image</span><span class="p">.</span><span class="n">getSize</span><span class="p">().</span><span class="n">y</span><span class="p">,</span>
-             <span class="mi">0</span><span class="p">,</span> <span class="n">GL_RGBA</span><span class="p">,</span> <span class="n">GL_UNSIGNED_BYTE</span><span class="p">,</span> <span class="n">image</span><span class="p">.</span><span class="n">getPixelsPtr</span><span class="p">());</span>
+<span class="n">glTexImage2D</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">GL_RGBA</span><span class="p">,</span><span class="w"> </span><span class="n">image</span><span class="p">.</span><span class="n">getSize</span><span class="p">().</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">image</span><span class="p">.</span><span class="n">getSize</span><span class="p">().</span><span class="n">y</span><span class="p">,</span>
+<span class="w">             </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">GL_RGBA</span><span class="p">,</span><span class="w"> </span><span class="n">GL_UNSIGNED_BYTE</span><span class="p">,</span><span class="w"> </span><span class="n">image</span><span class="p">.</span><span class="n">getPixelsPtr</span><span class="p">());</span>
 <span class="c1">// Unbind the texture to prevent modifications.</span>
-<span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+<span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
 <span class="c1">// Delete the texture at the end of the application.</span>
 <span class="c1">// ...</span>
-<span class="n">glDeleteTextures</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">texture</span><span class="p">);</span>
-</code></pre></div>
+<span class="n">glDeleteTextures</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">texture</span><span class="p">);</span>
+</pre></div>
 <p>Ofcourse there are more texture formats than only 2D textures,
 You can find further information on parameters here:
 <a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBindTexture.xhtml">glBindTexture - OpenGL Refpage</a><br>
 <a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glTexImage2D.xhtml">glTexImage2D - OpenGL Refpage</a><br>
 <a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glTexParameter.xhtml">glTexParameter - OpenGL Refpage</a><br></p>
-<div class="highlight"><pre class="highlight cpp"><code><span class="c1">// With the texture created, we now have to specify the UV,</span>
+<div class="highlight"><pre><span></span><span class="c1">// With the texture created, we now have to specify the UV,</span>
 <span class="c1">// or in OpenGL terms ST coordinates.</span>
-<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span> <span class="n">texCoords</span> <span class="p">{</span>
-    <span class="c1">// The texture coordinates have to match the triangles/quad</span>
-    <span class="c1">// definition.</span>
-    <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">,</span>    <span class="c1">// start at top-left</span>
-    <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>    <span class="c1">// go round counter-clockwise</span>
-    <span class="mf">1.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>
-    <span class="mf">1.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">1.0</span><span class="n">f</span>     <span class="c1">// end at top-right</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">texCoords</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// The texture coordinates have to match the triangles/quad</span>
+<span class="w">    </span><span class="c1">// definition.</span>
+<span class="w">    </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">,</span><span class="w">    </span><span class="c1">// start at top-left</span>
+<span class="w">    </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w">    </span><span class="c1">// go round counter-clockwise</span>
+<span class="w">    </span><span class="mf">1.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span>
+<span class="w">    </span><span class="mf">1.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="w">     </span><span class="c1">// end at top-right</span>
 <span class="p">};</span>
-<span class="c1">// Now we increase the VBO's size again just like we did for the colors.</span>
+<span class="c1">// Now we increase the VBO&#39;s size again just like we did for the colors.</span>
 <span class="c1">// ...</span>
-<span class="n">GLuint</span> <span class="n">vbo</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
-<span class="n">glGenBuffers</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">vbo</span><span class="p">);</span>
+<span class="n">GLuint</span><span class="w"> </span><span class="n">vbo</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+<span class="n">glGenBuffers</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">vbo</span><span class="p">);</span>
 <span class="c1">// ...</span>
-<span class="n">glDeleteBuffers</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">vbo</span><span class="p">);</span>
+<span class="n">glDeleteBuffers</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">vbo</span><span class="p">);</span>
 <span class="c1">// ...</span>
 <span class="c1">// Load the texture coordinates into the new buffer.</span>
-<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span> <span class="n">vbo</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
-<span class="n">glBufferData</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">texCoords</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">texCoords</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span>
-             <span class="n">texCoords</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">GL_STATIC_DRAW</span><span class="p">);</span>
+<span class="n">glBindBuffer</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="n">vbo</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+<span class="n">glBufferData</span><span class="p">(</span><span class="n">GL_ARRAY_BUFFER</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">texCoords</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">texCoords</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span>
+<span class="w">             </span><span class="n">texCoords</span><span class="p">.</span><span class="n">data</span><span class="p">(),</span><span class="w"> </span><span class="n">GL_STATIC_DRAW</span><span class="p">);</span>
 <span class="n">glEnableVertexAttribArray</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
-<span class="n">glVertexAttribPointer</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">GL_FLOAT</span><span class="p">,</span> <span class="n">GL_FALSE</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">nullptr</span><span class="p">);</span>
+<span class="n">glVertexAttribPointer</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FLOAT</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FALSE</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
 <span class="c1">// Because the VAO does not store the texture we have to bind it before drawing.</span>
 <span class="c1">// ...</span>
 <span class="n">glBindVertexArray</span><span class="p">(</span><span class="n">vao</span><span class="p">);</span>
-<span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span> <span class="n">texture</span><span class="p">);</span>
-<span class="n">glDrawElements</span><span class="p">(</span><span class="n">GL_TRIANGLES</span><span class="p">,</span> <span class="n">iboData</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span> <span class="n">GL_UNSIGNED_INT</span><span class="p">,</span> <span class="nb">nullptr</span><span class="p">);</span>
+<span class="n">glBindTexture</span><span class="p">(</span><span class="n">GL_TEXTURE_2D</span><span class="p">,</span><span class="w"> </span><span class="n">texture</span><span class="p">);</span>
+<span class="n">glDrawElements</span><span class="p">(</span><span class="n">GL_TRIANGLES</span><span class="p">,</span><span class="w"> </span><span class="n">iboData</span><span class="p">.</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="n">GL_UNSIGNED_INT</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
 <span class="c1">// ...</span>
-</code></pre></div>
+</pre></div>
 <p>Change the shaders to pass the data to the fragment shader.<br></p>
 
 <p><strong>Vertex Shader</strong></p>
-<div class="highlight"><pre class="highlight glsl"><code><span class="cp">#version 330 core
-</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec3</span> <span class="n">position</span><span class="p">;</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec3</span> <span class="n">color</span><span class="p">;</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec2</span> <span class="n">texCoords</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="cp">#version 330 core</span>
 
-<span class="k">out</span> <span class="kt">vec3</span> <span class="n">fColor</span><span class="p">;</span>
-<span class="k">out</span> <span class="kt">vec2</span> <span class="n">fTexCoords</span><span class="p">;</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">position</span><span class="p">;</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">color</span><span class="p">;</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">vec2</span><span class="w"> </span><span class="n">texCoords</span><span class="p">;</span>
 
-<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">fColor</span> <span class="o">=</span> <span class="n">color</span><span class="p">;</span>
-    <span class="n">fTexCoords</span> <span class="o">=</span> <span class="n">texCoords</span><span class="p">;</span>
-    <span class="nb">gl_Position</span> <span class="o">=</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+<span class="k">out</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">fColor</span><span class="p">;</span>
+<span class="k">out</span><span class="w"> </span><span class="kt">vec2</span><span class="w"> </span><span class="n">fTexCoords</span><span class="p">;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">fColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">color</span><span class="p">;</span>
+<span class="w">    </span><span class="n">fTexCoords</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">texCoords</span><span class="p">;</span>
+<span class="w">    </span><span class="nb">gl_Position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
 <span class="p">}</span>
-</code></pre></div>
+</pre></div>
 <p><strong>Fragment Shader</strong></p>
-<div class="highlight"><pre class="highlight glsl"><code><span class="cp">#version 330 core
-</span><span class="c1">// sampler2D represents our 2D texture.</span>
-<span class="k">uniform</span> <span class="kt">sampler2D</span> <span class="n">tex</span><span class="p">;</span>
-<span class="k">uniform</span> <span class="kt">float</span> <span class="n">time</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="cp">#version 330 core</span>
+<span class="c1">// sampler2D represents our 2D texture.</span>
+<span class="k">uniform</span><span class="w"> </span><span class="kt">sampler2D</span><span class="w"> </span><span class="n">tex</span><span class="p">;</span>
+<span class="k">uniform</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">time</span><span class="p">;</span>
 
-<span class="k">in</span> <span class="kt">vec3</span> <span class="n">fColor</span><span class="p">;</span>
-<span class="k">in</span> <span class="kt">vec2</span> <span class="n">fTexCoords</span><span class="p">;</span>
+<span class="k">in</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">fColor</span><span class="p">;</span>
+<span class="k">in</span><span class="w"> </span><span class="kt">vec2</span><span class="w"> </span><span class="n">fTexCoords</span><span class="p">;</span>
 
-<span class="k">out</span> <span class="kt">vec4</span> <span class="n">outColor</span><span class="p">;</span>
+<span class="k">out</span><span class="w"> </span><span class="kt">vec4</span><span class="w"> </span><span class="n">outColor</span><span class="p">;</span>
 
-<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// texture() loads the current texure data at the specified texture coords,</span>
-    <span class="c1">// then we can simply multiply them by our color.</span>
-    <span class="n">outColor</span> <span class="o">=</span> <span class="n">texture</span><span class="p">(</span><span class="n">tex</span><span class="p">,</span> <span class="n">fTexCoords</span><span class="p">)</span> <span class="o">*</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">fColor</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// texture() loads the current texure data at the specified texture coords,</span>
+<span class="w">    </span><span class="c1">// then we can simply multiply them by our color.</span>
+<span class="w">    </span><span class="n">outColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">texture</span><span class="p">(</span><span class="n">tex</span><span class="p">,</span><span class="w"> </span><span class="n">fTexCoords</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="n">fColor</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
 <span class="p">}</span>
-</code></pre></div>
+</pre></div>
 <p>You can find the current code here: <a href="https://pastebin.com/u3bcwM6q">OpenGL - 3</a></p>
 
 <h2>Matrix Transformation</h2>
 
 <p><strong>Vertex Shader</strong></p>
-<div class="highlight"><pre class="highlight glsl"><code><span class="cp">#version 330 core
-</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec3</span> <span class="n">position</span><span class="p">;</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec3</span> <span class="n">color</span><span class="p">;</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec2</span> <span class="n">texCoords</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="cp">#version 330 core</span>
+
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">position</span><span class="p">;</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">color</span><span class="p">;</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">vec2</span><span class="w"> </span><span class="n">texCoords</span><span class="p">;</span>
 <span class="c1">// Create 2 4x4 matricies, 1 for the projection matrix</span>
 <span class="c1">// and 1 for the model matrix.</span>
-<span class="c1">// Because we draw in a static scene, we don't need a view matrix.</span>
-<span class="k">uniform</span> <span class="kt">mat4</span> <span class="n">projection</span><span class="p">;</span>
-<span class="k">uniform</span> <span class="kt">mat4</span> <span class="n">model</span><span class="p">;</span>
+<span class="c1">// Because we draw in a static scene, we don&#39;t need a view matrix.</span>
+<span class="k">uniform</span><span class="w"> </span><span class="kt">mat4</span><span class="w"> </span><span class="n">projection</span><span class="p">;</span>
+<span class="k">uniform</span><span class="w"> </span><span class="kt">mat4</span><span class="w"> </span><span class="n">model</span><span class="p">;</span>
 
-<span class="k">out</span> <span class="kt">vec3</span> <span class="n">fColor</span><span class="p">;</span>
-<span class="k">out</span> <span class="kt">vec2</span> <span class="n">fTexCoords</span><span class="p">;</span>
+<span class="k">out</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">fColor</span><span class="p">;</span>
+<span class="k">out</span><span class="w"> </span><span class="kt">vec2</span><span class="w"> </span><span class="n">fTexCoords</span><span class="p">;</span>
 
-<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">fColor</span> <span class="o">=</span> <span class="n">color</span><span class="p">;</span>
-    <span class="n">fTexCoords</span> <span class="o">=</span> <span class="n">texCoords</span><span class="p">;</span>
-    <span class="c1">// Multiplay the position by the model matrix and then by the</span>
-    <span class="c1">// projection matrix.</span>
-    <span class="c1">// Beware order of multiplication for matricies!</span>
-    <span class="nb">gl_Position</span> <span class="o">=</span> <span class="n">projection</span> <span class="o">*</span> <span class="n">model</span> <span class="o">*</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">fColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">color</span><span class="p">;</span>
+<span class="w">    </span><span class="n">fTexCoords</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">texCoords</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// Multiplay the position by the model matrix and then by the</span>
+<span class="w">    </span><span class="c1">// projection matrix.</span>
+<span class="w">    </span><span class="c1">// Beware order of multiplication for matricies!</span>
+<span class="w">    </span><span class="nb">gl_Position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">projection</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
 <span class="p">}</span>
-</code></pre></div>
+</pre></div>
 <p>In our source we now need to change the vertex data, create a model- and a projection matrix.</p>
-<div class="highlight"><pre class="highlight cpp"><code><span class="c1">// The new vertex data, counter-clockwise declaration.</span>
-<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span> <span class="n">vertexData</span> <span class="p">{</span>  
-    <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>   <span class="c1">// top left</span>
-    <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>   <span class="c1">// bottom left</span>
-    <span class="mf">1.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>   <span class="c1">// bottom right</span>
-    <span class="mf">1.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span>    <span class="c1">// top right</span>
+<div class="highlight"><pre><span></span><span class="c1">// The new vertex data, counter-clockwise declaration.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertexData</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">    </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w">   </span><span class="c1">// top left</span>
+<span class="w">    </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w">   </span><span class="c1">// bottom left</span>
+<span class="w">    </span><span class="mf">1.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w">   </span><span class="c1">// bottom right</span>
+<span class="w">    </span><span class="mf">1.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="w">    </span><span class="c1">// top right</span>
 <span class="p">};</span>
 <span class="c1">// Request the location of our matricies.</span>
-<span class="n">GLint</span> <span class="n">projectionLocation</span> <span class="o">=</span> <span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="s">"projection"</span><span class="p">);</span>
-<span class="n">GLint</span> <span class="n">modelLocation</span> <span class="o">=</span> <span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="s">"model"</span><span class="p">);</span>
+<span class="n">GLint</span><span class="w"> </span><span class="n">projectionLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">program</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;projection&quot;</span><span class="p">);</span>
+<span class="n">GLint</span><span class="w"> </span><span class="n">modelLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glGetUniformLocation</span><span class="p">(</span><span class="n">program</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;model&quot;</span><span class="p">);</span>
 <span class="c1">// Declaring the matricies.</span>
 <span class="c1">// Orthogonal matrix for a 1024x768 window.</span>
-<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span> <span class="n">projection</span> <span class="p">{</span>  
-    <span class="mf">0.001953</span><span class="n">f</span><span class="p">,</span>       <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>  <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>
-         <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.002604</span><span class="n">f</span><span class="p">,</span>  <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>
-         <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>       <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>
-        <span class="o">-</span><span class="mf">1.0</span><span class="n">f</span><span class="p">,</span>       <span class="mf">1.0</span><span class="n">f</span><span class="p">,</span>  <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">1.0</span><span class="n">f</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">projection</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">    </span><span class="mf">0.001953f</span><span class="p">,</span><span class="w">       </span><span class="mf">0.0f</span><span class="p">,</span><span class="w">  </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span>
+<span class="w">         </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">-0.002604f</span><span class="p">,</span><span class="w">  </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span>
+<span class="w">         </span><span class="mf">0.0f</span><span class="p">,</span><span class="w">       </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">-1.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span>
+<span class="w">        </span><span class="mf">-1.0f</span><span class="p">,</span><span class="w">       </span><span class="mf">1.0f</span><span class="p">,</span><span class="w">  </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span>
 <span class="p">};</span>
 <span class="c1">// Model matrix translating to x 50, y 50</span>
 <span class="c1">// and scaling to x 200, y 200.</span>
-<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span> <span class="n">model</span> <span class="p">{</span>  
-    <span class="mf">200.0</span><span class="n">f</span><span class="p">,</span>   <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>
-      <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">200.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>
-      <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>   <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">1.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span>
-     <span class="mf">50.0</span><span class="n">f</span><span class="p">,</span>  <span class="mf">50.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">1.0</span><span class="n">f</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="p">{</span><span class="w">  </span>
+<span class="w">    </span><span class="mf">200.0f</span><span class="p">,</span><span class="w">   </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span>
+<span class="w">      </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">200.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span>
+<span class="w">      </span><span class="mf">0.0f</span><span class="p">,</span><span class="w">   </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span>
+<span class="w">     </span><span class="mf">50.0f</span><span class="p">,</span><span class="w">  </span><span class="mf">50.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span>
 <span class="p">};</span>
 <span class="c1">// Now we can send our calculated matricies to the program.</span>
 <span class="n">glUseProgram</span><span class="p">(</span><span class="n">program</span><span class="p">);</span>
-<span class="n">glUniformMatrix4fv</span><span class="p">(</span><span class="n">projectionLocation</span><span class="p">,</span>   <span class="c1">// location</span>
-                   <span class="mi">1</span><span class="p">,</span>                    <span class="c1">// count</span>
-                   <span class="n">GL_FALSE</span><span class="p">,</span>             <span class="c1">// transpose the matrix</span>
-                   <span class="n">projection</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>   <span class="c1">// data</span>
-<span class="n">glUniformMatrix4fv</span><span class="p">(</span><span class="n">modelLocation</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">GL_FALSE</span><span class="p">,</span> <span class="n">model</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
+<span class="n">glUniformMatrix4fv</span><span class="p">(</span><span class="n">projectionLocation</span><span class="p">,</span><span class="w">   </span><span class="c1">// location</span>
+<span class="w">                   </span><span class="mi">1</span><span class="p">,</span><span class="w">                    </span><span class="c1">// count</span>
+<span class="w">                   </span><span class="n">GL_FALSE</span><span class="p">,</span><span class="w">             </span><span class="c1">// transpose the matrix</span>
+<span class="w">                   </span><span class="n">projection</span><span class="p">.</span><span class="n">data</span><span class="p">());</span><span class="w">   </span><span class="c1">// data</span>
+<span class="n">glUniformMatrix4fv</span><span class="p">(</span><span class="n">modelLocation</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="p">.</span><span class="n">data</span><span class="p">());</span>
 <span class="n">glUseProgram</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 <span class="c1">// The glUniform*() calls have to be done, while the program is bound.</span>
-</code></pre></div>
+</pre></div>
 <p>The application should now display the texture at the defined position and size.<br>
 You can find the current code here: <a href="https://pastebin.com/9ahpFLkY">OpenGL - 4</a></p>
-<div class="highlight"><pre class="highlight cpp"><code><span class="c1">// There are many math librarys for OpenGL, which create</span>
+<div class="highlight"><pre><span></span><span class="c1">// There are many math librarys for OpenGL, which create</span>
 <span class="c1">// matricies and vectors, the most used in C++ is glm (OpenGL Mathematics).</span>
 <span class="c1">// Its a header only library.</span>
 <span class="c1">// The same code using glm would look like:</span>
-<span class="n">glm</span><span class="o">::</span><span class="n">mat4</span> <span class="n">projection</span><span class="p">{</span> <span class="n">glm</span><span class="o">::</span><span class="n">ortho</span><span class="p">(</span><span class="mf">0.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">1024.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">768.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span><span class="p">)</span> <span class="p">};</span>
-<span class="n">glUniformMatrix4fv</span><span class="p">(</span><span class="n">projectionLocation</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">GL_FALSE</span><span class="p">,</span>
-                   <span class="n">glm</span><span class="o">::</span><span class="n">value_ptr</span><span class="p">(</span><span class="n">projection</span><span class="p">));</span>
+<span class="n">glm</span><span class="o">::</span><span class="n">mat4</span><span class="w"> </span><span class="n">projection</span><span class="p">{</span><span class="w"> </span><span class="n">glm</span><span class="o">::</span><span class="n">ortho</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1024.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">768.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">)</span><span class="w"> </span><span class="p">};</span>
+<span class="n">glUniformMatrix4fv</span><span class="p">(</span><span class="n">projectionLocation</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FALSE</span><span class="p">,</span>
+<span class="w">                   </span><span class="n">glm</span><span class="o">::</span><span class="n">value_ptr</span><span class="p">(</span><span class="n">projection</span><span class="p">));</span>
 <span class="c1">// Initialise the model matrix to the identity matrix, otherwise every</span>
 <span class="c1">// multiplication would be 0.</span>
-<span class="n">glm</span><span class="o">::</span><span class="n">mat4</span> <span class="n">model</span><span class="p">{</span> <span class="mf">1.0</span><span class="n">f</span> <span class="p">};</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">glm</span><span class="o">::</span><span class="n">translate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">glm</span><span class="o">::</span><span class="n">vec3</span><span class="p">{</span> <span class="mf">50.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">50.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span> <span class="p">});</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">glm</span><span class="o">::</span><span class="n">scale</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">glm</span><span class="o">::</span><span class="n">vec3</span><span class="p">{</span> <span class="mf">200.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">200.0</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="n">f</span> <span class="p">});</span>
-<span class="n">glUniformMatrix4fv</span><span class="p">(</span><span class="n">modelLocation</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">GL_FALSE</span><span class="p">,</span>
-                   <span class="n">glm</span><span class="o">::</span><span class="n">value_ptr</span><span class="p">(</span><span class="n">model</span><span class="p">));</span>
-</code></pre></div>
+<span class="n">glm</span><span class="o">::</span><span class="n">mat4</span><span class="w"> </span><span class="n">model</span><span class="p">{</span><span class="w"> </span><span class="mf">1.0f</span><span class="w"> </span><span class="p">};</span>
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glm</span><span class="o">::</span><span class="n">translate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">glm</span><span class="o">::</span><span class="n">vec3</span><span class="p">{</span><span class="w"> </span><span class="mf">50.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">50.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="w"> </span><span class="p">});</span>
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">glm</span><span class="o">::</span><span class="n">scale</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">glm</span><span class="o">::</span><span class="n">vec3</span><span class="p">{</span><span class="w"> </span><span class="mf">200.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">200.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="w"> </span><span class="p">});</span>
+<span class="n">glUniformMatrix4fv</span><span class="p">(</span><span class="n">modelLocation</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">GL_FALSE</span><span class="p">,</span>
+<span class="w">                   </span><span class="n">glm</span><span class="o">::</span><span class="n">value_ptr</span><span class="p">(</span><span class="n">model</span><span class="p">));</span>
+</pre></div>
 <h2>Geometry Shader</h2>
 
 <p>Geometry shaders were introduced in OpenGL 3.2, they can produce vertices
@@ -695,69 +695,69 @@ they can take a point as an input and output other primitives.
 Geometry shaders are inbetween the vertex and the fragment shader.</p>
 
 <p><strong>Vertex Shader</strong></p>
-<div class="highlight"><pre class="highlight glsl"><code><span class="cp">#version 330 core
-</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec3</span> <span class="n">position</span><span class="p">;</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">location</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">in</span> <span class="kt">vec3</span> <span class="n">color</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="cp">#version 330 core</span>
+
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mo">0</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">position</span><span class="p">;</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="kt">vec3</span><span class="w"> </span><span class="n">color</span><span class="p">;</span>
 <span class="c1">// Create an output interface block passed to the next shadaer stage.</span>
 <span class="c1">// Interface blocks can be used to structure data passed between shaders.</span>
-<span class="k">out</span> <span class="n">VS_OUT</span> <span class="p">{</span>
-    <span class="kt">vec3</span> <span class="n">color</span><span class="p">;</span>
-<span class="p">}</span> <span class="n">vs_out</span><span class="p">;</span>
+<span class="k">out</span><span class="w"> </span><span class="n">VS_OUT</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">vec3</span><span class="w"> </span><span class="n">color</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">vs_out</span><span class="p">;</span>
 
-<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">vs_out</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">color</span>
-    <span class="nb">gl_Position</span> <span class="o">=</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">vs_out</span><span class="p">.</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">color</span>
+<span class="w">    </span><span class="nb">gl_Position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
 <span class="p">}</span>
-</code></pre></div>
+</pre></div>
 <p><strong>Geometry Shader</strong></p>
-<div class="highlight"><pre class="highlight glsl"><code><span class="cp">#version 330 core
-</span><span class="c1">// The geometry shader takes in points.</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">points</span><span class="p">)</span> <span class="k">in</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="cp">#version 330 core</span>
+<span class="c1">// The geometry shader takes in points.</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">points</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="p">;</span>
 <span class="c1">// It outputs a triangle every 3 vertices emitted.</span>
-<span class="k">layout</span><span class="p">(</span><span class="n">triangle_strip</span><span class="p">,</span> <span class="n">max_vertices</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="k">out</span><span class="p">;</span>
+<span class="k">layout</span><span class="p">(</span><span class="n">triangle_strip</span><span class="p">,</span><span class="w"> </span><span class="n">max_vertices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="k">out</span><span class="p">;</span>
 <span class="c1">// VS_OUT becomes an input variable in the geometry shader.</span>
 <span class="c1">// Every input to the geometry shader in treated as an array.</span>
-<span class="k">in</span> <span class="n">VS_OUT</span> <span class="p">{</span>
-    <span class="kt">vec3</span> <span class="n">color</span><span class="p">;</span>
-<span class="p">}</span> <span class="n">gs_in</span><span class="p">[];</span>
+<span class="k">in</span><span class="w"> </span><span class="n">VS_OUT</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">vec3</span><span class="w"> </span><span class="n">color</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">gs_in</span><span class="p">[];</span>
 <span class="c1">// Output color for the fragment shader.</span>
-<span class="c1">// You can also simply define color as 'out vec3 color',</span>
-<span class="c1">// If you don't want to use interface blocks.</span>
-<span class="k">out</span> <span class="n">GS_OUT</span> <span class="p">{</span>
-    <span class="kt">vec3</span> <span class="n">color</span><span class="p">;</span>
-<span class="p">}</span> <span class="n">gs_out</span><span class="p">;</span>
+<span class="c1">// You can also simply define color as &#39;out vec3 color&#39;,</span>
+<span class="c1">// If you don&#39;t want to use interface blocks.</span>
+<span class="k">out</span><span class="w"> </span><span class="n">GS_OUT</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">vec3</span><span class="w"> </span><span class="n">color</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">gs_out</span><span class="p">;</span>
 
-<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// Each emit calls the fragment shader, so we set a color for each vertex.</span>
-    <span class="n">gs_out</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">mix</span><span class="p">(</span><span class="n">gs_in</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">color</span><span class="p">,</span> <span class="kt">vec3</span><span class="p">(</span><span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">.</span><span class="mi">5</span><span class="p">);</span>
-    <span class="c1">// Move 0.5 units to the left and emit the new vertex.</span>
-    <span class="c1">// gl_in[] is the current vertex from the vertex shader, here we only</span>
-    <span class="c1">// use 0, because we are receiving points.</span>
-    <span class="nb">gl_Position</span> <span class="o">=</span> <span class="n">gl_in</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nb">gl_Position</span> <span class="o">+</span> <span class="kt">vec4</span><span class="p">(</span><span class="o">-</span><span class="mi">0</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
-    <span class="n">EmitVertex</span><span class="p">();</span>
-    <span class="n">gs_out</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">mix</span><span class="p">(</span><span class="n">gs_in</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">color</span><span class="p">,</span> <span class="kt">vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">.</span><span class="mi">5</span><span class="p">);</span>
-    <span class="c1">// Move 0.5 units to the right and emit the new vertex.</span>
-    <span class="nb">gl_Position</span> <span class="o">=</span> <span class="n">gl_in</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nb">gl_Position</span> <span class="o">+</span> <span class="kt">vec4</span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
-    <span class="n">EmitVertex</span><span class="p">();</span>
-    <span class="n">gs_out</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">mix</span><span class="p">(</span><span class="n">gs_in</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">color</span><span class="p">,</span> <span class="kt">vec3</span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">.</span><span class="mi">5</span><span class="p">);</span>
-    <span class="c1">// Move 0.5 units up and emit the new vertex.</span>
-    <span class="nb">gl_Position</span> <span class="o">=</span> <span class="n">gl_in</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nb">gl_Position</span> <span class="o">+</span> <span class="kt">vec4</span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">75</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
-    <span class="n">EmitVertex</span><span class="p">();</span>
-    <span class="n">EndPrimitive</span><span class="p">();</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Each emit calls the fragment shader, so we set a color for each vertex.</span>
+<span class="w">    </span><span class="n">gs_out</span><span class="p">.</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mix</span><span class="p">(</span><span class="n">gs_in</span><span class="p">[</span><span class="mo">0</span><span class="p">].</span><span class="n">color</span><span class="p">,</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">),</span><span class="w"> </span><span class="mf">0.5</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Move 0.5 units to the left and emit the new vertex.</span>
+<span class="w">    </span><span class="c1">// gl_in[] is the current vertex from the vertex shader, here we only</span>
+<span class="w">    </span><span class="c1">// use 0, because we are receiving points.</span>
+<span class="w">    </span><span class="nb">gl_Position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">gl_in</span><span class="p">[</span><span class="mo">0</span><span class="p">].</span><span class="nb">gl_Position</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span>
+<span class="w">    </span><span class="n">EmitVertex</span><span class="p">();</span>
+<span class="w">    </span><span class="n">gs_out</span><span class="p">.</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mix</span><span class="p">(</span><span class="n">gs_in</span><span class="p">[</span><span class="mo">0</span><span class="p">].</span><span class="n">color</span><span class="p">,</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">),</span><span class="w"> </span><span class="mf">0.5</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Move 0.5 units to the right and emit the new vertex.</span>
+<span class="w">    </span><span class="nb">gl_Position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">gl_in</span><span class="p">[</span><span class="mo">0</span><span class="p">].</span><span class="nb">gl_Position</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span>
+<span class="w">    </span><span class="n">EmitVertex</span><span class="p">();</span>
+<span class="w">    </span><span class="n">gs_out</span><span class="p">.</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mix</span><span class="p">(</span><span class="n">gs_in</span><span class="p">[</span><span class="mo">0</span><span class="p">].</span><span class="n">color</span><span class="p">,</span><span class="w"> </span><span class="kt">vec3</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">),</span><span class="w"> </span><span class="mf">0.5</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Move 0.5 units up and emit the new vertex.</span>
+<span class="w">    </span><span class="nb">gl_Position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">gl_in</span><span class="p">[</span><span class="mo">0</span><span class="p">].</span><span class="nb">gl_Position</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.75</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span>
+<span class="w">    </span><span class="n">EmitVertex</span><span class="p">();</span>
+<span class="w">    </span><span class="n">EndPrimitive</span><span class="p">();</span>
 <span class="p">}</span>
-</code></pre></div>
+</pre></div>
 <p><strong>Fragment Shader</strong></p>
-<div class="highlight"><pre class="highlight glsl"><code><span class="k">in</span> <span class="n">GS_OUT</span> <span class="p">{</span>
-    <span class="kt">vec3</span> <span class="n">color</span><span class="p">;</span>
-<span class="p">}</span> <span class="n">fs_in</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="k">in</span><span class="w"> </span><span class="n">GS_OUT</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">vec3</span><span class="w"> </span><span class="n">color</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">fs_in</span><span class="p">;</span>
 
-<span class="k">out</span> <span class="kt">vec4</span> <span class="n">outColor</span><span class="p">;</span>
+<span class="k">out</span><span class="w"> </span><span class="kt">vec4</span><span class="w"> </span><span class="n">outColor</span><span class="p">;</span>
 
-<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">outColor</span> <span class="o">=</span> <span class="kt">vec4</span><span class="p">(</span><span class="n">fs_in</span><span class="p">.</span><span class="n">color</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">outColor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">vec4</span><span class="p">(</span><span class="n">fs_in</span><span class="p">.</span><span class="n">color</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
 <span class="p">}</span>
-</code></pre></div>
+</pre></div>
 <p>If you now store a single point with a single color in a VBO and draw them,
 you should see a triangle, with your color mixed half way between
 red, green and blue on each vertex.</p>

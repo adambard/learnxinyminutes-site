@@ -94,226 +94,226 @@ on Unix and Linux) despite many competitors and criticisms.</p>
 
 <p>There are many varieties of make in existence, however this article
 assumes that we are using GNU make which is the standard on Linux.</p>
-<div class="highlight"><pre class="highlight make"><code><span class="c"># Comments can be written like this.
-</span>
-<span class="c"># File should be named Makefile and then can be run as `make &lt;target&gt;`.
-# Otherwise we use `make -f "filename" &lt;target&gt;`.
-</span>
-<span class="c"># Warning - only use TABS to indent in Makefiles, never spaces!
-</span>
-<span class="c">#-----------------------------------------------------------------------
-# Basics
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># Rules are of the format
-# target: &lt;prerequisite&gt;
-# where prerequisites are optional.
-</span>
-<span class="c"># A rule - this rule will only run if file0.txt doesn't exist.
-</span><span class="nl">file0.txt</span><span class="o">:</span>
-    <span class="err">echo</span> <span class="s2">"foo"</span> <span class="err">&gt;</span> <span class="err">file0.txt</span>
-    <span class="c"># Even comments in these 'recipe' sections get passed to the shell.
-</span>    <span class="c"># Try `make file0.txt` or simply `make` - first rule is the default.
-</span>
-<span class="c"># This rule will only run if file0.txt is newer than file1.txt.
-</span><span class="nl">file1.txt</span><span class="o">:</span> <span class="nf">file0.txt</span>
-    <span class="err">cat</span> <span class="err">file0.txt</span> <span class="err">&gt;</span> <span class="err">file1.txt</span>
-    <span class="c"># use the same quoting rules as in the shell.
-</span>    <span class="err">@cat</span> <span class="err">file0.txt</span> <span class="err">&gt;&gt;</span> <span class="err">file1.txt</span>
-    <span class="c"># @ stops the command from being echoed to stdout.
-</span>    <span class="err">-@echo</span> <span class="s1">'hello'</span>
-    <span class="c"># - means that make will keep going in the case of an error.
-</span>    <span class="c"># Try `make file1.txt` on the commandline.
-</span>
-<span class="c"># A rule can have multiple targets and multiple prerequisites
-</span><span class="nl">file2.txt file3.txt</span><span class="o">:</span> <span class="nf">file0.txt file1.txt</span>
-    <span class="err">touch</span> <span class="err">file2.txt</span>
-    <span class="err">touch</span> <span class="err">file3.txt</span>
+<div class="highlight"><pre><span></span><span class="c"># Comments can be written like this.</span>
 
-<span class="c"># Make will complain about multiple recipes for the same rule. Empty
-# recipes don't count though and can be used to add new dependencies.
-</span>
-<span class="c">#-----------------------------------------------------------------------
-# Phony Targets
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># A phony target. Any target that isn't a file.
-# It will never be up to date so make will always try to run it.
-</span><span class="nl">all</span><span class="o">:</span> <span class="nf">maker process</span>
+<span class="c"># File should be named Makefile and then can be run as `make &lt;target&gt;`.</span>
+<span class="c"># Otherwise we use `make -f &quot;filename&quot; &lt;target&gt;`.</span>
 
-<span class="c"># We can declare things out of order.
-</span><span class="nl">maker</span><span class="o">:</span>
-    <span class="err">touch</span> <span class="err">ex0.txt</span> <span class="err">ex1.txt</span>
+<span class="c"># Warning - only use TABS to indent in Makefiles, never spaces!</span>
 
-<span class="c"># Can avoid phony rules breaking when a real file has the same name by
-</span><span class="nl">.PHONY</span><span class="o">:</span> <span class="nf">all maker process</span>
-<span class="c"># This is a special target. There are several others.
-</span>
-<span class="c"># A rule with a dependency on a phony target will always run
-</span><span class="nl">ex0.txt ex1.txt</span><span class="o">:</span> <span class="nf">maker</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Basics</span>
+<span class="c">#-----------------------------------------------------------------------</span>
 
-<span class="c"># Common phony targets are: all make clean install ...
-</span>
-<span class="c">#-----------------------------------------------------------------------
-# Automatic Variables &amp; Wildcards
-#-----------------------------------------------------------------------
-</span>
-<span class="nl">process</span><span class="o">:</span> <span class="nf">file*.txt  </span><span class="c">#</span><span class="nf">using a wildcard to match filenames</span>
-    <span class="err">@echo</span> <span class="err">$^</span>    <span class="c"># $^ is a variable containing the list of prerequisites
-</span>    <span class="err">@echo</span> <span class="err">$@</span>    <span class="c"># prints the target name
-</span>    <span class="c">#(for multiple target rules, $@ is whichever caused the rule to run)
-</span>    <span class="err">@echo</span> <span class="err">$&lt;</span>    <span class="c"># the first prerequisite listed
-</span>    <span class="err">@echo</span> <span class="err">$?</span>    <span class="c"># only the dependencies that are out of date
-</span>    <span class="err">@echo</span> <span class="err">$+</span>    <span class="c"># all dependencies including duplicates (unlike normal)
-</span>    <span class="c">#@echo $|   # all of the 'order only' prerequisites
-</span>
-<span class="c"># Even if we split up the rule dependency definitions, $^ will find them
-</span><span class="nl">process</span><span class="o">:</span> <span class="nf">ex1.txt file0.txt</span>
-<span class="c"># ex1.txt will be found but file0.txt will be deduplicated.
-</span>
-<span class="c">#-----------------------------------------------------------------------
-# Patterns
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># Can teach make how to convert certain files into other files.
-</span>
-<span class="nl">%.png</span><span class="o">:</span> <span class="nf">%.svg</span>
-    <span class="err">inkscape</span> <span class="err">--export-png</span> <span class="err">$^</span>
+<span class="c"># Rules are of the format</span>
+<span class="c"># target: &lt;prerequisite&gt;</span>
+<span class="c"># where prerequisites are optional.</span>
 
-<span class="c"># Pattern rules will only do anything if make decides to create the
-# target.
-</span>
-<span class="c"># Directory paths are normally ignored when matching pattern rules. But
-# make will try to use the most appropriate rule available.
-</span><span class="nl">small/%.png</span><span class="o">:</span> <span class="nf">%.svg</span>
-    <span class="err">inkscape</span> <span class="err">--export-png</span> <span class="err">--export-dpi</span> <span class="err">30</span> <span class="err">$^</span>
+<span class="c"># A rule - this rule will only run if file0.txt doesn&#39;t exist.</span>
+<span class="nf">file0.txt</span><span class="o">:</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;foo&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>file0.txt
+<span class="c">    # Even comments in these &#39;recipe&#39; sections get passed to the shell.</span>
+<span class="c">    # Try `make file0.txt` or simply `make` - first rule is the default.</span>
 
-<span class="c"># make will use the last version for a pattern rule that it finds.
-</span><span class="nl">%.png</span><span class="o">:</span> <span class="nf">%.svg</span>
-    <span class="err">@echo</span> <span class="err">this</span> <span class="err">rule</span> <span class="err">is</span> <span class="err">chosen</span>
+<span class="c"># This rule will only run if file0.txt is newer than file1.txt.</span>
+<span class="nf">file1.txt</span><span class="o">:</span><span class="w"> </span><span class="n">file</span>0.<span class="n">txt</span>
+<span class="w">    </span>cat<span class="w"> </span>file0.txt<span class="w"> </span>&gt;<span class="w"> </span>file1.txt
+<span class="c">    # use the same quoting rules as in the shell.</span>
+<span class="w">    </span>@cat<span class="w"> </span>file0.txt<span class="w"> </span>&gt;&gt;<span class="w"> </span>file1.txt
+<span class="c">    # @ stops the command from being echoed to stdout.</span>
+<span class="w">    </span>-@echo<span class="w"> </span><span class="s1">&#39;hello&#39;</span>
+<span class="c">    # - means that make will keep going in the case of an error.</span>
+<span class="c">    # Try `make file1.txt` on the commandline.</span>
 
-<span class="c"># However make will use the first pattern rule that can make the target
-</span><span class="nl">%.png</span><span class="o">:</span> <span class="nf">%.ps</span>
-    <span class="err">@echo</span> <span class="err">this</span> <span class="err">rule</span> <span class="err">is</span> <span class="err">not</span> <span class="err">chosen</span> <span class="err">if</span> <span class="err">*.svg</span> <span class="err">and</span> <span class="err">*.ps</span> <span class="err">are</span> <span class="err">both</span> <span class="err">present</span>
+<span class="c"># A rule can have multiple targets and multiple prerequisites</span>
+<span class="nf">file2.txt file3.txt</span><span class="o">:</span><span class="w"> </span><span class="n">file</span>0.<span class="n">txt</span> <span class="n">file</span>1.<span class="n">txt</span>
+<span class="w">    </span>touch<span class="w"> </span>file2.txt
+<span class="w">    </span>touch<span class="w"> </span>file3.txt
 
-<span class="c"># make already has some pattern rules built-in. For instance, it knows
-# how to turn *.c files into *.o files.
-</span>
-<span class="c"># Older makefiles might use suffix rules instead of pattern rules
-</span><span class="nl">.png.ps</span><span class="o">:</span>
-    <span class="err">@echo</span> <span class="err">this</span> <span class="err">rule</span> <span class="err">is</span> <span class="err">similar</span> <span class="err">to</span> <span class="err">a</span> <span class="err">pattern</span> <span class="err">rule.</span>
+<span class="c"># Make will complain about multiple recipes for the same rule. Empty</span>
+<span class="c"># recipes don&#39;t count though and can be used to add new dependencies.</span>
 
-<span class="c"># Tell make about the suffix rule
-</span><span class="nl">.SUFFIXES</span><span class="o">:</span> <span class="nf">.png</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Phony Targets</span>
+<span class="c">#-----------------------------------------------------------------------</span>
 
-<span class="c">#-----------------------------------------------------------------------
-# Variables
-#-----------------------------------------------------------------------
-# aka. macros
-</span>
-<span class="c"># Variables are basically all string types
-</span>
-<span class="nv">name</span> <span class="o">=</span> Ted
-<span class="nv">name2</span><span class="o">=</span><span class="s2">"Sarah"</span>
+<span class="c"># A phony target. Any target that isn&#39;t a file.</span>
+<span class="c"># It will never be up to date so make will always try to run it.</span>
+<span class="nf">all</span><span class="o">:</span><span class="w"> </span><span class="n">maker</span> <span class="n">process</span>
 
-<span class="nl">echo</span><span class="o">:</span>
-    <span class="err">@echo</span> <span class="err">$(name)</span>
-    <span class="err">@echo</span> <span class="err">${name2}</span>
-    <span class="err">@echo</span> <span class="err">$name</span>    <span class="c"># This won't work, treated as $(n)ame.
-</span>    <span class="err">@echo</span> <span class="err">$(name3)</span> <span class="c"># Unknown variables are treated as empty strings.
-</span>
-<span class="c"># There are 4 places to set variables.
-# In order of priority from highest to lowest:
-# 1: commandline arguments
-# 2: Makefile
-# 3: shell environment variables - make imports these automatically.
-# 4: make has some predefined variables
-</span>
-<span class="nv">name4</span> <span class="o">?=</span> Jean
-<span class="c"># Only set the variable if environment variable is not already defined.
-</span>
-<span class="err">override</span> <span class="nv">name5</span> <span class="o">=</span> David
-<span class="c"># Stops commandline arguments from changing this variable.
-</span>
-<span class="nv">name4</span> <span class="o">+=</span>grey
-<span class="c"># Append values to variable (includes a space).
-</span>
-<span class="c"># Pattern-specific variable values (GNU extension).
-</span><span class="nl">echo</span><span class="o">:</span> <span class="nf">name2 = Sara </span><span class="c">#</span><span class="nf"> True within the matching rule</span>
-    <span class="c"># and also within its remade recursive dependencies
-</span>    <span class="c"># (except it can break when your graph gets too complicated!)
-</span>
-<span class="c"># Some variables defined automatically by make.
-</span><span class="nl">echo_inbuilt</span><span class="o">:</span>
-    <span class="err">echo</span> <span class="err">$(CC)</span>
-    <span class="err">echo</span> <span class="err">${CXX}</span>
-    <span class="err">echo</span> <span class="err">$(FC)</span>
-    <span class="err">echo</span> <span class="err">${CFLAGS}</span>
-    <span class="err">echo</span> <span class="err">$(CPPFLAGS)</span>
-    <span class="err">echo</span> <span class="err">${CXXFLAGS}</span>
-    <span class="err">echo</span> <span class="err">$(LDFLAGS)</span>
-    <span class="err">echo</span> <span class="err">${LDLIBS}</span>
+<span class="c"># We can declare things out of order.</span>
+<span class="nf">maker</span><span class="o">:</span>
+<span class="w">    </span>touch<span class="w"> </span>ex0.txt<span class="w"> </span>ex1.txt
 
-<span class="c">#-----------------------------------------------------------------------
-# Variables 2
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># The first type of variables are evaluated each time they are used.
-# This can be expensive, so a second type of variable exists which is
-# only evaluated once. (This is a GNU make extension)
-</span>
-<span class="nv">var</span> <span class="o">:=</span> hello
-<span class="nl">var2 </span><span class="o">::</span><span class="nf">=  $(var) hello</span>
-<span class="c">#:= and ::= are equivalent.
-</span>
-<span class="c"># These variables are evaluated procedurally (in the order that they
-# appear), thus breaking with the rest of the language !
-</span>
-<span class="c"># This doesn't work
-</span><span class="nl">var3 </span><span class="o">::</span><span class="nf">= $(var4) and good luck</span>
-<span class="nl">var4 </span><span class="o">::</span><span class="nf">= good night</span>
+<span class="c"># Can avoid phony rules breaking when a real file has the same name by</span>
+<span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">all</span> <span class="n">maker</span> <span class="n">process</span>
+<span class="c"># This is a special target. There are several others.</span>
 
-<span class="c">#-----------------------------------------------------------------------
-# Functions
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># make has lots of functions available.
-</span>
-<span class="nv">sourcefiles</span> <span class="o">=</span> <span class="nf">$(</span><span class="nb">wildcard</span> <span class="k">*</span>.c <span class="k">*</span>/<span class="k">*</span>.c<span class="nf">)</span>
-<span class="nv">objectfiles</span> <span class="o">=</span> <span class="nf">$(</span><span class="nb">patsubst</span> %.c,%.o,<span class="nv">$(sourcefiles)</span><span class="nf">)</span>
+<span class="c"># A rule with a dependency on a phony target will always run</span>
+<span class="nf">ex0.txt ex1.txt</span><span class="o">:</span><span class="w"> </span><span class="n">maker</span>
 
-<span class="c"># Format is $(func arg0,arg1,arg2...)
-</span>
-<span class="c"># Some examples
-</span><span class="nl">ls</span><span class="o">:</span> <span class="nf">* src/*</span>
-    <span class="err">@echo</span> <span class="err">$(filter</span> <span class="err">%.txt,</span> <span class="err">$^)</span>
-    <span class="err">@echo</span> <span class="err">$(notdir</span> <span class="err">$^)</span>
-    <span class="err">@echo</span> <span class="err">$(join</span> <span class="err">$(dir</span> <span class="err">$^),$(notdir</span> <span class="err">$^))</span>
+<span class="c"># Common phony targets are: all make clean install ...</span>
 
-<span class="c">#-----------------------------------------------------------------------
-# Directives
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># Include other makefiles, useful for platform specific code
-</span><span class="k">include</span><span class="sx"> foo.mk</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Automatic Variables &amp; Wildcards</span>
+<span class="c">#-----------------------------------------------------------------------</span>
 
-<span class="nv">sport</span> <span class="o">=</span> tennis
-<span class="c"># Conditional compilation
-</span><span class="nl">report</span><span class="o">:</span>
-<span class="k">ifeq</span> <span class="nv">($(sport),tennis)</span>
-    <span class="err">@echo</span> <span class="s1">'game, set, match'</span>
-<span class="k">else</span>
-    <span class="err">@echo</span> <span class="s2">"They think it's all over; it is now"</span>
-<span class="k">endif</span>
+<span class="nf">process</span><span class="o">:</span><span class="w"> </span><span class="n">file</span>*.<span class="n">txt</span>  <span class="c">#using a wildcard to match filenames</span>
+<span class="w">    </span>@echo<span class="w"> </span>$^<span class="w">    </span><span class="c1"># $^ is a variable containing the list of prerequisites</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="nv">$@</span><span class="w">    </span><span class="c1"># prints the target name</span>
+<span class="c">    #(for multiple target rules, $@ is whichever caused the rule to run)</span>
+<span class="w">    </span>@echo<span class="w"> </span>$&lt;<span class="w">    </span><span class="c1"># the first prerequisite listed</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="nv">$?</span><span class="w">    </span><span class="c1"># only the dependencies that are out of date</span>
+<span class="w">    </span>@echo<span class="w"> </span>$+<span class="w">    </span><span class="c1"># all dependencies including duplicates (unlike normal)</span>
+<span class="c">    #@echo $|   # all of the &#39;order only&#39; prerequisites</span>
 
-<span class="c"># There are also ifneq, ifdef, ifndef
-</span>
-<span class="nv">foo</span> <span class="o">=</span> <span class="nb">true</span>
+<span class="c"># Even if we split up the rule dependency definitions, $^ will find them</span>
+<span class="nf">process</span><span class="o">:</span><span class="w"> </span><span class="n">ex</span>1.<span class="n">txt</span> <span class="n">file</span>0.<span class="n">txt</span>
+<span class="c"># ex1.txt will be found but file0.txt will be deduplicated.</span>
 
-<span class="k">ifdef</span> <span class="nv">$(foo)</span>
-<span class="nv">bar</span> <span class="o">=</span> <span class="s1">'hello'</span>
-<span class="k">endif</span>
-</code></pre></div>
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Patterns</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+
+<span class="c"># Can teach make how to convert certain files into other files.</span>
+
+<span class="nf">%.png</span><span class="o">:</span><span class="w"> </span>%.<span class="n">svg</span>
+<span class="w">    </span>inkscape<span class="w"> </span>--export-png<span class="w"> </span>$^
+
+<span class="c"># Pattern rules will only do anything if make decides to create the</span>
+<span class="c"># target.</span>
+
+<span class="c"># Directory paths are normally ignored when matching pattern rules. But</span>
+<span class="c"># make will try to use the most appropriate rule available.</span>
+<span class="nf">small/%.png</span><span class="o">:</span><span class="w"> </span>%.<span class="n">svg</span>
+<span class="w">    </span>inkscape<span class="w"> </span>--export-png<span class="w"> </span>--export-dpi<span class="w"> </span><span class="m">30</span><span class="w"> </span>$^
+
+<span class="c"># make will use the last version for a pattern rule that it finds.</span>
+<span class="nf">%.png</span><span class="o">:</span><span class="w"> </span>%.<span class="n">svg</span>
+<span class="w">    </span>@echo<span class="w"> </span>this<span class="w"> </span>rule<span class="w"> </span>is<span class="w"> </span>chosen
+
+<span class="c"># However make will use the first pattern rule that can make the target</span>
+<span class="nf">%.png</span><span class="o">:</span><span class="w"> </span>%.<span class="n">ps</span>
+<span class="w">    </span>@echo<span class="w"> </span>this<span class="w"> </span>rule<span class="w"> </span>is<span class="w"> </span>not<span class="w"> </span>chosen<span class="w"> </span><span class="k">if</span><span class="w"> </span>*.svg<span class="w"> </span>and<span class="w"> </span>*.ps<span class="w"> </span>are<span class="w"> </span>both<span class="w"> </span>present
+
+<span class="c"># make already has some pattern rules built-in. For instance, it knows</span>
+<span class="c"># how to turn *.c files into *.o files.</span>
+
+<span class="c"># Older makefiles might use suffix rules instead of pattern rules</span>
+<span class="nf">.png.ps</span><span class="o">:</span>
+<span class="w">    </span>@echo<span class="w"> </span>this<span class="w"> </span>rule<span class="w"> </span>is<span class="w"> </span>similar<span class="w"> </span>to<span class="w"> </span>a<span class="w"> </span>pattern<span class="w"> </span>rule.
+
+<span class="c"># Tell make about the suffix rule</span>
+<span class="nf">.SUFFIXES</span><span class="o">:</span><span class="w"> </span>.<span class="n">png</span>
+
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Variables</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># aka. macros</span>
+
+<span class="c"># Variables are basically all string types</span>
+
+<span class="nv">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Ted
+<span class="nv">name2</span><span class="o">=</span><span class="s2">&quot;Sarah&quot;</span>
+
+<span class="nf">echo</span><span class="o">:</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>name<span class="k">)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="si">${</span><span class="nv">name2</span><span class="si">}</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="nv">$name</span><span class="w">    </span><span class="c1"># This won&#39;t work, treated as $(n)ame.</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>name3<span class="k">)</span><span class="w"> </span><span class="c1"># Unknown variables are treated as empty strings.</span>
+
+<span class="c"># There are 4 places to set variables.</span>
+<span class="c"># In order of priority from highest to lowest:</span>
+<span class="c"># 1: commandline arguments</span>
+<span class="c"># 2: Makefile</span>
+<span class="c"># 3: shell environment variables - make imports these automatically.</span>
+<span class="c"># 4: make has some predefined variables</span>
+
+<span class="nv">name4</span><span class="w"> </span><span class="o">?=</span><span class="w"> </span>Jean
+<span class="c"># Only set the variable if environment variable is not already defined.</span>
+
+<span class="err">override</span><span class="w"> </span><span class="nv">name5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>David
+<span class="c"># Stops commandline arguments from changing this variable.</span>
+
+<span class="nv">name4</span><span class="w"> </span><span class="o">+=</span>grey
+<span class="c"># Append values to variable (includes a space).</span>
+
+<span class="c"># Pattern-specific variable values (GNU extension).</span>
+<span class="nf">echo</span><span class="o">:</span><span class="w"> </span><span class="n">name</span>2 = <span class="n">Sara</span> <span class="c"># True within the matching rule</span>
+<span class="c">    # and also within its remade recursive dependencies</span>
+<span class="c">    # (except it can break when your graph gets too complicated!)</span>
+
+<span class="c"># Some variables defined automatically by make.</span>
+<span class="nf">echo_inbuilt</span><span class="o">:</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>CC<span class="k">)</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">CXX</span><span class="si">}</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>FC<span class="k">)</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">CFLAGS</span><span class="si">}</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>CPPFLAGS<span class="k">)</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">CXXFLAGS</span><span class="si">}</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>LDFLAGS<span class="k">)</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">LDLIBS</span><span class="si">}</span>
+
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Variables 2</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+
+<span class="c"># The first type of variables are evaluated each time they are used.</span>
+<span class="c"># This can be expensive, so a second type of variable exists which is</span>
+<span class="c"># only evaluated once. (This is a GNU make extension)</span>
+
+<span class="nv">var</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span>hello
+<span class="nf">var2 </span><span class="o">::</span>=  <span class="k">$(</span><span class="nv">var</span><span class="k">)</span> <span class="n">hello</span>
+<span class="c">#:= and ::= are equivalent.</span>
+
+<span class="c"># These variables are evaluated procedurally (in the order that they</span>
+<span class="c"># appear), thus breaking with the rest of the language !</span>
+
+<span class="c"># This doesn&#39;t work</span>
+<span class="nf">var3 </span><span class="o">::</span>= <span class="k">$(</span><span class="nv">var4</span><span class="k">)</span> <span class="n">and</span> <span class="n">good</span> <span class="n">luck</span>
+<span class="nf">var4 </span><span class="o">::</span>= <span class="n">good</span> <span class="n">night</span>
+
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Functions</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+
+<span class="c"># make has lots of functions available.</span>
+
+<span class="nv">sourcefiles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">$(</span>wildcard<span class="w"> </span>*.c<span class="w"> </span>*/*.c<span class="k">)</span>
+<span class="nv">objectfiles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">$(</span>patsubst<span class="w"> </span>%.c,%.o,<span class="k">$(</span>sourcefiles<span class="k">))</span>
+
+<span class="c"># Format is $(func arg0,arg1,arg2...)</span>
+
+<span class="c"># Some examples</span>
+<span class="nf">ls</span><span class="o">:</span><span class="w"> </span>* <span class="n">src</span>/*
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>filter<span class="w"> </span>%.txt,<span class="w"> </span>$^<span class="k">)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>notdir<span class="w"> </span>$^<span class="k">)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>join<span class="w"> </span><span class="k">$(</span>dir<span class="w"> </span>$^<span class="k">)</span>,<span class="k">$(</span>notdir<span class="w"> </span>$^<span class="k">))</span>
+
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Directives</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+
+<span class="c"># Include other makefiles, useful for platform specific code</span>
+<span class="cp">include foo.mk</span>
+
+<span class="nv">sport</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>tennis
+<span class="c"># Conditional compilation</span>
+<span class="nf">report</span><span class="o">:</span>
+<span class="cp">ifeq ($(sport),tennis)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="s1">&#39;game, set, match&#39;</span>
+<span class="cp">else</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="s2">&quot;They think it&#39;s all over; it is now&quot;</span>
+<span class="cp">endif</span>
+
+<span class="c"># There are also ifneq, ifdef, ifndef</span>
+
+<span class="nv">foo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span>
+
+<span class="cp">ifdef $(foo)</span>
+<span class="nv">bar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;hello&#39;</span>
+<span class="cp">endif</span>
+</pre></div>
 <h3>More Resources</h3>
 
 <ul>

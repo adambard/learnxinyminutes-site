@@ -91,159 +91,159 @@ convertissant le code hy en un arbre de syntaxe abstraite de python (ast).
 Ceci permet à hy d&#39;appeler du code python et à python d&#39;appeler du code hy.</p>
 
 <p>Ce tutoriel fonctionne pour hy &gt; 0.9.12</p>
-<div class="highlight"><pre class="highlight clojure"><code><span class="c1">;; Ceci est une introduction simple à hy, pour un tutoriel rapide aller à</span><span class="w">
-</span><span class="c1">;; http://try-hy.appspot.com</span><span class="w">
-</span><span class="c1">;;</span><span class="w">
-</span><span class="c1">; Les commentaires se font avec des points-virgules, comme les autres LISPS</span><span class="w">
+<div class="highlight"><pre><span></span><span class="c1">;; Ceci est une introduction simple à hy, pour un tutoriel rapide aller à</span>
+<span class="c1">;; http://try-hy.appspot.com</span>
+<span class="c1">;;</span>
+<span class="c1">; Les commentaires se font avec des points-virgules, comme les autres LISPS</span>
 
-</span><span class="c1">;; les s-expression de bases</span><span class="w">
-</span><span class="c1">; Les programmes Lisp sont fait d'expressions symboliques ou sexps qui</span><span class="w">
-</span><span class="c1">; ressemblent à</span><span class="w">
-</span><span class="p">(</span><span class="nf">some-function</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w">
-</span><span class="c1">; maintenant le quintessentiel hello world</span><span class="w">
-</span><span class="p">(</span><span class="nb">print</span><span class="w"> </span><span class="s">"hello world"</span><span class="p">)</span><span class="w">
+<span class="c1">;; les s-expression de bases</span>
+<span class="c1">; Les programmes Lisp sont fait d&#39;expressions symboliques ou sexps qui</span>
+<span class="c1">; ressemblent à</span>
+<span class="p">(</span><span class="nf">some-function</span><span class="w"> </span><span class="nv">args</span><span class="p">)</span>
+<span class="c1">; maintenant le quintessentiel hello world</span>
+<span class="p">(</span><span class="nb">print </span><span class="s">&quot;hello world&quot;</span><span class="p">)</span>
 
-</span><span class="c1">;; les types de données simples</span><span class="w">
-</span><span class="c1">; Tous les types de données simples sont exactement similaires à leurs</span><span class="w">
-</span><span class="c1">; homologues de python</span><span class="w">
-</span><span class="mi">42</span><span class="w"> </span><span class="c1">; =&gt; 42</span><span class="w">
-</span><span class="mf">3.14</span><span class="w"> </span><span class="c1">; =&gt; 3.14</span><span class="w">
-</span><span class="n">True</span><span class="w"> </span><span class="c1">; =&gt; True</span><span class="w">
-</span><span class="mi">4</span><span class="n">+10j</span><span class="w"> </span><span class="c1">; =&gt; (4+10j) un nombre complexe</span><span class="w">
+<span class="c1">;; les types de données simples</span>
+<span class="c1">; Tous les types de données simples sont exactement similaires à leurs</span>
+<span class="c1">; homologues de python</span>
+<span class="mi">42</span><span class="w"> </span><span class="c1">; =&gt; 42</span>
+<span class="mf">3.14</span><span class="w"> </span><span class="c1">; =&gt; 3.14</span>
+<span class="nv">True</span><span class="w"> </span><span class="c1">; =&gt; True</span>
+<span class="mi">4</span><span class="nv">+10j</span><span class="w"> </span><span class="c1">; =&gt; (4+10j) un nombre complexe</span>
 
-</span><span class="c1">; Commençons par un peu d'arithmétique très simple</span><span class="w">
-</span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 5</span><span class="w">
-</span><span class="c1">; l'opérateur est appliqué à tous les arguments, comme les autres lisps</span><span class="w">
-</span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 10</span><span class="w">
-</span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 1</span><span class="w">
-</span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 8</span><span class="w">
-</span><span class="p">(</span><span class="nb">/</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 4</span><span class="w">
-</span><span class="p">(</span><span class="nf">%</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 0 l'opérateur modulo</span><span class="w">
-</span><span class="c1">; l'opérateur d'élévation à la puissance est représenté par ** comme en python</span><span class="w">
-</span><span class="p">(</span><span class="nf">**</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 9</span><span class="w">
-</span><span class="c1">; les expressions imbriquées vont se comporter comme on s'y attend</span><span class="w">
-</span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="c1">;=&gt; 10</span><span class="w">
-</span><span class="c1">; aussi, les opérateurs logiques and or not et equal to etc. vont se comporter</span><span class="w">
-</span><span class="c1">; comme on s'y attend</span><span class="w">
-</span><span class="p">(</span><span class="nb">=</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; False</span><span class="w">
-</span><span class="p">(</span><span class="nb">not</span><span class="w"> </span><span class="p">(</span><span class="nb">=</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span><span class="w"> </span><span class="c1">;=&gt; True</span><span class="w">
+<span class="c1">; Commençons par un peu d&#39;arithmétique très simple</span>
+<span class="p">(</span><span class="nb">+ </span><span class="mi">4</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 5</span>
+<span class="c1">; l&#39;opérateur est appliqué à tous les arguments, comme les autres lisps</span>
+<span class="p">(</span><span class="nb">+ </span><span class="mi">4</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 10</span>
+<span class="p">(</span><span class="nb">- </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 1</span>
+<span class="p">(</span><span class="nb">* </span><span class="mi">4</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 8</span>
+<span class="p">(</span><span class="nb">/ </span><span class="mi">4</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 4</span>
+<span class="p">(</span><span class="nf">%</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 0 l&#39;opérateur modulo</span>
+<span class="c1">; l&#39;opérateur d&#39;élévation à la puissance est représenté par ** comme en python</span>
+<span class="p">(</span><span class="nf">**</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 9</span>
+<span class="c1">; les expressions imbriquées vont se comporter comme on s&#39;y attend</span>
+<span class="p">(</span><span class="nb">+ </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="nb">* </span><span class="mi">4</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="c1">;=&gt; 10</span>
+<span class="c1">; aussi, les opérateurs logiques and or not et equal to etc. vont se comporter</span>
+<span class="c1">; comme on s&#39;y attend</span>
+<span class="p">(</span><span class="nb">= </span><span class="mi">5</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; False</span>
+<span class="p">(</span><span class="nb">not </span><span class="p">(</span><span class="nb">= </span><span class="mi">5</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span><span class="w"> </span><span class="c1">;=&gt; True</span>
 
-</span><span class="c1">;; variables</span><span class="w">
-</span><span class="c1">; les variables sont déclarées en utilisant setv, les noms de variables</span><span class="w">
-</span><span class="c1">; peuvent utiliser l'UTF-8 à l'exception de ()[]{}",'`;#|</span><span class="w">
-</span><span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="mi">42</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="err">π</span><span class="w"> </span><span class="mf">3.14159</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">*foo*</span><span class="w"> </span><span class="mi">42</span><span class="p">)</span><span class="w">
-</span><span class="c1">;; d'autres types de conteneurs</span><span class="w">
-</span><span class="c1">; les chaînes, les listes, les tuples et dicts</span><span class="w">
-</span><span class="c1">; ce sont exactement les mêmes que les types de conteneurs de python</span><span class="w">
-</span><span class="s">"hello world"</span><span class="w"> </span><span class="c1">;=&gt; "hello world"</span><span class="w">
-</span><span class="c1">; les opérations sur les chaînes fonctionnent comme en python</span><span class="w">
-</span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="s">"hello "</span><span class="w"> </span><span class="s">"world"</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; "hello world"</span><span class="w">
-</span><span class="c1">; les listes sont créés en utilisant [], l'indexation commence à 0</span><span class="w">
-</span><span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="n">mylist</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">])</span><span class="w">
-</span><span class="c1">; les tuples sont des structures de données immuables</span><span class="w">
-</span><span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="n">mytuple</span><span class="w"> </span><span class="p">(</span><span class="nf">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w">
-</span><span class="c1">; les dictionnaires sont des paires clé-valeur</span><span class="w">
-</span><span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="n">dict1</span><span class="w"> </span><span class="p">{</span><span class="s">"key1"</span><span class="w"> </span><span class="mi">42</span><span class="w"> </span><span class="s">"key2"</span><span class="w"> </span><span class="mi">21</span><span class="p">})</span><span class="w">
-</span><span class="c1">; :nom peut être utilisé pour définir des mots clés dans hy qui peuvent être</span><span class="w">
-</span><span class="c1">;  utilisées comme clés</span><span class="w">
-</span><span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="n">dict2</span><span class="w"> </span><span class="p">{</span><span class="no">:key1</span><span class="w"> </span><span class="mi">41</span><span class="w"> </span><span class="no">:key2</span><span class="w"> </span><span class="mi">20</span><span class="p">})</span><span class="w">
-</span><span class="c1">; utilisez `get' pour obtenir l'élément à l'index / clé</span><span class="w">
-</span><span class="p">(</span><span class="nb">get</span><span class="w"> </span><span class="n">mylist</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 2</span><span class="w">
-</span><span class="p">(</span><span class="nb">get</span><span class="w"> </span><span class="n">dict1</span><span class="w"> </span><span class="s">"key1"</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 42</span><span class="w">
-</span><span class="c1">; Alternativement, si des mots clés ont été utilisés, l'élément peut être</span><span class="w">
-</span><span class="c1">; obtenu directement</span><span class="w">
-</span><span class="p">(</span><span class="no">:key1</span><span class="w"> </span><span class="n">dict2</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 41</span><span class="w">
+<span class="c1">;; variables</span>
+<span class="c1">; les variables sont déclarées en utilisant setv, les noms de variables</span>
+<span class="c1">; peuvent utiliser l&#39;UTF-8 à l&#39;exception de ()[]{}&quot;,&#39;`;#|</span>
+<span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="mi">42</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="nv">π</span><span class="w"> </span><span class="mf">3.14159</span><span class="p">)</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">*foo*</span><span class="w"> </span><span class="mi">42</span><span class="p">)</span>
+<span class="c1">;; d&#39;autres types de conteneurs</span>
+<span class="c1">; les chaînes, les listes, les tuples et dicts</span>
+<span class="c1">; ce sont exactement les mêmes que les types de conteneurs de python</span>
+<span class="s">&quot;hello world&quot;</span><span class="w"> </span><span class="c1">;=&gt; &quot;hello world&quot;</span>
+<span class="c1">; les opérations sur les chaînes fonctionnent comme en python</span>
+<span class="p">(</span><span class="nb">+ </span><span class="s">&quot;hello &quot;</span><span class="w"> </span><span class="s">&quot;world&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; &quot;hello world&quot;</span>
+<span class="c1">; les listes sont créés en utilisant [], l&#39;indexation commence à 0</span>
+<span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="nv">mylist</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">])</span>
+<span class="c1">; les tuples sont des structures de données immuables</span>
+<span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="nv">mytuple</span><span class="w"> </span><span class="p">(</span>,<span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span>
+<span class="c1">; les dictionnaires sont des paires clé-valeur</span>
+<span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="nv">dict1</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;key1&quot;</span><span class="w"> </span><span class="mi">42</span><span class="w"> </span><span class="s">&quot;key2&quot;</span><span class="w"> </span><span class="mi">21</span><span class="p">})</span>
+<span class="c1">; :nom peut être utilisé pour définir des mots clés dans hy qui peuvent être</span>
+<span class="c1">;  utilisées comme clés</span>
+<span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="nv">dict2</span><span class="w"> </span><span class="p">{</span><span class="ss">:key1</span><span class="w"> </span><span class="mi">41</span><span class="w"> </span><span class="ss">:key2</span><span class="w"> </span><span class="mi">20</span><span class="p">})</span>
+<span class="c1">; utilisez `get&#39; pour obtenir l&#39;élément à l&#39;index / clé</span>
+<span class="p">(</span><span class="nb">get </span><span class="nv">mylist</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 2</span>
+<span class="p">(</span><span class="nb">get </span><span class="nv">dict1</span><span class="w"> </span><span class="s">&quot;key1&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 42</span>
+<span class="c1">; Alternativement, si des mots clés ont été utilisés, l&#39;élément peut être</span>
+<span class="c1">; obtenu directement</span>
+<span class="p">(</span><span class="ss">:key1</span><span class="w"> </span><span class="nv">dict2</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 41</span>
 
-</span><span class="c1">;; fonctions et autres constructions de programme</span><span class="w">
-</span><span class="c1">; les fonctions sont définies en utilisant defn, la dernière sexp est renvoyé par défaut</span><span class="w">
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">greet</span><span class="w"> </span><span class="p">[</span><span class="nb">name</span><span class="p">]</span><span class="w">
-  </span><span class="s">"A simple greeting"</span><span class="w"> </span><span class="c1">; une docstring optionnelle</span><span class="w">
-  </span><span class="p">(</span><span class="nb">print</span><span class="w"> </span><span class="s">"hello "</span><span class="w"> </span><span class="nb">name</span><span class="p">))</span><span class="w">
+<span class="c1">;; fonctions et autres constructions de programme</span>
+<span class="c1">; les fonctions sont définies en utilisant defn, la dernière sexp est renvoyé par défaut</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">greet</span><span class="w"> </span><span class="p">[</span><span class="nv">name</span><span class="p">]</span>
+<span class="w">  </span><span class="s">&quot;A simple greeting&quot;</span><span class="w"> </span><span class="c1">; une docstring optionnelle</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">print </span><span class="s">&quot;hello &quot;</span><span class="w"> </span><span class="nv">name</span><span class="p">))</span>
 
-</span><span class="p">(</span><span class="nf">greet</span><span class="w"> </span><span class="s">"bilbo"</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; "hello bilbo"</span><span class="w">
+<span class="p">(</span><span class="nf">greet</span><span class="w"> </span><span class="s">&quot;bilbo&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; &quot;hello bilbo&quot;</span>
 
-</span><span class="c1">; les fonctions peuvent prendre des arguments optionnels ainsi que des</span><span class="w">
-</span><span class="c1">; arguments sous forme de mots clés</span><span class="w">
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">foolists</span><span class="w"> </span><span class="p">[</span><span class="n">arg1</span><span class="w"> </span><span class="o">&amp;</span><span class="n">optional</span><span class="w"> </span><span class="p">[</span><span class="n">arg2</span><span class="w"> </span><span class="mi">2</span><span class="p">]]</span><span class="w">
-  </span><span class="p">[</span><span class="n">arg1</span><span class="w"> </span><span class="n">arg2</span><span class="p">])</span><span class="w">
+<span class="c1">; les fonctions peuvent prendre des arguments optionnels ainsi que des</span>
+<span class="c1">; arguments sous forme de mots clés</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">foolists</span><span class="w"> </span><span class="p">[</span><span class="nv">arg1</span><span class="w"> </span><span class="o">&amp;</span><span class="nv">optional</span><span class="w"> </span><span class="p">[</span><span class="nv">arg2</span><span class="w"> </span><span class="mi">2</span><span class="p">]]</span>
+<span class="w">  </span><span class="p">[</span><span class="nv">arg1</span><span class="w"> </span><span class="nv">arg2</span><span class="p">])</span>
 
-</span><span class="p">(</span><span class="nf">foolists</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; [3 2]</span><span class="w">
-</span><span class="p">(</span><span class="nf">foolists</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; [10 3]</span><span class="w">
+<span class="p">(</span><span class="nf">foolists</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; [3 2]</span>
+<span class="p">(</span><span class="nf">foolists</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; [10 3]</span>
 
-</span><span class="c1">; les fonctions anonymes sont créés en utilisant `fn' ou `lambda'</span><span class="w">
-</span><span class="c1">; qui sont semblable à `defn '</span><span class="w">
-</span><span class="p">(</span><span class="nb">map</span><span class="w"> </span><span class="p">(</span><span class="k">fn</span><span class="w"> </span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">x</span><span class="p">))</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">])</span><span class="w"> </span><span class="c1">;=&gt; [1 4 9 16]</span><span class="w">
+<span class="c1">; les fonctions anonymes sont créés en utilisant `fn&#39; ou `lambda&#39;</span>
+<span class="c1">; qui sont semblable à `defn &#39;</span>
+<span class="p">(</span><span class="nb">map </span><span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">x</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="nb">* </span><span class="nv">x</span><span class="w"> </span><span class="nv">x</span><span class="p">))</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">])</span><span class="w"> </span><span class="c1">;=&gt; [1 4 9 16]</span>
 
-</span><span class="c1">;; Opérations sur les séquences</span><span class="w">
-</span><span class="c1">; hy a des utilitaires natifs pour les opérations sur les séquences etc.</span><span class="w">
-</span><span class="c1">; récupérez le premier élément en utilisant  `first' ou `car'</span><span class="w">
-</span><span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="n">mylist</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">])</span><span class="w">
-</span><span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="n">mydict</span><span class="w"> </span><span class="p">{</span><span class="s">"a"</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="s">"b"</span><span class="w"> </span><span class="mi">2</span><span class="p">})</span><span class="w">
-</span><span class="p">(</span><span class="nb">first</span><span class="w"> </span><span class="n">mylist</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 1</span><span class="w">
+<span class="c1">;; Opérations sur les séquences</span>
+<span class="c1">; hy a des utilitaires natifs pour les opérations sur les séquences etc.</span>
+<span class="c1">; récupérez le premier élément en utilisant  `first&#39; ou `car&#39;</span>
+<span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="nv">mylist</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">])</span>
+<span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="nv">mydict</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;a&quot;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="w"> </span><span class="mi">2</span><span class="p">})</span>
+<span class="p">(</span><span class="nb">first </span><span class="nv">mylist</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 1</span>
 
-</span><span class="c1">; découpez les listes en utilisant slice</span><span class="w">
-</span><span class="p">(</span><span class="nf">slice</span><span class="w"> </span><span class="n">mylist</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; [2 3]</span><span class="w">
+<span class="c1">; découpez les listes en utilisant slice</span>
+<span class="p">(</span><span class="nf">slice</span><span class="w"> </span><span class="nv">mylist</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; [2 3]</span>
 
-</span><span class="c1">; obtenez les éléments d'une liste ou dict en utilisant `get'</span><span class="w">
-</span><span class="p">(</span><span class="nb">get</span><span class="w"> </span><span class="n">mylist</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 2</span><span class="w">
-</span><span class="p">(</span><span class="nb">get</span><span class="w"> </span><span class="n">mydict</span><span class="w"> </span><span class="s">"b"</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 2</span><span class="w">
-</span><span class="c1">; l'indexation des listes commence à 0 comme en python</span><span class="w">
-</span><span class="c1">; assoc peut définir les éléments à clés/index</span><span class="w">
-</span><span class="p">(</span><span class="nb">assoc</span><span class="w"> </span><span class="n">mylist</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="c1">; makes mylist [1 2 10 4]</span><span class="w">
-</span><span class="p">(</span><span class="nb">assoc</span><span class="w"> </span><span class="n">mydict</span><span class="w"> </span><span class="s">"c"</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">; makes mydict {"a" 1 "b" 2 "c" 3}</span><span class="w">
-</span><span class="c1">; il ya tout un tas d'autres fonctions de base qui rend le travail avec</span><span class="w">
-</span><span class="c1">; les séquences amusant</span><span class="w">
+<span class="c1">; obtenez les éléments d&#39;une liste ou dict en utilisant `get&#39;</span>
+<span class="p">(</span><span class="nb">get </span><span class="nv">mylist</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 2</span>
+<span class="p">(</span><span class="nb">get </span><span class="nv">mydict</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; 2</span>
+<span class="c1">; l&#39;indexation des listes commence à 0 comme en python</span>
+<span class="c1">; assoc peut définir les éléments à clés/index</span>
+<span class="p">(</span><span class="nb">assoc </span><span class="nv">mylist</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="c1">; makes mylist [1 2 10 4]</span>
+<span class="p">(</span><span class="nb">assoc </span><span class="nv">mydict</span><span class="w"> </span><span class="s">&quot;c&quot;</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">; makes mydict {&quot;a&quot; 1 &quot;b&quot; 2 &quot;c&quot; 3}</span>
+<span class="c1">; il ya tout un tas d&#39;autres fonctions de base qui rend le travail avec</span>
+<span class="c1">; les séquences amusant</span>
 
-</span><span class="c1">;; les importations fonctionnent comme en pyhtonn</span><span class="w">
-</span><span class="p">(</span><span class="nb">import</span><span class="w"> </span><span class="n">datetime</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="nb">import</span><span class="w"> </span><span class="p">[</span><span class="n">functools</span><span class="w"> </span><span class="p">[</span><span class="nb">partial</span><span class="w"> </span><span class="nb">reduce</span><span class="p">]])</span><span class="w"> </span><span class="c1">; importe fun1 et fun2 de module1</span><span class="w">
-</span><span class="p">(</span><span class="nb">import</span><span class="w"> </span><span class="p">[</span><span class="n">matplotlib.pyplot</span><span class="w"> </span><span class="no">:as</span><span class="w"> </span><span class="n">plt</span><span class="p">])</span><span class="w"> </span><span class="c1">; faire une importation foo comme bar</span><span class="w">
-</span><span class="c1">; toutes les méthodes natives de python sont accessibles à partir de hy</span><span class="w">
-</span><span class="c1">; a.foo(arg) est appelé (.foo a arg)</span><span class="w">
-</span><span class="p">(</span><span class="nf">.split</span><span class="w"> </span><span class="p">(</span><span class="nf">.strip</span><span class="w"> </span><span class="s">"hello world  "</span><span class="p">))</span><span class="w"> </span><span class="c1">;=&gt; ["hello" "world"]</span><span class="w">
+<span class="c1">;; les importations fonctionnent comme en pyhtonn</span>
+<span class="p">(</span><span class="nb">import </span><span class="nv">datetime</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">import </span><span class="p">[</span><span class="nv">functools</span><span class="w"> </span><span class="p">[</span><span class="nb">partial </span><span class="nv">reduce</span><span class="p">]])</span><span class="w"> </span><span class="c1">; importe fun1 et fun2 de module1</span>
+<span class="p">(</span><span class="nb">import </span><span class="p">[</span><span class="nv">matplotlib.pyplot</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">plt</span><span class="p">])</span><span class="w"> </span><span class="c1">; faire une importation foo comme bar</span>
+<span class="c1">; toutes les méthodes natives de python sont accessibles à partir de hy</span>
+<span class="c1">; a.foo(arg) est appelé (.foo a arg)</span>
+<span class="p">(</span><span class="nf">.split</span><span class="w"> </span><span class="p">(</span><span class="nf">.strip</span><span class="w"> </span><span class="s">&quot;hello world  &quot;</span><span class="p">))</span><span class="w"> </span><span class="c1">;=&gt; [&quot;hello&quot; &quot;world&quot;]</span>
 
-</span><span class="c1">;; Conditionelles</span><span class="w">
-</span><span class="c1">; (if condition (body-if-true) (body-if-false)</span><span class="w">
-</span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">=</span><span class="w"> </span><span class="n">passcode</span><span class="w"> </span><span class="s">"moria"</span><span class="p">)</span><span class="w">
-  </span><span class="p">(</span><span class="nb">print</span><span class="w"> </span><span class="s">"welcome"</span><span class="p">)</span><span class="w">
-  </span><span class="p">(</span><span class="nb">print</span><span class="w"> </span><span class="s">"Speak friend, and Enter!"</span><span class="p">))</span><span class="w">
+<span class="c1">;; Conditionelles</span>
+<span class="c1">; (if condition (body-if-true) (body-if-false)</span>
+<span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">= </span><span class="nv">passcode</span><span class="w"> </span><span class="s">&quot;moria&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">print </span><span class="s">&quot;welcome&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">print </span><span class="s">&quot;Speak friend, and Enter!&quot;</span><span class="p">))</span>
 
-</span><span class="c1">; imbriquez plusieurs if else if avec le mot clé cond</span><span class="w">
-</span><span class="p">(</span><span class="k">cond</span><span class="w">
- </span><span class="p">[(</span><span class="nb">=</span><span class="w"> </span><span class="n">someval</span><span class="w"> </span><span class="mi">42</span><span class="p">)</span><span class="w">
-  </span><span class="p">(</span><span class="nb">print</span><span class="w"> </span><span class="s">"Life, universe and everything else!"</span><span class="p">)]</span><span class="w">
- </span><span class="p">[(</span><span class="nb">&gt;</span><span class="w"> </span><span class="n">someval</span><span class="w"> </span><span class="mi">42</span><span class="p">)</span><span class="w">
-  </span><span class="p">(</span><span class="nb">print</span><span class="w"> </span><span class="s">"val too large"</span><span class="p">)]</span><span class="w">
- </span><span class="p">[(</span><span class="nb">&lt;</span><span class="w"> </span><span class="n">someval</span><span class="w"> </span><span class="mi">42</span><span class="p">)</span><span class="w">
-  </span><span class="p">(</span><span class="nb">print</span><span class="w"> </span><span class="s">"val too small"</span><span class="p">)])</span><span class="w">
+<span class="c1">; imbriquez plusieurs if else if avec le mot clé cond</span>
+<span class="p">(</span><span class="nf">cond</span>
+<span class="w"> </span><span class="p">[(</span><span class="nb">= </span><span class="nv">someval</span><span class="w"> </span><span class="mi">42</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">print </span><span class="s">&quot;Life, universe and everything else!&quot;</span><span class="p">)]</span>
+<span class="w"> </span><span class="p">[(</span><span class="nb">&gt; </span><span class="nv">someval</span><span class="w"> </span><span class="mi">42</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">print </span><span class="s">&quot;val too large&quot;</span><span class="p">)]</span>
+<span class="w"> </span><span class="p">[(</span><span class="nb">&lt; </span><span class="nv">someval</span><span class="w"> </span><span class="mi">42</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">print </span><span class="s">&quot;val too small&quot;</span><span class="p">)])</span>
 
-</span><span class="c1">; groupez les expressions avec do, ceux-ci seront executé séquentiellemnt</span><span class="w">
-</span><span class="c1">; les expressions comme defn ont un do implicite</span><span class="w">
-</span><span class="p">(</span><span class="nf">do</span><span class="w">
- </span><span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="n">someval</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w">
- </span><span class="p">(</span><span class="nb">print</span><span class="w"> </span><span class="s">"someval is set to "</span><span class="w"> </span><span class="n">someval</span><span class="p">))</span><span class="w"> </span><span class="c1">;=&gt; 10</span><span class="w">
+<span class="c1">; groupez les expressions avec do, ceux-ci seront executé séquentiellemnt</span>
+<span class="c1">; les expressions comme defn ont un do implicite</span>
+<span class="p">(</span><span class="nf">do</span>
+<span class="w"> </span><span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="nv">someval</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+<span class="w"> </span><span class="p">(</span><span class="nb">print </span><span class="s">&quot;someval is set to &quot;</span><span class="w"> </span><span class="nv">someval</span><span class="p">))</span><span class="w"> </span><span class="c1">;=&gt; 10</span>
 
-</span><span class="c1">; créer une liaison lexicale avec `let', toutes les variables déclarées</span><span class="w">
-</span><span class="c1">; comme cela ont une portée locale</span><span class="w">
-</span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[[</span><span class="n">nemesis</span><span class="w"> </span><span class="p">{</span><span class="s">"superman"</span><span class="w"> </span><span class="s">"lex luther"</span><span class="w">
-                </span><span class="s">"sherlock"</span><span class="w"> </span><span class="s">"moriarty"</span><span class="w">
-                </span><span class="s">"seinfeld"</span><span class="w"> </span><span class="s">"newman"</span><span class="p">}]]</span><span class="w">
-  </span><span class="p">(</span><span class="k">for</span><span class="w"> </span><span class="p">[(</span><span class="nf">,</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">.items</span><span class="w"> </span><span class="n">nemesis</span><span class="p">)]</span><span class="w">
-    </span><span class="p">(</span><span class="nb">print</span><span class="w"> </span><span class="p">(</span><span class="nf">.format</span><span class="w"> </span><span class="s">"{0}'s nemesis was {1}"</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="n">v</span><span class="p">))))</span><span class="w">
+<span class="c1">; créer une liaison lexicale avec `let&#39;, toutes les variables déclarées</span>
+<span class="c1">; comme cela ont une portée locale</span>
+<span class="p">(</span><span class="k">let </span><span class="p">[[</span><span class="nv">nemesis</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;superman&quot;</span><span class="w"> </span><span class="s">&quot;lex luther&quot;</span>
+<span class="w">                </span><span class="s">&quot;sherlock&quot;</span><span class="w"> </span><span class="s">&quot;moriarty&quot;</span>
+<span class="w">                </span><span class="s">&quot;seinfeld&quot;</span><span class="w"> </span><span class="s">&quot;newman&quot;</span><span class="p">}]]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">for </span><span class="p">[(</span>,<span class="w"> </span><span class="nv">h</span><span class="w"> </span><span class="nv">v</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">.items</span><span class="w"> </span><span class="nv">nemesis</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">print </span><span class="p">(</span><span class="nf">.format</span><span class="w"> </span><span class="s">&quot;{0}&#39;s nemesis was {1}&quot;</span><span class="w"> </span><span class="nv">h</span><span class="w"> </span><span class="nv">v</span><span class="p">))))</span>
 
-</span><span class="c1">;; classes</span><span class="w">
-</span><span class="c1">; les classes sont définies comme ceci</span><span class="w">
-</span><span class="p">(</span><span class="nf">defclass</span><span class="w"> </span><span class="n">Wizard</span><span class="w"> </span><span class="p">[</span><span class="n">object</span><span class="p">]</span><span class="w">
-  </span><span class="p">[[</span><span class="n">--init--</span><span class="w"> </span><span class="p">(</span><span class="k">fn</span><span class="w"> </span><span class="p">[</span><span class="n">self</span><span class="w"> </span><span class="n">spell</span><span class="p">]</span><span class="w">
-             </span><span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="n">self.spell</span><span class="w"> </span><span class="n">spell</span><span class="p">)</span><span class="w"> </span><span class="c1">; init the spell attr</span><span class="w">
-             </span><span class="n">None</span><span class="p">)]</span><span class="w">
-   </span><span class="p">[</span><span class="n">get-spell</span><span class="w"> </span><span class="p">(</span><span class="k">fn</span><span class="w"> </span><span class="p">[</span><span class="n">self</span><span class="p">]</span><span class="w">
-              </span><span class="n">self.spell</span><span class="p">)]])</span><span class="w">
+<span class="c1">;; classes</span>
+<span class="c1">; les classes sont définies comme ceci</span>
+<span class="p">(</span><span class="nf">defclass</span><span class="w"> </span><span class="nv">Wizard</span><span class="w"> </span><span class="p">[</span><span class="nv">object</span><span class="p">]</span>
+<span class="w">  </span><span class="p">[[</span><span class="nv">--init--</span><span class="w"> </span><span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">self</span><span class="w"> </span><span class="nv">spell</span><span class="p">]</span>
+<span class="w">             </span><span class="p">(</span><span class="nf">setv</span><span class="w"> </span><span class="nv">self.spell</span><span class="w"> </span><span class="nv">spell</span><span class="p">)</span><span class="w"> </span><span class="c1">; init the spell attr</span>
+<span class="w">             </span><span class="nv">None</span><span class="p">)]</span>
+<span class="w">   </span><span class="p">[</span><span class="nv">get-spell</span><span class="w"> </span><span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">self</span><span class="p">]</span>
+<span class="w">              </span><span class="nv">self.spell</span><span class="p">)]])</span>
 
-</span><span class="c1">;; allez voir hylang.org</span><span class="w">
-</span></code></pre></div>
+<span class="c1">;; allez voir hylang.org</span>
+</pre></div>
 <h3>Lectures complémentaires</h3>
 
 <p>Ce tutoriel est juste une simple introduction à hy/lisp/python.</p>

@@ -95,240 +95,240 @@
 甚至与其他构建工具一起使用也并无冲突.</p>
 
 <p>尽管有许多的分支和变体, 这篇文章针对是标准的 GNU make.</p>
-<div class="highlight"><pre class="highlight make"><code><span class="c"># 这行表示注释
-</span>
-<span class="c"># 文件名一定要叫 Makefile, 大小写区分, 使用 `make &lt;target&gt;` 生成 target
-# 如果想要取别的名字, 可以用 `make -f "filename" &lt;target&gt;`.
-</span>
-<span class="c"># 重要的事情 - 只认识 TAB, 空格是不认的, 但是在 GNU Make 3.82 之后, 可以通过
-# 设置参数 .RECIPEPREFIX 进行修改
-</span>
-<span class="c">#-----------------------------------------------------------------------
-# 初级
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># 创建一个 target 的规则非常简单
-# targets : prerequisites
-#   recipe
-#    …
-# prerequisites(依赖) 是可选的, recipe(做法) 也可以多个或者不给.
-</span>
-<span class="c"># 下面这个任务没有给 prerequisites, 只会在目标文件 file0.txt 文件不存在时执行
-</span><span class="nl">file0.txt</span><span class="o">:</span>
-    <span class="err">echo</span> <span class="s2">"foo"</span> <span class="err">&gt;</span> <span class="err">file0.txt</span>
-    <span class="c"># 试试 `make file0.txt`
-</span>    <span class="c"># 或者直接 `make`, 因为第一个任务是默认任务.
-</span>    <span class="c"># 注意: 即使是这些注释, 如果前面有 TAB, 也会发送给 shell, 注意看 `make file0.txt` 输出
-</span>
-<span class="c"># 如果提供 prerequisites, 则只有 prerequisites 比 target 新时会执行
-# 比如下面这个任务只有当 file0.txt 比 file1.txt 新时才会执行.
-</span><span class="nl">file1.txt</span><span class="o">:</span> <span class="nf">file0.txt</span>
-    <span class="err">cat</span> <span class="err">file0.txt</span> <span class="err">&gt;</span> <span class="err">file1.txt</span>
-    <span class="c"># 这里跟shell里的命令式一模一样.
-</span>    <span class="err">@cat</span> <span class="err">file0.txt</span> <span class="err">&gt;&gt;</span> <span class="err">file1.txt</span>
-    <span class="c"># @ 不会把命令打印到 stdout.
-</span>    <span class="err">-@echo</span> <span class="s1">'hello'</span>
-    <span class="c"># - 意思是发生错误了也没关系.
-</span>    <span class="c"># 试试 `make file1.txt` 吧.
-</span>
-<span class="c"># targets 和 prerequisites 都可以是多个, 以空格分割
-</span><span class="nl">file2.txt file3.txt</span><span class="o">:</span> <span class="nf">file0.txt file1.txt</span>
-    <span class="err">touch</span> <span class="err">file2.txt</span>
-    <span class="err">touch</span> <span class="err">file3.txt</span>
+<div class="highlight"><pre><span></span><span class="c"># 这行表示注释</span>
 
-<span class="c"># 如果声明重复的 target, make 会给一个 warning, 后面会覆盖前面的
-# 比如重复定义 file2.txt 会得到这样的 warning
-# Makefile:46: warning: overriding commands for target `file2.txt'
-# Makefile:40: warning: ignoring old commands for target `file2.txt'
-</span><span class="nl">file2.txt</span><span class="o">:</span> <span class="nf">file0.txt</span>
-    <span class="err">touch</span> <span class="err">file2.txt</span>
+<span class="c"># 文件名一定要叫 Makefile, 大小写区分, 使用 `make &lt;target&gt;` 生成 target</span>
+<span class="c"># 如果想要取别的名字, 可以用 `make -f &quot;filename&quot; &lt;target&gt;`.</span>
 
-<span class="c"># 但是如果不定义任何 recipe, 就不会冲突, 只是多了依赖关系
-</span><span class="nl">file2.txt</span><span class="o">:</span> <span class="nf">file0.txt file3.txt</span>
+<span class="c"># 重要的事情 - 只认识 TAB, 空格是不认的, 但是在 GNU Make 3.82 之后, 可以通过</span>
+<span class="c"># 设置参数 .RECIPEPREFIX 进行修改</span>
 
-<span class="c">#-----------------------------------------------------------------------
-# Phony(假的) Targets
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># phony targets 意思是 tagets 并不是文件, 可以想象成一个任务的名字而已.
-# 因为不是文件, 无法比对是否有更新, 所以每次make都会执行.
-</span><span class="nl">all</span><span class="o">:</span> <span class="nf">maker process</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># 初级</span>
+<span class="c">#-----------------------------------------------------------------------</span>
 
-<span class="c"># 依赖于 phony target 的 target 也会每次 make 都执行, 即使 target 是文件
-</span><span class="nl">ex0.txt ex1.txt</span><span class="o">:</span> <span class="nf">maker</span>
+<span class="c"># 创建一个 target 的规则非常简单</span>
+<span class="c"># targets : prerequisites</span>
+<span class="c">#   recipe</span>
+<span class="c">#    …</span>
+<span class="c"># prerequisites(依赖) 是可选的, recipe(做法) 也可以多个或者不给.</span>
 
-<span class="c"># target 的声明顺序并不重要, 比如上面的 all 的依赖 maker 现在才声明
-</span><span class="nl">maker</span><span class="o">:</span>
-    <span class="err">touch</span> <span class="err">ex0.txt</span> <span class="err">ex1.txt</span>
+<span class="c"># 下面这个任务没有给 prerequisites, 只会在目标文件 file0.txt 文件不存在时执行</span>
+<span class="nf">file0.txt</span><span class="o">:</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;foo&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>file0.txt
+<span class="c">    # 试试 `make file0.txt`</span>
+<span class="c">    # 或者直接 `make`, 因为第一个任务是默认任务.</span>
+<span class="c">    # 注意: 即使是这些注释, 如果前面有 TAB, 也会发送给 shell, 注意看 `make file0.txt` 输出</span>
 
-<span class="c"># 如果定义的 phony target 与文件名重名, 可以用 .PHONY 显式地指明哪些 targets 是 phony
-</span><span class="nl">.PHONY</span><span class="o">:</span> <span class="nf">all maker process</span>
-<span class="c"># This is a special target. There are several others.
-</span>
-<span class="c"># 常用的 phony target 有: all clean install ...
-</span>
-<span class="c">#-----------------------------------------------------------------------
-# 变量与通配符
-#-----------------------------------------------------------------------
-</span>
-<span class="nl">process</span><span class="o">:</span> <span class="nf">file*.txt | dir/a.foo.b    </span><span class="c">#</span><span class="nf"> 可以用通配符匹配多个文件作为prerequisites</span>
-    <span class="err">@echo</span> <span class="err">$^</span>    <span class="c"># $^ 是 prerequisites
-</span>    <span class="err">@echo</span> <span class="err">$@</span>    <span class="c"># $@ 代表 target, 如果 target 为多个, $@ 代表当前执行的那个
-</span>    <span class="err">@echo</span> <span class="err">$&lt;</span>    <span class="c"># $&lt; prerequisite 中的第一个
-</span>    <span class="err">@echo</span> <span class="err">$?</span>    <span class="c"># $? 需要更新的 prerequisite 文件列表
-</span>    <span class="err">@echo</span> <span class="err">$+</span>    <span class="c"># $+ 所有依赖, 包括重复的
-</span>    <span class="err">@echo</span> <span class="err">$|</span>    <span class="c"># $| 竖线后面的 order-only prerequisites
-</span>
-<span class="nl">a.%.b</span><span class="o">:</span>
-    <span class="err">@echo</span> <span class="err">$*</span>  <span class="c"># $* match 的target % 那部分, 包括路径, 比如 `make dir/a.foo.b` 会打出 `dir/foo`
-</span>
-<span class="c"># 即便分开定义依赖, $^ 依然能拿到
-</span><span class="nl">process</span><span class="o">:</span> <span class="nf">ex1.txt file0.txt</span>
-<span class="c"># 非常智能的, ex1.txt 会被找到, file0.txt 会被去重.
-</span>
-<span class="c">#-----------------------------------------------------------------------
-# 模式匹配
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># 可以让 make 知道如何转换某些文件到其他格式
-# 比如 从 svg 到 png
-</span><span class="nl">%.png</span><span class="o">:</span> <span class="nf">%.svg</span>
-    <span class="err">inkscape</span> <span class="err">--export-png</span> <span class="err">$^</span>
+<span class="c"># 如果提供 prerequisites, 则只有 prerequisites 比 target 新时会执行</span>
+<span class="c"># 比如下面这个任务只有当 file0.txt 比 file1.txt 新时才会执行.</span>
+<span class="nf">file1.txt</span><span class="o">:</span><span class="w"> </span><span class="n">file</span>0.<span class="n">txt</span>
+<span class="w">    </span>cat<span class="w"> </span>file0.txt<span class="w"> </span>&gt;<span class="w"> </span>file1.txt
+<span class="c">    # 这里跟shell里的命令式一模一样.</span>
+<span class="w">    </span>@cat<span class="w"> </span>file0.txt<span class="w"> </span>&gt;&gt;<span class="w"> </span>file1.txt
+<span class="c">    # @ 不会把命令打印到 stdout.</span>
+<span class="w">    </span>-@echo<span class="w"> </span><span class="s1">&#39;hello&#39;</span>
+<span class="c">    # - 意思是发生错误了也没关系.</span>
+<span class="c">    # 试试 `make file1.txt` 吧.</span>
 
-<span class="c"># 一旦有需要 foo.png 这个任务就会运行
-</span>
-<span class="c"># 路径会被忽略, 所以上面的 target 能匹配所有 png
-# 但是如果加了路径, make 会找到最接近的匹配, 如果
-# make small/foo.png (在这之前要先有 small/foo.svg 这个文件)
-# 则会匹配下面这个规则
-</span><span class="nl">small/%.png</span><span class="o">:</span> <span class="nf">%.svg</span>
-    <span class="err">inkscape</span> <span class="err">--export-png</span> <span class="err">--export-dpi</span> <span class="err">30</span> <span class="err">$^</span>
+<span class="c"># targets 和 prerequisites 都可以是多个, 以空格分割</span>
+<span class="nf">file2.txt file3.txt</span><span class="o">:</span><span class="w"> </span><span class="n">file</span>0.<span class="n">txt</span> <span class="n">file</span>1.<span class="n">txt</span>
+<span class="w">    </span>touch<span class="w"> </span>file2.txt
+<span class="w">    </span>touch<span class="w"> </span>file3.txt
 
-<span class="nl">%.png</span><span class="o">:</span> <span class="nf">%.svg</span>
-    <span class="err">@echo</span> <span class="err">重复定义会覆盖前面的,</span> <span class="err">现在</span> <span class="err">inkscape</span> <span class="err">没用了</span>
+<span class="c"># 如果声明重复的 target, make 会给一个 warning, 后面会覆盖前面的</span>
+<span class="c"># 比如重复定义 file2.txt 会得到这样的 warning</span>
+<span class="c"># Makefile:46: warning: overriding commands for target `file2.txt&#39;</span>
+<span class="c"># Makefile:40: warning: ignoring old commands for target `file2.txt&#39;</span>
+<span class="nf">file2.txt</span><span class="o">:</span><span class="w"> </span><span class="n">file</span>0.<span class="n">txt</span>
+<span class="w">    </span>touch<span class="w"> </span>file2.txt
 
-<span class="c"># make 已经有一些内置的规则, 比如从 *.c 到 *.o
-</span>
-<span class="c">#-----------------------------------------------------------------------
-# 变量
-#-----------------------------------------------------------------------
-# 其实是宏 macro
-</span>
-<span class="c"># 变量都是字符串类型, 下面这俩是一样一样的
-</span>
-<span class="nv">name</span> <span class="o">=</span> Ted
-<span class="nv">name2</span><span class="o">=</span><span class="s2">"Sarah"</span>
+<span class="c"># 但是如果不定义任何 recipe, 就不会冲突, 只是多了依赖关系</span>
+<span class="nf">file2.txt</span><span class="o">:</span><span class="w"> </span><span class="n">file</span>0.<span class="n">txt</span> <span class="n">file</span>3.<span class="n">txt</span>
 
-<span class="nl">echo</span><span class="o">:</span>
-    <span class="err">@echo</span> <span class="err">$(name)</span>
-    <span class="err">@echo</span> <span class="err">${name2}</span>
-    <span class="err">@echo</span> <span class="err">$name</span>    <span class="c"># 这个会被蠢蠢的解析成 $(n)ame.
-</span>    <span class="err">@echo</span> <span class="err">\</span><span class="s2">"$(name3)\" # 未声明的变量会被处理成空字符串.
-    @echo $(name4)
-    @echo $(name5)
-# 你可以通过4种方式设置变量.
-# 按以下顺序由高到低:
-# 1: 命令行参数. 比如试试 `make echo name3=JICHAO`
-# 2: Makefile 里面的
-# 3: shell 中的环境变量
-# 4: make 预设的一些变量
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Phony(假的) Targets</span>
+<span class="c">#-----------------------------------------------------------------------</span>
 
-name4 ?= Jean
-# 问号意思是如果 name4 被设置过了, 就不设置了.
+<span class="c"># phony targets 意思是 tagets 并不是文件, 可以想象成一个任务的名字而已.</span>
+<span class="c"># 因为不是文件, 无法比对是否有更新, 所以每次make都会执行.</span>
+<span class="nf">all</span><span class="o">:</span><span class="w"> </span><span class="n">maker</span> <span class="n">process</span>
 
-override name5 = David
-# 用 override 可以防止命令行参数设置的覆盖
+<span class="c"># 依赖于 phony target 的 target 也会每次 make 都执行, 即使 target 是文件</span>
+<span class="nf">ex0.txt ex1.txt</span><span class="o">:</span><span class="w"> </span><span class="n">maker</span>
 
-name4 +=grey
-# 用加号可以连接 (中间用空格分割).
+<span class="c"># target 的声明顺序并不重要, 比如上面的 all 的依赖 maker 现在才声明</span>
+<span class="nf">maker</span><span class="o">:</span>
+<span class="w">    </span>touch<span class="w"> </span>ex0.txt<span class="w"> </span>ex1.txt
 
-# 在依赖的地方设置变量
-echo: name2 = Sara2
+<span class="c"># 如果定义的 phony target 与文件名重名, 可以用 .PHONY 显式地指明哪些 targets 是 phony</span>
+<span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">all</span> <span class="n">maker</span> <span class="n">process</span>
+<span class="c"># This is a special target. There are several others.</span>
 
-# 还有一些内置的变量
-echo_inbuilt:
-    echo $(CC)
-    echo ${CXX)}
-    echo $(FC)
-    echo ${CFLAGS)}
-    echo $(CPPFLAGS)
-    echo ${CXXFLAGS}
-    echo $(LDFLAGS)
-    echo ${LDLIBS}
+<span class="c"># 常用的 phony target 有: all clean install ...</span>
 
-#-----------------------------------------------------------------------
-# 变量 2
-#-----------------------------------------------------------------------
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># 变量与通配符</span>
+<span class="c">#-----------------------------------------------------------------------</span>
 
-# 加个冒号可以声明 Simply expanded variables 即时扩展变量, 即只在声明时扩展一次
-# 之前的等号声明时 recursively expanded 递归扩展
+<span class="nf">process</span><span class="o">:</span><span class="w"> </span><span class="n">file</span>*.<span class="n">txt</span> <span class="p">|</span> <span class="n">dir</span>/<span class="n">a</span>.<span class="n">foo</span>.<span class="n">b</span>    <span class="c"># 可以用通配符匹配多个文件作为prerequisites</span>
+<span class="w">    </span>@echo<span class="w"> </span>$^<span class="w">    </span><span class="c1"># $^ 是 prerequisites</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="nv">$@</span><span class="w">    </span><span class="c1"># $@ 代表 target, 如果 target 为多个, $@ 代表当前执行的那个</span>
+<span class="w">    </span>@echo<span class="w"> </span>$&lt;<span class="w">    </span><span class="c1"># $&lt; prerequisite 中的第一个</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="nv">$?</span><span class="w">    </span><span class="c1"># $? 需要更新的 prerequisite 文件列表</span>
+<span class="w">    </span>@echo<span class="w"> </span>$+<span class="w">    </span><span class="c1"># $+ 所有依赖, 包括重复的</span>
+<span class="w">    </span>@echo<span class="w"> </span>$<span class="p">|</span><span class="w">    </span><span class="c1"># $| 竖线后面的 order-only prerequisites</span>
 
-var := hello
-var2 :=  $(var) hello
+<span class="nf">a.%.b</span><span class="o">:</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="nv">$*</span><span class="w">  </span><span class="c1"># $* match 的target % 那部分, 包括路径, 比如 `make dir/a.foo.b` 会打出 `dir/foo`</span>
 
-# 这些变量会在其引用的顺序求值
-# 比如 var3 声明时找不到 var4, var3 会扩展成 `and good luck`
-var3 := $(var4) and good luck
-# 但是一般的变量会在调用时递归扩展, 先扩展 var5, 再扩展 var4, 所以是正常的
-var5 = $(var4) and good luck
-var4 := good night
+<span class="c"># 即便分开定义依赖, $^ 依然能拿到</span>
+<span class="nf">process</span><span class="o">:</span><span class="w"> </span><span class="n">ex</span>1.<span class="n">txt</span> <span class="n">file</span>0.<span class="n">txt</span>
+<span class="c"># 非常智能的, ex1.txt 会被找到, file0.txt 会被去重.</span>
 
-echoSEV:
-    @echo $(var)
-    @echo $(var2)
-    @echo $(var3)
-    @echo $(var4)
-    @echo $(var5)
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># 模式匹配</span>
+<span class="c">#-----------------------------------------------------------------------</span>
 
-#-----------------------------------------------------------------------
-# 函数
-#-----------------------------------------------------------------------
+<span class="c"># 可以让 make 知道如何转换某些文件到其他格式</span>
+<span class="c"># 比如 从 svg 到 png</span>
+<span class="nf">%.png</span><span class="o">:</span><span class="w"> </span>%.<span class="n">svg</span>
+<span class="w">    </span>inkscape<span class="w"> </span>--export-png<span class="w"> </span>$^
 
-# make 自带了一些函数.
-# wildcard 会将后面的通配符变成一串文件路径
-all_markdown:
-    @echo $(wildcard *.markdown)
-# patsubst 可以做替换, 比如下面会把所有 markdown
-# 后缀的文件重命名为 md 后缀
-substitue: *
-    @echo $(patsubst %.markdown,%.md,$* $^)
+<span class="c"># 一旦有需要 foo.png 这个任务就会运行</span>
 
-# 函数调用格式是 $(func arg0,arg1,arg2...)
+<span class="c"># 路径会被忽略, 所以上面的 target 能匹配所有 png</span>
+<span class="c"># 但是如果加了路径, make 会找到最接近的匹配, 如果</span>
+<span class="c"># make small/foo.png (在这之前要先有 small/foo.svg 这个文件)</span>
+<span class="c"># 则会匹配下面这个规则</span>
+<span class="nf">small/%.png</span><span class="o">:</span><span class="w"> </span>%.<span class="n">svg</span>
+<span class="w">    </span>inkscape<span class="w"> </span>--export-png<span class="w"> </span>--export-dpi<span class="w"> </span><span class="m">30</span><span class="w"> </span>$^
 
-# 试试
-ls: *
-    @echo $(filter %.txt, $^)
-    @echo $(notdir $^)
-    @echo $(join $(dir $^),$(notdir $^))
+<span class="nf">%.png</span><span class="o">:</span><span class="w"> </span>%.<span class="n">svg</span>
+<span class="w">    </span>@echo<span class="w"> </span>重复定义会覆盖前面的,<span class="w"> </span>现在<span class="w"> </span>inkscape<span class="w"> </span>没用了
 
-#-----------------------------------------------------------------------
-# Directives
-#-----------------------------------------------------------------------
+<span class="c"># make 已经有一些内置的规则, 比如从 *.c 到 *.o</span>
 
-# 可以用 include 引入别的 Makefile 文件
-# include foo.mk
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># 变量</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># 其实是宏 macro</span>
 
-sport = tennis
-# 流程控制语句 (如if else 等等) 顶格写
-report:
-ifeq ($(sport),tennis)
-    @echo 'game, set, match'
-else
-    @echo "</span><span class="err">They</span> <span class="err">think</span> <span class="err">it</span><span class="s1">'s all over; it is now"
-endif
+<span class="c"># 变量都是字符串类型, 下面这俩是一样一样的</span>
 
-# 还有 ifneq, ifdef, ifndef
+<span class="nv">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Ted
+<span class="nv">name2</span><span class="o">=</span><span class="s2">&quot;Sarah&quot;</span>
 
-foo = true
+<span class="nf">echo</span><span class="o">:</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>name<span class="k">)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="si">${</span><span class="nv">name2</span><span class="si">}</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="nv">$name</span><span class="w">    </span><span class="c1"># 这个会被蠢蠢的解析成 $(n)ame.</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="se">\&quot;</span><span class="k">$(</span>name3<span class="k">)</span><span class="se">\&quot;</span><span class="w"> </span><span class="c1"># 未声明的变量会被处理成空字符串.</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>name4<span class="k">)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>name5<span class="k">)</span>
+<span class="c"># 你可以通过4种方式设置变量.</span>
+<span class="c"># 按以下顺序由高到低:</span>
+<span class="c"># 1: 命令行参数. 比如试试 `make echo name3=JICHAO`</span>
+<span class="c"># 2: Makefile 里面的</span>
+<span class="c"># 3: shell 中的环境变量</span>
+<span class="c"># 4: make 预设的一些变量</span>
 
-# 不只是 recipe, 还可以写在外面哟
-ifdef $(foo)
-bar = '</span><span class="err">bar'</span>
-<span class="k">endif</span>
+<span class="nv">name4</span><span class="w"> </span><span class="o">?=</span><span class="w"> </span>Jean
+<span class="c"># 问号意思是如果 name4 被设置过了, 就不设置了.</span>
 
-<span class="nl">hellobar</span><span class="o">:</span>
-    <span class="err">@echo</span> <span class="err">bar</span>
-</code></pre></div>
+<span class="err">override</span><span class="w"> </span><span class="nv">name5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>David
+<span class="c"># 用 override 可以防止命令行参数设置的覆盖</span>
+
+<span class="nv">name4</span><span class="w"> </span><span class="o">+=</span>grey
+<span class="c"># 用加号可以连接 (中间用空格分割).</span>
+
+<span class="c"># 在依赖的地方设置变量</span>
+<span class="nf">echo</span><span class="o">:</span><span class="w"> </span><span class="n">name</span>2 = <span class="n">Sara</span>2
+
+<span class="c"># 还有一些内置的变量</span>
+<span class="nf">echo_inbuilt</span><span class="o">:</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>CC<span class="k">)</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">CXX</span><span class="p">)</span><span class="si">}</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>FC<span class="k">)</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">CFLAGS</span><span class="p">)</span><span class="si">}</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>CPPFLAGS<span class="k">)</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">CXXFLAGS</span><span class="si">}</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>LDFLAGS<span class="k">)</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">LDLIBS</span><span class="si">}</span>
+
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># 变量 2</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+
+<span class="c"># 加个冒号可以声明 Simply expanded variables 即时扩展变量, 即只在声明时扩展一次</span>
+<span class="c"># 之前的等号声明时 recursively expanded 递归扩展</span>
+
+<span class="nv">var</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span>hello
+<span class="nv">var2</span><span class="w"> </span><span class="o">:=</span><span class="w">  </span><span class="k">$(</span>var<span class="k">)</span><span class="w"> </span>hello
+
+<span class="c"># 这些变量会在其引用的顺序求值</span>
+<span class="c"># 比如 var3 声明时找不到 var4, var3 会扩展成 `and good luck`</span>
+<span class="nv">var3</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">$(</span>var4<span class="k">)</span><span class="w"> </span>and<span class="w"> </span>good<span class="w"> </span>luck
+<span class="c"># 但是一般的变量会在调用时递归扩展, 先扩展 var5, 再扩展 var4, 所以是正常的</span>
+<span class="nv">var5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">$(</span>var4<span class="k">)</span><span class="w"> </span>and<span class="w"> </span>good<span class="w"> </span>luck
+<span class="nv">var4</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span>good<span class="w"> </span>night
+
+<span class="nf">echoSEV</span><span class="o">:</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>var<span class="k">)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>var2<span class="k">)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>var3<span class="k">)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>var4<span class="k">)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>var5<span class="k">)</span>
+
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># 函数</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+
+<span class="c"># make 自带了一些函数.</span>
+<span class="c"># wildcard 会将后面的通配符变成一串文件路径</span>
+<span class="nf">all_markdown</span><span class="o">:</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>wildcard<span class="w"> </span>*.markdown<span class="k">)</span>
+<span class="c"># patsubst 可以做替换, 比如下面会把所有 markdown</span>
+<span class="c"># 后缀的文件重命名为 md 后缀</span>
+<span class="nf">substitue</span><span class="o">:</span><span class="w"> </span>*
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>patsubst<span class="w"> </span>%.markdown,%.md,<span class="nv">$*</span><span class="w"> </span>$^<span class="k">)</span>
+
+<span class="c"># 函数调用格式是 $(func arg0,arg1,arg2...)</span>
+
+<span class="c"># 试试</span>
+<span class="nf">ls</span><span class="o">:</span><span class="w"> </span>*
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>filter<span class="w"> </span>%.txt,<span class="w"> </span>$^<span class="k">)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>notdir<span class="w"> </span>$^<span class="k">)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>join<span class="w"> </span><span class="k">$(</span>dir<span class="w"> </span>$^<span class="k">)</span>,<span class="k">$(</span>notdir<span class="w"> </span>$^<span class="k">))</span>
+
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Directives</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+
+<span class="c"># 可以用 include 引入别的 Makefile 文件</span>
+<span class="c"># include foo.mk</span>
+
+<span class="nv">sport</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>tennis
+<span class="c"># 流程控制语句 (如if else 等等) 顶格写</span>
+<span class="nf">report</span><span class="o">:</span>
+<span class="cp">ifeq ($(sport),tennis)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="s1">&#39;game, set, match&#39;</span>
+<span class="cp">else</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="s2">&quot;They think it&#39;s all over; it is now&quot;</span>
+<span class="cp">endif</span>
+
+<span class="c"># 还有 ifneq, ifdef, ifndef</span>
+
+<span class="nv">foo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span>
+
+<span class="c"># 不只是 recipe, 还可以写在外面哟</span>
+<span class="cp">ifdef $(foo)</span>
+<span class="nv">bar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;bar&#39;</span>
+<span class="cp">endif</span>
+
+<span class="nf">hellobar</span><span class="o">:</span>
+<span class="w">    </span>@echo<span class="w"> </span>bar
+</pre></div>
 <h3>资源</h3>
 
 <ul>

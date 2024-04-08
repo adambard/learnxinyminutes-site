@@ -111,21 +111,21 @@
 <h1>Defining an object</h1>
 
 <p>An object encapsulates predicate declarations and definitions. Objects can be created dynamically but are usually static and defined in source files. A single source file can contain any number of entity definitions. A simple object, defining a list member public predicate:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>:- object(list).
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">object</span>(list).
 
-    :- public(member/2).
-    member(Head, [Head| _]).
-    member(Head, [_| Tail]) :-
-        member(Head, Tail).
+<span class="p">    :- </span><span class="k">public</span>(member<span class="o">/</span><span class="m">2</span>).
+    member(<span class="nv">Head</span>, [<span class="nv">Head</span>| <span class="nv">_</span>]).
+    member(<span class="nv">Head</span>, [<span class="nv">_</span>| <span class="nv">Tail</span>]) <span class="o">:-</span>
+        member(<span class="nv">Head</span>, <span class="nv">Tail</span>).
 
-:- end_object.
-</code></pre></div>
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
 <h1>Compiling and loading source files</h1>
 
 <p>Assuming that the code above for the <code>list</code> object is saved in a <code>list.lgt</code> file, it can be compiled and loaded using the <code>logtalk_load/1</code> built-in predicate or its abbreviation, <code>{}/1</code>, with the file path as argument (the extension can be omitted):</p>
-<div class="highlight"><pre class="highlight plaintext"><code>?- {list}.
+<div class="highlight"><pre><span></span><span class="o">?-</span> <span class="k">{</span>list<span class="k">}</span>.
 yes
-</code></pre></div>
+</pre></div>
 <p>In general, entities may have dependencies on entities defined in other source files (e.g. library entities). To load a file and all its dependencies, the advised solution is to define a 
 <em>loader</em> file that loads all the necessary files for an application. A loader file is simply a source file, typically named <code>loader.lgt</code>, that makes calls to the <code>logtalk_load/1-2</code>
 built-in predicates, usually from an <code>initialization/1</code> directive for portability and
@@ -134,349 +134,349 @@ standards compliance. Loader files are provided for all libraries, tools, and ex
 <h1>Sending a message to an object</h1>
 
 <p>The <code>::/2</code> infix operator is used to send a message to an object. As in Prolog, we can backtrack for alternative solutions:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>?- list::member(X, [1,2,3]).
-X = 1 ;
-X = 2 ;
-X = 3
+<div class="highlight"><pre><span></span><span class="o">?-</span> list<span class="o">::</span>member(<span class="nv">X</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]).
+<span class="nv">X</span> <span class="o">=</span> <span class="m">1</span> <span class="o">;</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="m">2</span> <span class="o">;</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="m">3</span>
 yes
-</code></pre></div>
+</pre></div>
 <p>Encapsulation is enforced. A predicate can be declared <em>public</em>, <em>protected</em>, or <em>private</em>. It can also be <em>local</em> when there is no scope directive for it. For example:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>:- object(scopes).
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">object</span>(scopes).
 
-    :- private(bar/0).
+<span class="p">    :- </span><span class="k">private</span>(bar<span class="o">/</span><span class="m">0</span>).
     bar.
 
     local.
 
-:- end_object.
-</code></pre></div>
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
 <p>Assuming the object is saved in a <code>scopes.lgt</code> file:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>?- {scopes}.
+<div class="highlight"><pre><span></span><span class="o">?-</span> <span class="k">{</span>scopes<span class="k">}</span>.
 yes
 
-?- catch(scopes::bar, Error, true).
-Error = error(
-    permission_error(access, private_predicate, bar/0),
-    logtalk(scopes::bar, user)
+<span class="o">?-</span> <span class="k">catch</span>(scopes<span class="o">::</span>bar, <span class="nv">Error</span>, <span class="k">true</span>).
+<span class="nv">Error</span> <span class="o">=</span> error(
+    <span class="k">permission_error</span>(access, private_predicate, bar<span class="o">/</span><span class="m">0</span>),
+    logtalk(scopes<span class="o">::</span>bar, user)
 )
 yes
 
-?- catch(scopes::local, Error, true).
-Error = error(
-    existence_error(predicate_declaration, local/0),
-    logtalk(scopes::local, user)
+<span class="o">?-</span> <span class="k">catch</span>(scopes<span class="o">::</span>local, <span class="nv">Error</span>, <span class="k">true</span>).
+<span class="nv">Error</span> <span class="o">=</span> error(
+    <span class="k">existence_error</span>(predicate_declaration, local<span class="o">/</span><span class="m">0</span>),
+    logtalk(scopes<span class="o">::</span>local, user)
 )
 yes
-</code></pre></div>
+</pre></div>
 <p>When the predicate in a message is unknown for the object (the role it plays determines the lookup procedures), we also get an error. For example:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>?- catch(scopes::unknown, Error, true).
-Error = error(
-    existence_error(predicate_declaration, unknown/0),
-    logtalk(scopes::unknown, user)
+<div class="highlight"><pre><span></span><span class="o">?-</span> <span class="k">catch</span>(scopes<span class="o">::</span>unknown, <span class="nv">Error</span>, <span class="k">true</span>).
+<span class="nv">Error</span> <span class="o">=</span> error(
+    <span class="k">existence_error</span>(predicate_declaration, unknown<span class="o">/</span><span class="m">0</span>),
+    logtalk(scopes<span class="o">::</span>unknown, user)
 )
 yes
-</code></pre></div>
+</pre></div>
 <p>A subtle point is that predicate scope directives specify predicate <em>calling</em> semantics, not <em>definition</em> semantics. For example, if an object playing the role of a class declares a predicate private, the predicate can be defined in subclasses and instances <em>but</em> can only be called in its instances <em>from</em> the class.</p>
 
 <h1>Defining and implementing a protocol</h1>
 
 <p>Protocols contain predicate declarations that can be implemented by any number of objects and categories:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>:- protocol(listp).
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">protocol</span>(listp).
 
-    :- public(member/2).
+<span class="p">    :- </span><span class="k">public</span>(member<span class="o">/</span><span class="m">2</span>).
 
-:- end_protocol.
+<span class="p">:- </span><span class="k">end_protocol</span>.
 
-:- object(list,
-    implements(listp)).
+<span class="p">:- </span><span class="k">object</span>(list,
+    <span class="k">implements</span>(listp)).
 
-    member(Head, [Head| _]).
-    member(Head, [_| Tail]) :-
-        member(Head, Tail).
+    member(<span class="nv">Head</span>, [<span class="nv">Head</span>| <span class="nv">_</span>]).
+    member(<span class="nv">Head</span>, [<span class="nv">_</span>| <span class="nv">Tail</span>]) <span class="o">:-</span>
+        member(<span class="nv">Head</span>, <span class="nv">Tail</span>).
 
-:- end_object.
-</code></pre></div>
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
 <p>The scope of the protocol predicates can be restricted using protected or private implementation. For example:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>:- object(stack,
-    implements(private::listp)).
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">object</span>(stack,
+    <span class="k">implements</span>(private<span class="o">::</span>listp)).
 
-:- end_object.
-</code></pre></div>
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
 <p>In fact, all entity relations (in an entity opening directive) can be qualified as public (the default), protected, or private.</p>
 
 <h1>Prototypes</h1>
 
 <p>An object without an <em>instantiation</em> or <em>specialization</em> relation with another object plays the role of a prototype. A prototype can <em>extend</em> another object, its parent prototype.</p>
-<div class="highlight"><pre class="highlight plaintext"><code>% clyde, our prototypical elephant
-:- object(clyde).
+<div class="highlight"><pre><span></span><span class="c">% clyde, our prototypical elephant</span>
+<span class="p">:- </span><span class="k">object</span>(clyde).
 
-    :- public(color/1).
+<span class="p">    :- </span><span class="k">public</span>(color<span class="o">/</span><span class="m">1</span>).
     color(grey).
 
-    :- public(number_of_legs/1).
-    number_of_legs(4).
+<span class="p">    :- </span><span class="k">public</span>(number_of_legs<span class="o">/</span><span class="m">1</span>).
+    number_of_legs(<span class="m">4</span>).
 
-:- end_object.
+<span class="p">:- </span><span class="k">end_object</span>.
 
-% fred, another elephant, is like clyde, except that he's white
-:- object(fred,
-    extends(clyde)).
+<span class="c">% fred, another elephant, is like clyde, except that he&#39;s white</span>
+<span class="p">:- </span><span class="k">object</span>(fred,
+    <span class="k">extends</span>(clyde)).
 
     color(white).
 
-:- end_object.
-</code></pre></div>
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
 <p>When answering a message sent to an object playing the role of a prototype, we validate the message and look for an answer first in the prototype itself and, if not found, we delegate to the prototype parents if any:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>?- fred::number_of_legs(N).
-N = 4
+<div class="highlight"><pre><span></span><span class="o">?-</span> fred<span class="o">::</span>number_of_legs(<span class="nv">N</span>).
+<span class="nv">N</span> <span class="o">=</span> <span class="m">4</span>
 yes
 
-?- fred::color(C).
-C = white
+<span class="o">?-</span> fred<span class="o">::</span>color(<span class="nv">C</span>).
+<span class="nv">C</span> <span class="o">=</span> white
 yes
-</code></pre></div>
+</pre></div>
 <p>A message is valid if the corresponding predicate is declared (and the sender is within scope) but it will fail, rather then throwing an error, if the predicate is not defined. This is called the <em>closed-world assumption</em>. For example, consider the following object, saved in a <code>foo.lgt</code> file:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>:- object(foo).
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">object</span>(foo).
 
-    :- public(bar/0).
+<span class="p">    :- </span><span class="k">public</span>(bar<span class="o">/</span><span class="m">0</span>).
 
-:- end_object.
-</code></pre></div>
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
 <p>Loading the file and trying to call the <code>bar/0</code> predicate fails as expected. Note that this is different from calling an <em>unknown</em> predicate, which results in an error:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>?- {foo}.
+<div class="highlight"><pre><span></span><span class="o">?-</span> <span class="k">{</span>foo<span class="k">}</span>.
 yes
 
-?- foo::bar.
+<span class="o">?-</span> foo<span class="o">::</span>bar.
 no
 
-?- catch(foo::baz, Error, true).
-Error = error(
-    existence_error(predicate_declaration, baz/0),
-    logtalk(foo::baz, user)
+<span class="o">?-</span> <span class="k">catch</span>(foo<span class="o">::</span>baz, <span class="nv">Error</span>, <span class="k">true</span>).
+<span class="nv">Error</span> <span class="o">=</span> error(
+    <span class="k">existence_error</span>(predicate_declaration, baz<span class="o">/</span><span class="m">0</span>),
+    logtalk(foo<span class="o">::</span>baz, user)
 )
 yes
-</code></pre></div>
+</pre></div>
 <h1>Classes and instances</h1>
 
 <p>In order to define objects playing the role of classes and/or instances, an object must have at least an instantiation or a specialization relation with another object. Objects playing the role of meta-classes can be used when we need to see a class also as an instance. We use the following example to also illustrate how to dynamically create new objects at runtime:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>% a simple, generic, metaclass defining a new/2 predicate for its instances
-:- object(metaclass,
-    instantiates(metaclass)).
+<div class="highlight"><pre><span></span><span class="c">% a simple, generic, metaclass defining a new/2 predicate for its instances</span>
+<span class="p">:- </span><span class="k">object</span>(metaclass,
+    <span class="k">instantiates</span>(metaclass)).
 
-    :- public(new/2).
-    new(Instance, Clauses) :-
-        self(Class),
-        create_object(Instance, [instantiates(Class)], [], Clauses).
+<span class="p">    :- </span><span class="k">public</span>(new<span class="o">/</span><span class="m">2</span>).
+    new(<span class="nv">Instance</span>, <span class="nv">Clauses</span>) <span class="o">:-</span>
+        <span class="k">self</span>(<span class="nv">Class</span>),
+        <span class="k">create_object</span>(<span class="nv">Instance</span>, [instantiates(<span class="nv">Class</span>)], [], <span class="nv">Clauses</span>).
 
-:- end_object.
+<span class="p">:- </span><span class="k">end_object</span>.
 
-% a simple class defining age/1 and name/1 predicate for its instances
-:- object(person,
-    instantiates(metaclass)).
+<span class="c">% a simple class defining age/1 and name/1 predicate for its instances</span>
+<span class="p">:- </span><span class="k">object</span>(person,
+    <span class="k">instantiates</span>(metaclass)).
 
-    :- public([
-        age/1, name/1
+<span class="p">    :- </span><span class="k">public</span>([
+        age<span class="o">/</span><span class="m">1</span>, name<span class="o">/</span><span class="m">1</span>
     ]).
 
-    % a default value for age/1
-    age(42).
+    <span class="c">% a default value for age/1</span>
+    age(<span class="m">42</span>).
 
-:- end_object.
+<span class="p">:- </span><span class="k">end_object</span>.
 
-% a static instance of the class person
-:- object(john,
-    instantiates(person)).
+<span class="c">% a static instance of the class person</span>
+<span class="p">:- </span><span class="k">object</span>(john,
+    <span class="k">instantiates</span>(person)).
 
     name(john).
-    age(12).
+    age(<span class="m">12</span>).
 
-:- end_object.
-</code></pre></div>
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
 <p>When answering a message sent to an object playing the role of an instance, we validate the message by starting in its class and going up to its class superclasses if necessary. Assuming that the message is valid, then we look for an answer starting in the instance itself:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>?- person::new(Instance, [name(paulo)]).
-Instance = o1
+<div class="highlight"><pre><span></span><span class="o">?-</span> person<span class="o">::</span>new(<span class="nv">Instance</span>, [name(paulo)]).
+<span class="nv">Instance</span> <span class="o">=</span> o1
 yes
 
-?- o1::name(Name).
-Name = paulo
+<span class="o">?-</span> o1<span class="o">::</span>name(<span class="nv">Name</span>).
+<span class="nv">Name</span> <span class="o">=</span> paulo
 yes
 
-?- o1::age(Age).
-Age = 42
+<span class="o">?-</span> o1<span class="o">::</span>age(<span class="nv">Age</span>).
+<span class="nv">Age</span> <span class="o">=</span> <span class="m">42</span>
 yes
 
-?- john::age(Age).
-Age = 12
+<span class="o">?-</span> john<span class="o">::</span>age(<span class="nv">Age</span>).
+<span class="nv">Age</span> <span class="o">=</span> <span class="m">12</span>
 yes
-</code></pre></div>
+</pre></div>
 <h1>Categories</h1>
 
 <p>A category is a fine grained unit of code reuse, used to encapsulate a <em>cohesive</em> set of predicate declarations and definitions, implementing a <em>single</em> functionality, that can be imported into any object. A category can thus be seen as the dual concept of a protocol. In the following example, we define categories representing car engines and then import them into car objects:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>% a protocol describing engine characteristics
-:- protocol(carenginep).
+<div class="highlight"><pre><span></span><span class="c">% a protocol describing engine characteristics</span>
+<span class="p">:- </span><span class="k">protocol</span>(carenginep).
 
-    :- public([
-        reference/1,
-        capacity/1,
-        cylinders/1,
-        horsepower_rpm/2,
-        bore_stroke/2,
-        fuel/1
+<span class="p">    :- </span><span class="k">public</span>([
+        reference<span class="o">/</span><span class="m">1</span>,
+        capacity<span class="o">/</span><span class="m">1</span>,
+        cylinders<span class="o">/</span><span class="m">1</span>,
+        horsepower_rpm<span class="o">/</span><span class="m">2</span>,
+        bore_stroke<span class="o">/</span><span class="m">2</span>,
+        fuel<span class="o">/</span><span class="m">1</span>
     ]).
 
-:- end_protocol.
+<span class="p">:- </span><span class="k">end_protocol</span>.
 
-% a typical engine defined as a category
-:- category(classic,
-    implements(carenginep)).
+<span class="c">% a typical engine defined as a category</span>
+<span class="p">:- </span><span class="k">category</span>(classic,
+    <span class="k">implements</span>(carenginep)).
 
-    reference('M180.940').
-    capacity(2195).
-    cylinders(6).
-    horsepower_rpm(94, 4800).
-    bore_stroke(80, 72.8).
+    reference(<span class="s">&#39;M180.940&#39;</span>).
+    capacity(<span class="m">2195</span>).
+    cylinders(<span class="m">6</span>).
+    horsepower_rpm(<span class="m">94</span>, <span class="m">4800</span>).
+    bore_stroke(<span class="m">80</span>, <span class="m">72.8</span>).
     fuel(gasoline).
 
-:- end_category.
+<span class="p">:- </span><span class="k">end_category</span>.
 
-% a souped up version of the previous engine
-:- category(sport,
-    extends(classic)).
+<span class="c">% a souped up version of the previous engine</span>
+<span class="p">:- </span><span class="k">category</span>(sport,
+    <span class="k">extends</span>(classic)).
 
-    reference('M180.941').
-    horsepower_rpm(HP, RPM) :-
-        ^^horsepower_rpm(ClassicHP, ClassicRPM),    % "super" call
-        HP is truncate(ClassicHP*1.23),
-        RPM is truncate(ClassicRPM*0.762).
+    reference(<span class="s">&#39;M180.941&#39;</span>).
+    horsepower_rpm(<span class="nv">HP</span>, <span class="nv">RPM</span>) <span class="o">:-</span>
+        <span class="o">^^</span>horsepower_rpm(<span class="nv">ClassicHP</span>, <span class="nv">ClassicRPM</span>),    <span class="c">% &quot;super&quot; call</span>
+        <span class="nv">HP</span> <span class="k">is</span> <span class="k">truncate</span>(<span class="nv">ClassicHP</span><span class="o">*</span><span class="m">1.23</span>),
+        <span class="nv">RPM</span> <span class="k">is</span> <span class="k">truncate</span>(<span class="nv">ClassicRPM</span><span class="o">*</span><span class="m">0.762</span>).
 
-:- end_category.
+<span class="p">:- </span><span class="k">end_category</span>.
 
-% with engines (and other components), we may start "assembling" some cars
-:- object(sedan,
-    imports(classic)).
+<span class="c">% with engines (and other components), we may start &quot;assembling&quot; some cars</span>
+<span class="p">:- </span><span class="k">object</span>(sedan,
+    <span class="k">imports</span>(classic)).
 
-:- end_object.
+<span class="p">:- </span><span class="k">end_object</span>.
 
-:- object(coupe,
-    imports(sport)).
+<span class="p">:- </span><span class="k">object</span>(coupe,
+    <span class="k">imports</span>(sport)).
 
-:- end_object.
-</code></pre></div>
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
 <p>Categories are independently compiled and thus allow importing objects to be updated by simple updating the imported categories without requiring object recompilation. Categories also provide <em>runtime transparency</em>. I.e. the category protocol adds to the protocol of the objects importing the category:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>?- sedan::current_predicate(Predicate).
-Predicate = reference/1 ;
-Predicate = capacity/1 ;
-Predicate = cylinders/1 ;
-Predicate = horsepower_rpm/2 ;
-Predicate = bore_stroke/2 ;
-Predicate = fuel/1
+<div class="highlight"><pre><span></span><span class="o">?-</span> sedan<span class="o">::</span><span class="k">current_predicate</span>(<span class="nv">Predicate</span>).
+<span class="nv">Predicate</span> <span class="o">=</span> reference<span class="o">/</span><span class="m">1</span> <span class="o">;</span>
+<span class="nv">Predicate</span> <span class="o">=</span> capacity<span class="o">/</span><span class="m">1</span> <span class="o">;</span>
+<span class="nv">Predicate</span> <span class="o">=</span> cylinders<span class="o">/</span><span class="m">1</span> <span class="o">;</span>
+<span class="nv">Predicate</span> <span class="o">=</span> horsepower_rpm<span class="o">/</span><span class="m">2</span> <span class="o">;</span>
+<span class="nv">Predicate</span> <span class="o">=</span> bore_stroke<span class="o">/</span><span class="m">2</span> <span class="o">;</span>
+<span class="nv">Predicate</span> <span class="o">=</span> fuel<span class="o">/</span><span class="m">1</span>
 yes
-</code></pre></div>
+</pre></div>
 <h1>Hot patching</h1>
 
 <p>Categories can be also be used for hot-patching objects. A category can add new predicates to an object and/or replace object predicate definitions. For example, consider the following object:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>:- object(buggy).
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">object</span>(buggy).
 
-    :- public(p/0).
-    p :- write(foo).
+<span class="p">    :- </span><span class="k">public</span>(p<span class="o">/</span><span class="m">0</span>).
+    p <span class="o">:-</span> <span class="k">write</span>(foo).
 
-:- end_object.
-</code></pre></div>
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
 <p>Assume that the object prints the wrong string when sent the message <code>p/0</code>:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>?- {buggy}.
+<div class="highlight"><pre><span></span><span class="o">?-</span> <span class="k">{</span>buggy<span class="k">}</span>.
 yes
 
-?- buggy::p.
+<span class="o">?-</span> buggy<span class="o">::</span>p.
 foo
 yes
-</code></pre></div>
+</pre></div>
 <p>If the object source code is not available and we need to fix an application running the object code, we can simply define a category that fixes the buggy predicate:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>:- category(patch,
-    complements(buggy)).
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">category</span>(patch,
+    <span class="k">complements</span>(buggy)).
 
-    % fixed p/0 def
-    p :- write(bar).
+    <span class="c">% fixed p/0 def</span>
+    p <span class="o">:-</span> <span class="k">write</span>(bar).
 
-:- end_category.
-</code></pre></div>
+<span class="p">:- </span><span class="k">end_category</span>.
+</pre></div>
 <p>After compiling and loading the category into the running application we will now get:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>?- {patch}.
+<div class="highlight"><pre><span></span><span class="o">?-</span> <span class="k">{</span>patch<span class="k">}</span>.
 yes
 
-?- buggy::p.
+<span class="o">?-</span> buggy<span class="o">::</span>p.
 bar
 yes
-</code></pre></div>
+</pre></div>
 <p>As hot-patching forcefully breaks encapsulation, there is a <code>complements</code> compiler flag that can be set (globally or on a per-object basis) to allow, restrict, or prevent it.</p>
 
 <h1>Parametric objects and categories</h1>
 
 <p>Objects and categories can be parameterized by using as identifier a compound term instead of an atom. Object and category parameters are <em>logical variables</em> shared with all encapsulated predicates. An example with geometric circles:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>:- object(circle(_Radius, _Color)).
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">object</span>(circle(<span class="nv">_Radius</span>, <span class="nv">_Color</span>)).
 
-    :- public([
-        area/1, perimeter/1
+<span class="p">    :- </span><span class="k">public</span>([
+        area<span class="o">/</span><span class="m">1</span>, perimeter<span class="o">/</span><span class="m">1</span>
     ]).
 
-    area(Area) :-
-        parameter(1, Radius),
-        Area is pi*Radius*Radius.
+    area(<span class="nv">Area</span>) <span class="o">:-</span>
+        <span class="k">parameter</span>(<span class="m">1</span>, <span class="nv">Radius</span>),
+        <span class="nv">Area</span> <span class="k">is</span> <span class="o">pi*</span><span class="nv">Radius</span><span class="o">*</span><span class="nv">Radius</span>.
 
-    perimeter(Perimeter) :-
-        parameter(1, Radius),
-        Perimeter is 2*pi*Radius.
+    perimeter(<span class="nv">Perimeter</span>) <span class="o">:-</span>
+        <span class="k">parameter</span>(<span class="m">1</span>, <span class="nv">Radius</span>),
+        <span class="nv">Perimeter</span> <span class="k">is</span> <span class="m">2</span><span class="o">*pi*</span><span class="nv">Radius</span>.
 
-:- end_object.
-</code></pre></div>
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
 <p>Parametric objects are used just as any other object, usually providing values for the parameters when sending a message:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>?- circle(1.23, blue)::area(Area).
-Area = 4.75291
+<div class="highlight"><pre><span></span><span class="o">?-</span> circle(<span class="m">1.23</span>, blue)<span class="o">::</span>area(<span class="nv">Area</span>).
+<span class="nv">Area</span> <span class="o">=</span> <span class="m">4.75291</span>
 yes
-</code></pre></div>
+</pre></div>
 <p>Parametric objects also provide a simple way of associating a set of predicates with a plain Prolog predicate. Prolog facts can be interpreted as <em>parametric object proxies</em> when they have the same functor and arity as the identifiers of parametric objects. Handy syntax is provided to for working with proxies. For example, assuming the following clauses for a <code>circle/2</code> predicate:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>circle(1.23, blue).
-circle(3.71, yellow).
-circle(0.39, green).
-circle(5.74, black).
-circle(8.32, cyan).
-</code></pre></div>
+<div class="highlight"><pre><span></span>circle(<span class="m">1.23</span>, blue).
+circle(<span class="m">3.71</span>, yellow).
+circle(<span class="m">0.39</span>, green).
+circle(<span class="m">5.74</span>, black).
+circle(<span class="m">8.32</span>, cyan).
+</pre></div>
 <p>With these clauses loaded, we can easily compute for example a list with the areas of all the circles:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>?- findall(Area, {circle(_, _)}::area(Area), Areas).
-Areas = [4.75291, 43.2412, 0.477836, 103.508, 217.468]
+<div class="highlight"><pre><span></span><span class="o">?-</span> <span class="k">findall</span>(<span class="nv">Area</span>, <span class="k">{</span>circle(<span class="nv">_</span>, <span class="nv">_</span>)<span class="k">}</span><span class="o">::</span>area(<span class="nv">Area</span>), <span class="nv">Areas</span>).
+<span class="nv">Areas</span> <span class="o">=</span> [<span class="m">4.75291</span>, <span class="m">43.2412</span>, <span class="m">0.477836</span>, <span class="m">103.508</span>, <span class="m">217.468</span>]
 yes
-</code></pre></div>
+</pre></div>
 <p>The <code>{Goal}::Message</code> construct proves <code>Goal</code>, possibly instantiating any variables in it, and sends <code>Message</code> to the resulting term.</p>
 
 <h1>Events and monitors</h1>
 
 <p>Logtalk supports <em>event-driven programming</em> by allowing defining events and monitors for those events. An event is simply the sending of a message to an object. Interpreting message sending as an atomic activity, a <em>before</em> event and an <em>after</em> event are recognized. Event monitors define event handler predicates, <code>before/3</code> and <code>after/3</code>, and can query, register, and delete a system-wide event registry that associates events with monitors. For example, a simple tracer for any message being sent using the <code>::/2</code> control construct can be defined as:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>:- object(tracer,
-    implements(monitoring)).    % built-in protocol for event handlers
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">object</span>(tracer,
+    <span class="k">implements</span>(monitoring)).    <span class="c">% built-in protocol for event handlers</span>
 
-    :- initialization(define_events(_, _, _, _, tracer)).
+<span class="p">    :- </span><span class="k">initialization</span>(<span class="k">define_events</span>(<span class="nv">_</span>, <span class="nv">_</span>, <span class="nv">_</span>, <span class="nv">_</span>, tracer)).
 
-    before(Object, Message, Sender) :-
-        write('call: '), writeq(Object), write(' &lt;-- '), writeq(Message),
-        write(' from '), writeq(Sender), nl.
+    <span class="k">before</span>(<span class="nv">Object</span>, <span class="nv">Message</span>, <span class="nv">Sender</span>) <span class="o">:-</span>
+        <span class="k">write</span>(<span class="s">&#39;call: &#39;</span>), <span class="k">writeq</span>(<span class="nv">Object</span>), <span class="k">write</span>(<span class="s">&#39; &lt;-- &#39;</span>), <span class="k">writeq</span>(<span class="nv">Message</span>),
+        <span class="k">write</span>(<span class="s">&#39; from &#39;</span>), <span class="k">writeq</span>(<span class="nv">Sender</span>), <span class="k">nl</span>.
 
-    after(Object, Message, Sender) :-
-        write('exit: '), writeq(Object), write(' &lt;-- '), writeq(Message),
-        write(' from '), writeq(Sender), nl.
+    <span class="k">after</span>(<span class="nv">Object</span>, <span class="nv">Message</span>, <span class="nv">Sender</span>) <span class="o">:-</span>
+        <span class="k">write</span>(<span class="s">&#39;exit: &#39;</span>), <span class="k">writeq</span>(<span class="nv">Object</span>), <span class="k">write</span>(<span class="s">&#39; &lt;-- &#39;</span>), <span class="k">writeq</span>(<span class="nv">Message</span>),
+        <span class="k">write</span>(<span class="s">&#39; from &#39;</span>), <span class="k">writeq</span>(<span class="nv">Sender</span>), <span class="k">nl</span>.
 
-:- end_object.
-</code></pre></div>
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
 <p>Assuming that the <code>tracer</code> object and the <code>list</code> object defined earlier are compiled and loaded, we can observe the event handlers in action by sending a message:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>?- list::member(X, [1,2,3]).
+<div class="highlight"><pre><span></span><span class="o">?-</span> list<span class="o">::</span>member(<span class="nv">X</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]).
 
-call: list &lt;-- member(X, [1,2,3]) from user
-exit: list &lt;-- member(1, [1,2,3]) from user
-X = 1 ;
-exit: list &lt;-- member(2, [1,2,3]) from user
-X = 2 ;
-exit: list &lt;-- member(3, [1,2,3]) from user
-X = 3
+call<span class="o">:</span> list <span class="o">&lt;--</span> member(<span class="nv">X</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]) from user
+exit<span class="o">:</span> list <span class="o">&lt;--</span> member(<span class="m">1</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]) from user
+<span class="nv">X</span> <span class="o">=</span> <span class="m">1</span> <span class="o">;</span>
+exit<span class="o">:</span> list <span class="o">&lt;--</span> member(<span class="m">2</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]) from user
+<span class="nv">X</span> <span class="o">=</span> <span class="m">2</span> <span class="o">;</span>
+exit<span class="o">:</span> list <span class="o">&lt;--</span> member(<span class="m">3</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]) from user
+<span class="nv">X</span> <span class="o">=</span> <span class="m">3</span>
 yes
-</code></pre></div>
+</pre></div>
 <p>Events can be set and deleted dynamically at runtime by calling the <code>define_events/5</code> and <code>abolish_events/5</code> built-in predicates.</p>
 
 <p>Event-driven programming can be seen as a form of <em>computational reflection</em>. But note that events are only generated when using the <code>::/2</code> message-sending control construct.</p>
@@ -484,53 +484,53 @@ yes
 <h1>Lambda expressions</h1>
 
 <p>Logtalk supports lambda expressions. Lambda parameters are represented using a list with the <code>(&gt;&gt;)/2</code> infix operator connecting them to the lambda. Some simple examples using library meta-predicates:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>?- {library(metapredicates_loader)}.
+<div class="highlight"><pre><span></span><span class="o">?-</span> <span class="k">{</span>library(metapredicates_loader)<span class="k">}</span>.
 yes
 
-?- meta::map([X,Y]&gt;&gt;(Y is 2*X), [1,2,3], Ys).
-Ys = [2,4,6]
+<span class="o">?-</span> meta<span class="o">::</span>map([<span class="nv">X</span>,<span class="nv">Y</span>]<span class="o">&gt;&gt;</span>(<span class="nv">Y</span> <span class="k">is</span> <span class="m">2</span><span class="o">*</span><span class="nv">X</span>), [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>], <span class="nv">Ys</span>).
+<span class="nv">Ys</span> <span class="o">=</span> [<span class="m">2</span>,<span class="m">4</span>,<span class="m">6</span>]
 yes
-</code></pre></div>
+</pre></div>
 <p>Currying is also supported:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>?- meta::map([X]&gt;&gt;([Y]&gt;&gt;(Y is 2*X)), [1,2,3], Ys).
-Ys = [2,4,6]
+<div class="highlight"><pre><span></span><span class="o">?-</span> meta<span class="o">::</span>map([<span class="nv">X</span>]<span class="o">&gt;&gt;</span>([<span class="nv">Y</span>]<span class="o">&gt;&gt;</span>(<span class="nv">Y</span> <span class="k">is</span> <span class="m">2</span><span class="o">*</span><span class="nv">X</span>)), [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>], <span class="nv">Ys</span>).
+<span class="nv">Ys</span> <span class="o">=</span> [<span class="m">2</span>,<span class="m">4</span>,<span class="m">6</span>]
 yes
-</code></pre></div>
+</pre></div>
 <p>Lambda free variables can be expressed using the extended syntax <code>{Free1, ...}/[Parameter1, ...]&gt;&gt;Lambda</code>.</p>
 
 <h1>Macros</h1>
 
 <p>Terms and goals in source files can be <em>expanded</em> at compile time by specifying a <em>hook object</em> that defines term-expansion and goal-expansion rules. For example, consider the following simple object, saved in a <code>source.lgt</code> file:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>:- object(source).
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">object</span>(source).
 
-    :- public(bar/1).
-    bar(X) :- foo(X).
+<span class="p">    :- </span><span class="k">public</span>(bar<span class="o">/</span><span class="m">1</span>).
+    bar(<span class="nv">X</span>) <span class="o">:-</span> foo(<span class="nv">X</span>).
 
     foo(a). foo(b). foo(c).
 
-:- end_object.
-</code></pre></div>
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
 <p>Assume the following hook object, saved in a <code>my_macros.lgt</code> file, that expands clauses and calls to the <code>foo/1</code> local predicate:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>:- object(my_macros,
-    implements(expanding)).    % built-in protocol for expanding predicates
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">object</span>(my_macros,
+    <span class="k">implements</span>(expanding)).    <span class="c">% built-in protocol for expanding predicates</span>
 
-    term_expansion(foo(Char), baz(Code)) :-
-        char_code(Char, Code). % standard built-in predicate
+    <span class="k">term_expansion</span>(foo(<span class="nv">Char</span>), baz(<span class="nv">Code</span>)) <span class="o">:-</span>
+        <span class="k">char_code</span>(<span class="nv">Char</span>, <span class="nv">Code</span>). <span class="c">% standard built-in predicate</span>
 
-    goal_expansion(foo(X), baz(X)).
+    <span class="k">goal_expansion</span>(foo(<span class="nv">X</span>), baz(<span class="nv">X</span>)).
 
-:- end_object.
-</code></pre></div>
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
 <p>After loading the macros file, we can then expand our source file with it using the <code>hook</code> compiler flag:</p>
-<div class="highlight"><pre class="highlight plaintext"><code>?- logtalk_load(my_macros), logtalk_load(source, [hook(my_macros)]).
+<div class="highlight"><pre><span></span><span class="o">?-</span> <span class="k">logtalk_load</span>(my_macros), <span class="k">logtalk_load</span>(source, [hook(my_macros)]).
 yes
 
-?- source::bar(X).
-X = 97 ;
-X = 98 ;
-X = 99
-true
-</code></pre></div>
+<span class="o">?-</span> source<span class="o">::</span>bar(<span class="nv">X</span>).
+<span class="nv">X</span> <span class="o">=</span> <span class="m">97</span> <span class="o">;</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="m">98</span> <span class="o">;</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="m">99</span>
+<span class="k">true</span>
+</pre></div>
 <p>The Logtalk library provides support for combining hook objects using different workflows (for example, defining a pipeline of expansions).</p>
 
 <h1>Further information</h1>

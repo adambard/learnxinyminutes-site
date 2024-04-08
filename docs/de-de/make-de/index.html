@@ -95,237 +95,237 @@ Konkurrenz und Kritik zu Make gibt.</p>
 
 <p>Es gibt eine Vielzahl an Varianten von Make, dieser Artikel beschäftigt sich
 mit der Version GNU Make. Diese Version ist Standard auf Linux.</p>
-<div class="highlight"><pre class="highlight make"><code><span class="c"># Kommentare können so geschrieben werden.
-</span>
-<span class="c"># Dateien sollten Makefile heißen, denn dann können sie als `make &lt;ziel&gt;`
-# aufgerufen werden. Ansonsten muss `make -f "dateiname" &lt;ziel&gt;` verwendet
-# werden.
-</span>
-<span class="c"># Warnung - Es sollten nur TABULATOREN zur Einrückung im Makefile verwendet
-# werden. Niemals Leerzeichen!
-</span>
-<span class="c">#-----------------------------------------------------------------------
-# Grundlagen
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># Eine Regel - Diese Regel wird nur abgearbeitet wenn die Datei file0.txt
-# nicht existiert.
-</span><span class="nl">file0.txt</span><span class="o">:</span>
-    <span class="err">echo</span> <span class="s2">"foo"</span> <span class="err">&gt;</span> <span class="err">file0.txt</span>
-    <span class="c"># Selbst Kommentare in der 'Rezept' Sektion werden an die Shell
-</span>    <span class="c"># weitergegeben. Versuche `make file0.txt` oder einfach `make`
-</span>    <span class="c"># die erste Regel ist die Standard-Regel.
-</span>
+<div class="highlight"><pre><span></span><span class="c"># Kommentare können so geschrieben werden.</span>
 
-<span class="c"># Diese Regel wird nur abgearbeitet, wenn file0.txt aktueller als file1.txt ist.
-</span><span class="nl">file1.txt</span><span class="o">:</span> <span class="nf">file0.txt</span>
-    <span class="err">cat</span> <span class="err">file0.txt</span> <span class="err">&gt;</span> <span class="err">file1.txt</span>
-    <span class="c"># Verwende die selben Quoting-Regeln wie die Shell
-</span>    <span class="err">@cat</span> <span class="err">file0.txt</span> <span class="err">&gt;&gt;</span> <span class="err">file1.txt</span>
-    <span class="c"># @ unterdrückt die Ausgabe des Befehls an stdout.
-</span>    <span class="err">-@echo</span> <span class="s1">'hello'</span>
-    <span class="c"># - bedeutet, dass Make die Abarbeitung fortsetzt auch wenn Fehler
-</span>    <span class="c"># passieren.
-</span>    <span class="c"># Versuche `make file1.txt` auf der Kommandozeile.
-</span>
-<span class="c"># Eine Regel kann mehrere Ziele und mehrere Voraussetzungen haben.
-</span><span class="nl">file2.txt file3.txt</span><span class="o">:</span> <span class="nf">file0.txt file1.txt</span>
-    <span class="err">touch</span> <span class="err">file2.txt</span>
-    <span class="err">touch</span> <span class="err">file3.txt</span>
+<span class="c"># Dateien sollten Makefile heißen, denn dann können sie als `make &lt;ziel&gt;`</span>
+<span class="c"># aufgerufen werden. Ansonsten muss `make -f &quot;dateiname&quot; &lt;ziel&gt;` verwendet</span>
+<span class="c"># werden.</span>
 
-<span class="c"># Make wird sich beschweren, wenn es mehrere Rezepte für die gleiche Regel gibt.
-# Leere Rezepte zählen nicht und können dazu verwendet werden weitere
-# Voraussetzungen hinzuzufügen.
-</span>
-<span class="c">#-----------------------------------------------------------------------
-# Phony-Ziele
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># Ein Phony-Ziel ist ein Ziel, das keine Datei ist.
-# Es wird nie aktuell sein, daher wird Make immer versuchen, es abzuarbeiten
-</span><span class="nl">all</span><span class="o">:</span> <span class="nf">maker process</span>
+<span class="c"># Warnung - Es sollten nur TABULATOREN zur Einrückung im Makefile verwendet</span>
+<span class="c"># werden. Niemals Leerzeichen!</span>
 
-<span class="c"># Es ist erlaubt Dinge ausserhalb der Reihenfolge zu deklarieren.
-</span><span class="nl">maker</span><span class="o">:</span>
-    <span class="err">touch</span> <span class="err">ex0.txt</span> <span class="err">ex1.txt</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Grundlagen</span>
+<span class="c">#-----------------------------------------------------------------------</span>
 
-<span class="c"># Um das Fehlschlagen von Phony-Regeln zu vermeiden wenn eine echte Datei den
-# selben namen wie ein Phony-Ziel hat:
-</span><span class="nl">.PHONY</span><span class="o">:</span> <span class="nf">all maker process</span>
-<span class="c"># Das ist ein spezielles Ziel. Es gibt noch ein paar mehr davon.
-</span>
-<span class="c"># Eine Regel mit einem Phony-Ziel als Voraussetzung wird immer abgearbeitet
-</span><span class="nl">ex0.txt ex1.txt</span><span class="o">:</span> <span class="nf">maker</span>
+<span class="c"># Eine Regel - Diese Regel wird nur abgearbeitet wenn die Datei file0.txt</span>
+<span class="c"># nicht existiert.</span>
+<span class="nf">file0.txt</span><span class="o">:</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;foo&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>file0.txt
+<span class="c">    # Selbst Kommentare in der &#39;Rezept&#39; Sektion werden an die Shell</span>
+<span class="c">    # weitergegeben. Versuche `make file0.txt` oder einfach `make`</span>
+<span class="c">    # die erste Regel ist die Standard-Regel.</span>
 
-<span class="c"># Häufige Phony-Ziele sind: all make clean install ...
-</span>
-<span class="c">#-----------------------------------------------------------------------
-# Automatische Variablen &amp; Wildcards
-#-----------------------------------------------------------------------
-</span>
-<span class="nl">process</span><span class="o">:</span> <span class="nf">file*.txt  </span><span class="c">#</span><span class="nf"> Eine Wildcard um Dateinamen zu vergleichen</span>
-    <span class="err">@echo</span> <span class="err">$^</span>    <span class="c"># $^ ist eine Variable die eine Liste aller
-</span>            <span class="c"># Voraussetzungen enthält.
-</span>    <span class="err">@echo</span> <span class="err">$@</span>    <span class="c"># Namen des Ziels ausgeben.
-</span>    <span class="c">#(Bei mehreren Ziel-Regeln enthält $@ den Verursacher der Abarbeitung
-</span>    <span class="c">#der Regel.)
-</span>    <span class="err">@echo</span> <span class="err">$&lt;</span>    <span class="c"># Die erste Voraussetzung aus der Liste
-</span>    <span class="err">@echo</span> <span class="err">$?</span>    <span class="c"># Nur die Voraussetzungen, die nicht aktuell sind.
-</span>    <span class="err">@echo</span> <span class="err">$+</span>    <span class="c"># Alle Voraussetzungen inklusive Duplikate (nicht wie Üblich)
-</span>    <span class="c">#@echo $|   # Alle 'order only' Voraussetzungen
-</span>
-<span class="c"># Selbst wenn wir die Voraussetzungen der Regel aufteilen, $^ wird sie finden.
-</span><span class="nl">process</span><span class="o">:</span> <span class="nf">ex1.txt file0.txt</span>
-<span class="c"># ex1.txt wird gefunden werden, aber file0.txt wird dedupliziert.
-</span>
-<span class="c">#-----------------------------------------------------------------------
-# Muster
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># Mit Mustern kann man make beibringen wie Dateien in andere Dateien
-# umgewandelt werden.
-</span>
-<span class="nl">%.png</span><span class="o">:</span> <span class="nf">%.svg</span>
-    <span class="err">inkscape</span> <span class="err">--export-png</span> <span class="err">$^</span>
 
-<span class="c"># Muster-Vergleichs-Regeln werden nur abgearbeitet, wenn make entscheidet das
-# Ziel zu erzeugen
-</span>
-<span class="c"># Verzeichnis-Pfade werden normalerweise bei Muster-Vergleichs-Regeln ignoriert.
-# Aber make wird versuchen die am besten passende Regel zu verwenden.
-</span><span class="nl">small/%.png</span><span class="o">:</span> <span class="nf">%.svg</span>
-    <span class="err">inkscape</span> <span class="err">--export-png</span> <span class="err">--export-dpi</span> <span class="err">30</span> <span class="err">$^</span>
+<span class="c"># Diese Regel wird nur abgearbeitet, wenn file0.txt aktueller als file1.txt ist.</span>
+<span class="nf">file1.txt</span><span class="o">:</span><span class="w"> </span><span class="n">file</span>0.<span class="n">txt</span>
+<span class="w">    </span>cat<span class="w"> </span>file0.txt<span class="w"> </span>&gt;<span class="w"> </span>file1.txt
+<span class="c">    # Verwende die selben Quoting-Regeln wie die Shell</span>
+<span class="w">    </span>@cat<span class="w"> </span>file0.txt<span class="w"> </span>&gt;&gt;<span class="w"> </span>file1.txt
+<span class="c">    # @ unterdrückt die Ausgabe des Befehls an stdout.</span>
+<span class="w">    </span>-@echo<span class="w"> </span><span class="s1">&#39;hello&#39;</span>
+<span class="c">    # - bedeutet, dass Make die Abarbeitung fortsetzt auch wenn Fehler</span>
+<span class="c">    # passieren.</span>
+<span class="c">    # Versuche `make file1.txt` auf der Kommandozeile.</span>
 
-<span class="c"># Make wird die letzte Version einer Muster-Vergleichs-Regel verwenden, die es
-# findet.
-</span><span class="nl">%.png</span><span class="o">:</span> <span class="nf">%.svg</span>
-    <span class="err">@echo</span> <span class="err">this</span> <span class="err">rule</span> <span class="err">is</span> <span class="err">chosen</span>
+<span class="c"># Eine Regel kann mehrere Ziele und mehrere Voraussetzungen haben.</span>
+<span class="nf">file2.txt file3.txt</span><span class="o">:</span><span class="w"> </span><span class="n">file</span>0.<span class="n">txt</span> <span class="n">file</span>1.<span class="n">txt</span>
+<span class="w">    </span>touch<span class="w"> </span>file2.txt
+<span class="w">    </span>touch<span class="w"> </span>file3.txt
 
-<span class="c"># Allerdings wird make die erste Muster-Vergleicher-Regel verwenden, die das
-# Ziel erzeugen kann.
-</span><span class="nl">%.png</span><span class="o">:</span> <span class="nf">%.ps</span>
-    <span class="err">@echo</span> <span class="err">this</span> <span class="err">rule</span> <span class="err">is</span> <span class="err">not</span> <span class="err">chosen</span> <span class="err">if</span> <span class="err">*.svg</span> <span class="err">and</span> <span class="err">*.ps</span> <span class="err">are</span> <span class="err">both</span> <span class="err">present</span>
+<span class="c"># Make wird sich beschweren, wenn es mehrere Rezepte für die gleiche Regel gibt.</span>
+<span class="c"># Leere Rezepte zählen nicht und können dazu verwendet werden weitere</span>
+<span class="c"># Voraussetzungen hinzuzufügen.</span>
 
-<span class="c"># Make hat bereits ein paar eingebaute Muster-Vergleichs-Regelen. Zum Beispiel
-# weiß Make wie man aus *.c Dateien *.o Dateien erzeugt.
-</span>
-<span class="c"># Ältere Versionen von Make verwenden möglicherweise Suffix-Regeln anstatt
-# Muster-Vergleichs-Regeln.
-</span><span class="nl">.png.ps</span><span class="o">:</span>
-    <span class="err">@echo</span> <span class="err">this</span> <span class="err">rule</span> <span class="err">is</span> <span class="err">similar</span> <span class="err">to</span> <span class="err">a</span> <span class="err">pattern</span> <span class="err">rule.</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Phony-Ziele</span>
+<span class="c">#-----------------------------------------------------------------------</span>
 
-<span class="c"># Aktivieren der Suffix-Regel
-</span><span class="nl">.SUFFIXES</span><span class="o">:</span> <span class="nf">.png</span>
+<span class="c"># Ein Phony-Ziel ist ein Ziel, das keine Datei ist.</span>
+<span class="c"># Es wird nie aktuell sein, daher wird Make immer versuchen, es abzuarbeiten</span>
+<span class="nf">all</span><span class="o">:</span><span class="w"> </span><span class="n">maker</span> <span class="n">process</span>
 
-<span class="c">#-----------------------------------------------------------------------
-# Variablen
-#-----------------------------------------------------------------------
-# auch Makros genannt.
-</span>
-<span class="c"># Variablen sind im Grunde genommen Zeichenketten-Typen.
-</span>
-<span class="nv">name</span> <span class="o">=</span> Ted
-<span class="nv">name2</span><span class="o">=</span><span class="s2">"Sarah"</span>
+<span class="c"># Es ist erlaubt Dinge ausserhalb der Reihenfolge zu deklarieren.</span>
+<span class="nf">maker</span><span class="o">:</span>
+<span class="w">    </span>touch<span class="w"> </span>ex0.txt<span class="w"> </span>ex1.txt
 
-<span class="nl">echo</span><span class="o">:</span>
-    <span class="err">@echo</span> <span class="err">$(name)</span>
-    <span class="err">@echo</span> <span class="err">${name2}</span>
-    <span class="err">@echo</span> <span class="err">$name</span>    <span class="c"># Das funktioniert nicht, wird als $(n)ame behandelt.
-</span>    <span class="err">@echo</span> <span class="err">$(name3)</span> <span class="c"># Unbekannte Variablen werden als leere Zeichenketten behandelt.
-</span>
-<span class="c"># Es git 4 Stellen um Variablen zu setzen.
-# In Reihenfolge der Priorität von höchster zu niedrigster:
-# 1: Befehls-Zeilen Argumente
-# 2: Makefile
-# 3: Shell Umbebungs-Variablen - Make importiert diese automatisch.
-# 3: MAke hat einige vordefinierte Variablen.
-</span>
-<span class="nv">name4</span> <span class="o">?=</span> Jean
-<span class="c"># Setze die Variable nur wenn es eine gleichnamige Umgebungs-Variable noch
-# nicht gibt.
-</span>
-<span class="err">override</span> <span class="nv">name5</span> <span class="o">=</span> David
-<span class="c"># Verhindert, dass Kommando-Zeilen Argumente diese Variable ändern können.
-</span>
-<span class="nv">name4</span> <span class="o">+=</span>grey
-<span class="c"># Werte an eine Variable anhängen (inkludiert Leerzeichen).
-</span>
-<span class="c"># Muster-Spezifische Variablen Werte (GNU Erweiterung).
-</span><span class="nl">echo</span><span class="o">:</span> <span class="nf">name2 = Sara </span><span class="c">#</span><span class="nf"> Wahr innerhalb der passenden Regel und auch innerhalb</span>
-    <span class="c"># rekursiver Voraussetzungen (ausser wenn es den Graphen zerstören
-</span>    <span class="c"># kann, wenn es zu kompilizert wird!)
-</span>
-<span class="c"># Ein paar Variablen, die von Make automatisch definiert werden.
-</span><span class="nl">echo_inbuilt</span><span class="o">:</span>
-    <span class="err">echo</span> <span class="err">$(CC)</span>
-    <span class="err">echo</span> <span class="err">${CXX}</span>
-    <span class="err">echo</span> <span class="err">$(FC)</span>
-    <span class="err">echo</span> <span class="err">${CFLAGS}</span>
-    <span class="err">echo</span> <span class="err">$(CPPFLAGS)</span>
-    <span class="err">echo</span> <span class="err">${CXXFLAGS}</span>
-    <span class="err">echo</span> <span class="err">$(LDFLAGS)</span>
-    <span class="err">echo</span> <span class="err">${LDLIBS}</span>
+<span class="c"># Um das Fehlschlagen von Phony-Regeln zu vermeiden wenn eine echte Datei den</span>
+<span class="c"># selben namen wie ein Phony-Ziel hat:</span>
+<span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">all</span> <span class="n">maker</span> <span class="n">process</span>
+<span class="c"># Das ist ein spezielles Ziel. Es gibt noch ein paar mehr davon.</span>
 
-<span class="c">#-----------------------------------------------------------------------
-# Variablen 2
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># Der erste Typ von Variablen wird bei jeder Verwendung ausgewertet.
-# Das kann aufwendig sein, daher exisitert ein zweiter Typ von Variablen.
-# Diese werden nur einmal ausgewertet. (Das ist eine GNU make Erweiterung)
-</span>
-<span class="nv">var</span> <span class="o">:=</span> hello
-<span class="nl">var2 </span><span class="o">::</span><span class="nf">=  $(var) hello</span>
-<span class="c">#:= und ::= sind äquivalent.
-</span>
-<span class="c"># Diese Variablen werden prozedural ausgwertet (in der Reihenfolge in der sie
-# auftauchen), die stehen daher im wiederspruch zum Rest der Sprache!
-</span>
-<span class="c"># Das funktioniert nicht
-</span><span class="nl">var3 </span><span class="o">::</span><span class="nf">= $(var4) and good luck</span>
-<span class="nl">var4 </span><span class="o">::</span><span class="nf">= good night</span>
+<span class="c"># Eine Regel mit einem Phony-Ziel als Voraussetzung wird immer abgearbeitet</span>
+<span class="nf">ex0.txt ex1.txt</span><span class="o">:</span><span class="w"> </span><span class="n">maker</span>
 
-<span class="c">#-----------------------------------------------------------------------
-# Funktionen
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># Make verfügt über eine Vielzahl von Funktionen.
-</span>
-<span class="nv">sourcefiles</span> <span class="o">=</span> <span class="nf">$(</span><span class="nb">wildcard</span> <span class="k">*</span>.c <span class="k">*</span>/<span class="k">*</span>.c<span class="nf">)</span>
-<span class="nv">objectfiles</span> <span class="o">=</span> <span class="nf">$(</span><span class="nb">patsubst</span> %.c,%.o,<span class="nv">$(sourcefiles)</span><span class="nf">)</span>
+<span class="c"># Häufige Phony-Ziele sind: all make clean install ...</span>
 
-<span class="c"># Das Format ist $(func arg0,arg1,arg2...)
-</span>
-<span class="c"># Ein paar Beispiele
-</span><span class="nl">ls</span><span class="o">:</span> <span class="nf">* src/*</span>
-    <span class="err">@echo</span> <span class="err">$(filter</span> <span class="err">%.txt,</span> <span class="err">$^)</span>
-    <span class="err">@echo</span> <span class="err">$(notdir</span> <span class="err">$^)</span>
-    <span class="err">@echo</span> <span class="err">$(join</span> <span class="err">$(dir</span> <span class="err">$^),$(notdir</span> <span class="err">$^))</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Automatische Variablen &amp; Wildcards</span>
+<span class="c">#-----------------------------------------------------------------------</span>
 
-<span class="c">#-----------------------------------------------------------------------
-# Direktiven
-#-----------------------------------------------------------------------
-</span>
-<span class="c"># Inkludiere andere Makefile, sehr praktisch für platformspezifischen Code
-</span><span class="k">include</span><span class="sx"> foo.mk</span>
+<span class="nf">process</span><span class="o">:</span><span class="w"> </span><span class="n">file</span>*.<span class="n">txt</span>  <span class="c"># Eine Wildcard um Dateinamen zu vergleichen</span>
+<span class="w">    </span>@echo<span class="w"> </span>$^<span class="w">    </span><span class="c1"># $^ ist eine Variable die eine Liste aller</span>
+<span class="c">            # Voraussetzungen enthält.</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="nv">$@</span><span class="w">    </span><span class="c1"># Namen des Ziels ausgeben.</span>
+<span class="c">    #(Bei mehreren Ziel-Regeln enthält $@ den Verursacher der Abarbeitung</span>
+<span class="c">    #der Regel.)</span>
+<span class="w">    </span>@echo<span class="w"> </span>$&lt;<span class="w">    </span><span class="c1"># Die erste Voraussetzung aus der Liste</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="nv">$?</span><span class="w">    </span><span class="c1"># Nur die Voraussetzungen, die nicht aktuell sind.</span>
+<span class="w">    </span>@echo<span class="w"> </span>$+<span class="w">    </span><span class="c1"># Alle Voraussetzungen inklusive Duplikate (nicht wie Üblich)</span>
+<span class="c">    #@echo $|   # Alle &#39;order only&#39; Voraussetzungen</span>
 
-<span class="nv">sport</span> <span class="o">=</span> tennis
-<span class="c"># Konditionale kompiliereung
-</span><span class="nl">report</span><span class="o">:</span>
-<span class="k">ifeq</span> <span class="nv">($(sport),tennis)</span>
-    <span class="err">@echo</span> <span class="s1">'game, set, match'</span>
-<span class="k">else</span>
-    <span class="err">@echo</span> <span class="s2">"They think it's all over; it is now"</span>
-<span class="k">endif</span>
+<span class="c"># Selbst wenn wir die Voraussetzungen der Regel aufteilen, $^ wird sie finden.</span>
+<span class="nf">process</span><span class="o">:</span><span class="w"> </span><span class="n">ex</span>1.<span class="n">txt</span> <span class="n">file</span>0.<span class="n">txt</span>
+<span class="c"># ex1.txt wird gefunden werden, aber file0.txt wird dedupliziert.</span>
 
-<span class="c"># Es gibt auch ifneq, ifdef, ifndef
-</span>
-<span class="nv">foo</span> <span class="o">=</span> <span class="nb">true</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Muster</span>
+<span class="c">#-----------------------------------------------------------------------</span>
 
-<span class="k">ifdef</span> <span class="nv">$(foo)</span>
-<span class="nv">bar</span> <span class="o">=</span> <span class="s1">'hello'</span>
-<span class="k">endif</span>
-</code></pre></div>
+<span class="c"># Mit Mustern kann man make beibringen wie Dateien in andere Dateien</span>
+<span class="c"># umgewandelt werden.</span>
+
+<span class="nf">%.png</span><span class="o">:</span><span class="w"> </span>%.<span class="n">svg</span>
+<span class="w">    </span>inkscape<span class="w"> </span>--export-png<span class="w"> </span>$^
+
+<span class="c"># Muster-Vergleichs-Regeln werden nur abgearbeitet, wenn make entscheidet das</span>
+<span class="c"># Ziel zu erzeugen</span>
+
+<span class="c"># Verzeichnis-Pfade werden normalerweise bei Muster-Vergleichs-Regeln ignoriert.</span>
+<span class="c"># Aber make wird versuchen die am besten passende Regel zu verwenden.</span>
+<span class="nf">small/%.png</span><span class="o">:</span><span class="w"> </span>%.<span class="n">svg</span>
+<span class="w">    </span>inkscape<span class="w"> </span>--export-png<span class="w"> </span>--export-dpi<span class="w"> </span><span class="m">30</span><span class="w"> </span>$^
+
+<span class="c"># Make wird die letzte Version einer Muster-Vergleichs-Regel verwenden, die es</span>
+<span class="c"># findet.</span>
+<span class="nf">%.png</span><span class="o">:</span><span class="w"> </span>%.<span class="n">svg</span>
+<span class="w">    </span>@echo<span class="w"> </span>this<span class="w"> </span>rule<span class="w"> </span>is<span class="w"> </span>chosen
+
+<span class="c"># Allerdings wird make die erste Muster-Vergleicher-Regel verwenden, die das</span>
+<span class="c"># Ziel erzeugen kann.</span>
+<span class="nf">%.png</span><span class="o">:</span><span class="w"> </span>%.<span class="n">ps</span>
+<span class="w">    </span>@echo<span class="w"> </span>this<span class="w"> </span>rule<span class="w"> </span>is<span class="w"> </span>not<span class="w"> </span>chosen<span class="w"> </span><span class="k">if</span><span class="w"> </span>*.svg<span class="w"> </span>and<span class="w"> </span>*.ps<span class="w"> </span>are<span class="w"> </span>both<span class="w"> </span>present
+
+<span class="c"># Make hat bereits ein paar eingebaute Muster-Vergleichs-Regelen. Zum Beispiel</span>
+<span class="c"># weiß Make wie man aus *.c Dateien *.o Dateien erzeugt.</span>
+
+<span class="c"># Ältere Versionen von Make verwenden möglicherweise Suffix-Regeln anstatt</span>
+<span class="c"># Muster-Vergleichs-Regeln.</span>
+<span class="nf">.png.ps</span><span class="o">:</span>
+<span class="w">    </span>@echo<span class="w"> </span>this<span class="w"> </span>rule<span class="w"> </span>is<span class="w"> </span>similar<span class="w"> </span>to<span class="w"> </span>a<span class="w"> </span>pattern<span class="w"> </span>rule.
+
+<span class="c"># Aktivieren der Suffix-Regel</span>
+<span class="nf">.SUFFIXES</span><span class="o">:</span><span class="w"> </span>.<span class="n">png</span>
+
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Variablen</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># auch Makros genannt.</span>
+
+<span class="c"># Variablen sind im Grunde genommen Zeichenketten-Typen.</span>
+
+<span class="nv">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Ted
+<span class="nv">name2</span><span class="o">=</span><span class="s2">&quot;Sarah&quot;</span>
+
+<span class="nf">echo</span><span class="o">:</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>name<span class="k">)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="si">${</span><span class="nv">name2</span><span class="si">}</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="nv">$name</span><span class="w">    </span><span class="c1"># Das funktioniert nicht, wird als $(n)ame behandelt.</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>name3<span class="k">)</span><span class="w"> </span><span class="c1"># Unbekannte Variablen werden als leere Zeichenketten behandelt.</span>
+
+<span class="c"># Es git 4 Stellen um Variablen zu setzen.</span>
+<span class="c"># In Reihenfolge der Priorität von höchster zu niedrigster:</span>
+<span class="c"># 1: Befehls-Zeilen Argumente</span>
+<span class="c"># 2: Makefile</span>
+<span class="c"># 3: Shell Umbebungs-Variablen - Make importiert diese automatisch.</span>
+<span class="c"># 3: MAke hat einige vordefinierte Variablen.</span>
+
+<span class="nv">name4</span><span class="w"> </span><span class="o">?=</span><span class="w"> </span>Jean
+<span class="c"># Setze die Variable nur wenn es eine gleichnamige Umgebungs-Variable noch</span>
+<span class="c"># nicht gibt.</span>
+
+<span class="err">override</span><span class="w"> </span><span class="nv">name5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>David
+<span class="c"># Verhindert, dass Kommando-Zeilen Argumente diese Variable ändern können.</span>
+
+<span class="nv">name4</span><span class="w"> </span><span class="o">+=</span>grey
+<span class="c"># Werte an eine Variable anhängen (inkludiert Leerzeichen).</span>
+
+<span class="c"># Muster-Spezifische Variablen Werte (GNU Erweiterung).</span>
+<span class="nf">echo</span><span class="o">:</span><span class="w"> </span><span class="n">name</span>2 = <span class="n">Sara</span> <span class="c"># Wahr innerhalb der passenden Regel und auch innerhalb</span>
+<span class="c">    # rekursiver Voraussetzungen (ausser wenn es den Graphen zerstören</span>
+<span class="c">    # kann, wenn es zu kompilizert wird!)</span>
+
+<span class="c"># Ein paar Variablen, die von Make automatisch definiert werden.</span>
+<span class="nf">echo_inbuilt</span><span class="o">:</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>CC<span class="k">)</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">CXX</span><span class="si">}</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>FC<span class="k">)</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">CFLAGS</span><span class="si">}</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>CPPFLAGS<span class="k">)</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">CXXFLAGS</span><span class="si">}</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>LDFLAGS<span class="k">)</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">LDLIBS</span><span class="si">}</span>
+
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Variablen 2</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+
+<span class="c"># Der erste Typ von Variablen wird bei jeder Verwendung ausgewertet.</span>
+<span class="c"># Das kann aufwendig sein, daher exisitert ein zweiter Typ von Variablen.</span>
+<span class="c"># Diese werden nur einmal ausgewertet. (Das ist eine GNU make Erweiterung)</span>
+
+<span class="nv">var</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span>hello
+<span class="nf">var2 </span><span class="o">::</span>=  <span class="k">$(</span><span class="nv">var</span><span class="k">)</span> <span class="n">hello</span>
+<span class="c">#:= und ::= sind äquivalent.</span>
+
+<span class="c"># Diese Variablen werden prozedural ausgwertet (in der Reihenfolge in der sie</span>
+<span class="c"># auftauchen), die stehen daher im wiederspruch zum Rest der Sprache!</span>
+
+<span class="c"># Das funktioniert nicht</span>
+<span class="nf">var3 </span><span class="o">::</span>= <span class="k">$(</span><span class="nv">var4</span><span class="k">)</span> <span class="n">and</span> <span class="n">good</span> <span class="n">luck</span>
+<span class="nf">var4 </span><span class="o">::</span>= <span class="n">good</span> <span class="n">night</span>
+
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Funktionen</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+
+<span class="c"># Make verfügt über eine Vielzahl von Funktionen.</span>
+
+<span class="nv">sourcefiles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">$(</span>wildcard<span class="w"> </span>*.c<span class="w"> </span>*/*.c<span class="k">)</span>
+<span class="nv">objectfiles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">$(</span>patsubst<span class="w"> </span>%.c,%.o,<span class="k">$(</span>sourcefiles<span class="k">))</span>
+
+<span class="c"># Das Format ist $(func arg0,arg1,arg2...)</span>
+
+<span class="c"># Ein paar Beispiele</span>
+<span class="nf">ls</span><span class="o">:</span><span class="w"> </span>* <span class="n">src</span>/*
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>filter<span class="w"> </span>%.txt,<span class="w"> </span>$^<span class="k">)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>notdir<span class="w"> </span>$^<span class="k">)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="k">$(</span>join<span class="w"> </span><span class="k">$(</span>dir<span class="w"> </span>$^<span class="k">)</span>,<span class="k">$(</span>notdir<span class="w"> </span>$^<span class="k">))</span>
+
+<span class="c">#-----------------------------------------------------------------------</span>
+<span class="c"># Direktiven</span>
+<span class="c">#-----------------------------------------------------------------------</span>
+
+<span class="c"># Inkludiere andere Makefile, sehr praktisch für platformspezifischen Code</span>
+<span class="cp">include foo.mk</span>
+
+<span class="nv">sport</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>tennis
+<span class="c"># Konditionale kompiliereung</span>
+<span class="nf">report</span><span class="o">:</span>
+<span class="cp">ifeq ($(sport),tennis)</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="s1">&#39;game, set, match&#39;</span>
+<span class="cp">else</span>
+<span class="w">    </span>@echo<span class="w"> </span><span class="s2">&quot;They think it&#39;s all over; it is now&quot;</span>
+<span class="cp">endif</span>
+
+<span class="c"># Es gibt auch ifneq, ifdef, ifndef</span>
+
+<span class="nv">foo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span>
+
+<span class="cp">ifdef $(foo)</span>
+<span class="nv">bar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;hello&#39;</span>
+<span class="cp">endif</span>
+</pre></div>
 <h3>Mehr Resourcen</h3>
 
 <ul>

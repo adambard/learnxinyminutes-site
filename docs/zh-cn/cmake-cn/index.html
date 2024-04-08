@@ -93,147 +93,147 @@
 <p>CMake是一个可扩展的开源系统，它以操作系统和与编译器无关的方式管理构建过程。与其他许多跨平台系统不同的是，
 CMake被设计为与本机的构建环境结合使用。它通过被放置于每个源文件目录下的简单配置文件（名为 CMakeLists.txt 的文件）
 来生成常规使用的标准构建文件（比如：Unix 下的 makefiles 文件或 Windows MSVC 中的 projects/workspaces）。</p>
-<div class="highlight"><pre class="highlight cmake"><code><span class="c1"># 在 CMake 中, 这是一条命令</span>
+<div class="highlight"><pre><span></span><span class="c"># 在 CMake 中, 这是一条命令</span>
 
-<span class="c1"># 要运行我们的代码，请执行以下命令：</span>
-<span class="c1">#  - mkdir build &amp;&amp; cd build</span>
-<span class="c1">#  - cmake ..</span>
-<span class="c1">#  - make</span>
-<span class="c1"># </span>
-<span class="c1"># 通过上述命令，我们将遵循最佳实践在子目录中进行编译</span>
-<span class="c1"># 在第二行命令中我们请求Cmake 生成新的依赖于系统的Makefile文件。</span>
-<span class="c1"># 最后，我们运行本地的make 命令。</span>
+<span class="c"># 要运行我们的代码，请执行以下命令：</span>
+<span class="c">#  - mkdir build &amp;&amp; cd build</span>
+<span class="c">#  - cmake ..</span>
+<span class="c">#  - make</span>
+<span class="c"># </span>
+<span class="c"># 通过上述命令，我们将遵循最佳实践在子目录中进行编译</span>
+<span class="c"># 在第二行命令中我们请求Cmake 生成新的依赖于系统的Makefile文件。</span>
+<span class="c"># 最后，我们运行本地的make 命令。</span>
 
-<span class="c1">#------------------------------------------------------------------------------</span>
-<span class="c1"># 基础部分</span>
-<span class="c1">#------------------------------------------------------------------------------</span>
-<span class="c1">#</span>
-<span class="c1"># Cmake文件必须被命令为 “CMakeLists.txt” 。</span>
+<span class="c">#------------------------------------------------------------------------------</span>
+<span class="c"># 基础部分</span>
+<span class="c">#------------------------------------------------------------------------------</span>
+<span class="c">#</span>
+<span class="c"># Cmake文件必须被命令为 “CMakeLists.txt” 。</span>
 
-<span class="c1"># 设置生成Makefile的CMake所需最低版本要求</span>
-<span class="nb">cmake_minimum_required</span> <span class="p">(</span>VERSION 2.8<span class="p">)</span>
+<span class="c"># 设置生成Makefile的CMake所需最低版本要求</span>
+<span class="nb">cmake_minimum_required</span><span class="w"> </span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">2.8</span><span class="p">)</span>
 
-<span class="c1"># 当版本小于2.8时，需要加入关键字 FATAL_ERROR。</span>
-<span class="nb">cmake_minimum_required</span> <span class="p">(</span>VERSION 2.8 FATAL_ERROR<span class="p">)</span>
+<span class="c"># 当版本小于2.8时，需要加入关键字 FATAL_ERROR。</span>
+<span class="nb">cmake_minimum_required</span><span class="w"> </span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">2.8</span><span class="w"> </span><span class="s">FATAL_ERROR</span><span class="p">)</span>
 
-<span class="c1"># 在这里定义了项目的名称，同时会影响Cmake 生成的目录命名约定。</span>
-<span class="c1"># 我们可以将代码的语言作为第二个参数传入。</span>
-<span class="nb">project</span> <span class="p">(</span>learncmake C<span class="p">)</span>
+<span class="c"># 在这里定义了项目的名称，同时会影响Cmake 生成的目录命名约定。</span>
+<span class="c"># 我们可以将代码的语言作为第二个参数传入。</span>
+<span class="nb">project</span><span class="w"> </span><span class="p">(</span><span class="s">learncmake</span><span class="w"> </span><span class="s">C</span><span class="p">)</span>
 
-<span class="c1"># 设置项目的源目录（仅仅是由于惯例）</span>
-<span class="nb">set</span><span class="p">(</span> LEARN_CMAKE_SOURCE_DIR <span class="si">${</span><span class="nv">CMAKE_CURRENT_SOURCE_DIR</span><span class="si">}</span> <span class="p">)</span>
-<span class="nb">set</span><span class="p">(</span> LEARN_CMAKE_BINARY_DIR <span class="si">${</span><span class="nv">CMAKE_CURRENT_BINARY_DIR</span><span class="si">}</span> <span class="p">)</span>
+<span class="c"># 设置项目的源目录（仅仅是由于惯例）</span>
+<span class="nb">set</span><span class="p">(</span><span class="w"> </span><span class="s">LEARN_CMAKE_SOURCE_DIR</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_CURRENT_SOURCE_DIR</span><span class="o">}</span><span class="w"> </span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="w"> </span><span class="s">LEARN_CMAKE_BINARY_DIR</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_CURRENT_BINARY_DIR</span><span class="o">}</span><span class="w"> </span><span class="p">)</span>
 
-<span class="c1"># 在构建系统中用“semver”风格为我们代码设置当前版本是很有用的。</span>
-<span class="nb">set</span> <span class="p">(</span>LEARN_CMAKE_VERSION_MAJOR 1<span class="p">)</span>
-<span class="nb">set</span> <span class="p">(</span>LEARN_CMAKE_VERSION_MINOR 0<span class="p">)</span>
-<span class="nb">set</span> <span class="p">(</span>LEARN_CMAKE_VERSION_PATCH 0<span class="p">)</span>
+<span class="c"># 在构建系统中用“semver”风格为我们代码设置当前版本是很有用的。</span>
+<span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="s">LEARN_CMAKE_VERSION_MAJOR</span><span class="w"> </span><span class="s">1</span><span class="p">)</span>
+<span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="s">LEARN_CMAKE_VERSION_MINOR</span><span class="w"> </span><span class="s">0</span><span class="p">)</span>
+<span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="s">LEARN_CMAKE_VERSION_PATCH</span><span class="w"> </span><span class="s">0</span><span class="p">)</span>
 
-<span class="c1"># 将变量（版本号）发送到源代码头</span>
-<span class="nb">configure_file</span> <span class="p">(</span>
-  <span class="s2">"</span><span class="si">${</span><span class="nv">PROJECT_SOURCE_DIR</span><span class="si">}</span><span class="s2">/TutorialConfig.h.in"</span>
-  <span class="s2">"</span><span class="si">${</span><span class="nv">PROJECT_BINARY_DIR</span><span class="si">}</span><span class="s2">/TutorialConfig.h"</span>
+<span class="c"># 将变量（版本号）发送到源代码头</span>
+<span class="nb">configure_file</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="s2">&quot;${PROJECT_SOURCE_DIR}/TutorialConfig.h.in&quot;</span>
+<span class="w">  </span><span class="s2">&quot;${PROJECT_BINARY_DIR}/TutorialConfig.h&quot;</span>
 <span class="p">)</span>
 
-<span class="c1"># 包含目录</span>
-<span class="c1"># 在 GCC中, 该语句等同于 "-I" 命令</span>
-<span class="nb">include_directories</span><span class="p">(</span> include <span class="p">)</span>
+<span class="c"># 包含目录</span>
+<span class="c"># 在 GCC中, 该语句等同于 &quot;-I&quot; 命令</span>
+<span class="nb">include_directories</span><span class="p">(</span><span class="w"> </span><span class="s">include</span><span class="w"> </span><span class="p">)</span>
 
-<span class="c1"># 在哪里安装其他库？注意：在此处提供includes路径，后续检查将解决所有其他问题</span>
-<span class="nb">set</span><span class="p">(</span> CMAKE_MODULE_PATH <span class="si">${</span><span class="nv">CMAKE_MODULE_PATH</span><span class="si">}</span> <span class="s2">"</span><span class="si">${</span><span class="nv">CMAKE_SOURCE_DIR</span><span class="si">}</span><span class="s2">/CMake/modules/"</span> <span class="p">)</span>
+<span class="c"># 在哪里安装其他库？注意：在此处提供includes路径，后续检查将解决所有其他问题</span>
+<span class="nb">set</span><span class="p">(</span><span class="w"> </span><span class="s">CMAKE_MODULE_PATH</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_MODULE_PATH</span><span class="o">}</span><span class="w"> </span><span class="s2">&quot;${CMAKE_SOURCE_DIR}/CMake/modules/&quot;</span><span class="w"> </span><span class="p">)</span>
 
-<span class="c1"># 条件</span>
-<span class="nb">if</span> <span class="p">(</span> CONDITION <span class="p">)</span>
-  <span class="c1"># 输出！</span>
+<span class="c"># 条件</span>
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="s">CONDITION</span><span class="w"> </span><span class="p">)</span>
+<span class="w">  </span><span class="c"># 输出！</span>
 
-  <span class="c1"># 附带信息</span>
-  <span class="nb">message</span><span class="p">(</span>STATUS <span class="s2">"My message"</span><span class="p">)</span>
+<span class="w">  </span><span class="c"># 附带信息</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s">STATUS</span><span class="w"> </span><span class="s2">&quot;My message&quot;</span><span class="p">)</span>
 
-  <span class="c1"># CMake 警告，继续处理</span>
-  <span class="nb">message</span><span class="p">(</span>WARNING <span class="s2">"My message"</span><span class="p">)</span>
+<span class="w">  </span><span class="c"># CMake 警告，继续处理</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s">WARNING</span><span class="w"> </span><span class="s2">&quot;My message&quot;</span><span class="p">)</span>
 
-  <span class="c1"># CMake 警告 (dev)，继续处理</span>
-  <span class="nb">message</span><span class="p">(</span>AUTHOR_WARNING <span class="s2">"My message"</span><span class="p">)</span>
+<span class="w">  </span><span class="c"># CMake 警告 (dev)，继续处理</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s">AUTHOR_WARNING</span><span class="w"> </span><span class="s2">&quot;My message&quot;</span><span class="p">)</span>
 
-  <span class="c1"># CMake 错误，继续处理但是会跳过生成</span>
-  <span class="nb">message</span><span class="p">(</span>SEND_ERROR <span class="s2">"My message"</span><span class="p">)</span>
+<span class="w">  </span><span class="c"># CMake 错误，继续处理但是会跳过生成</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s">SEND_ERROR</span><span class="w"> </span><span class="s2">&quot;My message&quot;</span><span class="p">)</span>
 
-  <span class="c1"># CMake 错误，停止处理和生成</span>
-  <span class="nb">message</span><span class="p">(</span>FATAL_ERROR <span class="s2">"My message"</span><span class="p">)</span>
+<span class="w">  </span><span class="c"># CMake 错误，停止处理和生成</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s">FATAL_ERROR</span><span class="w"> </span><span class="s2">&quot;My message&quot;</span><span class="p">)</span>
 <span class="nb">endif</span><span class="p">()</span>
 
-<span class="nb">if</span><span class="p">(</span> CONDITION <span class="p">)</span>
+<span class="nb">if</span><span class="p">(</span><span class="w"> </span><span class="s">CONDITION</span><span class="w"> </span><span class="p">)</span>
 
-<span class="nb">elseif</span><span class="p">(</span> CONDITION <span class="p">)</span>
+<span class="nb">elseif</span><span class="p">(</span><span class="w"> </span><span class="s">CONDITION</span><span class="w"> </span><span class="p">)</span>
 
-<span class="nb">else</span><span class="p">(</span> CONDITION <span class="p">)</span>
+<span class="nb">else</span><span class="p">(</span><span class="w"> </span><span class="s">CONDITION</span><span class="w"> </span><span class="p">)</span>
 
-<span class="nb">endif</span><span class="p">(</span> CONDITION <span class="p">)</span>
+<span class="nb">endif</span><span class="p">(</span><span class="w"> </span><span class="s">CONDITION</span><span class="w"> </span><span class="p">)</span>
 
-<span class="c1"># 循环</span>
-<span class="nb">foreach</span><span class="p">(</span>loop_var arg1 arg2 ...<span class="p">)</span>
-  <span class="nf">COMMAND1</span><span class="p">(</span>ARGS ...<span class="p">)</span>
-  <span class="nf">COMMAND2</span><span class="p">(</span>ARGS ...<span class="p">)</span>
-  ...
-<span class="nb">endforeach</span><span class="p">(</span>loop_var<span class="p">)</span>
+<span class="c"># 循环</span>
+<span class="nb">foreach</span><span class="p">(</span><span class="s">loop_var</span><span class="w"> </span><span class="s">arg1</span><span class="w"> </span><span class="s">arg2</span><span class="w"> </span><span class="s">...</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">COMMAND1</span><span class="p">(</span><span class="s">ARGS</span><span class="w"> </span><span class="s">...</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">COMMAND2</span><span class="p">(</span><span class="s">ARGS</span><span class="w"> </span><span class="s">...</span><span class="p">)</span>
+<span class="w">  </span><span class="err">...</span>
+<span class="nb">endforeach</span><span class="p">(</span><span class="s">loop_var</span><span class="p">)</span>
 
-<span class="nb">foreach</span><span class="p">(</span>loop_var RANGE total<span class="p">)</span>
-<span class="nb">foreach</span><span class="p">(</span>loop_var RANGE start stop [step]<span class="p">)</span>
+<span class="nb">foreach</span><span class="p">(</span><span class="s">loop_var</span><span class="w"> </span><span class="s">RANGE</span><span class="w"> </span><span class="s">total</span><span class="p">)</span>
+<span class="nb">foreach</span><span class="p">(</span><span class="s">loop_var</span><span class="w"> </span><span class="s">RANGE</span><span class="w"> </span><span class="s">start</span><span class="w"> </span><span class="s">stop</span><span class="w"> </span><span class="s">[step]</span><span class="p">)</span>
 
-<span class="nb">foreach</span><span class="p">(</span>loop_var IN [LISTS [list1 [...]]]
-                    [ITEMS [item1 [...]]]<span class="p">)</span>
+<span class="nb">foreach</span><span class="p">(</span><span class="s">loop_var</span><span class="w"> </span><span class="s">IN</span><span class="w"> </span><span class="s">[LISTS</span><span class="w"> </span><span class="s">[list1</span><span class="w"> </span><span class="s">[...]]]</span>
+<span class="w">                    </span><span class="s">[ITEMS</span><span class="w"> </span><span class="s">[item1</span><span class="w"> </span><span class="s">[...]]]</span><span class="p">)</span>
 
-<span class="nb">while</span><span class="p">(</span>condition<span class="p">)</span>
-  <span class="nf">COMMAND1</span><span class="p">(</span>ARGS ...<span class="p">)</span>
-  <span class="nf">COMMAND2</span><span class="p">(</span>ARGS ...<span class="p">)</span>
-  ...
-<span class="nb">endwhile</span><span class="p">(</span>condition<span class="p">)</span>
+<span class="nb">while</span><span class="p">(</span><span class="s">condition</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">COMMAND1</span><span class="p">(</span><span class="s">ARGS</span><span class="w"> </span><span class="s">...</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">COMMAND2</span><span class="p">(</span><span class="s">ARGS</span><span class="w"> </span><span class="s">...</span><span class="p">)</span>
+<span class="w">  </span><span class="err">...</span>
+<span class="nb">endwhile</span><span class="p">(</span><span class="s">condition</span><span class="p">)</span>
 
 
-<span class="c1"># 逻辑运算</span>
-<span class="nb">if</span><span class="p">(</span>FALSE <span class="nf">AND</span> <span class="p">(</span>FALSE OR TRUE<span class="p">))</span>
-  <span class="nb">message</span><span class="p">(</span><span class="s2">"Don't display!"</span><span class="p">)</span>
+<span class="c"># 逻辑运算</span>
+<span class="nb">if</span><span class="p">(</span><span class="s">FALSE</span><span class="w"> </span><span class="s">AND</span><span class="w"> </span><span class="p">(</span><span class="s">FALSE</span><span class="w"> </span><span class="s">OR</span><span class="w"> </span><span class="s">TRUE</span><span class="p">))</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;Don&#39;t display!&quot;</span><span class="p">)</span>
 <span class="nb">endif</span><span class="p">()</span>
 
-<span class="c1"># 将常规，缓存或环境变量设置为给定值。</span>
-<span class="c1"># 如果指定了PARENT_SCOPE选项，则将在当前作用域上的作用域中设置变量</span>
-<span class="c1"># `set(&lt;variable&gt; &lt;value&gt;... [PARENT_SCOPE])`</span>
+<span class="c"># 将常规，缓存或环境变量设置为给定值。</span>
+<span class="c"># 如果指定了PARENT_SCOPE选项，则将在当前作用域上的作用域中设置变量</span>
+<span class="c"># `set(&lt;variable&gt; &lt;value&gt;... [PARENT_SCOPE])`</span>
 
-<span class="c1"># 如何在带引号和不带引号的参数中引用变量？How to reference variables inside quoted and unquoted arguments?</span>
-<span class="c1"># 如果未设置变量，变量引用由变量值或空字符串替换。</span>
-<span class="si">${</span><span class="nv">variable_name</span><span class="si">}</span>
+<span class="c"># 如何在带引号和不带引号的参数中引用变量？How to reference variables inside quoted and unquoted arguments?</span>
+<span class="c"># 如果未设置变量，变量引用由变量值或空字符串替换。</span>
+<span class="err">${variable_name}</span>
 
-<span class="c1"># 清单</span>
-<span class="c1"># 设置源文件列表</span>
-<span class="nb">set</span><span class="p">(</span> LEARN_CMAKE_SOURCES 
-  src/main.c
-  src/imagem.c
-  src/pather.c
+<span class="c"># 清单</span>
+<span class="c"># 设置源文件列表</span>
+<span class="nb">set</span><span class="p">(</span><span class="w"> </span><span class="s">LEARN_CMAKE_SOURCES</span><span class="w"> </span>
+<span class="w">  </span><span class="s">src/main.c</span>
+<span class="w">  </span><span class="s">src/imagem.c</span>
+<span class="w">  </span><span class="s">src/pather.c</span>
 <span class="p">)</span>
 
-<span class="c1"># 调用编译器</span>
-<span class="c1">#</span>
-<span class="c1"># ${PROJECT_NAME} 即 Learn_CMake </span>
-<span class="nb">add_executable</span><span class="p">(</span> <span class="si">${</span><span class="nv">PROJECT_NAME</span><span class="si">}</span> <span class="si">${</span><span class="nv">LEARN_CMAKE_SOURCES</span><span class="si">}</span> <span class="p">)</span>
+<span class="c"># 调用编译器</span>
+<span class="c">#</span>
+<span class="c"># ${PROJECT_NAME} 即 Learn_CMake </span>
+<span class="nb">add_executable</span><span class="p">(</span><span class="w"> </span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">LEARN_CMAKE_SOURCES</span><span class="o">}</span><span class="w"> </span><span class="p">)</span>
 
-<span class="c1"># 链接库</span>
-<span class="nb">target_link_libraries</span><span class="p">(</span> <span class="si">${</span><span class="nv">PROJECT_NAME</span><span class="si">}</span> <span class="si">${</span><span class="nv">LIBS</span><span class="si">}</span> m <span class="p">)</span>
+<span class="c"># 链接库</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="w"> </span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">LIBS</span><span class="o">}</span><span class="w"> </span><span class="s">m</span><span class="w"> </span><span class="p">)</span>
 
-<span class="c1"># 在哪里安装其他库？注意：在此处提供includes路径，后续检查将解决所有其他问题</span>
-<span class="nb">set</span><span class="p">(</span> CMAKE_MODULE_PATH <span class="si">${</span><span class="nv">CMAKE_MODULE_PATH</span><span class="si">}</span> <span class="s2">"</span><span class="si">${</span><span class="nv">CMAKE_SOURCE_DIR</span><span class="si">}</span><span class="s2">/CMake/modules/"</span> <span class="p">)</span>
+<span class="c"># 在哪里安装其他库？注意：在此处提供includes路径，后续检查将解决所有其他问题</span>
+<span class="nb">set</span><span class="p">(</span><span class="w"> </span><span class="s">CMAKE_MODULE_PATH</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_MODULE_PATH</span><span class="o">}</span><span class="w"> </span><span class="s2">&quot;${CMAKE_SOURCE_DIR}/CMake/modules/&quot;</span><span class="w"> </span><span class="p">)</span>
 
-<span class="c1"># 编译条件 (gcc ; g++)</span>
-<span class="nb">if</span> <span class="p">(</span> <span class="s2">"</span><span class="si">${</span><span class="nv">CMAKE_C_COMPILER_ID</span><span class="si">}</span><span class="s2">"</span> STREQUAL <span class="s2">"GNU"</span> <span class="p">)</span>
-  <span class="nb">message</span><span class="p">(</span> STATUS <span class="s2">"Setting the flags for </span><span class="si">${</span><span class="nv">CMAKE_C_COMPILER_ID</span><span class="si">}</span><span class="s2"> compiler"</span> <span class="p">)</span>
-  <span class="nb">add_definitions</span><span class="p">(</span> --std=c99 <span class="p">)</span>
+<span class="c"># 编译条件 (gcc ; g++)</span>
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="s2">&quot;${CMAKE_C_COMPILER_ID}&quot;</span><span class="w"> </span><span class="s">STREQUAL</span><span class="w"> </span><span class="s2">&quot;GNU&quot;</span><span class="w"> </span><span class="p">)</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="w"> </span><span class="s">STATUS</span><span class="w"> </span><span class="s2">&quot;Setting the flags for ${CMAKE_C_COMPILER_ID} compiler&quot;</span><span class="w"> </span><span class="p">)</span>
+<span class="w">  </span><span class="nb">add_definitions</span><span class="p">(</span><span class="w"> </span><span class="s">--std=c99</span><span class="w"> </span><span class="p">)</span>
 <span class="nb">endif</span><span class="p">()</span>
 
-<span class="c1"># 检查 OS</span>
-<span class="nb">if</span><span class="p">(</span> UNIX <span class="p">)</span>
-    <span class="nb">set</span><span class="p">(</span> LEARN_CMAKE_DEFINITIONS
-        <span class="s2">"</span><span class="si">${</span><span class="nv">LEARN_CMAKE_DEFINITIONS</span><span class="si">}</span><span class="s2"> -Wall -Wextra -Werror -Wno-deprecated-declarations -Wno-unused-parameter -Wno-comment"</span> <span class="p">)</span>
+<span class="c"># 检查 OS</span>
+<span class="nb">if</span><span class="p">(</span><span class="w"> </span><span class="s">UNIX</span><span class="w"> </span><span class="p">)</span>
+<span class="w">    </span><span class="nb">set</span><span class="p">(</span><span class="w"> </span><span class="s">LEARN_CMAKE_DEFINITIONS</span>
+<span class="w">        </span><span class="s2">&quot;${LEARN_CMAKE_DEFINITIONS} -Wall -Wextra -Werror -Wno-deprecated-declarations -Wno-unused-parameter -Wno-comment&quot;</span><span class="w"> </span><span class="p">)</span>
 <span class="nb">endif</span><span class="p">()</span>
-</code></pre></div>
+</pre></div>
 <h3>资源</h3>
 
 <ul>

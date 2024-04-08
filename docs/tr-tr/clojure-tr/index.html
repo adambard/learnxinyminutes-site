@@ -89,458 +89,458 @@
     <p>Clojure, Lisp dialekti, barınan bir dildir. <a href="https://tr.wikipedia.org/wiki/Java_sanal_makinesi">JVM</a> üzerinde barınıyor. Clojure, Lisp&#39;in tüm gücü ve kendi mantalitesi ile mükemmel bir genel-amaçlı programlama dilidir. Clojure, Eş-zamanlı programlama, Makrolar, Fonksiyonel Programlama, Tembel yapılar ve daha fazlasını vaadediyor.</p>
 
 <p>(Bu örnekleri çalıştırmak için Clojure 1.2 versionu veya daha yenisine sahip olmalısınız.)</p>
-<div class="highlight"><pre class="highlight clojure"><code><span class="c1">; Noktalı Virgül, satırı yorumlamak için kullanılır.</span><span class="w">
-
-</span><span class="c1">; Clojure programları formlardan meydana gelir,</span><span class="w">
-</span><span class="c1">; Parantezlerle çevirili değerler, boşluk ile ayrılır. --Virgül ile değil--</span><span class="w">
-</span><span class="c1">;</span><span class="w">
-</span><span class="c1">; Clojure okuyucusu*, listedeki ilk elemanı çağırılacak bir fonksiyon</span><span class="w">
-</span><span class="c1">; Veya makro, geri kalan ifadeleri o çağırıma argüman olarak kabul eder.</span><span class="w">
-</span><span class="c1">;</span><span class="w">
-
-</span><span class="c1">; Bir dosyadaki ilk çağırım isim-uzayı tanımlamak için `ns` olmalı.</span><span class="w">
-</span><span class="p">(</span><span class="nf">ns</span><span class="w"> </span><span class="n">clojure-</span><span class="err">öğ</span><span class="n">ren</span><span class="p">)</span><span class="w">
-
-</span><span class="c1">;</span><span class="w">
-</span><span class="c1">; Bir diğer yorumlama seçeneği de, ifade-içi. Bu diyez (`#`), ve alt çizgi</span><span class="w">
-</span><span class="c1">; İle başlar ve herhangi bir s-ifade'ye uygulanabilir.</span><span class="w">
-</span><span class="c1">;</span><span class="w">
-</span><span class="o">#</span><span class="n">_</span><span class="p">(</span><span class="nf">bu</span><span class="w"> </span><span class="err">ç</span><span class="n">a</span><span class="err">ğı</span><span class="n">r</span><span class="err">ı</span><span class="n">m</span><span class="w"> </span><span class="n">de</span><span class="err">ğ</span><span class="n">erlendirilmeyecektir</span><span class="p">)</span><span class="w">
-
-</span><span class="c1">; Öncelikle fonksiyon çağırımları ve temel işlemler:</span><span class="w">
-
-</span><span class="c1">; Örnek bir fonksiyon çağırımı:</span><span class="w">
-</span><span class="c1">; (örnek-bir-fonksiyon ilk-argüman ikinci-argüman)</span><span class="w">
-
-</span><span class="c1">; `str` aldığı argümanları bir karakter katarı olarak geri verir.</span><span class="w">
-</span><span class="p">(</span><span class="nb">str</span><span class="w"> </span><span class="s">"Merhaba"</span><span class="w"> </span><span class="s">" "</span><span class="w"> </span><span class="s">"dünya!"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "Merhaba dünya!"</span><span class="w">
-
-</span><span class="c1">; Matematik, oldukça sezgisel ve basit</span><span class="w">
-</span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 2</span><span class="w">
-</span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 1</span><span class="w">
-</span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 2</span><span class="w">
-</span><span class="p">(</span><span class="nb">/</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 2</span><span class="w">
-
-</span><span class="c1">; Eşitlik için `=`</span><span class="w">
-</span><span class="p">(</span><span class="nb">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; true</span><span class="w">
-</span><span class="p">(</span><span class="nb">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; false</span><span class="w">
-
-</span><span class="c1">; `not` beklediğiniz gibi, mantıksal ifadeleri tersine çevirir.</span><span class="w">
-</span><span class="p">(</span><span class="nb">not</span><span class="w"> </span><span class="n">true</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; false</span><span class="w">
-
-</span><span class="c1">; Clojure formları, iç-içe çağırılabilir</span><span class="w">
-</span><span class="c1">; Değerlendirilen çağırımlar bir üst form'a argüman</span><span class="w">
-</span><span class="c1">; Olarak verilir.</span><span class="w">
-</span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="c1">; = 1 + (3 - 2) =&gt; 2</span><span class="w">
-
-</span><span class="c1">; Tipler</span><span class="w">
-</span><span class="c1">;;;;;;;;;;;;;</span><span class="w">
-
-</span><span class="c1">; Clojure, Java'nın temel tipleri olan mantıksal (boolean),</span><span class="w">
-</span><span class="c1">; Tam sayılar (int) ve karakter katarlarını (string) kullanır.</span><span class="w">
-</span><span class="c1">; Değerleri denetlemek için `class` fonksiyonunu kullanın.</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; Tam sayı sabitleri ön-tanımlı olarak `java.lang.Long` ile tanımlanır.</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="mi">1</span><span class="nb">.</span><span class="p">)</span><span class="c1">; Kayan noktalı sayı sabitleri</span><span class="w">
-</span><span class="c1">; Ön-tanımlı olarak `java.lang.Double` ile tanımlanır.</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="s">""</span><span class="p">)</span><span class="c1">; Karakter katarı sabitleri her zaman, --sadece-- çift tırnak</span><span class="w">
-</span><span class="c1">; ile tanımlanır ve ön-tanımlı olarak `java.lang.String` tipindedir.</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="n">false</span><span class="p">)</span><span class="w"> </span><span class="c1">; Mantıksal değer sabitleri, `java.lang.Boolean`.</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="n">nil</span><span class="p">)</span><span class="c1">; "Null", (tanımsız) değerler `nil` ile tanımlanır.</span><span class="w">
-
-</span><span class="c1">; Clojure okuyucusu her paranter ifadesini bir çağırım olarak</span><span class="w">
-</span><span class="c1">; değerlendirdiğinden bir liste tanımlamak için çağırımı durdurmalıyız.</span><span class="w">
-</span><span class="o">'</span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; (+ 1 2)</span><span class="w">
-</span><span class="c1">; ((quote (+ 1 2)) için bir kısa yoldur)</span><span class="w">
-
-</span><span class="c1">; Alıntılanmış listeleri çağırabilirsiniz.</span><span class="w">
-</span><span class="p">(</span><span class="nb">eval</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; 3</span><span class="w">
-
-</span><span class="c1">; Koleksiyonlar ve Ardışıklar</span><span class="w">
-</span><span class="c1">;;;;;;;;;;;;;;;;;;;</span><span class="w">
-
-</span><span class="c1">; Listeler bağlı-liste veri yapısı,</span><span class="w">
-</span><span class="c1">; Vektörler dizi altyapısı kullanır. </span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="c1">; =&gt; clojure.lang.PersistentList</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="c1">; =&gt; clojure.lang.PersistentVector</span><span class="w">
-
-</span><span class="c1">; Bir liste `(1 2 3)` şeklinde gösterilebilir, yazılabilir.</span><span class="w">
-</span><span class="c1">; Fakat bu listeyi, Alıntılamalıyız --Quote--.</span><span class="w">
-</span><span class="c1">; Bu, onu bir fonksiyon çağırımı olarak değil,</span><span class="w">
-</span><span class="c1">; bir liste olarak değerlendirilmesini sağlayacaktır.</span><span class="w">
-</span><span class="c1">; Ayrıca, `(list 1 2 3)` tamamen `'(1 2 3)` ifadesi ile</span><span class="w">
-</span><span class="c1">; eşdeğerdir.</span><span class="w">
-
-</span><span class="c1">; 'Koleksiyonlar' sadece bir veri grubudur.</span><span class="w">
-</span><span class="c1">; Vektörler ve Listeler, koleksiyondur:</span><span class="w">
-</span><span class="p">(</span><span class="nf">coll?</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; true</span><span class="w">
-</span><span class="p">(</span><span class="nf">coll?</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; true</span><span class="w">
-
-</span><span class="c1">; 'Ardışıklar' (seqs), bir veri listesinin soyut tanımlamasıdır.</span><span class="w">
-</span><span class="c1">; Sadece listeler ardışıktır.</span><span class="w">
-</span><span class="p">(</span><span class="nb">seq?</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; true</span><span class="w">
-</span><span class="p">(</span><span class="nb">seq?</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; false</span><span class="w">
-
-</span><span class="c1">; Bir ardışık, ulaşıldığında sadece giriş verisi vermelidir.</span><span class="w">
-</span><span class="c1">; Yani, ardışıklar tembel olabilir. | Sonsuz ardışıklar tanımlanabilir.</span><span class="w">
-</span><span class="p">(</span><span class="nb">range</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; (0 1 2 3)</span><span class="w">
-</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; (0 1 2 3 4 ...) (sonsuz bir ardışık)</span><span class="w">
-</span><span class="p">(</span><span class="nb">take</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">(</span><span class="nb">range</span><span class="p">))</span><span class="w"> </span><span class="c1">;  (0 1 2 3)</span><span class="w">
-
-</span><span class="c1">; Bu yapılarda ekleme işlemi için `cons` kullanılır.</span><span class="w">
-</span><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; (4 1 2 3)</span><span class="w">
-</span><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; (4 1 2 3)</span><span class="w">
-
-</span><span class="c1">; `conj` bir koleksiyona en verimli şekilde veri ekler.</span><span class="w">
-</span><span class="c1">; Bu, listeler için liste başına, vektörler için ise vektör sonuna demektir.</span><span class="w">
-</span><span class="p">(</span><span class="nb">conj</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; [1 2 3 4]</span><span class="w">
-</span><span class="p">(</span><span class="nb">conj</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; (4 1 2 3)</span><span class="w">
-
-</span><span class="c1">; `concat` koleksiyonları birleştirmek için kullanılır.</span><span class="w">
-</span><span class="p">(</span><span class="nb">concat</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">3</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; (1 2 3 4)</span><span class="w">
-
-</span><span class="c1">; `filter` ve `map` koleksiyonlarla işlem yapmak için</span><span class="w">
-</span><span class="c1">; ön-tanımlı yüksek-seviyeli fonksiyonlardır.</span><span class="w">
-</span><span class="c1">;</span><span class="w">
-</span><span class="c1">; ps: `inc` argümanını bir arttıran bir fonksiyon.</span><span class="w">
-</span><span class="p">(</span><span class="nb">map</span><span class="w"> </span><span class="nb">inc</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; (2 3 4)</span><span class="w">
-</span><span class="p">(</span><span class="nb">filter</span><span class="w"> </span><span class="n">even?</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; (2)</span><span class="w">
-
-</span><span class="c1">; Koleksiyonları indirgemek için `reduce` kullanılır.</span><span class="w">
-</span><span class="p">(</span><span class="nb">reduce</span><span class="w"> </span><span class="nb">+</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">])</span><span class="w">
-</span><span class="c1">; = (+ (+ (+ 1 2) 3) 4)</span><span class="w">
-</span><span class="c1">; =&gt; 10</span><span class="w">
-
-</span><span class="c1">; Reduce, bir ilk-tanım değeri alabilir.</span><span class="w">
-</span><span class="p">(</span><span class="nb">reduce</span><span class="w"> </span><span class="nb">conj</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="o">'</span><span class="p">(</span><span class="nf">3</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w">
-</span><span class="c1">; = (conj (conj (conj [] 3) 2) 1)</span><span class="w">
-</span><span class="c1">; =&gt; [3 2 1]</span><span class="w">
-
-</span><span class="c1">; Fonksiyonlar</span><span class="w">
-</span><span class="c1">;;;;;;;;;;;;;;;;;;;;;</span><span class="w">
-
-</span><span class="c1">; Yeni bir fonksiyon oluşturmak için `fn` kullanın.</span><span class="w">
-</span><span class="c1">; Bir fonksiyon her zaman son ifadesini döndürür.</span><span class="w">
-</span><span class="p">(</span><span class="k">fn</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="s">"Merhaba Dünya!"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; fn</span><span class="w">
-
-</span><span class="c1">; Fonksiyonu çağırmak için bir çift paranteze daha ihtiyaç var.</span><span class="w">
-</span><span class="p">((</span><span class="k">fn</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="s">"Merhaba Dünya!"</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; "Merhaba Dünya!"</span><span class="w">
-
-</span><span class="c1">; İsim uzayında bir değişken tanımlamak için `def`</span><span class="w">
-</span><span class="c1">; kullanılır.</span><span class="w">
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w">
-</span><span class="n">x</span><span class="w"> </span><span class="c1">; =&gt; 1</span><span class="w">
-
-</span><span class="c1">; Bir değişkene fonksiyon değeri atamak için,</span><span class="w">
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">merhaba-d</span><span class="err">ü</span><span class="n">nya</span><span class="w"> </span><span class="p">(</span><span class="k">fn</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="s">"Merhaba Dünya!"</span><span class="p">))</span><span class="w">
-</span><span class="p">(</span><span class="nf">merhaba-d</span><span class="err">ü</span><span class="n">nya</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "Merhaba Dünya!"</span><span class="w">
-
-</span><span class="c1">; Bu süreci, `defn` ile kısaltabiliriz.</span><span class="w">
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">hello-world</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="s">"Merhaba Dünya!"</span><span class="p">)</span><span class="w">
-
-</span><span class="c1">; `defn` fonksiyon çağırımındaki üçüncü eleman</span><span class="w">
-</span><span class="c1">; --vektör-- bir argüman listesidir. Fonksiyonun alacağı</span><span class="w">
-</span><span class="c1">; argümanları tanımlar.</span><span class="w">
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">merhaba</span><span class="w"> </span><span class="p">[</span><span class="n">isim</span><span class="p">]</span><span class="w">
-  </span><span class="p">(</span><span class="nb">str</span><span class="w"> </span><span class="s">"Merhaba "</span><span class="w"> </span><span class="n">isim</span><span class="p">))</span><span class="w">
-</span><span class="p">(</span><span class="nf">merhaba</span><span class="w"> </span><span class="s">"Dünya!"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "Merhaba Dünya!"</span><span class="w">
-
-</span><span class="c1">; Ayrıca, `#()` kısa yolunu, fonksiyon deklare etmek için</span><span class="w">
-</span><span class="c1">; kullanabiliriz.</span><span class="w">
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">merhaba2</span><span class="w"> </span><span class="o">#</span><span class="p">(</span><span class="nb">str</span><span class="w"> </span><span class="s">"Merhaba "</span><span class="w"> </span><span class="n">%1</span><span class="p">))</span><span class="w">
-</span><span class="p">(</span><span class="nf">merhaba2</span><span class="w"> </span><span class="s">"Dünya!"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "Merhaba Dünya!"</span><span class="w">
-
-</span><span class="c1">; Çok düzeyli fonksiyonlar da tanımlanabilir,</span><span class="w">
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">merhaba3</span><span class="w">
-  </span><span class="p">([]</span><span class="w"> </span><span class="s">"Merhaba Dünya!"</span><span class="p">)</span><span class="w">
-  </span><span class="p">([</span><span class="n">isim</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="nb">str</span><span class="w"> </span><span class="s">"Merhaba "</span><span class="w"> </span><span class="n">isim</span><span class="p">)))</span><span class="w">
-</span><span class="p">(</span><span class="nf">merhaba3</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "Merhaba Dünya!"</span><span class="w">
-</span><span class="p">(</span><span class="nf">merhaba3</span><span class="w"> </span><span class="s">"A. NESİN!"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "Hello A. NESİN!"</span><span class="w">
-
-</span><span class="c1">; Fonksiyonlar, belirsiz-sayıda argüman alabilir,</span><span class="w">
-</span><span class="c1">; ve bunları sizin için bir ardışıkta depolayabilir.</span><span class="w">
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">arg</span><span class="err">ü</span><span class="n">man-say</span><span class="err">ı</span><span class="n">s</span><span class="err">ı</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="w"> </span><span class="n">arg</span><span class="err">ü</span><span class="n">manlar</span><span class="err">ı</span><span class="n">m</span><span class="p">]</span><span class="w">
-  </span><span class="p">(</span><span class="nb">str</span><span class="w"> </span><span class="s">"Verilen argüman sayısı:"</span><span class="w"> </span><span class="p">(</span><span class="nb">count</span><span class="w"> </span><span class="n">arg</span><span class="err">ü</span><span class="n">manlar</span><span class="err">ı</span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="s">", argümanlar: "</span><span class="w"> </span><span class="n">arg</span><span class="err">ü</span><span class="n">manlar</span><span class="err">ı</span><span class="n">m</span><span class="p">))</span><span class="w">
-</span><span class="p">(</span><span class="nf">arg</span><span class="err">ü</span><span class="n">man-say</span><span class="err">ı</span><span class="n">s</span><span class="err">ı</span><span class="w"> </span><span class="s">"Öğün"</span><span class="w"> </span><span class="s">"Çalış"</span><span class="w"> </span><span class="s">"Güven"</span><span class="p">)</span><span class="w">
-</span><span class="c1">; =&gt; "Verilen argüman sayısı:3, argümanlar: ("Öğün" "Çalış" "Güven")"</span><span class="w">
-
-</span><span class="c1">; Elbette, sıradan ve belirsiz-sayılı fonksiyon argümanlarını</span><span class="w">
-</span><span class="c1">; harmanlayabilirsiniz.</span><span class="w">
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">merhabalar</span><span class="w"> </span><span class="p">[</span><span class="n">ev-sahibi</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">misafirler</span><span class="p">]</span><span class="w">
-  </span><span class="p">(</span><span class="nb">str</span><span class="w"> </span><span class="s">"Merhabalar, "</span><span class="w"> </span><span class="n">misafirler</span><span class="w"> </span><span class="s">". Benim adım "</span><span class="w"> </span><span class="n">ev-sahibi</span><span class="w"> </span><span class="s">"."</span><span class="p">))</span><span class="w">
-</span><span class="p">(</span><span class="nf">merhabalar</span><span class="w"> </span><span class="s">"İklim"</span><span class="w"> </span><span class="s">"Ayşe"</span><span class="w"> </span><span class="s">"Fatma"</span><span class="w"> </span><span class="s">"Nurdan"</span><span class="p">)</span><span class="w">
-</span><span class="c1">; =&gt; "Merhabalar, (\"Ayşe\" \"Fatma\" \"Nurdan\"). Benim adım İklim."</span><span class="w">
-
-
-</span><span class="c1">; Eşlemeler</span><span class="w">
-</span><span class="c1">;;;;;;;;;;</span><span class="w">
-
-</span><span class="c1">; Hash-Maps, Array-Maps</span><span class="w">
-</span><span class="c1">; Hash-Eşlemeleri ve Dizi-Eşlemeleri bir arayüzü paylaşırlar.</span><span class="w">
-</span><span class="c1">; Hash-Eşlemeleri daha hızlıdır, fakat anahtar sıralaması tutmazlar.</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="p">{</span><span class="no">:a</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="no">:b</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="no">:c</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span><span class="w"> </span><span class="c1">; =&gt; clojure.lang.PersistentArrayMap</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="p">(</span><span class="nb">hash-map</span><span class="w"> </span><span class="no">:a</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="no">:b</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="no">:c</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; clojure.lang.PersistentHashMap</span><span class="w">
-
-</span><span class="c1">; Dizi-Eşlemeleri bir çok işlem sırasında otomatik olarak Hash-Eşlemelerine</span><span class="w">
-</span><span class="c1">; dönüşürler. Eğer yeterince büyürlerse, endişelenmenize gerek yoktur.</span><span class="w">
-
-</span><span class="c1">; Eşlemeler anahtar değeri olarak herhangi hash-ifadesi (hashable)</span><span class="w">
-</span><span class="c1">; alabilirler. Ama çoğunlukla, bu iş için anahtar-kelimeler `keyword`</span><span class="w">
-</span><span class="c1">; kullanılır.</span><span class="w">
-</span><span class="c1">; Anahtar-kelimeler, karakter katarları gibidirler, fakat</span><span class="w">
-</span><span class="c1">; bir kaç artıları vardır.</span><span class="w">
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="no">:a</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; clojure.lang.Keyword</span><span class="w">
-
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">karakterkatar</span><span class="err">ı</span><span class="n">-e</span><span class="err">ş</span><span class="n">lemesi</span><span class="w"> </span><span class="p">{</span><span class="s">"a"</span><span class="w"> </span><span class="mi">1</span><span class="n">,</span><span class="w"> </span><span class="s">"b"</span><span class="w"> </span><span class="mi">2</span><span class="n">,</span><span class="w"> </span><span class="s">"c"</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span><span class="w">
-</span><span class="n">karakterkatar</span><span class="err">ı</span><span class="n">-e</span><span class="err">ş</span><span class="n">lemesi</span><span class="w">  </span><span class="c1">; =&gt; {"a" 1, "b" 2, "c" 3}</span><span class="w">
-
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">anahtar-e</span><span class="err">ş</span><span class="n">lemesi</span><span class="w"> </span><span class="p">{</span><span class="no">:a</span><span class="w"> </span><span class="mi">1</span><span class="n">,</span><span class="w"> </span><span class="no">:b</span><span class="w"> </span><span class="mi">2</span><span class="n">,</span><span class="w"> </span><span class="no">:c</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span><span class="w">
-</span><span class="n">anahtar-e</span><span class="err">ş</span><span class="n">lemesi</span><span class="w"> </span><span class="c1">; =&gt; {:a 1, :c 3, :b 2}</span><span class="w">
-
-</span><span class="c1">; Bu arada, virgüller her zaman boşluk olarak değerlendirilir</span><span class="w">
-</span><span class="c1">; ve etkisizdirler.</span><span class="w">
-
-</span><span class="c1">; Bir eşlemeleden fonksiyon notasyonu ile değer çağırmak,</span><span class="w">
-</span><span class="p">(</span><span class="nf">karakterkatar</span><span class="err">ı</span><span class="n">-e</span><span class="err">ş</span><span class="n">lemesi</span><span class="w"> </span><span class="s">"a"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 1</span><span class="w">
-</span><span class="p">(</span><span class="nf">anahtar-e</span><span class="err">ş</span><span class="n">lemesi</span><span class="w"> </span><span class="no">:a</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 1</span><span class="w">
-
-</span><span class="c1">; Keyword tipleri kendi değerlerini argüman olarak aldıkları bir</span><span class="w">
-</span><span class="c1">; eşlemeden değer notasyonu ile çağırabilirler.</span><span class="w">
-</span><span class="p">(</span><span class="no">:b</span><span class="w"> </span><span class="n">anahtar-e</span><span class="err">ş</span><span class="n">lemesi</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 2</span><span class="w">
-
-</span><span class="c1">; Bu notasyonu, bir karakter katarı ile denemeyiniz.</span><span class="w">
-</span><span class="c1">;("a" karakterkatarı-eşlemesi)</span><span class="w">
-</span><span class="c1">; =&gt; Exception: java.lang.String cannot be cast to clojure.lang.IFn</span><span class="w">
-
-</span><span class="c1">; Verilmemiş bir değeri çağırmak, `nil` döndürecektir.</span><span class="w">
-</span><span class="p">(</span><span class="nf">karakterkatar</span><span class="err">ı</span><span class="n">-e</span><span class="err">ş</span><span class="n">lemesi</span><span class="w"> </span><span class="s">"d"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; nil</span><span class="w">
-
-</span><span class="c1">; Eşlemelere yeni değerler eklemek için `assoc` kullanırız.</span><span class="w">
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">yeni-anahtar-e</span><span class="err">ş</span><span class="n">lemesi</span><span class="w"> </span><span class="p">(</span><span class="nb">assoc</span><span class="w"> </span><span class="n">anahtar-e</span><span class="err">ş</span><span class="n">lemesi</span><span class="w"> </span><span class="no">:d</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span><span class="w">
-</span><span class="n">yeni-anahtar-e</span><span class="err">ş</span><span class="n">lemesi</span><span class="w"> </span><span class="c1">; =&gt; {:a 1, :b 2, :c 3, :d 4}</span><span class="w">
-
-</span><span class="c1">; Ama unutmayın, Clojure veri yapıları değişmezdir!</span><span class="w">
-</span><span class="n">anahtar-e</span><span class="err">ş</span><span class="n">lemesi</span><span class="w"> </span><span class="c1">; =&gt; {:a 1, :b 2, :c 3}</span><span class="w">
-
-</span><span class="c1">; Değer silmek için ise `dissoc` kullanılır.</span><span class="w">
-</span><span class="p">(</span><span class="nb">dissoc</span><span class="w"> </span><span class="n">anahtar-e</span><span class="err">ş</span><span class="n">lemesi</span><span class="w"> </span><span class="no">:a</span><span class="w"> </span><span class="no">:b</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; {:c 3}</span><span class="w">
-
-</span><span class="c1">; Kümeler</span><span class="w">
-</span><span class="c1">;;;;;;</span><span class="w">
-
-</span><span class="p">(</span><span class="nb">class</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span><span class="w"> </span><span class="c1">; =&gt; clojure.lang.PersistentHashSet</span><span class="w">
-</span><span class="p">(</span><span class="nb">set</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; #{1 2 3}</span><span class="w">
-
-</span><span class="c1">; `conj` ile bir değer eklenir.</span><span class="w">
-</span><span class="p">(</span><span class="nb">conj</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; #{1 2 3 4}</span><span class="w">
-
-</span><span class="c1">; `disj` ile değer çıkarılır.</span><span class="w">
-</span><span class="p">(</span><span class="nb">disj</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; #{2 3}</span><span class="w">
-
-</span><span class="c1">; Fonksiyon notasyonu kümelerde de tanımlıdır.</span><span class="w">
-</span><span class="c1">; Kendi içlerinde değer arayan bir fonksiyon olarak</span><span class="w">
-</span><span class="c1">; kullanılabilirler.</span><span class="w">
-</span><span class="p">(</span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 1</span><span class="w">
-</span><span class="p">(</span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; nil</span><span class="w">
-
-</span><span class="c1">; `clojure.sets` isim-uzayında daha fazla fonksiyon vardır.</span><span class="w">
-
-</span><span class="c1">; Kullanışlı Formlar</span><span class="w">
-</span><span class="c1">;;;;;;;;;;;;;;;;;</span><span class="w">
-
-</span><span class="c1">; Clojure için mantıksal yapılar bir özel-form'dur.</span><span class="w">
-</span><span class="c1">; Ve diğer fonksiyonlar gibi kullanılabilir.</span><span class="w">
-</span><span class="c1">; `if` fonksiyonunun ilk argümanı bir test ifadesidir.</span><span class="w">
-</span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="n">true</span><span class="w"> </span><span class="s">"ya şundadır"</span><span class="w"> </span><span class="s">"ya bunda"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "ya şundadır"</span><span class="w">
-</span><span class="c1">; İkinci ifade doğru, üçüncü ifade ise yanlışsa ifadeleridir.</span><span class="w">
-</span><span class="c1">; Eğer test terimi doğru olarak değerlendirilirse,</span><span class="w">
-</span><span class="c1">; doğru ifadesi, yanlışsa yanlış ifadesi değerlendirilir ve döndürülür.</span><span class="w">
-</span><span class="c1">;</span><span class="w">
-</span><span class="c1">; Bir yanlışsa ifadesi yoksa `nil` döndürülür.</span><span class="w">
-</span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="n">false</span><span class="w"> </span><span class="s">"a"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; nil</span><span class="w">
-
-</span><span class="c1">; Yerel geçici-değişken tanımlamak için `let` kullanılır.</span><span class="w">
-</span><span class="c1">; İfadelerin varlığı `let` çağırımı ile sınırlıdır.</span><span class="w">
-</span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[</span><span class="n">a</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="w">
-  </span><span class="p">(</span><span class="nb">&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; false</span><span class="w">
-
-</span><span class="c1">; İfade ve çağırımları `do` ile gruplayabilirsiniz.</span><span class="w">
-</span><span class="c1">; Çağırımların sonuncusu `do` ifadesinin değeri olarak </span><span class="w">
-</span><span class="c1">; döndürülecektir.</span><span class="w">
-</span><span class="p">(</span><span class="nf">do</span><span class="w">
-  </span><span class="p">(</span><span class="nb">print</span><span class="w"> </span><span class="s">"Selamlar!"</span><span class="p">)</span><span class="w">
-  </span><span class="s">"Dünya!"</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; "Dünya!" (prints "Selamlar!")</span><span class="w">
-
-</span><span class="c1">; Fonksiyonlar kapalı bir `do` ifadesi ile çevrelenmiştir.</span><span class="w">
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">yazd</span><span class="err">ı</span><span class="n">r-ve-selamla!</span><span class="w"> </span><span class="p">[</span><span class="n">isim</span><span class="p">]</span><span class="w">
-  </span><span class="p">(</span><span class="nb">println</span><span class="w"> </span><span class="s">"Merhaba, "</span><span class="w"> </span><span class="n">isim</span><span class="w"> </span><span class="s">"!"</span><span class="p">)</span><span class="w">
-  </span><span class="p">(</span><span class="nb">str</span><span class="w"> </span><span class="s">"Merhaba, "</span><span class="w"> </span><span class="n">isim</span><span class="w"> </span><span class="s">"!"</span><span class="p">))</span><span class="w">
-</span><span class="p">(</span><span class="nf">yazd</span><span class="err">ı</span><span class="n">r-ve-selamla!</span><span class="w"> </span><span class="s">"Zübeyde"</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; "Merhaba, Zübeyde!" ("Merhaba, Zübeyde!" yazdırır.)</span><span class="w">
-
-</span><span class="c1">; `let` ifadesi de kapalı bir `do` ile gelmektedir.</span><span class="w">
-</span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">[</span><span class="n">isim</span><span class="w"> </span><span class="s">"Ayten"</span><span class="p">]</span><span class="w">
-  </span><span class="p">(</span><span class="nb">print</span><span class="w"> </span><span class="s">"Merhabalar, "</span><span class="w"> </span><span class="n">isim</span><span class="p">)</span><span class="w">
-  </span><span class="p">(</span><span class="nb">str</span><span class="w"> </span><span class="s">"Merhabalar, "</span><span class="w"> </span><span class="n">isim</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; "Merhabalar, " ("Merhabalar, Ayten" yazdırır)</span><span class="w">
-
-</span><span class="c1">; Sıralama-makroları (-&gt; ve -&gt;&gt;) ile veri dönüşümünü daha temiz ifade</span><span class="w">
-</span><span class="c1">; edebilirsiniz.</span><span class="w">
-</span><span class="c1">; Bu makrolar ilk argümanı sonraki her çağırımın içine yerleştirir.</span><span class="w">
-</span><span class="c1">;</span><span class="w">
-</span><span class="c1">; `-&gt;` makrosu, ifadeyi çağırımların ilk argümanı olacak şekilde yerleştirir.</span><span class="w">
-</span><span class="p">(</span><span class="nb">-&gt;</span><span class="w">
-   </span><span class="p">{</span><span class="no">:a</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="no">:b</span><span class="w"> </span><span class="mi">2</span><span class="p">}</span><span class="w"> 
-   </span><span class="p">(</span><span class="nb">assoc</span><span class="w"> </span><span class="no">:c</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; (assoc {:a 1 :b 2} :c 3)</span><span class="w">
-   </span><span class="p">(</span><span class="nb">dissoc</span><span class="w"> </span><span class="no">:b</span><span class="p">))</span><span class="w">
-
-</span><span class="c1">; Bu ifade aşağıdaki şekilde yazılabilir:</span><span class="w">
-</span><span class="c1">; (dissoc (assoc {:a 1 :b 2} :c 3) :b)</span><span class="w">
-</span><span class="c1">; ve `{:a 1 :c 3}` olarak değer bulur.</span><span class="w">
-
-</span><span class="c1">; Sondan-Sıralama-Makrosu (-&gt;&gt;) ise aynı şeyi yapar,</span><span class="w">
-</span><span class="c1">; tek fark ise, ifadeyi, çağırımların son argümanı olarak yerleştirir.</span><span class="w">
-</span><span class="c1">;</span><span class="w">
-</span><span class="p">(</span><span class="nf">-&gt;&gt;</span><span class="w">
-   </span><span class="p">(</span><span class="nb">range</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w">    </span><span class="c1">;=&gt; '(0 1 2 3 4 5 6 7 8 9)</span><span class="w">
-   </span><span class="p">(</span><span class="nb">map</span><span class="w"> </span><span class="nb">inc</span><span class="p">)</span><span class="w">     </span><span class="c1">;=&gt; (map inc (range 10))</span><span class="w">
-   </span><span class="p">(</span><span class="nb">filter</span><span class="w"> </span><span class="n">odd?</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; (filter odd? (map inc (range 10)))</span><span class="w">
-   </span><span class="p">(</span><span class="nb">into</span><span class="w"> </span><span class="p">[]))</span><span class="w">    </span><span class="c1">;=&gt; (into [] (filter odd? (map inc (range 10))))</span><span class="w">
-                 </span><span class="c1">; Sonuç: [1 3 5 7 9]</span><span class="w">
-
-</span><span class="c1">; Bir ifadedeki önceki veri dönüşümlerinin sonucunu nereye</span><span class="w">
-</span><span class="c1">; koyacağınız konusunda daha fazla özgürlük istediğiniz bir durumda,</span><span class="w">
-</span><span class="c1">; Sıralama-Makrolarından daha özgür bi' şey kullanmak istersiniz;</span><span class="w">
-</span><span class="c1">; `as-&gt;` makrosu ile dönüşümlerin çıktısına bir isim atayabilir</span><span class="w">
-</span><span class="c1">; ve ardışık çağırımlarda yer tutucu olarak kullanabilirsiniz.</span><span class="w">
-
-</span><span class="p">(</span><span class="nf">as-&gt;</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="n">girdi</span><span class="w">
-  </span><span class="p">(</span><span class="nb">map</span><span class="w"> </span><span class="nb">inc</span><span class="w"> </span><span class="n">girdi</span><span class="p">)</span><span class="c1">;=&gt; ifadeyi isterseniz çağırımın son argümanı olarak,</span><span class="w">
-  </span><span class="p">(</span><span class="nb">nth</span><span class="w"> </span><span class="n">girdi</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt;  veya çağırımın ilk argümanı olarak, </span><span class="w">
-  </span><span class="p">(</span><span class="nb">conj</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">6</span><span class="p">]</span><span class="w"> </span><span class="n">girdi</span><span class="w"> </span><span class="p">[</span><span class="mi">8</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="mi">10</span><span class="p">]))</span><span class="w"> </span><span class="c1">;=&gt; ya da istediğiniz sırada kullanabilirsiniz.</span><span class="w">
-</span><span class="c1">;=&gt; [4 5 6 4 [8 9 10]]</span><span class="w">
-
-
-
-</span><span class="c1">; Modüller</span><span class="w">
-</span><span class="c1">;;;;;;;;;;;;;;;</span><span class="w">
-
-</span><span class="c1">; `use` çağırdığınız modüldeki tüm tanımlara erişmenize olanak verir.</span><span class="w">
-</span><span class="p">(</span><span class="nf">use</span><span class="w"> </span><span class="ss">'clojure.set</span><span class="p">)</span><span class="w">
-
-</span><span class="c1">; Şu anda, küme fonksiyonlarını kullanabiliriz.</span><span class="w">
-</span><span class="p">(</span><span class="nb">intersection</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">})</span><span class="w"> </span><span class="c1">; =&gt; #{2 3}</span><span class="w">
-</span><span class="p">(</span><span class="nb">difference</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">})</span><span class="w"> </span><span class="c1">; =&gt; #{1}</span><span class="w">
-
-</span><span class="c1">; Ayrıca eklenecek fonksiyonları seçebilirsiniz de:</span><span class="w">
-</span><span class="p">(</span><span class="nf">use</span><span class="w"> </span><span class="o">'</span><span class="p">[</span><span class="n">clojure.set</span><span class="w"> </span><span class="no">:only</span><span class="w"> </span><span class="p">[</span><span class="nb">intersection</span><span class="p">]])</span><span class="w">
-
-</span><span class="c1">; Bir modülü eklemek için `require` kullanılır. </span><span class="w">
-</span><span class="p">(</span><span class="nf">require</span><span class="w"> </span><span class="ss">'clojure.string</span><span class="p">)</span><span class="w">
-
-</span><span class="c1">; İsim-uzayı kapsamlı çağırımlar aşağıdaki şekildedir:</span><span class="w">
-</span><span class="c1">; isim-uzayı/fonksiyon-ismi --isim uzayı ismi ve fonksiyon ismi</span><span class="w">
-</span><span class="c1">; arasına eğik çizgi koymanız yeterli.</span><span class="w">
-</span><span class="c1">; Burada, modül `clojure.string` ve fonksiyon ismi `blank?`</span><span class="w">
-</span><span class="p">(</span><span class="nf">clojure.string/blank?</span><span class="w"> </span><span class="s">""</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; true</span><span class="w">
-
-</span><span class="c1">; Ekleme sırasında, bir modüle takma-ad verilebilir.</span><span class="w">
-</span><span class="p">(</span><span class="nf">require</span><span class="w"> </span><span class="o">'</span><span class="p">[</span><span class="n">clojure.string</span><span class="w"> </span><span class="no">:as</span><span class="w"> </span><span class="nb">str</span><span class="p">])</span><span class="w">
-</span><span class="p">(</span><span class="nf">str/replace</span><span class="w"> </span><span class="s">"Bu bir özet metindir, test için kullanılabilir!"</span><span class="w">
-  </span><span class="o">#</span><span class="s">"[aeıioöuü]"</span><span class="w"> </span><span class="n">str/upper-case</span><span class="p">)</span><span class="w">
-</span><span class="c1">; =&gt; "BU bIr ÖzEt mEtIndIr, tEst IçIn kUllAnIlAbIlIr!"</span><span class="w">
-</span><span class="c1">; (#"", burada düzenli ifadeler için bir sözdizimsel-şekerlemeyi ifade eder)</span><span class="w">
-
-</span><span class="c1">; Bir isim-uzayı tanımlamasında `require` kullanılabilir.</span><span class="w">
-</span><span class="c1">; `ns` bir makrodur ve `require` (ve `use`, ama lütfen kullanmayın)</span><span class="w">
-</span><span class="c1">; dahil olmak üzere bir çok çağırım için işlevsellik sağlamaktadır.</span><span class="w">
-</span><span class="c1">; Bu notasyonu kullanırsanız, modüllerinizi alıntılamak zorunda kalmazsınız.</span><span class="w">
-</span><span class="p">(</span><span class="nf">ns</span><span class="w"> </span><span class="nb">test</span><span class="w">
-  </span><span class="p">(</span><span class="no">:require</span><span class="w">
-    </span><span class="p">[</span><span class="n">clojure.string</span><span class="w"> </span><span class="no">:as</span><span class="w"> </span><span class="nb">str</span><span class="p">]</span><span class="w">
-    </span><span class="p">[</span><span class="n">clojure.set</span><span class="w"> </span><span class="no">:as</span><span class="w"> </span><span class="nb">set</span><span class="p">]))</span><span class="w">
-
-
-</span><span class="c1">; Java</span><span class="w">
-</span><span class="c1">;;;;;;;;;;;;;;;;;</span><span class="w">
-
-</span><span class="c1">; Java, kocaman ve kullanışlı bir standart kütüphaneye sahip,</span><span class="w">
-</span><span class="c1">; Clojure, Java etkileşimi ile, bundan yararlanabilirsiniz.</span><span class="w">
-
-</span><span class="c1">; `import` diğer modüller gibi, bir java modülü de ele alabilir.</span><span class="w">
-</span><span class="c1">; Date, bir Java modülü.</span><span class="w">
-</span><span class="p">(</span><span class="nb">import</span><span class="w"> </span><span class="n">java.util.Date</span><span class="p">)</span><span class="w">
-
-</span><span class="c1">; `ns` çağırımında da kullanabilirsiniz.</span><span class="w">
-</span><span class="p">(</span><span class="nf">ns</span><span class="w"> </span><span class="nb">test</span><span class="w">
-  </span><span class="p">(</span><span class="no">:import</span><span class="w"> </span><span class="n">java.util.Date</span><span class="w">
-           </span><span class="n">java.util.Calendar</span><span class="p">))</span><span class="w">
-
-</span><span class="c1">; Bir Java nesnesinden oluşturmak için `new` çağırımını kullanabilirsiniz.</span><span class="w">
-</span><span class="p">(</span><span class="nb">new</span><span class="w"> </span><span class="n">Date</span><span class="p">)</span><span class="w">
-
-</span><span class="c1">; Ayrıca Clojure Okuyucusu, size bunun daha farklı bir yolunu sunar:</span><span class="w">
-</span><span class="c1">; Sınıf isminin sonuna koyulacak bir nokta `.` ile</span><span class="w">
-</span><span class="c1">; bu yapılabilir.</span><span class="w">
-</span><span class="p">(</span><span class="nf">Date.</span><span class="p">)</span><span class="w"> </span><span class="c1">; &lt;bir tarih nesnesi&gt;</span><span class="w">
-
-</span><span class="c1">; `.` --nokta-- çağırımı, size nesnelerdeki metotlara erişme imkanı verir.</span><span class="w">
-</span><span class="p">(</span><span class="nb">.</span><span class="w"> </span><span class="p">(</span><span class="nb">new</span><span class="w"> </span><span class="n">Date</span><span class="p">)</span><span class="w"> </span><span class="n">getTime</span><span class="p">)</span><span class="w"> </span><span class="c1">; &lt;bir zaman-damgası&gt;</span><span class="w">
-</span><span class="p">(</span><span class="nf">.getTime</span><span class="w"> </span><span class="p">(</span><span class="nf">Date.</span><span class="p">))</span><span class="w"> </span><span class="c1">; Üstteki ifade ile tamamen aynı sonucu verir.</span><span class="w">
-
-</span><span class="c1">; Sınıf içindeki statik metotlara erişmek için `/` ayracını</span><span class="w">
-</span><span class="c1">; sınıf ile metot ismi birleştirmek için kullanabilirsiniz.</span><span class="w">
-</span><span class="c1">; (örnekSınıf/statikMetot)</span><span class="w">
-</span><span class="p">(</span><span class="nf">System/currentTimeMillis</span><span class="p">)</span><span class="w"> </span><span class="c1">; &lt;bir zaman-damgası&gt; (`system` her zaman sunulur)</span><span class="w">
-
-</span><span class="c1">; Sınıflarla işlem yaparken, `doto` bu süreci kolaylaştırabilir.</span><span class="w">
-</span><span class="c1">; İlk argüman sınıf nesnesi, sonraki her çağırım, nesne üzerinde yapılır.</span><span class="w">
-</span><span class="p">(</span><span class="nb">import</span><span class="w"> </span><span class="n">java.util.Calendar</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="nb">doto</span><span class="w"> </span><span class="p">(</span><span class="nf">Calendar/getInstance</span><span class="p">)</span><span class="w">
-  </span><span class="p">(</span><span class="nf">.set</span><span class="w"> </span><span class="mi">2000</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; `set` metodu, `doto` ifadesine verilen</span><span class="w">
-                        </span><span class="c1">; sınıf nesnesi üzerinde çağırılır.</span><span class="w">
-  </span><span class="n">.getTime</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; Bir tarih nesnesi. set to 2000-01-01 00:00:00</span><span class="w">
-
-
-</span><span class="c1">; STM</span><span class="w">
-</span><span class="c1">;;;;;;;;;;;;;;;;;</span><span class="w">
-
-</span><span class="c1">; 'Software Transactional Memory' Clojure'un değişmez veri yapılarını</span><span class="w">
-</span><span class="c1">; ele alırken kullandığı bir mekanizmadır. Clojure içinde bunu kullanan</span><span class="w">
-</span><span class="c1">; birkaç yapı vardır.</span><span class="w">
-
-</span><span class="c1">; Bir `atom` en basitidir. Bir ilkleme-değeri verin.</span><span class="w">
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">benim-atomum</span><span class="w"> </span><span class="p">(</span><span class="nf">atom</span><span class="w"> </span><span class="p">{}))</span><span class="w">
-
-</span><span class="c1">; Bir atomu güncellemek için `swap!` kullanılır.</span><span class="w">
-</span><span class="c1">; `swap!` fonksiyonu, ilk argüman olarak aldığı atomu, ikinci argüman</span><span class="w">
-</span><span class="c1">; olarak aldığı fonksiyona uygular. Bu fonksiyona ek argümanlar ise</span><span class="w">
-</span><span class="c1">; fonksiyondan sonra gelirler.</span><span class="w">
-</span><span class="p">(</span><span class="nf">swap!</span><span class="w"> </span><span class="n">benim-atomum</span><span class="w"> </span><span class="nb">assoc</span><span class="w"> </span><span class="no">:a</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w">
-</span><span class="c1">; benim-atomum'un değerini (assoc {} :a 1) ifadesinin sonucu ile değiştirir.</span><span class="w">
-</span><span class="p">(</span><span class="nf">swap!</span><span class="w"> </span><span class="n">benim-atomum</span><span class="w"> </span><span class="nb">assoc</span><span class="w"> </span><span class="no">:b</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">
-</span><span class="c1">; benim-atomum'un değerini (assoc {:a 1} :b 2) ifadesinin sonucu ile değiştirir.</span><span class="w">
-
-</span><span class="c1">; `deref` ile, atomun değerini çözümleyebilirsiniz. </span><span class="w">
-</span><span class="n">benim-atomum</span><span class="w">  </span><span class="c1">;=&gt; Atom&lt;#...&gt; (Atom ifadesi döndürür)</span><span class="w">
-</span><span class="o">@</span><span class="n">benim-atomum</span><span class="w"> </span><span class="c1">; =&gt; {:a 1 :b 2}</span><span class="w">
-
-</span><span class="c1">; İşte, `atom` kullanan basit bir sayaç.</span><span class="w">
-</span><span class="p">(</span><span class="k">def</span><span class="w"> </span><span class="n">saya</span><span class="err">ç</span><span class="w"> </span><span class="p">(</span><span class="nf">atom</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="c1">;=&gt; Şu anki isim uzayına, `sayaç` ile, 0 başlangıç</span><span class="w">
-</span><span class="c1">; değeri ile bir atom tanımladık.</span><span class="w">
-</span><span class="p">(</span><span class="k">defn</span><span class="w"> </span><span class="n">saya</span><span class="err">ç</span><span class="n">-artt</span><span class="err">ı</span><span class="n">r</span><span class="w"> </span><span class="p">[</span><span class="n">benim-atomum</span><span class="p">]</span><span class="w">
-  </span><span class="p">(</span><span class="nf">swap!</span><span class="w"> </span><span class="n">saya</span><span class="err">ç</span><span class="w"> </span><span class="nb">inc</span><span class="p">))</span><span class="w"> </span><span class="c1">;=&gt; Atom'un değerini bir arttır.</span><span class="w">
-
-</span><span class="p">(</span><span class="nf">saya</span><span class="err">ç</span><span class="n">-artt</span><span class="err">ı</span><span class="n">r</span><span class="w"> </span><span class="n">saya</span><span class="err">ç</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="nf">saya</span><span class="err">ç</span><span class="n">-artt</span><span class="err">ı</span><span class="n">r</span><span class="w"> </span><span class="n">saya</span><span class="err">ç</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="nf">saya</span><span class="err">ç</span><span class="n">-artt</span><span class="err">ı</span><span class="n">r</span><span class="w"> </span><span class="n">saya</span><span class="err">ç</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="nf">saya</span><span class="err">ç</span><span class="n">-artt</span><span class="err">ı</span><span class="n">r</span><span class="w"> </span><span class="n">saya</span><span class="err">ç</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="nf">saya</span><span class="err">ç</span><span class="n">-artt</span><span class="err">ı</span><span class="n">r</span><span class="w"> </span><span class="n">saya</span><span class="err">ç</span><span class="p">)</span><span class="w">
-</span><span class="p">(</span><span class="nf">saya</span><span class="err">ç</span><span class="n">-artt</span><span class="err">ı</span><span class="n">r</span><span class="w"> </span><span class="n">saya</span><span class="err">ç</span><span class="p">)</span><span class="w">
-
-</span><span class="o">@</span><span class="n">saya</span><span class="err">ç</span><span class="w"> </span><span class="c1">; =&gt; 6</span><span class="w">
-
-</span><span class="c1">; Diğer STM yapıları `ref`'ler ve `agent`'lar.</span><span class="w">
-</span><span class="c1">; Ref'ler: http://clojure.org/refs</span><span class="w">
-</span><span class="c1">; Agent'lar: http://clojure.org/agents</span><span class="w">
-</span></code></pre></div>
+<div class="highlight"><pre><span></span><span class="c1">; Noktalı Virgül, satırı yorumlamak için kullanılır.</span>
+
+<span class="c1">; Clojure programları formlardan meydana gelir,</span>
+<span class="c1">; Parantezlerle çevirili değerler, boşluk ile ayrılır. --Virgül ile değil--</span>
+<span class="c1">;</span>
+<span class="c1">; Clojure okuyucusu*, listedeki ilk elemanı çağırılacak bir fonksiyon</span>
+<span class="c1">; Veya makro, geri kalan ifadeleri o çağırıma argüman olarak kabul eder.</span>
+<span class="c1">;</span>
+
+<span class="c1">; Bir dosyadaki ilk çağırım isim-uzayı tanımlamak için `ns` olmalı.</span>
+<span class="p">(</span><span class="kd">ns </span><span class="nv">clojure-öğren</span><span class="p">)</span>
+
+<span class="c1">;</span>
+<span class="c1">; Bir diğer yorumlama seçeneği de, ifade-içi. Bu diyez (`#`), ve alt çizgi</span>
+<span class="c1">; İle başlar ve herhangi bir s-ifade&#39;ye uygulanabilir.</span>
+<span class="c1">;</span>
+<span class="o">#</span><span class="nv">_</span><span class="p">(</span><span class="nf">bu</span><span class="w"> </span><span class="nv">çağırım</span><span class="w"> </span><span class="nv">değerlendirilmeyecektir</span><span class="p">)</span>
+
+<span class="c1">; Öncelikle fonksiyon çağırımları ve temel işlemler:</span>
+
+<span class="c1">; Örnek bir fonksiyon çağırımı:</span>
+<span class="c1">; (örnek-bir-fonksiyon ilk-argüman ikinci-argüman)</span>
+
+<span class="c1">; `str` aldığı argümanları bir karakter katarı olarak geri verir.</span>
+<span class="p">(</span><span class="nb">str </span><span class="s">&quot;Merhaba&quot;</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="w"> </span><span class="s">&quot;dünya!&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Merhaba dünya!&quot;</span>
+
+<span class="c1">; Matematik, oldukça sezgisel ve basit</span>
+<span class="p">(</span><span class="nb">+ </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 2</span>
+<span class="p">(</span><span class="nb">- </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 1</span>
+<span class="p">(</span><span class="nb">* </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 2</span>
+<span class="p">(</span><span class="nb">/ </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 2</span>
+
+<span class="c1">; Eşitlik için `=`</span>
+<span class="p">(</span><span class="nb">= </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; true</span>
+<span class="p">(</span><span class="nb">= </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; false</span>
+
+<span class="c1">; `not` beklediğiniz gibi, mantıksal ifadeleri tersine çevirir.</span>
+<span class="p">(</span><span class="nb">not </span><span class="nv">true</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; false</span>
+
+<span class="c1">; Clojure formları, iç-içe çağırılabilir</span>
+<span class="c1">; Değerlendirilen çağırımlar bir üst form&#39;a argüman</span>
+<span class="c1">; Olarak verilir.</span>
+<span class="p">(</span><span class="nb">+ </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="nb">- </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="c1">; = 1 + (3 - 2) =&gt; 2</span>
+
+<span class="c1">; Tipler</span>
+<span class="c1">;;;;;;;;;;;;;</span>
+
+<span class="c1">; Clojure, Java&#39;nın temel tipleri olan mantıksal (boolean),</span>
+<span class="c1">; Tam sayılar (int) ve karakter katarlarını (string) kullanır.</span>
+<span class="c1">; Değerleri denetlemek için `class` fonksiyonunu kullanın.</span>
+<span class="p">(</span><span class="nb">class </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; Tam sayı sabitleri ön-tanımlı olarak `java.lang.Long` ile tanımlanır.</span>
+<span class="p">(</span><span class="nb">class </span><span class="mi">1</span><span class="nv">.</span><span class="p">)</span><span class="c1">; Kayan noktalı sayı sabitleri</span>
+<span class="c1">; Ön-tanımlı olarak `java.lang.Double` ile tanımlanır.</span>
+<span class="p">(</span><span class="nb">class </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="c1">; Karakter katarı sabitleri her zaman, --sadece-- çift tırnak</span>
+<span class="c1">; ile tanımlanır ve ön-tanımlı olarak `java.lang.String` tipindedir.</span>
+<span class="p">(</span><span class="nb">class </span><span class="nv">false</span><span class="p">)</span><span class="w"> </span><span class="c1">; Mantıksal değer sabitleri, `java.lang.Boolean`.</span>
+<span class="p">(</span><span class="nb">class </span><span class="nv">nil</span><span class="p">)</span><span class="c1">; &quot;Null&quot;, (tanımsız) değerler `nil` ile tanımlanır.</span>
+
+<span class="c1">; Clojure okuyucusu her paranter ifadesini bir çağırım olarak</span>
+<span class="c1">; değerlendirdiğinden bir liste tanımlamak için çağırımı durdurmalıyız.</span>
+<span class="o">&#39;</span><span class="p">(</span><span class="nb">+ </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; (+ 1 2)</span>
+<span class="c1">; ((quote (+ 1 2)) için bir kısa yoldur)</span>
+
+<span class="c1">; Alıntılanmış listeleri çağırabilirsiniz.</span>
+<span class="p">(</span><span class="nb">eval </span><span class="o">&#39;</span><span class="p">(</span><span class="nb">+ </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; 3</span>
+
+<span class="c1">; Koleksiyonlar ve Ardışıklar</span>
+<span class="c1">;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">; Listeler bağlı-liste veri yapısı,</span>
+<span class="c1">; Vektörler dizi altyapısı kullanır. </span>
+<span class="p">(</span><span class="nb">class </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="c1">; =&gt; clojure.lang.PersistentList</span>
+<span class="p">(</span><span class="nb">class </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="c1">; =&gt; clojure.lang.PersistentVector</span>
+
+<span class="c1">; Bir liste `(1 2 3)` şeklinde gösterilebilir, yazılabilir.</span>
+<span class="c1">; Fakat bu listeyi, Alıntılamalıyız --Quote--.</span>
+<span class="c1">; Bu, onu bir fonksiyon çağırımı olarak değil,</span>
+<span class="c1">; bir liste olarak değerlendirilmesini sağlayacaktır.</span>
+<span class="c1">; Ayrıca, `(list 1 2 3)` tamamen `&#39;(1 2 3)` ifadesi ile</span>
+<span class="c1">; eşdeğerdir.</span>
+
+<span class="c1">; &#39;Koleksiyonlar&#39; sadece bir veri grubudur.</span>
+<span class="c1">; Vektörler ve Listeler, koleksiyondur:</span>
+<span class="p">(</span><span class="nf">coll?</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; true</span>
+<span class="p">(</span><span class="nf">coll?</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; true</span>
+
+<span class="c1">; &#39;Ardışıklar&#39; (seqs), bir veri listesinin soyut tanımlamasıdır.</span>
+<span class="c1">; Sadece listeler ardışıktır.</span>
+<span class="p">(</span><span class="nb">seq? </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; true</span>
+<span class="p">(</span><span class="nb">seq? </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; false</span>
+
+<span class="c1">; Bir ardışık, ulaşıldığında sadece giriş verisi vermelidir.</span>
+<span class="c1">; Yani, ardışıklar tembel olabilir. | Sonsuz ardışıklar tanımlanabilir.</span>
+<span class="p">(</span><span class="nb">range </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; (0 1 2 3)</span>
+<span class="p">(</span><span class="nf">range</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; (0 1 2 3 4 ...) (sonsuz bir ardışık)</span>
+<span class="p">(</span><span class="nb">take </span><span class="mi">4</span><span class="w"> </span><span class="p">(</span><span class="nf">range</span><span class="p">))</span><span class="w"> </span><span class="c1">;  (0 1 2 3)</span>
+
+<span class="c1">; Bu yapılarda ekleme işlemi için `cons` kullanılır.</span>
+<span class="p">(</span><span class="nb">cons </span><span class="mi">4</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; (4 1 2 3)</span>
+<span class="p">(</span><span class="nb">cons </span><span class="mi">4</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; (4 1 2 3)</span>
+
+<span class="c1">; `conj` bir koleksiyona en verimli şekilde veri ekler.</span>
+<span class="c1">; Bu, listeler için liste başına, vektörler için ise vektör sonuna demektir.</span>
+<span class="p">(</span><span class="nb">conj </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; [1 2 3 4]</span>
+<span class="p">(</span><span class="nb">conj </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; (4 1 2 3)</span>
+
+<span class="c1">; `concat` koleksiyonları birleştirmek için kullanılır.</span>
+<span class="p">(</span><span class="nb">concat </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; (1 2 3 4)</span>
+
+<span class="c1">; `filter` ve `map` koleksiyonlarla işlem yapmak için</span>
+<span class="c1">; ön-tanımlı yüksek-seviyeli fonksiyonlardır.</span>
+<span class="c1">;</span>
+<span class="c1">; ps: `inc` argümanını bir arttıran bir fonksiyon.</span>
+<span class="p">(</span><span class="nb">map inc </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; (2 3 4)</span>
+<span class="p">(</span><span class="nb">filter </span><span class="nv">even?</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; (2)</span>
+
+<span class="c1">; Koleksiyonları indirgemek için `reduce` kullanılır.</span>
+<span class="p">(</span><span class="nb">reduce + </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">])</span>
+<span class="c1">; = (+ (+ (+ 1 2) 3) 4)</span>
+<span class="c1">; =&gt; 10</span>
+
+<span class="c1">; Reduce, bir ilk-tanım değeri alabilir.</span>
+<span class="p">(</span><span class="nb">reduce conj </span><span class="p">[]</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span>
+<span class="c1">; = (conj (conj (conj [] 3) 2) 1)</span>
+<span class="c1">; =&gt; [3 2 1]</span>
+
+<span class="c1">; Fonksiyonlar</span>
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">; Yeni bir fonksiyon oluşturmak için `fn` kullanın.</span>
+<span class="c1">; Bir fonksiyon her zaman son ifadesini döndürür.</span>
+<span class="p">(</span><span class="k">fn </span><span class="p">[]</span><span class="w"> </span><span class="s">&quot;Merhaba Dünya!&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; fn</span>
+
+<span class="c1">; Fonksiyonu çağırmak için bir çift paranteze daha ihtiyaç var.</span>
+<span class="p">((</span><span class="k">fn </span><span class="p">[]</span><span class="w"> </span><span class="s">&quot;Merhaba Dünya!&quot;</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; &quot;Merhaba Dünya!&quot;</span>
+
+<span class="c1">; İsim uzayında bir değişken tanımlamak için `def`</span>
+<span class="c1">; kullanılır.</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">x</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="nv">x</span><span class="w"> </span><span class="c1">; =&gt; 1</span>
+
+<span class="c1">; Bir değişkene fonksiyon değeri atamak için,</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">merhaba-dünya</span><span class="w"> </span><span class="p">(</span><span class="k">fn </span><span class="p">[]</span><span class="w"> </span><span class="s">&quot;Merhaba Dünya!&quot;</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">merhaba-dünya</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Merhaba Dünya!&quot;</span>
+
+<span class="c1">; Bu süreci, `defn` ile kısaltabiliriz.</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">hello-world</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="s">&quot;Merhaba Dünya!&quot;</span><span class="p">)</span>
+
+<span class="c1">; `defn` fonksiyon çağırımındaki üçüncü eleman</span>
+<span class="c1">; --vektör-- bir argüman listesidir. Fonksiyonun alacağı</span>
+<span class="c1">; argümanları tanımlar.</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">merhaba</span><span class="w"> </span><span class="p">[</span><span class="nv">isim</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Merhaba &quot;</span><span class="w"> </span><span class="nv">isim</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">merhaba</span><span class="w"> </span><span class="s">&quot;Dünya!&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Merhaba Dünya!&quot;</span>
+
+<span class="c1">; Ayrıca, `#()` kısa yolunu, fonksiyon deklare etmek için</span>
+<span class="c1">; kullanabiliriz.</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">merhaba2</span><span class="w"> </span><span class="o">#</span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Merhaba &quot;</span><span class="w"> </span><span class="nv">%1</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">merhaba2</span><span class="w"> </span><span class="s">&quot;Dünya!&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Merhaba Dünya!&quot;</span>
+
+<span class="c1">; Çok düzeyli fonksiyonlar da tanımlanabilir,</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">merhaba3</span>
+<span class="w">  </span><span class="p">([]</span><span class="w"> </span><span class="s">&quot;Merhaba Dünya!&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">([</span><span class="nv">isim</span><span class="p">]</span><span class="w"> </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Merhaba &quot;</span><span class="w"> </span><span class="nv">isim</span><span class="p">)))</span>
+<span class="p">(</span><span class="nf">merhaba3</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Merhaba Dünya!&quot;</span>
+<span class="p">(</span><span class="nf">merhaba3</span><span class="w"> </span><span class="s">&quot;A. NESİN!&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Hello A. NESİN!&quot;</span>
+
+<span class="c1">; Fonksiyonlar, belirsiz-sayıda argüman alabilir,</span>
+<span class="c1">; ve bunları sizin için bir ardışıkta depolayabilir.</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">argüman-sayısı</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="w"> </span><span class="nv">argümanlarım</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Verilen argüman sayısı:&quot;</span><span class="w"> </span><span class="p">(</span><span class="nb">count </span><span class="nv">argümanlarım</span><span class="p">)</span><span class="w"> </span><span class="s">&quot;, argümanlar: &quot;</span><span class="w"> </span><span class="nv">argümanlarım</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">argüman-sayısı</span><span class="w"> </span><span class="s">&quot;Öğün&quot;</span><span class="w"> </span><span class="s">&quot;Çalış&quot;</span><span class="w"> </span><span class="s">&quot;Güven&quot;</span><span class="p">)</span>
+<span class="c1">; =&gt; &quot;Verilen argüman sayısı:3, argümanlar: (&quot;Öğün&quot; &quot;Çalış&quot; &quot;Güven&quot;)&quot;</span>
+
+<span class="c1">; Elbette, sıradan ve belirsiz-sayılı fonksiyon argümanlarını</span>
+<span class="c1">; harmanlayabilirsiniz.</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">merhabalar</span><span class="w"> </span><span class="p">[</span><span class="nv">ev-sahibi</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nv">misafirler</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Merhabalar, &quot;</span><span class="w"> </span><span class="nv">misafirler</span><span class="w"> </span><span class="s">&quot;. Benim adım &quot;</span><span class="w"> </span><span class="nv">ev-sahibi</span><span class="w"> </span><span class="s">&quot;.&quot;</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">merhabalar</span><span class="w"> </span><span class="s">&quot;İklim&quot;</span><span class="w"> </span><span class="s">&quot;Ayşe&quot;</span><span class="w"> </span><span class="s">&quot;Fatma&quot;</span><span class="w"> </span><span class="s">&quot;Nurdan&quot;</span><span class="p">)</span>
+<span class="c1">; =&gt; &quot;Merhabalar, (\&quot;Ayşe\&quot; \&quot;Fatma\&quot; \&quot;Nurdan\&quot;). Benim adım İklim.&quot;</span>
+
+
+<span class="c1">; Eşlemeler</span>
+<span class="c1">;;;;;;;;;;</span>
+
+<span class="c1">; Hash-Maps, Array-Maps</span>
+<span class="c1">; Hash-Eşlemeleri ve Dizi-Eşlemeleri bir arayüzü paylaşırlar.</span>
+<span class="c1">; Hash-Eşlemeleri daha hızlıdır, fakat anahtar sıralaması tutmazlar.</span>
+<span class="p">(</span><span class="nb">class </span><span class="p">{</span><span class="ss">:a</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ss">:b</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="ss">:c</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span><span class="w"> </span><span class="c1">; =&gt; clojure.lang.PersistentArrayMap</span>
+<span class="p">(</span><span class="nb">class </span><span class="p">(</span><span class="nb">hash-map </span><span class="ss">:a</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ss">:b</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="ss">:c</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; clojure.lang.PersistentHashMap</span>
+
+<span class="c1">; Dizi-Eşlemeleri bir çok işlem sırasında otomatik olarak Hash-Eşlemelerine</span>
+<span class="c1">; dönüşürler. Eğer yeterince büyürlerse, endişelenmenize gerek yoktur.</span>
+
+<span class="c1">; Eşlemeler anahtar değeri olarak herhangi hash-ifadesi (hashable)</span>
+<span class="c1">; alabilirler. Ama çoğunlukla, bu iş için anahtar-kelimeler `keyword`</span>
+<span class="c1">; kullanılır.</span>
+<span class="c1">; Anahtar-kelimeler, karakter katarları gibidirler, fakat</span>
+<span class="c1">; bir kaç artıları vardır.</span>
+<span class="p">(</span><span class="nb">class </span><span class="ss">:a</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; clojure.lang.Keyword</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">karakterkatarı-eşlemesi</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;a&quot;</span><span class="w"> </span><span class="mi">1</span>,<span class="w"> </span><span class="s">&quot;b&quot;</span><span class="w"> </span><span class="mi">2</span>,<span class="w"> </span><span class="s">&quot;c&quot;</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span>
+<span class="nv">karakterkatarı-eşlemesi</span><span class="w">  </span><span class="c1">; =&gt; {&quot;a&quot; 1, &quot;b&quot; 2, &quot;c&quot; 3}</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">anahtar-eşlemesi</span><span class="w"> </span><span class="p">{</span><span class="ss">:a</span><span class="w"> </span><span class="mi">1</span>,<span class="w"> </span><span class="ss">:b</span><span class="w"> </span><span class="mi">2</span>,<span class="w"> </span><span class="ss">:c</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span>
+<span class="nv">anahtar-eşlemesi</span><span class="w"> </span><span class="c1">; =&gt; {:a 1, :c 3, :b 2}</span>
+
+<span class="c1">; Bu arada, virgüller her zaman boşluk olarak değerlendirilir</span>
+<span class="c1">; ve etkisizdirler.</span>
+
+<span class="c1">; Bir eşlemeleden fonksiyon notasyonu ile değer çağırmak,</span>
+<span class="p">(</span><span class="nf">karakterkatarı-eşlemesi</span><span class="w"> </span><span class="s">&quot;a&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 1</span>
+<span class="p">(</span><span class="nf">anahtar-eşlemesi</span><span class="w"> </span><span class="ss">:a</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 1</span>
+
+<span class="c1">; Keyword tipleri kendi değerlerini argüman olarak aldıkları bir</span>
+<span class="c1">; eşlemeden değer notasyonu ile çağırabilirler.</span>
+<span class="p">(</span><span class="ss">:b</span><span class="w"> </span><span class="nv">anahtar-eşlemesi</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 2</span>
+
+<span class="c1">; Bu notasyonu, bir karakter katarı ile denemeyiniz.</span>
+<span class="c1">;(&quot;a&quot; karakterkatarı-eşlemesi)</span>
+<span class="c1">; =&gt; Exception: java.lang.String cannot be cast to clojure.lang.IFn</span>
+
+<span class="c1">; Verilmemiş bir değeri çağırmak, `nil` döndürecektir.</span>
+<span class="p">(</span><span class="nf">karakterkatarı-eşlemesi</span><span class="w"> </span><span class="s">&quot;d&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; nil</span>
+
+<span class="c1">; Eşlemelere yeni değerler eklemek için `assoc` kullanırız.</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">yeni-anahtar-eşlemesi</span><span class="w"> </span><span class="p">(</span><span class="nb">assoc </span><span class="nv">anahtar-eşlemesi</span><span class="w"> </span><span class="ss">:d</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span>
+<span class="nv">yeni-anahtar-eşlemesi</span><span class="w"> </span><span class="c1">; =&gt; {:a 1, :b 2, :c 3, :d 4}</span>
+
+<span class="c1">; Ama unutmayın, Clojure veri yapıları değişmezdir!</span>
+<span class="nv">anahtar-eşlemesi</span><span class="w"> </span><span class="c1">; =&gt; {:a 1, :b 2, :c 3}</span>
+
+<span class="c1">; Değer silmek için ise `dissoc` kullanılır.</span>
+<span class="p">(</span><span class="nb">dissoc </span><span class="nv">anahtar-eşlemesi</span><span class="w"> </span><span class="ss">:a</span><span class="w"> </span><span class="ss">:b</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; {:c 3}</span>
+
+<span class="c1">; Kümeler</span>
+<span class="c1">;;;;;;</span>
+
+<span class="p">(</span><span class="nb">class </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span><span class="w"> </span><span class="c1">; =&gt; clojure.lang.PersistentHashSet</span>
+<span class="p">(</span><span class="nb">set </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; #{1 2 3}</span>
+
+<span class="c1">; `conj` ile bir değer eklenir.</span>
+<span class="p">(</span><span class="nb">conj </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; #{1 2 3 4}</span>
+
+<span class="c1">; `disj` ile değer çıkarılır.</span>
+<span class="p">(</span><span class="nb">disj </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; #{2 3}</span>
+
+<span class="c1">; Fonksiyon notasyonu kümelerde de tanımlıdır.</span>
+<span class="c1">; Kendi içlerinde değer arayan bir fonksiyon olarak</span>
+<span class="c1">; kullanılabilirler.</span>
+<span class="p">(</span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 1</span>
+<span class="p">(</span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; nil</span>
+
+<span class="c1">; `clojure.sets` isim-uzayında daha fazla fonksiyon vardır.</span>
+
+<span class="c1">; Kullanışlı Formlar</span>
+<span class="c1">;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">; Clojure için mantıksal yapılar bir özel-form&#39;dur.</span>
+<span class="c1">; Ve diğer fonksiyonlar gibi kullanılabilir.</span>
+<span class="c1">; `if` fonksiyonunun ilk argümanı bir test ifadesidir.</span>
+<span class="p">(</span><span class="k">if </span><span class="nv">true</span><span class="w"> </span><span class="s">&quot;ya şundadır&quot;</span><span class="w"> </span><span class="s">&quot;ya bunda&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;ya şundadır&quot;</span>
+<span class="c1">; İkinci ifade doğru, üçüncü ifade ise yanlışsa ifadeleridir.</span>
+<span class="c1">; Eğer test terimi doğru olarak değerlendirilirse,</span>
+<span class="c1">; doğru ifadesi, yanlışsa yanlış ifadesi değerlendirilir ve döndürülür.</span>
+<span class="c1">;</span>
+<span class="c1">; Bir yanlışsa ifadesi yoksa `nil` döndürülür.</span>
+<span class="p">(</span><span class="k">if </span><span class="nv">false</span><span class="w"> </span><span class="s">&quot;a&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; nil</span>
+
+<span class="c1">; Yerel geçici-değişken tanımlamak için `let` kullanılır.</span>
+<span class="c1">; İfadelerin varlığı `let` çağırımı ile sınırlıdır.</span>
+<span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">a</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">b</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">&gt; </span><span class="nv">a</span><span class="w"> </span><span class="nv">b</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; false</span>
+
+<span class="c1">; İfade ve çağırımları `do` ile gruplayabilirsiniz.</span>
+<span class="c1">; Çağırımların sonuncusu `do` ifadesinin değeri olarak </span>
+<span class="c1">; döndürülecektir.</span>
+<span class="p">(</span><span class="nf">do</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">print </span><span class="s">&quot;Selamlar!&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="s">&quot;Dünya!&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Dünya!&quot; (prints &quot;Selamlar!&quot;)</span>
+
+<span class="c1">; Fonksiyonlar kapalı bir `do` ifadesi ile çevrelenmiştir.</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">yazdır-ve-selamla!</span><span class="w"> </span><span class="p">[</span><span class="nv">isim</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">println </span><span class="s">&quot;Merhaba, &quot;</span><span class="w"> </span><span class="nv">isim</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Merhaba, &quot;</span><span class="w"> </span><span class="nv">isim</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">yazdır-ve-selamla!</span><span class="w"> </span><span class="s">&quot;Zübeyde&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; &quot;Merhaba, Zübeyde!&quot; (&quot;Merhaba, Zübeyde!&quot; yazdırır.)</span>
+
+<span class="c1">; `let` ifadesi de kapalı bir `do` ile gelmektedir.</span>
+<span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">isim</span><span class="w"> </span><span class="s">&quot;Ayten&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">print </span><span class="s">&quot;Merhabalar, &quot;</span><span class="w"> </span><span class="nv">isim</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Merhabalar, &quot;</span><span class="w"> </span><span class="nv">isim</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; &quot;Merhabalar, &quot; (&quot;Merhabalar, Ayten&quot; yazdırır)</span>
+
+<span class="c1">; Sıralama-makroları (-&gt; ve -&gt;&gt;) ile veri dönüşümünü daha temiz ifade</span>
+<span class="c1">; edebilirsiniz.</span>
+<span class="c1">; Bu makrolar ilk argümanı sonraki her çağırımın içine yerleştirir.</span>
+<span class="c1">;</span>
+<span class="c1">; `-&gt;` makrosu, ifadeyi çağırımların ilk argümanı olacak şekilde yerleştirir.</span>
+<span class="p">(</span><span class="nf">-&gt;</span>
+<span class="w">   </span><span class="p">{</span><span class="ss">:a</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ss">:b</span><span class="w"> </span><span class="mi">2</span><span class="p">}</span><span class="w"> </span>
+<span class="w">   </span><span class="p">(</span><span class="nb">assoc </span><span class="ss">:c</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; (assoc {:a 1 :b 2} :c 3)</span>
+<span class="w">   </span><span class="p">(</span><span class="nb">dissoc </span><span class="ss">:b</span><span class="p">))</span>
+
+<span class="c1">; Bu ifade aşağıdaki şekilde yazılabilir:</span>
+<span class="c1">; (dissoc (assoc {:a 1 :b 2} :c 3) :b)</span>
+<span class="c1">; ve `{:a 1 :c 3}` olarak değer bulur.</span>
+
+<span class="c1">; Sondan-Sıralama-Makrosu (-&gt;&gt;) ise aynı şeyi yapar,</span>
+<span class="c1">; tek fark ise, ifadeyi, çağırımların son argümanı olarak yerleştirir.</span>
+<span class="c1">;</span>
+<span class="p">(</span><span class="nf">-&gt;&gt;</span>
+<span class="w">   </span><span class="p">(</span><span class="nb">range </span><span class="mi">10</span><span class="p">)</span><span class="w">    </span><span class="c1">;=&gt; &#39;(0 1 2 3 4 5 6 7 8 9)</span>
+<span class="w">   </span><span class="p">(</span><span class="nb">map </span><span class="nv">inc</span><span class="p">)</span><span class="w">     </span><span class="c1">;=&gt; (map inc (range 10))</span>
+<span class="w">   </span><span class="p">(</span><span class="nb">filter </span><span class="nv">odd?</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; (filter odd? (map inc (range 10)))</span>
+<span class="w">   </span><span class="p">(</span><span class="nb">into </span><span class="p">[]))</span><span class="w">    </span><span class="c1">;=&gt; (into [] (filter odd? (map inc (range 10))))</span>
+<span class="w">                 </span><span class="c1">; Sonuç: [1 3 5 7 9]</span>
+
+<span class="c1">; Bir ifadedeki önceki veri dönüşümlerinin sonucunu nereye</span>
+<span class="c1">; koyacağınız konusunda daha fazla özgürlük istediğiniz bir durumda,</span>
+<span class="c1">; Sıralama-Makrolarından daha özgür bi&#39; şey kullanmak istersiniz;</span>
+<span class="c1">; `as-&gt;` makrosu ile dönüşümlerin çıktısına bir isim atayabilir</span>
+<span class="c1">; ve ardışık çağırımlarda yer tutucu olarak kullanabilirsiniz.</span>
+
+<span class="p">(</span><span class="nf">as-&gt;</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="nv">girdi</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">map inc </span><span class="nv">girdi</span><span class="p">)</span><span class="c1">;=&gt; ifadeyi isterseniz çağırımın son argümanı olarak,</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">nth </span><span class="nv">girdi</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt;  veya çağırımın ilk argümanı olarak, </span>
+<span class="w">  </span><span class="p">(</span><span class="nb">conj </span><span class="p">[</span><span class="mi">4</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">6</span><span class="p">]</span><span class="w"> </span><span class="nv">girdi</span><span class="w"> </span><span class="p">[</span><span class="mi">8</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="mi">10</span><span class="p">]))</span><span class="w"> </span><span class="c1">;=&gt; ya da istediğiniz sırada kullanabilirsiniz.</span>
+<span class="c1">;=&gt; [4 5 6 4 [8 9 10]]</span>
+
+
+
+<span class="c1">; Modüller</span>
+<span class="c1">;;;;;;;;;;;;;;;</span>
+
+<span class="c1">; `use` çağırdığınız modüldeki tüm tanımlara erişmenize olanak verir.</span>
+<span class="p">(</span><span class="nf">use</span><span class="w"> </span><span class="ss">&#39;clojure.set</span><span class="p">)</span>
+
+<span class="c1">; Şu anda, küme fonksiyonlarını kullanabiliriz.</span>
+<span class="p">(</span><span class="nb">intersection </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">})</span><span class="w"> </span><span class="c1">; =&gt; #{2 3}</span>
+<span class="p">(</span><span class="nb">difference </span><span class="o">#</span><span class="p">{</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w"> </span><span class="o">#</span><span class="p">{</span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">})</span><span class="w"> </span><span class="c1">; =&gt; #{1}</span>
+
+<span class="c1">; Ayrıca eklenecek fonksiyonları seçebilirsiniz de:</span>
+<span class="p">(</span><span class="nf">use</span><span class="w"> </span><span class="o">&#39;</span><span class="p">[</span><span class="nv">clojure.set</span><span class="w"> </span><span class="ss">:only</span><span class="w"> </span><span class="p">[</span><span class="nv">intersection</span><span class="p">]])</span>
+
+<span class="c1">; Bir modülü eklemek için `require` kullanılır. </span>
+<span class="p">(</span><span class="nf">require</span><span class="w"> </span><span class="ss">&#39;clojure.string</span><span class="p">)</span>
+
+<span class="c1">; İsim-uzayı kapsamlı çağırımlar aşağıdaki şekildedir:</span>
+<span class="c1">; isim-uzayı/fonksiyon-ismi --isim uzayı ismi ve fonksiyon ismi</span>
+<span class="c1">; arasına eğik çizgi koymanız yeterli.</span>
+<span class="c1">; Burada, modül `clojure.string` ve fonksiyon ismi `blank?`</span>
+<span class="p">(</span><span class="nf">clojure.string/blank?</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; true</span>
+
+<span class="c1">; Ekleme sırasında, bir modüle takma-ad verilebilir.</span>
+<span class="p">(</span><span class="nf">require</span><span class="w"> </span><span class="o">&#39;</span><span class="p">[</span><span class="nv">clojure.string</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">str</span><span class="p">])</span>
+<span class="p">(</span><span class="nf">str/replace</span><span class="w"> </span><span class="s">&quot;Bu bir özet metindir, test için kullanılabilir!&quot;</span>
+<span class="w">  </span><span class="o">#</span><span class="s">&quot;[aeıioöuü]&quot;</span><span class="w"> </span><span class="nv">str/upper-case</span><span class="p">)</span>
+<span class="c1">; =&gt; &quot;BU bIr ÖzEt mEtIndIr, tEst IçIn kUllAnIlAbIlIr!&quot;</span>
+<span class="c1">; (#&quot;&quot;, burada düzenli ifadeler için bir sözdizimsel-şekerlemeyi ifade eder)</span>
+
+<span class="c1">; Bir isim-uzayı tanımlamasında `require` kullanılabilir.</span>
+<span class="c1">; `ns` bir makrodur ve `require` (ve `use`, ama lütfen kullanmayın)</span>
+<span class="c1">; dahil olmak üzere bir çok çağırım için işlevsellik sağlamaktadır.</span>
+<span class="c1">; Bu notasyonu kullanırsanız, modüllerinizi alıntılamak zorunda kalmazsınız.</span>
+<span class="p">(</span><span class="kd">ns </span><span class="nv">test</span>
+<span class="w">  </span><span class="p">(</span><span class="ss">:require</span>
+<span class="w">    </span><span class="p">[</span><span class="nv">clojure.string</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">str</span><span class="p">]</span>
+<span class="w">    </span><span class="p">[</span><span class="nv">clojure.set</span><span class="w"> </span><span class="ss">:as</span><span class="w"> </span><span class="nv">set</span><span class="p">]))</span>
+
+
+<span class="c1">; Java</span>
+<span class="c1">;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">; Java, kocaman ve kullanışlı bir standart kütüphaneye sahip,</span>
+<span class="c1">; Clojure, Java etkileşimi ile, bundan yararlanabilirsiniz.</span>
+
+<span class="c1">; `import` diğer modüller gibi, bir java modülü de ele alabilir.</span>
+<span class="c1">; Date, bir Java modülü.</span>
+<span class="p">(</span><span class="nb">import </span><span class="nv">java.util.Date</span><span class="p">)</span>
+
+<span class="c1">; `ns` çağırımında da kullanabilirsiniz.</span>
+<span class="p">(</span><span class="kd">ns </span><span class="nv">test</span>
+<span class="w">  </span><span class="p">(</span><span class="ss">:import</span><span class="w"> </span><span class="nv">java.util.Date</span>
+<span class="w">           </span><span class="nv">java.util.Calendar</span><span class="p">))</span>
+
+<span class="c1">; Bir Java nesnesinden oluşturmak için `new` çağırımını kullanabilirsiniz.</span>
+<span class="p">(</span><span class="k">new </span><span class="nv">Date</span><span class="p">)</span>
+
+<span class="c1">; Ayrıca Clojure Okuyucusu, size bunun daha farklı bir yolunu sunar:</span>
+<span class="c1">; Sınıf isminin sonuna koyulacak bir nokta `.` ile</span>
+<span class="c1">; bu yapılabilir.</span>
+<span class="p">(</span><span class="nf">Date.</span><span class="p">)</span><span class="w"> </span><span class="c1">; &lt;bir tarih nesnesi&gt;</span>
+
+<span class="c1">; `.` --nokta-- çağırımı, size nesnelerdeki metotlara erişme imkanı verir.</span>
+<span class="p">(</span><span class="k">. </span><span class="p">(</span><span class="k">new </span><span class="nv">Date</span><span class="p">)</span><span class="w"> </span><span class="nv">getTime</span><span class="p">)</span><span class="w"> </span><span class="c1">; &lt;bir zaman-damgası&gt;</span>
+<span class="p">(</span><span class="nf">.getTime</span><span class="w"> </span><span class="p">(</span><span class="nf">Date.</span><span class="p">))</span><span class="w"> </span><span class="c1">; Üstteki ifade ile tamamen aynı sonucu verir.</span>
+
+<span class="c1">; Sınıf içindeki statik metotlara erişmek için `/` ayracını</span>
+<span class="c1">; sınıf ile metot ismi birleştirmek için kullanabilirsiniz.</span>
+<span class="c1">; (örnekSınıf/statikMetot)</span>
+<span class="p">(</span><span class="nf">System/currentTimeMillis</span><span class="p">)</span><span class="w"> </span><span class="c1">; &lt;bir zaman-damgası&gt; (`system` her zaman sunulur)</span>
+
+<span class="c1">; Sınıflarla işlem yaparken, `doto` bu süreci kolaylaştırabilir.</span>
+<span class="c1">; İlk argüman sınıf nesnesi, sonraki her çağırım, nesne üzerinde yapılır.</span>
+<span class="p">(</span><span class="nb">import </span><span class="nv">java.util.Calendar</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">doto </span><span class="p">(</span><span class="nf">Calendar/getInstance</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">.set</span><span class="w"> </span><span class="mi">2000</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; `set` metodu, `doto` ifadesine verilen</span>
+<span class="w">                        </span><span class="c1">; sınıf nesnesi üzerinde çağırılır.</span>
+<span class="w">  </span><span class="nv">.getTime</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; Bir tarih nesnesi. set to 2000-01-01 00:00:00</span>
+
+
+<span class="c1">; STM</span>
+<span class="c1">;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">; &#39;Software Transactional Memory&#39; Clojure&#39;un değişmez veri yapılarını</span>
+<span class="c1">; ele alırken kullandığı bir mekanizmadır. Clojure içinde bunu kullanan</span>
+<span class="c1">; birkaç yapı vardır.</span>
+
+<span class="c1">; Bir `atom` en basitidir. Bir ilkleme-değeri verin.</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">benim-atomum</span><span class="w"> </span><span class="p">(</span><span class="nf">atom</span><span class="w"> </span><span class="p">{}))</span>
+
+<span class="c1">; Bir atomu güncellemek için `swap!` kullanılır.</span>
+<span class="c1">; `swap!` fonksiyonu, ilk argüman olarak aldığı atomu, ikinci argüman</span>
+<span class="c1">; olarak aldığı fonksiyona uygular. Bu fonksiyona ek argümanlar ise</span>
+<span class="c1">; fonksiyondan sonra gelirler.</span>
+<span class="p">(</span><span class="nf">swap!</span><span class="w"> </span><span class="nv">benim-atomum</span><span class="w"> </span><span class="nb">assoc </span><span class="ss">:a</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="c1">; benim-atomum&#39;un değerini (assoc {} :a 1) ifadesinin sonucu ile değiştirir.</span>
+<span class="p">(</span><span class="nf">swap!</span><span class="w"> </span><span class="nv">benim-atomum</span><span class="w"> </span><span class="nb">assoc </span><span class="ss">:b</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="c1">; benim-atomum&#39;un değerini (assoc {:a 1} :b 2) ifadesinin sonucu ile değiştirir.</span>
+
+<span class="c1">; `deref` ile, atomun değerini çözümleyebilirsiniz. </span>
+<span class="nv">benim-atomum</span><span class="w">  </span><span class="c1">;=&gt; Atom&lt;#...&gt; (Atom ifadesi döndürür)</span>
+<span class="o">@</span><span class="nv">benim-atomum</span><span class="w"> </span><span class="c1">; =&gt; {:a 1 :b 2}</span>
+
+<span class="c1">; İşte, `atom` kullanan basit bir sayaç.</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">sayaç</span><span class="w"> </span><span class="p">(</span><span class="nf">atom</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span><span class="w"> </span><span class="c1">;=&gt; Şu anki isim uzayına, `sayaç` ile, 0 başlangıç</span>
+<span class="c1">; değeri ile bir atom tanımladık.</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">sayaç-arttır</span><span class="w"> </span><span class="p">[</span><span class="nv">benim-atomum</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">swap!</span><span class="w"> </span><span class="nv">sayaç</span><span class="w"> </span><span class="nv">inc</span><span class="p">))</span><span class="w"> </span><span class="c1">;=&gt; Atom&#39;un değerini bir arttır.</span>
+
+<span class="p">(</span><span class="nf">sayaç-arttır</span><span class="w"> </span><span class="nv">sayaç</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">sayaç-arttır</span><span class="w"> </span><span class="nv">sayaç</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">sayaç-arttır</span><span class="w"> </span><span class="nv">sayaç</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">sayaç-arttır</span><span class="w"> </span><span class="nv">sayaç</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">sayaç-arttır</span><span class="w"> </span><span class="nv">sayaç</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">sayaç-arttır</span><span class="w"> </span><span class="nv">sayaç</span><span class="p">)</span>
+
+<span class="o">@</span><span class="nv">sayaç</span><span class="w"> </span><span class="c1">; =&gt; 6</span>
+
+<span class="c1">; Diğer STM yapıları `ref`&#39;ler ve `agent`&#39;lar.</span>
+<span class="c1">; Ref&#39;ler: http://clojure.org/refs</span>
+<span class="c1">; Agent&#39;lar: http://clojure.org/agents</span>
+</pre></div>
 <h3>Çevirim-içi içerikler</h3>
 
 <p>Bu içerik, Rich Hickey&#39;nin derin yazılım geliştirme anlayışına ve John McCarthy&#39;nin vizyonu olan Lisp&#39;in, Clojure&#39;a miras verdiklerini anlamak için elbette yeterli değildir. Fakat fonksiyonel paradigma ve bu paradigmanın modern bir Lisp lehçesinde kullanımına göz kırpmış oldunuz.</p>

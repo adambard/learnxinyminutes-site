@@ -91,794 +91,794 @@
 Cocoa Touch.
 Он является объектно-ориентированным языком программирования общего назначения,
 который добавляет обмен сообщениями в Smalltalk-стиле к языку программирования C.</p>
-<div class="highlight"><pre class="highlight plaintext"><code>// Однострочные комментарии начинаются с //
-
-/*
-Так выглядят многострочные комментарии
-*/
-
-// Импорт заголовочных файлов фреймворка Foundation с помощью #import
-// Используйте &lt;&gt;, чтобы импортировать глобальные файлы (обычно фреймворки)
-// Используйте "", чтобы импортировать локальные файлы (из проекта)
-#import &lt;Foundation/Foundation.h&gt;
-#import "MyClass.h"
-
-// Если вы включили модули для iOS &gt;= 7.0 или OS X &gt;= 10.9 проектов в
-// Xcode 5, вы можете импортировать фреймворки подобным образом:
-@import Foundation;
-
-// Точка входа в программу - это функция main,
-// которая возвращает целый тип
-int main (int argc, const char * argv[])
-{
-    // Создание autorelease pool для управления памятью в программе
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-    // В место этого воспользуйтесь @autoreleasepool, если вы используете
-    // автоматический подсчет ссылок (ARC)
-    @autoreleasepool {
-
-    // Используйте NSLog для печати в консоль
-    NSLog(@"Привет Мир!"); // Напечатает строку "Привет Мир!"
-
-    ///////////////////////////////////////
-    // Типы и переменные
-    ///////////////////////////////////////
-
-    // Объявление простых типов
-    int myPrimitive1  = 1;
-    long myPrimitive2 = 234554664565;
-
-    // Объявление объектов
-    // Помещайте * в начало названия объекта для строго типизированного объявления
-    MyClass *myObject1 = nil;  // Строгая типизация 
-    id       myObject2 = nil;  // Слабая типизация 
-    // %@ – это объект
-    // 'description' - это общий для всех объектов метод вывода данных
-    NSLog(@"%@ and %@", myObject1, [myObject2 description]); // напечатает "(null) and (null)"
-
-    // Строка
-    NSString *worldString = @"Мир";
-    NSLog(@"Привет %@!", worldString); // напечатает "Привет Мир!"
-    // NSMutableString - это изменяемая версия NSString-объекта
-    NSMutableString *mutableString = [NSMutableString stringWithString:@"Привет"];
-    [mutableString appendString:@" Мир!"];
-    NSLog(@"%@", mutableString); // напечатает =&gt; "Привет Мир!"
-
-    // Символьные литералы
-    NSNumber *theLetterZNumber = @'Z';
-    char theLetterZ            = [theLetterZNumber charValue]; // или 'Z'
-    NSLog(@"%c", theLetterZ);
-
-    // Целочисленные литералы
-    NSNumber *fortyTwoNumber = @42;
-    int fortyTwo             = [fortyTwoNumber intValue]; // или '42'
-    NSLog(@"%i", fortyTwo);
-
-    // Беззнаковый целочисленный литерал
-    NSNumber *fortyTwoUnsignedNumber = @42U;
-    unsigned int fortyTwoUnsigned    = [fortyTwoUnsignedNumber unsignedIntValue]; // или 42
-    NSLog(@"%u", fortyTwoUnsigned);
-
-    NSNumber *fortyTwoShortNumber = [NSNumber numberWithShort:42];
-    short fortyTwoShort           = [fortyTwoShortNumber shortValue]; // или 42
-    NSLog(@"%hi", fortyTwoShort);
-
-    NSNumber *fortyOneShortNumber   = [NSNumber numberWithShort:41];
-    unsigned short fortyOneUnsigned = [fortyOneShortNumber unsignedShortValue]; // или 41
-    NSLog(@"%u", fortyOneUnsigned);
-
-    NSNumber *fortyTwoLongNumber = @42L;
-    long fortyTwoLong            = [fortyTwoLongNumber longValue]; // или 42
-    NSLog(@"%li", fortyTwoLong);
-
-    NSNumber *fiftyThreeLongNumber   = @53L;
-    unsigned long fiftyThreeUnsigned = [fiftyThreeLongNumber unsignedLongValue]; // или 53
-    NSLog(@"%lu", fiftyThreeUnsigned);
-
-    // Вещественный литерал
-    NSNumber *piFloatNumber = @3.141592654F;
-    float piFloat           = [piFloatNumber floatValue]; // или 3.141592654f
-    NSLog(@"%f", piFloat); // напечатает 3.141592654
-    NSLog(@"%5.2f", piFloat); // напечатает " 3.14"
-
-    NSNumber *piDoubleNumber = @3.1415926535;
-    double piDouble                 = [piDoubleNumber doubleValue]; // или 3.1415926535
-    NSLog(@"%f", piDouble);
-    NSLog(@"%4.2f", piDouble); // напечатает "3.14"
-
-    // NSDecimalNumber - это класс с фиксированной точкой, который является
-    // более точным, чем float или double
-    NSDecimalNumber *oneDecNum = [NSDecimalNumber decimalNumberWithString:@"10.99"];
-    NSDecimalNumber *twoDecNum = [NSDecimalNumber decimalNumberWithString:@"5.002"];
-    // NSDecimalNumber не способен использовать стандартные +, -, *, / операторы,
-    // поэтому он предоставляет свои собственные:
-    [oneDecNum decimalNumberByAdding:twoDecNum]; 
-    [oneDecNum decimalNumberBySubtracting:twoDecNum];
-    [oneDecNum decimalNumberByMultiplyingBy:twoDecNum];
-    [oneDecNum decimalNumberByDividingBy:twoDecNum];
-    NSLog(@"%@", oneDecNum); // напечатает "10.99", т.к. NSDecimalNumber - изменяемый
-
-    // BOOL (булевый) литерал
-    NSNumber *yesNumber = @YES;
-    NSNumber *noNumber  = @NO;
-    // или
-    BOOL yesBool = YES;
-    BOOL noBool  = NO;
-    NSLog(@"%i", yesBool); // напечатает 1
-
-    // Массив
-    // Может содержать различные типы данных, но должен быть объектом Objective-C
-    NSArray *anArray      = @[@1, @2, @3, @4];
-    NSNumber *thirdNumber = anArray[2];
-    NSLog(@"Третье число = %@", thirdNumber); // Напечатает "Третье число = 3"
-    // NSMutableArray - это изменяемая версия NSArray, допускающая вам изменять
-    // элементы в массиве и расширять или сокращать массив.
-    // Удобный, но не эффективный как NSArray.
-    NSMutableArray *mutableArray = [NSMutableArray arrayWithCapacity:2];
-    [mutableArray addObject:@"Привет"];
-    [mutableArray addObject:@"Мир"];
-    [mutableArray removeObjectAtIndex:0];
-    NSLog(@"%@", [mutableArray objectAtIndex:0]); // напечатает "Мир"
-
-    // Словарь
-    NSDictionary *aDictionary = @{ @"ключ1" : @"значение1", @"ключ2" : @"значение2" };
-    NSObject *valueObject     = aDictionary[@"Ключ"];
-    NSLog(@"Объект = %@", valueObject); // Напечатает "Объект = (null)"
-    // NSMutableDictionary тоже доступен, как изменяемый словарь
-    NSMutableDictionary *mutableDictionary = [NSMutableDictionary dictionaryWithCapacity:2];
-    [mutableDictionary setObject:@"значение1" forKey:@"ключ1"];
-    [mutableDictionary setObject:@"значение2" forKey:@"ключ2"];
-    [mutableDictionary removeObjectForKey:@"ключ1"];
-
-    // Множество
-    NSSet *set = [NSSet setWithObjects:@"Привет", @"Привет", @"Мир", nil];
-    NSLog(@"%@", set); // напечатает {(Hello, World)} (порядок может отличаться)
-    // NSMutableSet тоже доступен, как изменяемое множество
-    NSMutableSet *mutableSet = [NSMutableSet setWithCapacity:2];
-    [mutableSet addObject:@"Привет"];
-    [mutableSet addObject:@"Привет"];
-    NSLog(@"%@", mutableSet); // напечатает =&gt; {(Привет)}
-
-    ///////////////////////////////////////
-    // Операторы
-    ///////////////////////////////////////
-
-    // Операторы работают также как в Си.
-    // Например:
-    2 + 5; // =&gt; 7
-    4.2f + 5.1f; // =&gt; 9.3f
-    3 == 2; // =&gt; 0 (НЕТ)
-    3 != 2; // =&gt; 1 (ДА)
-    1 &amp;&amp; 1; // =&gt; 1 (логическое И)
-    0 || 1; // =&gt; 1 (логическое ИЛИ)
-    ~0x0F; // =&gt; 0xF0 (побитовое отрицание)
-    0x0F &amp; 0xF0; // =&gt; 0x00 (побитовое И)
-    0x01 &lt;&lt; 1; // =&gt; 0x02 (побитовый сдвиг влево (на 1))
-
-    ///////////////////////////////////////
-    // Структуры ветвления
-    ///////////////////////////////////////
-
-    // Условный оператор
-    if (NO)
-    {
-        NSLog(@"Я никогда не выполнюсь");
-    } else if (0)
-    {
-        NSLog(@"Я тоже никогда не выполнюсь");
-    } else
-    {
-        NSLog(@"Я напечатаюсь");
-    }
-
-    // Ветвление с множественным выбором
-    switch (2)
-    {
-        case 0:
-        {
-            NSLog(@"Я никогда не выполнюсь");
-        } break;
-        case 1:
-        {
-            NSLog(@"Я тоже никогда не выполнюсь");
-        } break;
-        default:
-        {
-            NSLog(@"Я напечатаюсь");
-        } break;
-    }
-
-    // Цикл с предусловием
-    int ii = 0;
-    while (ii &lt; 4)
-    {
-        NSLog(@"%d,", ii++); // ii++ инкрементирует ii после передачи значения
-    } // =&gt; напечатает "0," 
-      //               "1,"
-      //               "2,"
-      //               "3,"
-
-    // Цикл со счётчиком
-    int jj;
-    for (jj=0; jj &lt; 4; jj++)
-    {
-        NSLog(@"%d,", jj);
-    } // =&gt; напечатает "0," 
-      //               "1,"
-      //               "2,"
-      //               "3,"
-
-    // Цикл просмотра           
-    NSArray *values = @[@0, @1, @2, @3];
-    for (NSNumber *value in values)
-    {
-        NSLog(@"%@,", value);
-    } // =&gt; напечатает "0," 
-      //               "1,"
-      //               "2,"
-      //               "3,"
-
-    // Цикл for для объектов. Может использоваться с любым объектом Objective-C
-    for (id item in values) { 
-        NSLog(@"%@,", item); 
-    } // напечатает =&gt; "0," 
-      //           "1,"
-      //           "2,"
-      //           "3,"      
-
-    // Обработка исключений
-    @try
-    {
-        // Ваше исключение здесь
-        @throw [NSException exceptionWithName:@"FileNotFoundException"
-                            reason:@"Файл не найден в системе" userInfo:nil];
-    } @catch (NSException * e)
-    {
-        NSLog(@"Исключение: %@", e);
-    } @finally
-    {
-        NSLog(@"В конце отводится время для очистки.");
-    } // =&gt; напечатает "Исключение: Файл не найден в системе"
-      //               "В конце отводится время для очистки."
-
-    // NSError - это полезные объекты для аргументов функции, чтобы заполнить их
-    // пользовательскими ошибками.
-    NSError *error = [NSError errorWithDomain:@"Неправильный эл. адрес." code:4 userInfo:nil];
-
-    ///////////////////////////////////////
-    // Объекты
-    ///////////////////////////////////////
-
-    // Создание объектов через выделение памяти и инициализацию.
-    // Объект не является полнофункциональным пока обе части не выполнятся.
-    MyClass *myObject = [[MyClass alloc] init];
-
-    // В Objective-C модель ООП базируется на передаче сообщений.
-    // В Objective-C Вы не просто вызваете метод; вы посылаете сообщение.
-    [myObject instanceMethodWithParameter:@"Стив Джобс"];
-
-    // Очищайте память, перед завершением работы программы.
-    [pool drain];
-
-    // Конец @autoreleasepool
-    }
-
-    // Конец программы.
-    return 0;
-}
-
-///////////////////////////////////////
-// Классы и функции
-///////////////////////////////////////
-
-// Объявляйте свой класс в файле МойКласс.h
-// Синтаксис объявления:
-// @interface ИмяКласса : ИмяКлассаРодителя &lt;ИмплементируемыеПротоколы&gt;
-// {
-//    тип имя; &lt;= Объявление переменных;
-// }
-// @property тип имя; &lt;= объявление свойств
-// -/+ (тип) Объявление метода(ов).
-// @end
-@interface MyClass : NSObject &lt;MyProtocol&gt; // NSObject - это базовый класс в Objective-C.
-{
-    // Объявления экземпляров переменных (может существовать в файлах интерфейса или реализвации)
-    int count; // По умолчанию защищенный доступ.
-    @private id data; // Приватный доступ (Намного удобнее объявлять в файле реализации)
-    NSString *name;
-}
-// Удобное обозначение для переменных с открытым (public) доступом
-// автоматически генерируется сеттер-метод
-// По умолчанию название сеттер-метода начинается с 'set' с последующим именем
-// переменной из @property
-@property int propInt; // Имя сеттер-метода = 'setPropInt'
-@property (copy) id copyId; // (copy) =&gt; Скопировать объект в ходе присвоения.
-// (readonly) =&gt; Не позволяет установить значение вне @interface
-@property (readonly) NSString *roString; // Используйте @synthesize 
-                               // в @implementation, чтобы создать аксессор
-// Вы можете настроить геттер и сеттер имена вместо используемого 'set'-имени по умолчанию:
-@property (getter=lengthGet, setter=lengthSet:) int length;
-
-// Методы
-+/- (возвращаемый тип)сигнатураМетода:(Параметр типа *)имяПараметра;
-
-// + для методов класса
-+ (NSString *)classMethod;
-+ (MyClass *)myClassFromHeight:(NSNumber *)defaultHeight;
-
-// - для методов объекта
-- (NSString *)instanceMethodWithParameter:(NSString *)string;
-- (NSNumber *)methodAParameterAsString:(NSString*)string andAParameterAsNumber:(NSNumber *)number;
-
-// Методы-конструктор с аргументом:
-- (id)initWithDistance:(int)defaultDistance;
-// В Objective-C имена методов очень описательные. Всегда имена методов соответствуют своим аргументам
-
-@end // Устанавливает конец интерфейса (interface)
-
-
-// Чтобы обратиться к открытым (public) переменным из файла реализации, @property генерирует сеттер-метод
-// автоматически. Название метода - это 'set' с последующим именем переменной из @property:
-MyClass *myClass = [[MyClass alloc] init]; // создает экземпляр объекта класса MyClass
-[myClass setCount:10]; 
-NSLog(@"%d", [myClass count]); // напечатает =&gt; 10
-// Или используйте свой геттер и сеттер методы, которые определены в @interface:
-[myClass lengthSet:32];
-NSLog(@"%i", [myClass lengthGet]); // напечатает =&gt; 32
-// Для удобства вы можете использовать точечную нотацию,
-// чтобы установить и получить доступ к переменным объекта:
-myClass.count = 45;
-NSLog(@"%i", myClass.count); // напечатает =&gt; 45
-
-// Вызов методов класса:
-NSString *classMethodString = [MyClass classMethod];
-MyClass *classFromName = [MyClass myClassFromName:@"Привет"];
-
-// Вызов методов экземпляра:
-MyClass *myClass = [[MyClass alloc] init]; // Создает экземпляр объекта MyClass
-NSString *stringFromInstanceMethod = [myClass instanceMethodWithParameter:@"Привет"];
-
-// Селекторы
-// Это способ динамически представить методы. Используйте для вызова методов класса, передайте методы
-// через функции, чтобы сказать другим классам, что они должны вызвать их и сохранить методы
-// как переменные
-// SEL - это тип данных. @selector() вернет селектор из предоставленного имени метода
-// methodAParameterAsString:andAParameterAsNumber: - это название метода в MyClass
-SEL selectorVar = @selector(methodAParameterAsString:andAParameterAsNumber:); 
-if ([myClass respondsToSelector:selectorVar]) { // Проверяет содержит ли класс метод
-    // Необходимо установить все аргументы метода в один объект, что отправить его в performSelector-функцию
-    NSArray *arguments = [NSArray arrayWithObjects:@"Привет", @4, nil];
-    [myClass performSelector:selectorVar withObject:arguments]; // Вызывает метод
-} else {
-    // NSStringFromSelector() вернет NSString название метода полученного селектором
-    NSLog(@"MyClass не содержит метод: %@", NSStringFromSelector(selectedVar));
-}
-
-// Имплементируйте методы в файле MyClass.m:
-@implementation MyClass {
-    long distance; // Переменная экземпляра с закрытым (private) доступом
-    NSNumber height;
-}
-
-// Для доступа к public переменной, объявленной в интерфейсе, используйте '_' перед названием переменной:
-_count = 5; // Ссылается на "int count" из интерфейса MyClass
-// Получение доступа к переменной, объявленной в реализации происходит следующим образом:
-distance = 18; // Ссылается на "long distance" из реализации MyClass
-// Для использования в иплементации переменной, объявленной в интерфейсе с помощью @property,
-// следует использовать @synthesize для создания переменной аксессора:
-@synthesize roString = _roString; // Теперь _roString доступна в @implementation (реализации интерфейса)
-
-// Вызывается в первую очередь, перед вызовом других медотов класса или инициализации других объектов
-+ (void)initialize 
-{
-    if (self == [MyClass class]) {
-        distance = 0;
-    }
-}
-
-// Вызывается при высвобождении памяти под объектом
-- (void)dealloc
-{
-    [height release]; // Если не используется ARC, убедитесь в освобождении переменных объекта класса
-    [super dealloc];  // and call parent class dealloc
-}
-
-// Конструкторы – это способ создания объектов класса.
-// Это конструктор по умолчанию, который вызывается, когда объект инициализируется.
-- (id)init
-{
-    if ((self = [super init])) // 'super' используется для того, чтобы обратиться к методам родительского класса
-    {
-        self.count = 1; // 'self' используется для вызова самого себя
-    }
-    return self;
-}
-// Можно создать конструкторы, которые содержат аргументы:
-- (id)initWithDistance:(int)defaultDistance 
-{
-    distance = defaultDistance;
-    return self;
-}
-
-+ (NSString *)classMethod
-{
-    return [[self alloc] init];
-}
-
-+ (MyClass *)myClassFromHeight:(NSNumber *)defaultHeight 
-{
-    height = defaultHeight;
-    return [[self alloc] init];
-}
-
-- (NSString *)instanceMethodWithParameter:(NSString *)string
-{
-    return @"Новая строка";
-}
-
-- (NSNumber *)methodAParameterAsString:(NSString*)string andAParameterAsNumber:(NSNumber *)number
-{
-    return @42;
-}
-
-// Objective-C не содержит объявление приватных методов, но вы можете имитировать их.
-// Чтобы сымитировать приватный метод, создайте метод в @implementation, но не в @interface.
-- (NSNumber *)secretPrivateMethod {
-    return @72;
-}
-[self secretPrivateMethod]; // Вызывает приватный метод
-
-// Методы объявленные в МyProtocol (см. далее)
-- (void)myProtocolMethod
-{
-    // операторы
-}
-
-@end // Устанавливает конец реализации (implementation)
-
-///////////////////////////////////////
-// Категории
-///////////////////////////////////////
-// Категория - это группа методов предназначенные для того, чтобы расширить класс. Они позволяют вам добавить новые методы
-// к существующему классу для организационных целей. Это не стоит путать с подклассами.
-// Подклассы предназначены для ИЗМЕНЕНИЯ функциональности объекта пока как категории ДОБАВЛЯЮТ
-// функциональность в объект.
-// Категории позволяют вам:
-// -- Добавлять методы в существующий класс для организационных целей.
-// -- Допускает вам расширять объекты Objective-C классов (напр.: NSString) добавить ваши собственные методы.
-// -- Добавляет возможность создать защищенные и закрытые методы классов. 
-// ПРИМЕЧАНИЕ: Не переопределяйте методы базового класса в категории даже если у вас есть возможность это сделать
-// to. Переопределение методов может привести к ошибкам компиляции позднее между различными категориями и это 
-// нарушает цель категорий, чтобы добавлять только функциональность. Вместо этого подклассы переопределяют методы.
-
-// Здесь простой базовый класс Car.
-@interface Car : NSObject
-
-@property NSString *make;
-@property NSString *color;
-
-- (void)turnOn;
-- (void)accelerate;
-
-@end
-
-// И реализация базового класса Car:
-#import "Car.h"
-
-@implementation Car
-
-@synthesize make = _make;
-@synthesize color = _color;
-
-- (void)turnOn {
-    NSLog(@"Машина заведена.");
-}
-- (void)accelerate {
-    NSLog(@"Ускорение.");
-}
-
-@end
-
-// Теперь, если мы хотим создать объект Truck - грузовик, мы должны создать подкласс класса Car, что
-// изменит функциональность Car и позволит вести себя подобно грузовику. Но что, если мы хотим только добавить
-// определенную функциональность в уже существующий класс Car? Например - чистка автомобиля. Мы просто создадим
-// категорию, которая добавит несколько методов для чистки автомобиля в класс Car:
-// @interface ИмяФайла: Car+Clean.h (ИмяБазовогоКласса+ИмяКатегории.h)
-#import "Car.h" // Убедитесь в том, что базовый класс импортирован для расширения.
-
-@interface Car (Clean) // Имя категории внутри (), следующие после имени базового класса.
-
-- (void)washWindows; // Названия новых методов, которые мы добавляем в наш объект Car.
-- (void)wax;
-
-@end
-
-// @implementation имя файла: Car+Clean.m (ИмяБазовогоКласса+ИмяКатегории.m)
-#import "Car+Clean.h" // Импортируйте Очистку файл @interface категории.
-
-@implementation Car (Clean)
-
-- (void)washWindows {
-    NSLog(@"Окна промыли.");
-}
-- (void)wax {
-    NSLog(@"Воском натерли.");
-}
-
-@end 
-
-// Любой экземпляр объекта Car имеет возможность воспользоваться категорией. Все, что нужно сделать, это импортировать ее:
-#import "Car+Clean.h" // Импортировать как множество различных категорий, как вы хотите использовать.
-#import "Car.h" // Кроме того, необходимо импортировать базовый класс для использования его оригинальные функциональные возможности.
-
-int main (int argc, const char * argv[]) {
-    @autoreleasepool {
-        Car *mustang = [[Car alloc] init];
-        mustang.color = @"Красный";
-        mustang.make = @"Форд";
-
-        [mustang turnOn]; // Используйте методы из базового класса Car.
-        [mustang washWindows]; // Используйте методы категории Clean из класса Car.
-    }
-    return 0; 
-}
-
-// Objective-C не поддерживает объявление защищенных методов, но вы можете имитировать их.
-// Создайте категорию, содержащую все защищенные методы, затем импортируйте ее только в
-// @implementation-файле класса, относящегося к классу Car:
-@interface Car (Protected) // Наименование категории с помощью 'Protected'
-// дает знать, что методы защищенные.
-
-- (void)lockCar; // Здесь перечисляются методы, которые должны быть созданы
-// только с помощью объектов класса Car.
-
-@end
-// Чтобы воспользоваться защищенными методами, импортируйте категорию, затем реализуйте методы:
-#import "Car+Protected.h" // Запомните, делайте импорт только в файле с @implementation.
-
-@implementation Car 
-
-- (void)lockCar {
-    NSLog(@"Машина закрыта."); // Экземпляры класса Car не могут использовать
-// метод lockCar, потому что он объявлен не в @interface.
-}
-
-@end
-
-///////////////////////////////////////
-// Расширения
-///////////////////////////////////////
-// Расширения позволяют вам переопределять атрибуты свойств и методов
-// с открытым доступом в @interface.
-// @interface имя файла: Shape.h
-@interface Shape : NSObject // Расширение базового класса Shape переопределяет
-                                        // свои поля ниже.
-
-@property (readonly) NSNumber *numOfSides;
-
-- (int)getNumOfSides;
-
-@end
-// Вы можете переопределить numOfSides-переменную или getNumOfSides-метод
-// Внесение изменений с помощью расширения делается следующим образом:
-// @implementation имя файла: Shape.m
-#import "Shape.h"
-// Расширения "живут" в том же файле, где и @implementation класса.
-@interface Shape () // После имени базового класса скобки () объявляют расширение.
-
-@property (copy) NSNumber *numOfSides; // Делает numOfSides-свойство
-             // копирующим (copy) вместо свойства только для чтения (readonly).
--(NSNumber)getNumOfSides; // Изменяет метод getNumOfSides так,
-                         // чтобы он возвращал объект NSNumber вместо типа int.
--(void)privateMethod; // Вы также можете создать новый закрытый метод
-                              // внутри расширения.
-
-@end
-// Главный @implementation:
-@implementation Shape
-
-@synthesize numOfSides = _numOfSides;
-
--(NSNumber)getNumOfSides { // Все операторы внутри расширения
-                                         // должны быть в @implementation.
-    return _numOfSides;
-}
--(void)privateMethod {
-    NSLog(@"Закрытый метод созданный с помощью расширения.");
-    NSLog(@"Экземпляр Shape не может вызвать этот метод.");
-}
-
-@end
-
-///////////////////////////////////////
-// Протоколы
-///////////////////////////////////////
-// Протокол объявляет методы, которые могут быть реализованы с помощью
-// любого класса. Протоколы сами по себе не являются классами. Они просто
-// определяют интерфейс, который должен быть реализован другими объектами.
-// @protocol имя файла: "CarUtilities.h"
-@protocol CarUtilities &lt;NSObject&gt; // &lt;NSObject&gt; =&gt; Имя другого протокола,
-// который включен в этот протокол.
-    @property BOOL engineOn; // Адаптирующий класс должен определить
-// все @synthesize для @property и
-    - (void)turnOnEngine; // определить все методы.
-@end
-// Ниже пример класса, реализующий протокол.
-#import "CarUtilities.h" // Импорт файла с @protocol.
-
-@interface Car : NSObject &lt;CarUtilities&gt; // Внутри &lt;&gt; имя протокола
-// Здесь вам не нужно указывать @property или имена методов для CarUtilities.
-// Они нужны только для @implementation.
-- (void)turnOnEngineWithUtilities:(id &lt;CarUtilities&gt;)car; // Вы также можете
-// указать тип протоколов.
-@end
-// В @implementation нужно реализовать все @property и методы для протокола.
-@implementation Car : NSObject &lt;CarUtilities&gt;
-
-@synthesize engineOn = _engineOn; // Создайте @synthesize-оператор
-// для "@property engineOn".
-
-- (void)turnOnEngine { // Реализуйте turnOnEngine как вам угодно. Протоколы
-// не определят,
-    _engineOn = YES; // как вам реализовать метод, он только требует,
-// чтобы вы реализовали его.
-}
-// Вы можете использовать протокол как данные, если вы знаете, что он реализует
-// методы и переменные.
-- (void)turnOnEngineWithCarUtilities:(id &lt;CarUtilities&gt;)objectOfSomeKind { 
-    [objectOfSomeKind engineOn]; // У вас есть доступ к переменным объекта
-    [objectOfSomeKind turnOnEngine]; // и методам.
-    [objectOfSomeKind engineOn]; // Может или не может быть значение YES. Класс
-// реализует как нужно.
-}
-
-@end
-// Экземпляры класса Car сейчас имеют доступ к протоколу.
-Car *carInstance = [[Car alloc] init];
-[carInstance setEngineOn:NO];
-[carInstance turnOnEngine];
-if ([carInstance engineOn]) {
-    NSLog(@"Двигатель запущен."); // напечатает =&gt; "Двигатель запущен."
-}
-// Убедитись в том, что объект типа 'id' реализует протокол перед вызовом методов протокола:
-if ([myClass conformsToProtocol:@protocol(CarUtilities)]) {
-    NSLog(@"Не работает, т.к. класс MyClass не реализует протокол CarUtilities.");
-} else if ([carInstance conformsToProtocol:@protocol(CarUtilities)]) {
-    NSLog(@"Работает как класс Car, который реализует протокол CarUtilities.");
-}
-// Категории тоже могут реализовать протоколы:
-// @interface Car (CarCategory) &lt;CarUtilities&gt;
-// Вы можете реализовать много протоколов:
-// @interface Car : NSObject &lt;CarUtilities, CarCleaning&gt;
-// ЗАМЕЧАНИЕ: Если два или более протоколов полагаются друг на друга,
-// убедитесь, что они ранее объявлены:
-#import "Brother.h"
-
-@protocol Brother; // Оператор раннего объявления. Без него компилятор
-// выдаст ошибку.
-
-@protocol Sister &lt;NSObject&gt;
-
-- (void)beNiceToBrother:(id &lt;Brother&gt;)brother;
-
-@end
-
-// Рассмотрите проблему, где протокол Sister полагается на протокол Brother,
-// а Brother полагается на Sister.
-#import "Sister.h"
-
-@protocol Sister; // Эти строки предотвращают рекурсию, решая этим проблему.
-
-@protocol Brother &lt;NSObject&gt;
-
-- (void)beNiceToSister:(id &lt;Sister&gt;)sister;
-
-@end
-
-
-///////////////////////////////////////
-// Блоки
-///////////////////////////////////////
-// Блоки - это операторы кода, наподобие функции, которую возможно использовать
-// как данные.
-// Ниже простой блок с целочисленным аргументом, и возвращает аргумент плюс 4.
-int (^addUp)(int n); // Объявите переменную, чтобы сохранить блок.
-void (^noParameterBlockVar)(void); // Пример объявления блока-переменной
-// без аргументов.
-// Блоки имею доступ к переменным в той же области видимости. Но переменные
-// будут только для чтения, и значения переданных в блок станут значением
-// переменной, когда блок создастся.
-int outsideVar = 17; // Если мы редактируем outsideVar после объявления addUp,
-// outsideVar остается равным 17.
-__block long mutableVar = 3; // __block делают переменные перезаписываемыми
-// в блоках, в отличие от outsideVar.
-addUp = ^(int n) { // Удалите (int n) в блоке, чтобы не принимать
-// какие-либо параметры.
-    NSLog(@"Вы можете иметь столько строк в блоке, сколько вы хотели.");
-    NSSet *blockSet; // Также вы можете объявить локальные переменные.
-    mutableVar = 32; // Присвоить новое значение к __block-переменной.
-    return n + outsideVar; // Необязательный оператор возврата.
-}
-int addUp = add(10 + 16); // Вызывает блок кода с аргументами.
-// Блоки часто используются как аргументы функции, чтобы позже их вызвать, или
-// как функции обратного вызова (callbacks).
-@implementation BlockExample : NSObject 
-
-- (void)runBlock:(void (^)(NSString))block {
-    NSLog(@"В аргументе блок ничего не возвращает и принимает NSString-объект.");
-    block(@"Аргумент передан блоку на исполнение."); // Вызов блока.
-}
-
-@end
-
-
-///////////////////////////////////////
-// Управление памятью
-///////////////////////////////////////
-/* 
-Для каждого объекта, используемого в приложении, должна быть выделена память
-для таких объектов. Когда приложение прекращает использование объекта, память
-должна быть освобождена, чтобы гарантировать эффективность приложения.
-Objective-C не использует сборщик мусора, а вместо этого применяет подсчет ссылок.
-Пока существует по крайней мере одна ссылка на объект (также называется
-"владение" объектом), то объект будет доступен к использованию (еще известно
-как "право владения").
-
-Когда экземпляр владеет объектом, его ссылка увеличивается на один. Когда
-объекта освобождается, счетчик ссылки уменьшается на один. Когда счетчик ссылки
-равен нулю, объект удаляется из памяти.
-
-Над всеми объектами взаимодействуют, следуя паттерну:
-(1) создание объекта, (2) использование объекта, (3) затем освобождение объекта из памяти.
-*/
-
-MyClass *classVar = [MyClass alloc]; // 'alloc' устанавливает счетчик ссылки
-// объекта classVar на 1 и возвращает указатель на объект.
-[classVar release]; // Уменьшает счетчик ссылки объекта classVar
-// 'retain' заявляет право собственности на существующий экземпляр объекта
-// и увеличивает счетчик ссылки. Затем вернет указатель на объект.
-MyClass *newVar = [classVar retain]; // Если classVar освободится, объект
-// останется в памяти, потому что newVar - владелец
-[classVar autorelease]; // Удалит право на владение объектом
-// в конце @autoreleasepool блока. Вернет указатель на объект.
-
-// @property может использовать 'retain' и 'assign' тоже для маленького
-// удобного определения
-@property (retain) MyClass *instance; // Освободит старое значение и сохранит
-// одно новое (строгая ссылка)
-@property (assign) NSSet *set; // Укажет на новое значение
-// без сохранения/освобождения старого значения (слабая ссылка)
-
-// Автоматический подсчет ссылок (ARC)
-// Управление памятью может быть трудным, поэтому в Xcode 4.2 и iOS 4 введен
-// автоматический подсчет ссылок (ARC).
-// ARC - это особенность компилятора, который помещает "retain", "release"
-// и "autorelease" автоматически за вас тогда, когда используется ARC,
-// вам не нужно больше обращаться к "retain", "release" или "autorelease"
-MyClass *arcMyClass = [[MyClass alloc] init];
-// ... код, использующий объект arcMyClass
-// Без ARC, вам нужно было бы вызвать: [arcMyClass release] после того, как вы
-// завершите работу с объектом arcMyClass. Но с ARC,
-// теперь этого не нужно делать. Он будет помещать release-вызов за вас
-
-// Что касается 'assign' и 'retain' @property атрибутов, в ARC вы должны
-// использовать 'weak' и 'strong'
-@property (weak) MyClass *weakVar; // 'weak' не принимает право на владение
-// объектом. Если исходный счетчик ссылки экземпляра обнуляется,
-// weakVar-свойство автоматически примет значение nil,
-// во избежание падения приложения
-@property (strong) MyClass *strongVar; // 'strong' принимает право на владение
-// объектом. Гарантирует, что объект останется в памяти для использования
-
-// Для обычных переменных (не объявленных с помощью @property), используйте
-// следующий способ:
-__strong NSString *strongString; // По умолчанию. Переменная сохраняется в памяти,
-// пока она не покинет область видимости
-__weak NSSet *weakSet; // Слабая ссылка на существующий объект. Когда существующий
-// объект освобождается, weakSet принимает nil
-__unsafe_unretained NSArray *unsafeArray; // Похож на __weak, но unsafeArray
-// не принимает nil, когда существующий объект освобождается
-</code></pre></div>
+<div class="highlight"><pre><span></span><span class="c1">// Однострочные комментарии начинаются с //</span>
+
+<span class="cm">/*</span>
+<span class="cm">Так выглядят многострочные комментарии</span>
+<span class="cm">*/</span>
+
+<span class="c1">// Импорт заголовочных файлов фреймворка Foundation с помощью #import</span>
+<span class="c1">// Используйте &lt;&gt;, чтобы импортировать глобальные файлы (обычно фреймворки)</span>
+<span class="c1">// Используйте &quot;&quot;, чтобы импортировать локальные файлы (из проекта)</span>
+<span class="cp">#import &lt;Foundation/Foundation.h&gt;</span>
+<span class="cp">#import &quot;MyClass.h&quot;</span>
+
+<span class="c1">// Если вы включили модули для iOS &gt;= 7.0 или OS X &gt;= 10.9 проектов в</span>
+<span class="c1">// Xcode 5, вы можете импортировать фреймворки подобным образом:</span>
+<span class="k">@import</span><span class="w"> </span><span class="n">Foundation</span><span class="p">;</span>
+
+<span class="c1">// Точка входа в программу - это функция main,</span>
+<span class="c1">// которая возвращает целый тип</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Создание autorelease pool для управления памятью в программе</span>
+<span class="w">    </span><span class="bp">NSAutoreleasePool</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">pool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[[</span><span class="bp">NSAutoreleasePool</span><span class="w"> </span><span class="n">alloc</span><span class="p">]</span><span class="w"> </span><span class="n">init</span><span class="p">];</span>
+<span class="w">    </span><span class="c1">// В место этого воспользуйтесь @autoreleasepool, если вы используете</span>
+<span class="w">    </span><span class="c1">// автоматический подсчет ссылок (ARC)</span>
+<span class="w">    </span><span class="k">@autoreleasepool</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">    </span><span class="c1">// Используйте NSLog для печати в консоль</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Привет Мир!&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// Напечатает строку &quot;Привет Мир!&quot;</span>
+
+<span class="w">    </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">    </span><span class="c1">// Типы и переменные</span>
+<span class="w">    </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">    </span><span class="c1">// Объявление простых типов</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">myPrimitive1</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">myPrimitive2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">234554664565</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Объявление объектов</span>
+<span class="w">    </span><span class="c1">// Помещайте * в начало названия объекта для строго типизированного объявления</span>
+<span class="w">    </span><span class="bp">MyClass</span><span class="w"> </span><span class="o">*</span><span class="n">myObject1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">nil</span><span class="p">;</span><span class="w">  </span><span class="c1">// Строгая типизация </span>
+<span class="w">    </span><span class="kt">id</span><span class="w">       </span><span class="n">myObject2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">nil</span><span class="p">;</span><span class="w">  </span><span class="c1">// Слабая типизация </span>
+<span class="w">    </span><span class="c1">// %@ – это объект</span>
+<span class="w">    </span><span class="c1">// &#39;description&#39; - это общий для всех объектов метод вывода данных</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@ and %@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">myObject1</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">myObject2</span><span class="w"> </span><span class="n">description</span><span class="p">]);</span><span class="w"> </span><span class="c1">// напечатает &quot;(null) and (null)&quot;</span>
+
+<span class="w">    </span><span class="c1">// Строка</span>
+<span class="w">    </span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="n">worldString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">@&quot;Мир&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Привет %@!&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">worldString</span><span class="p">);</span><span class="w"> </span><span class="c1">// напечатает &quot;Привет Мир!&quot;</span>
+<span class="w">    </span><span class="c1">// NSMutableString - это изменяемая версия NSString-объекта</span>
+<span class="w">    </span><span class="bp">NSMutableString</span><span class="w"> </span><span class="o">*</span><span class="n">mutableString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSMutableString</span><span class="w"> </span><span class="n">stringWithString</span><span class="o">:</span><span class="s">@&quot;Привет&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">mutableString</span><span class="w"> </span><span class="n">appendString</span><span class="o">:</span><span class="s">@&quot; Мир!&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">mutableString</span><span class="p">);</span><span class="w"> </span><span class="c1">// напечатает =&gt; &quot;Привет Мир!&quot;</span>
+
+<span class="w">    </span><span class="c1">// Символьные литералы</span>
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">theLetterZNumber</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">@&#39;Z&#39;</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">theLetterZ</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">theLetterZNumber</span><span class="w"> </span><span class="n">charValue</span><span class="p">];</span><span class="w"> </span><span class="c1">// или &#39;Z&#39;</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%c&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">theLetterZ</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Целочисленные литералы</span>
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">fortyTwoNumber</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">@42</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">fortyTwo</span><span class="w">             </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">fortyTwoNumber</span><span class="w"> </span><span class="n">intValue</span><span class="p">];</span><span class="w"> </span><span class="c1">// или &#39;42&#39;</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fortyTwo</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Беззнаковый целочисленный литерал</span>
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">fortyTwoUnsignedNumber</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">@42</span><span class="n">U</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">fortyTwoUnsigned</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">fortyTwoUnsignedNumber</span><span class="w"> </span><span class="n">unsignedIntValue</span><span class="p">];</span><span class="w"> </span><span class="c1">// или 42</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%u&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fortyTwoUnsigned</span><span class="p">);</span>
+
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">fortyTwoShortNumber</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSNumber</span><span class="w"> </span><span class="n">numberWithShort</span><span class="o">:</span><span class="mi">42</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">short</span><span class="w"> </span><span class="n">fortyTwoShort</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">fortyTwoShortNumber</span><span class="w"> </span><span class="n">shortValue</span><span class="p">];</span><span class="w"> </span><span class="c1">// или 42</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%hi&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fortyTwoShort</span><span class="p">);</span>
+
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">fortyOneShortNumber</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSNumber</span><span class="w"> </span><span class="n">numberWithShort</span><span class="o">:</span><span class="mi">41</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">short</span><span class="w"> </span><span class="n">fortyOneUnsigned</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">fortyOneShortNumber</span><span class="w"> </span><span class="n">unsignedShortValue</span><span class="p">];</span><span class="w"> </span><span class="c1">// или 41</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%u&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fortyOneUnsigned</span><span class="p">);</span>
+
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">fortyTwoLongNumber</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">@42L</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">fortyTwoLong</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">fortyTwoLongNumber</span><span class="w"> </span><span class="n">longValue</span><span class="p">];</span><span class="w"> </span><span class="c1">// или 42</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%li&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fortyTwoLong</span><span class="p">);</span>
+
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">fiftyThreeLongNumber</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">@53L</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">fiftyThreeUnsigned</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">fiftyThreeLongNumber</span><span class="w"> </span><span class="n">unsignedLongValue</span><span class="p">];</span><span class="w"> </span><span class="c1">// или 53</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%lu&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">fiftyThreeUnsigned</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Вещественный литерал</span>
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">piFloatNumber</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">@3.141592654F</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">piFloat</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">piFloatNumber</span><span class="w"> </span><span class="n">floatValue</span><span class="p">];</span><span class="w"> </span><span class="c1">// или 3.141592654f</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%f&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">piFloat</span><span class="p">);</span><span class="w"> </span><span class="c1">// напечатает 3.141592654</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%5.2f&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">piFloat</span><span class="p">);</span><span class="w"> </span><span class="c1">// напечатает &quot; 3.14&quot;</span>
+
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">piDoubleNumber</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">@3.1415926535</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">piDouble</span><span class="w">                 </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">piDoubleNumber</span><span class="w"> </span><span class="n">doubleValue</span><span class="p">];</span><span class="w"> </span><span class="c1">// или 3.1415926535</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%f&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">piDouble</span><span class="p">);</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%4.2f&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">piDouble</span><span class="p">);</span><span class="w"> </span><span class="c1">// напечатает &quot;3.14&quot;</span>
+
+<span class="w">    </span><span class="c1">// NSDecimalNumber - это класс с фиксированной точкой, который является</span>
+<span class="w">    </span><span class="c1">// более точным, чем float или double</span>
+<span class="w">    </span><span class="bp">NSDecimalNumber</span><span class="w"> </span><span class="o">*</span><span class="n">oneDecNum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSDecimalNumber</span><span class="w"> </span><span class="n">decimalNumberWithString</span><span class="o">:</span><span class="s">@&quot;10.99&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="bp">NSDecimalNumber</span><span class="w"> </span><span class="o">*</span><span class="n">twoDecNum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSDecimalNumber</span><span class="w"> </span><span class="n">decimalNumberWithString</span><span class="o">:</span><span class="s">@&quot;5.002&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="c1">// NSDecimalNumber не способен использовать стандартные +, -, *, / операторы,</span>
+<span class="w">    </span><span class="c1">// поэтому он предоставляет свои собственные:</span>
+<span class="w">    </span><span class="p">[</span><span class="n">oneDecNum</span><span class="w"> </span><span class="n">decimalNumberByAdding</span><span class="o">:</span><span class="n">twoDecNum</span><span class="p">];</span><span class="w"> </span>
+<span class="w">    </span><span class="p">[</span><span class="n">oneDecNum</span><span class="w"> </span><span class="n">decimalNumberBySubtracting</span><span class="o">:</span><span class="n">twoDecNum</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">oneDecNum</span><span class="w"> </span><span class="n">decimalNumberByMultiplyingBy</span><span class="o">:</span><span class="n">twoDecNum</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">oneDecNum</span><span class="w"> </span><span class="n">decimalNumberByDividingBy</span><span class="o">:</span><span class="n">twoDecNum</span><span class="p">];</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">oneDecNum</span><span class="p">);</span><span class="w"> </span><span class="c1">// напечатает &quot;10.99&quot;, т.к. NSDecimalNumber - изменяемый</span>
+
+<span class="w">    </span><span class="c1">// BOOL (булевый) литерал</span>
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">yesNumber</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">@YES</span><span class="p">;</span>
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">noNumber</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="m">@NO</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// или</span>
+<span class="w">    </span><span class="kt">BOOL</span><span class="w"> </span><span class="n">yesBool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">YES</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">BOOL</span><span class="w"> </span><span class="n">noBool</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nb">NO</span><span class="p">;</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">yesBool</span><span class="p">);</span><span class="w"> </span><span class="c1">// напечатает 1</span>
+
+<span class="w">    </span><span class="c1">// Массив</span>
+<span class="w">    </span><span class="c1">// Может содержать различные типы данных, но должен быть объектом Objective-C</span>
+<span class="w">    </span><span class="bp">NSArray</span><span class="w"> </span><span class="o">*</span><span class="n">anArray</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="l">@[</span><span class="mi">@1</span><span class="p">,</span><span class="w"> </span><span class="mi">@2</span><span class="p">,</span><span class="w"> </span><span class="mi">@3</span><span class="p">,</span><span class="w"> </span><span class="mi">@4</span><span class="l">]</span><span class="p">;</span>
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">thirdNumber</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">anArray</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Третье число = %@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">thirdNumber</span><span class="p">);</span><span class="w"> </span><span class="c1">// Напечатает &quot;Третье число = 3&quot;</span>
+<span class="w">    </span><span class="c1">// NSMutableArray - это изменяемая версия NSArray, допускающая вам изменять</span>
+<span class="w">    </span><span class="c1">// элементы в массиве и расширять или сокращать массив.</span>
+<span class="w">    </span><span class="c1">// Удобный, но не эффективный как NSArray.</span>
+<span class="w">    </span><span class="bp">NSMutableArray</span><span class="w"> </span><span class="o">*</span><span class="n">mutableArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSMutableArray</span><span class="w"> </span><span class="n">arrayWithCapacity</span><span class="o">:</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">mutableArray</span><span class="w"> </span><span class="n">addObject</span><span class="o">:</span><span class="s">@&quot;Привет&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">mutableArray</span><span class="w"> </span><span class="n">addObject</span><span class="o">:</span><span class="s">@&quot;Мир&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">mutableArray</span><span class="w"> </span><span class="n">removeObjectAtIndex</span><span class="o">:</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">mutableArray</span><span class="w"> </span><span class="n">objectAtIndex</span><span class="o">:</span><span class="mi">0</span><span class="p">]);</span><span class="w"> </span><span class="c1">// напечатает &quot;Мир&quot;</span>
+
+<span class="w">    </span><span class="c1">// Словарь</span>
+<span class="w">    </span><span class="bp">NSDictionary</span><span class="w"> </span><span class="o">*</span><span class="n">aDictionary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="l">@{</span><span class="w"> </span><span class="s">@&quot;ключ1&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">@&quot;значение1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">@&quot;ключ2&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">@&quot;значение2&quot;</span><span class="w"> </span><span class="l">}</span><span class="p">;</span>
+<span class="w">    </span><span class="bp">NSObject</span><span class="w"> </span><span class="o">*</span><span class="n">valueObject</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">aDictionary</span><span class="p">[</span><span class="s">@&quot;Ключ&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Объект = %@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">valueObject</span><span class="p">);</span><span class="w"> </span><span class="c1">// Напечатает &quot;Объект = (null)&quot;</span>
+<span class="w">    </span><span class="c1">// NSMutableDictionary тоже доступен, как изменяемый словарь</span>
+<span class="w">    </span><span class="bp">NSMutableDictionary</span><span class="w"> </span><span class="o">*</span><span class="n">mutableDictionary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSMutableDictionary</span><span class="w"> </span><span class="n">dictionaryWithCapacity</span><span class="o">:</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">mutableDictionary</span><span class="w"> </span><span class="n">setObject</span><span class="o">:</span><span class="s">@&quot;значение1&quot;</span><span class="w"> </span><span class="n">forKey</span><span class="o">:</span><span class="s">@&quot;ключ1&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">mutableDictionary</span><span class="w"> </span><span class="n">setObject</span><span class="o">:</span><span class="s">@&quot;значение2&quot;</span><span class="w"> </span><span class="n">forKey</span><span class="o">:</span><span class="s">@&quot;ключ2&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">mutableDictionary</span><span class="w"> </span><span class="n">removeObjectForKey</span><span class="o">:</span><span class="s">@&quot;ключ1&quot;</span><span class="p">];</span>
+
+<span class="w">    </span><span class="c1">// Множество</span>
+<span class="w">    </span><span class="bp">NSSet</span><span class="w"> </span><span class="o">*</span><span class="n">set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSSet</span><span class="w"> </span><span class="n">setWithObjects</span><span class="o">:</span><span class="s">@&quot;Привет&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">@&quot;Привет&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">@&quot;Мир&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">nil</span><span class="p">];</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">set</span><span class="p">);</span><span class="w"> </span><span class="c1">// напечатает {(Hello, World)} (порядок может отличаться)</span>
+<span class="w">    </span><span class="c1">// NSMutableSet тоже доступен, как изменяемое множество</span>
+<span class="w">    </span><span class="bp">NSMutableSet</span><span class="w"> </span><span class="o">*</span><span class="n">mutableSet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSMutableSet</span><span class="w"> </span><span class="n">setWithCapacity</span><span class="o">:</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">mutableSet</span><span class="w"> </span><span class="n">addObject</span><span class="o">:</span><span class="s">@&quot;Привет&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">mutableSet</span><span class="w"> </span><span class="n">addObject</span><span class="o">:</span><span class="s">@&quot;Привет&quot;</span><span class="p">];</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">mutableSet</span><span class="p">);</span><span class="w"> </span><span class="c1">// напечатает =&gt; {(Привет)}</span>
+
+<span class="w">    </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">    </span><span class="c1">// Операторы</span>
+<span class="w">    </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">    </span><span class="c1">// Операторы работают также как в Си.</span>
+<span class="w">    </span><span class="c1">// Например:</span>
+<span class="w">    </span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 7</span>
+<span class="w">    </span><span class="mf">4.2f</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">5.1f</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 9.3f</span>
+<span class="w">    </span><span class="mi">3</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0 (НЕТ)</span>
+<span class="w">    </span><span class="mi">3</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1 (ДА)</span>
+<span class="w">    </span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1 (логическое И)</span>
+<span class="w">    </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1 (логическое ИЛИ)</span>
+<span class="w">    </span><span class="o">~</span><span class="mh">0x0F</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0xF0 (побитовое отрицание)</span>
+<span class="w">    </span><span class="mh">0x0F</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xF0</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0x00 (побитовое И)</span>
+<span class="w">    </span><span class="mh">0x01</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0x02 (побитовый сдвиг влево (на 1))</span>
+
+<span class="w">    </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">    </span><span class="c1">// Структуры ветвления</span>
+<span class="w">    </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">    </span><span class="c1">// Условный оператор</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">NO</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Я никогда не выполнюсь&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Я тоже никогда не выполнюсь&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Я напечатаюсь&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Ветвление с множественным выбором</span>
+<span class="w">    </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Я никогда не выполнюсь&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">break</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="mi">1</span><span class="p">:</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Я тоже никогда не выполнюсь&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">break</span><span class="p">;</span>
+<span class="w">        </span><span class="k">default</span><span class="o">:</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Я напечатаюсь&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Цикл с предусловием</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">ii</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">ii</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%d,&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ii</span><span class="o">++</span><span class="p">);</span><span class="w"> </span><span class="c1">// ii++ инкрементирует ii после передачи значения</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="c1">// =&gt; напечатает &quot;0,&quot; </span>
+<span class="w">      </span><span class="c1">//               &quot;1,&quot;</span>
+<span class="w">      </span><span class="c1">//               &quot;2,&quot;</span>
+<span class="w">      </span><span class="c1">//               &quot;3,&quot;</span>
+
+<span class="w">    </span><span class="c1">// Цикл со счётчиком</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">jj</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">jj</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">jj</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w"> </span><span class="n">jj</span><span class="o">++</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%d,&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">jj</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="c1">// =&gt; напечатает &quot;0,&quot; </span>
+<span class="w">      </span><span class="c1">//               &quot;1,&quot;</span>
+<span class="w">      </span><span class="c1">//               &quot;2,&quot;</span>
+<span class="w">      </span><span class="c1">//               &quot;3,&quot;</span>
+
+<span class="w">    </span><span class="c1">// Цикл просмотра           </span>
+<span class="w">    </span><span class="bp">NSArray</span><span class="w"> </span><span class="o">*</span><span class="n">values</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="l">@[</span><span class="mi">@0</span><span class="p">,</span><span class="w"> </span><span class="mi">@1</span><span class="p">,</span><span class="w"> </span><span class="mi">@2</span><span class="p">,</span><span class="w"> </span><span class="mi">@3</span><span class="l">]</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">value</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">values</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@,&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="c1">// =&gt; напечатает &quot;0,&quot; </span>
+<span class="w">      </span><span class="c1">//               &quot;1,&quot;</span>
+<span class="w">      </span><span class="c1">//               &quot;2,&quot;</span>
+<span class="w">      </span><span class="c1">//               &quot;3,&quot;</span>
+
+<span class="w">    </span><span class="c1">// Цикл for для объектов. Может использоваться с любым объектом Objective-C</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">id</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">values</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">        </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%@,&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">item</span><span class="p">);</span><span class="w"> </span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="c1">// напечатает =&gt; &quot;0,&quot; </span>
+<span class="w">      </span><span class="c1">//           &quot;1,&quot;</span>
+<span class="w">      </span><span class="c1">//           &quot;2,&quot;</span>
+<span class="w">      </span><span class="c1">//           &quot;3,&quot;      </span>
+
+<span class="w">    </span><span class="c1">// Обработка исключений</span>
+<span class="w">    </span><span class="k">@try</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// Ваше исключение здесь</span>
+<span class="w">        </span><span class="k">@throw</span><span class="w"> </span><span class="p">[</span><span class="bp">NSException</span><span class="w"> </span><span class="n">exceptionWithName</span><span class="o">:</span><span class="s">@&quot;FileNotFoundException&quot;</span>
+<span class="w">                            </span><span class="nl">reason</span><span class="p">:</span><span class="s">@&quot;Файл не найден в системе&quot;</span><span class="w"> </span><span class="n">userInfo</span><span class="o">:</span><span class="nb">nil</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">@catch</span><span class="w"> </span><span class="p">(</span><span class="bp">NSException</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">e</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Исключение: %@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">@finally</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;В конце отводится время для очистки.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="c1">// =&gt; напечатает &quot;Исключение: Файл не найден в системе&quot;</span>
+<span class="w">      </span><span class="c1">//               &quot;В конце отводится время для очистки.&quot;</span>
+
+<span class="w">    </span><span class="c1">// NSError - это полезные объекты для аргументов функции, чтобы заполнить их</span>
+<span class="w">    </span><span class="c1">// пользовательскими ошибками.</span>
+<span class="w">    </span><span class="bp">NSError</span><span class="w"> </span><span class="o">*</span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSError</span><span class="w"> </span><span class="n">errorWithDomain</span><span class="o">:</span><span class="s">@&quot;Неправильный эл. адрес.&quot;</span><span class="w"> </span><span class="n">code</span><span class="o">:</span><span class="mi">4</span><span class="w"> </span><span class="n">userInfo</span><span class="o">:</span><span class="nb">nil</span><span class="p">];</span>
+
+<span class="w">    </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">    </span><span class="c1">// Объекты</span>
+<span class="w">    </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">    </span><span class="c1">// Создание объектов через выделение памяти и инициализацию.</span>
+<span class="w">    </span><span class="c1">// Объект не является полнофункциональным пока обе части не выполнятся.</span>
+<span class="w">    </span><span class="bp">MyClass</span><span class="w"> </span><span class="o">*</span><span class="n">myObject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[[</span><span class="bp">MyClass</span><span class="w"> </span><span class="n">alloc</span><span class="p">]</span><span class="w"> </span><span class="n">init</span><span class="p">];</span>
+
+<span class="w">    </span><span class="c1">// В Objective-C модель ООП базируется на передаче сообщений.</span>
+<span class="w">    </span><span class="c1">// В Objective-C Вы не просто вызваете метод; вы посылаете сообщение.</span>
+<span class="w">    </span><span class="p">[</span><span class="n">myObject</span><span class="w"> </span><span class="n">instanceMethodWithParameter</span><span class="o">:</span><span class="s">@&quot;Стив Джобс&quot;</span><span class="p">];</span>
+
+<span class="w">    </span><span class="c1">// Очищайте память, перед завершением работы программы.</span>
+<span class="w">    </span><span class="p">[</span><span class="n">pool</span><span class="w"> </span><span class="n">drain</span><span class="p">];</span>
+
+<span class="w">    </span><span class="c1">// Конец @autoreleasepool</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Конец программы.</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Классы и функции</span>
+<span class="c1">///////////////////////////////////////</span>
+
+<span class="c1">// Объявляйте свой класс в файле МойКласс.h</span>
+<span class="c1">// Синтаксис объявления:</span>
+<span class="c1">// @interface ИмяКласса : ИмяКлассаРодителя &lt;ИмплементируемыеПротоколы&gt;</span>
+<span class="c1">// {</span>
+<span class="c1">//    тип имя; &lt;= Объявление переменных;</span>
+<span class="c1">// }</span>
+<span class="c1">// @property тип имя; &lt;= объявление свойств</span>
+<span class="c1">// -/+ (тип) Объявление метода(ов).</span>
+<span class="c1">// @end</span>
+<span class="k">@interface</span> <span class="bp">MyClass</span> : <span class="bp">NSObject</span><span class="w"> </span><span class="o">&lt;</span><span class="n">MyProtocol</span><span class="o">&gt;</span><span class="w"> </span><span class="c1">// NSObject - это базовый класс в Objective-C.</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Объявления экземпляров переменных (может существовать в файлах интерфейса или реализвации)</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">;</span><span class="w"> </span><span class="c1">// По умолчанию защищенный доступ.</span>
+<span class="w">    </span><span class="k">@private</span><span class="w"> </span><span class="kt">id</span><span class="w"> </span><span class="n">data</span><span class="p">;</span><span class="w"> </span><span class="c1">// Приватный доступ (Намного удобнее объявлять в файле реализации)</span>
+<span class="w">    </span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="n">name</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1">// Удобное обозначение для переменных с открытым (public) доступом</span>
+<span class="c1">// автоматически генерируется сеттер-метод</span>
+<span class="c1">// По умолчанию название сеттер-метода начинается с &#39;set&#39; с последующим именем</span>
+<span class="c1">// переменной из @property</span>
+<span class="k">@property</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">propInt</span><span class="p">;</span><span class="w"> </span><span class="c1">// Имя сеттер-метода = &#39;setPropInt&#39;</span>
+<span class="k">@property</span><span class="w"> </span><span class="p">(</span><span class="k">copy</span><span class="p">)</span><span class="w"> </span><span class="kt">id</span><span class="w"> </span><span class="n">copyId</span><span class="p">;</span><span class="w"> </span><span class="c1">// (copy) =&gt; Скопировать объект в ходе присвоения.</span>
+<span class="c1">// (readonly) =&gt; Не позволяет установить значение вне @interface</span>
+<span class="k">@property</span><span class="w"> </span><span class="p">(</span><span class="k">readonly</span><span class="p">)</span><span class="w"> </span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="n">roString</span><span class="p">;</span><span class="w"> </span><span class="c1">// Используйте @synthesize </span>
+<span class="w">                               </span><span class="c1">// в @implementation, чтобы создать аксессор</span>
+<span class="c1">// Вы можете настроить геттер и сеттер имена вместо используемого &#39;set&#39;-имени по умолчанию:</span>
+<span class="k">@property</span><span class="w"> </span><span class="p">(</span><span class="k">getter</span><span class="o">=</span><span class="n">lengthGet</span><span class="p">,</span><span class="w"> </span><span class="k">setter</span><span class="o">=</span><span class="n">lengthSet</span><span class="o">:</span><span class="p">)</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">length</span><span class="p">;</span>
+
+<span class="c1">// Методы</span>
+<span class="o">+/-</span><span class="w"> </span><span class="p">(</span><span class="n">возвращаемый</span><span class="w"> </span><span class="n">тип</span><span class="p">)</span><span class="n">сигнатураМетода</span><span class="o">:</span><span class="p">(</span><span class="n">Параметр</span><span class="w"> </span><span class="n">типа</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">имяПараметра</span><span class="p">;</span>
+
+<span class="c1">// + для методов класса</span>
+<span class="p">+</span> <span class="p">(</span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">classMethod</span><span class="p">;</span>
+<span class="p">+</span> <span class="p">(</span><span class="bp">MyClass</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">myClassFromHeight:</span><span class="p">(</span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nv">defaultHeight</span><span class="p">;</span>
+
+<span class="c1">// - для методов объекта</span>
+<span class="p">-</span> <span class="p">(</span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">instanceMethodWithParameter:</span><span class="p">(</span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nv">string</span><span class="p">;</span>
+<span class="p">-</span> <span class="p">(</span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">methodAParameterAsString:</span><span class="p">(</span><span class="bp">NSString</span><span class="o">*</span><span class="p">)</span><span class="nv">string</span><span class="w"> </span><span class="nf">andAParameterAsNumber:</span><span class="p">(</span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nv">number</span><span class="p">;</span>
+
+<span class="c1">// Методы-конструктор с аргументом:</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">initWithDistance:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">defaultDistance</span><span class="p">;</span>
+<span class="c1">// В Objective-C имена методов очень описательные. Всегда имена методов соответствуют своим аргументам</span>
+
+<span class="k">@end</span><span class="w"> </span><span class="c1">// Устанавливает конец интерфейса (interface)</span>
+
+
+<span class="c1">// Чтобы обратиться к открытым (public) переменным из файла реализации, @property генерирует сеттер-метод</span>
+<span class="c1">// автоматически. Название метода - это &#39;set&#39; с последующим именем переменной из @property:</span>
+<span class="bp">MyClass</span><span class="w"> </span><span class="o">*</span><span class="n">myClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[[</span><span class="bp">MyClass</span><span class="w"> </span><span class="n">alloc</span><span class="p">]</span><span class="w"> </span><span class="n">init</span><span class="p">];</span><span class="w"> </span><span class="c1">// создает экземпляр объекта класса MyClass</span>
+<span class="p">[</span><span class="n">myClass</span><span class="w"> </span><span class="n">setCount</span><span class="o">:</span><span class="mi">10</span><span class="p">];</span><span class="w"> </span>
+<span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%d&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">myClass</span><span class="w"> </span><span class="n">count</span><span class="p">]);</span><span class="w"> </span><span class="c1">// напечатает =&gt; 10</span>
+<span class="c1">// Или используйте свой геттер и сеттер методы, которые определены в @interface:</span>
+<span class="p">[</span><span class="n">myClass</span><span class="w"> </span><span class="n">lengthSet</span><span class="o">:</span><span class="mi">32</span><span class="p">];</span>
+<span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">myClass</span><span class="w"> </span><span class="n">lengthGet</span><span class="p">]);</span><span class="w"> </span><span class="c1">// напечатает =&gt; 32</span>
+<span class="c1">// Для удобства вы можете использовать точечную нотацию,</span>
+<span class="c1">// чтобы установить и получить доступ к переменным объекта:</span>
+<span class="n">myClass</span><span class="p">.</span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">45</span><span class="p">;</span>
+<span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;%i&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">myClass</span><span class="p">.</span><span class="n">count</span><span class="p">);</span><span class="w"> </span><span class="c1">// напечатает =&gt; 45</span>
+
+<span class="c1">// Вызов методов класса:</span>
+<span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="n">classMethodString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">MyClass</span><span class="w"> </span><span class="n">classMethod</span><span class="p">];</span>
+<span class="bp">MyClass</span><span class="w"> </span><span class="o">*</span><span class="n">classFromName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">MyClass</span><span class="w"> </span><span class="n">myClassFromName</span><span class="o">:</span><span class="s">@&quot;Привет&quot;</span><span class="p">];</span>
+
+<span class="c1">// Вызов методов экземпляра:</span>
+<span class="bp">MyClass</span><span class="w"> </span><span class="o">*</span><span class="n">myClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[[</span><span class="bp">MyClass</span><span class="w"> </span><span class="n">alloc</span><span class="p">]</span><span class="w"> </span><span class="n">init</span><span class="p">];</span><span class="w"> </span><span class="c1">// Создает экземпляр объекта MyClass</span>
+<span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="n">stringFromInstanceMethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">myClass</span><span class="w"> </span><span class="n">instanceMethodWithParameter</span><span class="o">:</span><span class="s">@&quot;Привет&quot;</span><span class="p">];</span>
+
+<span class="c1">// Селекторы</span>
+<span class="c1">// Это способ динамически представить методы. Используйте для вызова методов класса, передайте методы</span>
+<span class="c1">// через функции, чтобы сказать другим классам, что они должны вызвать их и сохранить методы</span>
+<span class="c1">// как переменные</span>
+<span class="c1">// SEL - это тип данных. @selector() вернет селектор из предоставленного имени метода</span>
+<span class="c1">// methodAParameterAsString:andAParameterAsNumber: - это название метода в MyClass</span>
+<span class="kt">SEL</span><span class="w"> </span><span class="n">selectorVar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">@selector</span><span class="p">(</span><span class="n">methodAParameterAsString</span><span class="o">:</span><span class="n">andAParameterAsNumber</span><span class="o">:</span><span class="p">);</span><span class="w"> </span>
+<span class="k">if</span><span class="w"> </span><span class="p">([</span><span class="n">myClass</span><span class="w"> </span><span class="n">respondsToSelector</span><span class="o">:</span><span class="n">selectorVar</span><span class="p">])</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// Проверяет содержит ли класс метод</span>
+<span class="w">    </span><span class="c1">// Необходимо установить все аргументы метода в один объект, что отправить его в performSelector-функцию</span>
+<span class="w">    </span><span class="bp">NSArray</span><span class="w"> </span><span class="o">*</span><span class="n">arguments</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">NSArray</span><span class="w"> </span><span class="n">arrayWithObjects</span><span class="o">:</span><span class="s">@&quot;Привет&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">@4</span><span class="p">,</span><span class="w"> </span><span class="nb">nil</span><span class="p">];</span>
+<span class="w">    </span><span class="p">[</span><span class="n">myClass</span><span class="w"> </span><span class="n">performSelector</span><span class="o">:</span><span class="n">selectorVar</span><span class="w"> </span><span class="n">withObject</span><span class="o">:</span><span class="n">arguments</span><span class="p">];</span><span class="w"> </span><span class="c1">// Вызывает метод</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// NSStringFromSelector() вернет NSString название метода полученного селектором</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;MyClass не содержит метод: %@&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">NSStringFromSelector</span><span class="p">(</span><span class="n">selectedVar</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="c1">// Имплементируйте методы в файле MyClass.m:</span>
+<span class="k">@implementation</span> <span class="bp">MyClass</span> <span class="p">{</span>
+<span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">distance</span><span class="p">;</span><span class="w"> </span><span class="c1">// Переменная экземпляра с закрытым (private) доступом</span>
+<span class="w">    </span><span class="bp">NSNumber</span><span class="w"> </span><span class="n">height</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Для доступа к public переменной, объявленной в интерфейсе, используйте &#39;_&#39; перед названием переменной:</span>
+<span class="n">_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="c1">// Ссылается на &quot;int count&quot; из интерфейса MyClass</span>
+<span class="c1">// Получение доступа к переменной, объявленной в реализации происходит следующим образом:</span>
+<span class="n">distance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">18</span><span class="p">;</span><span class="w"> </span><span class="c1">// Ссылается на &quot;long distance&quot; из реализации MyClass</span>
+<span class="c1">// Для использования в иплементации переменной, объявленной в интерфейсе с помощью @property,</span>
+<span class="c1">// следует использовать @synthesize для создания переменной аксессора:</span>
+<span class="k">@synthesize</span><span class="w"> </span><span class="n">roString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_roString</span><span class="p">;</span><span class="w"> </span><span class="c1">// Теперь _roString доступна в @implementation (реализации интерфейса)</span>
+
+<span class="c1">// Вызывается в первую очередь, перед вызовом других медотов класса или инициализации других объектов</span>
+<span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">initialize</span><span class="w"> </span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">self</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="p">[</span><span class="bp">MyClass</span><span class="w"> </span><span class="k">class</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">distance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Вызывается при высвобождении памяти под объектом</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">dealloc</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">[</span><span class="n">height</span><span class="w"> </span><span class="k">release</span><span class="p">];</span><span class="w"> </span><span class="c1">// Если не используется ARC, убедитесь в освобождении переменных объекта класса</span>
+<span class="w">    </span><span class="p">[</span><span class="nb">super</span><span class="w"> </span><span class="n">dealloc</span><span class="p">];</span><span class="w">  </span><span class="c1">// and call parent class dealloc</span>
+<span class="p">}</span>
+
+<span class="c1">// Конструкторы – это способ создания объектов класса.</span>
+<span class="c1">// Это конструктор по умолчанию, который вызывается, когда объект инициализируется.</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">init</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="nb">self</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="nb">super</span><span class="w"> </span><span class="n">init</span><span class="p">]))</span><span class="w"> </span><span class="c1">// &#39;super&#39; используется для того, чтобы обратиться к методам родительского класса</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nb">self</span><span class="p">.</span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// &#39;self&#39; используется для вызова самого себя</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">self</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1">// Можно создать конструкторы, которые содержат аргументы:</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nf">initWithDistance:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">defaultDistance</span><span class="w"> </span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">distance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">defaultDistance</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">self</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">+</span> <span class="p">(</span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">classMethod</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">[[</span><span class="nb">self</span><span class="w"> </span><span class="n">alloc</span><span class="p">]</span><span class="w"> </span><span class="n">init</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="p">+</span> <span class="p">(</span><span class="bp">MyClass</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">myClassFromHeight:</span><span class="p">(</span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nv">defaultHeight</span><span class="w"> </span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">defaultHeight</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">[[</span><span class="nb">self</span><span class="w"> </span><span class="n">alloc</span><span class="p">]</span><span class="w"> </span><span class="n">init</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="p">-</span> <span class="p">(</span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">instanceMethodWithParameter:</span><span class="p">(</span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nv">string</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s">@&quot;Новая строка&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">-</span> <span class="p">(</span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">methodAParameterAsString:</span><span class="p">(</span><span class="bp">NSString</span><span class="o">*</span><span class="p">)</span><span class="nv">string</span><span class="w"> </span><span class="nf">andAParameterAsNumber:</span><span class="p">(</span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nv">number</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">@42</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// Objective-C не содержит объявление приватных методов, но вы можете имитировать их.</span>
+<span class="c1">// Чтобы сымитировать приватный метод, создайте метод в @implementation, но не в @interface.</span>
+<span class="p">-</span> <span class="p">(</span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="nf">secretPrivateMethod</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">@72</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="p">[</span><span class="nb">self</span><span class="w"> </span><span class="n">secretPrivateMethod</span><span class="p">];</span><span class="w"> </span><span class="c1">// Вызывает приватный метод</span>
+
+<span class="c1">// Методы объявленные в МyProtocol (см. далее)</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">myProtocolMethod</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// операторы</span>
+<span class="p">}</span>
+
+<span class="k">@end</span><span class="w"> </span><span class="c1">// Устанавливает конец реализации (implementation)</span>
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Категории</span>
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Категория - это группа методов предназначенные для того, чтобы расширить класс. Они позволяют вам добавить новые методы</span>
+<span class="c1">// к существующему классу для организационных целей. Это не стоит путать с подклассами.</span>
+<span class="c1">// Подклассы предназначены для ИЗМЕНЕНИЯ функциональности объекта пока как категории ДОБАВЛЯЮТ</span>
+<span class="c1">// функциональность в объект.</span>
+<span class="c1">// Категории позволяют вам:</span>
+<span class="c1">// -- Добавлять методы в существующий класс для организационных целей.</span>
+<span class="c1">// -- Допускает вам расширять объекты Objective-C классов (напр.: NSString) добавить ваши собственные методы.</span>
+<span class="c1">// -- Добавляет возможность создать защищенные и закрытые методы классов. </span>
+<span class="c1">// ПРИМЕЧАНИЕ: Не переопределяйте методы базового класса в категории даже если у вас есть возможность это сделать</span>
+<span class="c1">// to. Переопределение методов может привести к ошибкам компиляции позднее между различными категориями и это </span>
+<span class="c1">// нарушает цель категорий, чтобы добавлять только функциональность. Вместо этого подклассы переопределяют методы.</span>
+
+<span class="c1">// Здесь простой базовый класс Car.</span>
+<span class="k">@interface</span> <span class="nc">Car</span> : <span class="bp">NSObject</span>
+
+<span class="k">@property</span><span class="w"> </span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="n">make</span><span class="p">;</span>
+<span class="k">@property</span><span class="w"> </span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="n">color</span><span class="p">;</span>
+
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">turnOn</span><span class="p">;</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">accelerate</span><span class="p">;</span>
+
+<span class="k">@end</span>
+
+<span class="c1">// И реализация базового класса Car:</span>
+<span class="cp">#import &quot;Car.h&quot;</span>
+
+<span class="k">@implementation</span> <span class="nc">Car</span>
+
+<span class="k">@synthesize</span><span class="w"> </span><span class="n">make</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_make</span><span class="p">;</span>
+<span class="k">@synthesize</span><span class="w"> </span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_color</span><span class="p">;</span>
+
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">turnOn</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Машина заведена.&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">accelerate</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Ускорение.&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+
+<span class="c1">// Теперь, если мы хотим создать объект Truck - грузовик, мы должны создать подкласс класса Car, что</span>
+<span class="c1">// изменит функциональность Car и позволит вести себя подобно грузовику. Но что, если мы хотим только добавить</span>
+<span class="c1">// определенную функциональность в уже существующий класс Car? Например - чистка автомобиля. Мы просто создадим</span>
+<span class="c1">// категорию, которая добавит несколько методов для чистки автомобиля в класс Car:</span>
+<span class="c1">// @interface ИмяФайла: Car+Clean.h (ИмяБазовогоКласса+ИмяКатегории.h)</span>
+<span class="cp">#import &quot;Car.h&quot; </span><span class="c1">// Убедитесь в том, что базовый класс импортирован для расширения.</span>
+
+<span class="k">@interface</span> <span class="nc">Car</span> <span class="nl">(Clean)</span><span class="w"> </span><span class="c1">// Имя категории внутри (), следующие после имени базового класса.</span>
+
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">washWindows</span><span class="p">;</span><span class="w"> </span><span class="c1">// Названия новых методов, которые мы добавляем в наш объект Car.</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">wax</span><span class="p">;</span>
+
+<span class="k">@end</span>
+
+<span class="c1">// @implementation имя файла: Car+Clean.m (ИмяБазовогоКласса+ИмяКатегории.m)</span>
+<span class="cp">#import &quot;Car+Clean.h&quot; </span><span class="c1">// Импортируйте Очистку файл @interface категории.</span>
+
+<span class="k">@implementation</span> <span class="nc">Car</span> <span class="nl">(Clean)</span>
+
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">washWindows</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Окна промыли.&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">wax</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Воском натерли.&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">@end</span><span class="w"> </span>
+
+<span class="c1">// Любой экземпляр объекта Car имеет возможность воспользоваться категорией. Все, что нужно сделать, это импортировать ее:</span>
+<span class="cp">#import &quot;Car+Clean.h&quot; </span><span class="c1">// Импортировать как множество различных категорий, как вы хотите использовать.</span>
+<span class="cp">#import &quot;Car.h&quot; </span><span class="c1">// Кроме того, необходимо импортировать базовый класс для использования его оригинальные функциональные возможности.</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">@autoreleasepool</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Car</span><span class="w"> </span><span class="o">*</span><span class="n">mustang</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[[</span><span class="n">Car</span><span class="w"> </span><span class="n">alloc</span><span class="p">]</span><span class="w"> </span><span class="n">init</span><span class="p">];</span>
+<span class="w">        </span><span class="n">mustang</span><span class="p">.</span><span class="n">color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">@&quot;Красный&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="n">mustang</span><span class="p">.</span><span class="n">make</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">@&quot;Форд&quot;</span><span class="p">;</span>
+
+<span class="w">        </span><span class="p">[</span><span class="n">mustang</span><span class="w"> </span><span class="n">turnOn</span><span class="p">];</span><span class="w"> </span><span class="c1">// Используйте методы из базового класса Car.</span>
+<span class="w">        </span><span class="p">[</span><span class="n">mustang</span><span class="w"> </span><span class="n">washWindows</span><span class="p">];</span><span class="w"> </span><span class="c1">// Используйте методы категории Clean из класса Car.</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span>
+<span class="p">}</span>
+
+<span class="c1">// Objective-C не поддерживает объявление защищенных методов, но вы можете имитировать их.</span>
+<span class="c1">// Создайте категорию, содержащую все защищенные методы, затем импортируйте ее только в</span>
+<span class="c1">// @implementation-файле класса, относящегося к классу Car:</span>
+<span class="k">@interface</span> <span class="nc">Car</span> <span class="nl">(Protected)</span><span class="w"> </span><span class="c1">// Наименование категории с помощью &#39;Protected&#39;</span>
+<span class="c1">// дает знать, что методы защищенные.</span>
+
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">lockCar</span><span class="p">;</span><span class="w"> </span><span class="c1">// Здесь перечисляются методы, которые должны быть созданы</span>
+<span class="c1">// только с помощью объектов класса Car.</span>
+
+<span class="k">@end</span>
+<span class="c1">// Чтобы воспользоваться защищенными методами, импортируйте категорию, затем реализуйте методы:</span>
+<span class="cp">#import &quot;Car+Protected.h&quot; </span><span class="c1">// Запомните, делайте импорт только в файле с @implementation.</span>
+
+<span class="k">@implementation</span> <span class="nc">Car</span><span class="w"> </span>
+
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">lockCar</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Машина закрыта.&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// Экземпляры класса Car не могут использовать</span>
+<span class="c1">// метод lockCar, потому что он объявлен не в @interface.</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Расширения</span>
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Расширения позволяют вам переопределять атрибуты свойств и методов</span>
+<span class="c1">// с открытым доступом в @interface.</span>
+<span class="c1">// @interface имя файла: Shape.h</span>
+<span class="k">@interface</span> <span class="nc">Shape</span> : <span class="bp">NSObject</span><span class="w"> </span><span class="c1">// Расширение базового класса Shape переопределяет</span>
+<span class="w">                                        </span><span class="c1">// свои поля ниже.</span>
+
+<span class="k">@property</span><span class="w"> </span><span class="p">(</span><span class="k">readonly</span><span class="p">)</span><span class="w"> </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">numOfSides</span><span class="p">;</span>
+
+<span class="p">-</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nf">getNumOfSides</span><span class="p">;</span>
+
+<span class="k">@end</span>
+<span class="c1">// Вы можете переопределить numOfSides-переменную или getNumOfSides-метод</span>
+<span class="c1">// Внесение изменений с помощью расширения делается следующим образом:</span>
+<span class="c1">// @implementation имя файла: Shape.m</span>
+<span class="cp">#import &quot;Shape.h&quot;</span>
+<span class="c1">// Расширения &quot;живут&quot; в том же файле, где и @implementation класса.</span>
+<span class="k">@interface</span> <span class="nc">Shape</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="c1">// После имени базового класса скобки () объявляют расширение.</span>
+
+<span class="k">@property</span><span class="w"> </span><span class="p">(</span><span class="k">copy</span><span class="p">)</span><span class="w"> </span><span class="bp">NSNumber</span><span class="w"> </span><span class="o">*</span><span class="n">numOfSides</span><span class="p">;</span><span class="w"> </span><span class="c1">// Делает numOfSides-свойство</span>
+<span class="w">             </span><span class="c1">// копирующим (copy) вместо свойства только для чтения (readonly).</span>
+<span class="p">-(</span><span class="bp">NSNumber</span><span class="p">)</span><span class="nf">getNumOfSides</span><span class="p">;</span><span class="w"> </span><span class="c1">// Изменяет метод getNumOfSides так,</span>
+<span class="w">                         </span><span class="c1">// чтобы он возвращал объект NSNumber вместо типа int.</span>
+<span class="p">-(</span><span class="kt">void</span><span class="p">)</span><span class="nf">privateMethod</span><span class="p">;</span><span class="w"> </span><span class="c1">// Вы также можете создать новый закрытый метод</span>
+<span class="w">                              </span><span class="c1">// внутри расширения.</span>
+
+<span class="k">@end</span>
+<span class="c1">// Главный @implementation:</span>
+<span class="k">@implementation</span> <span class="nc">Shape</span>
+
+<span class="k">@synthesize</span><span class="w"> </span><span class="n">numOfSides</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_numOfSides</span><span class="p">;</span>
+
+<span class="p">-(</span><span class="bp">NSNumber</span><span class="p">)</span><span class="nf">getNumOfSides</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// Все операторы внутри расширения</span>
+<span class="w">                                         </span><span class="c1">// должны быть в @implementation.</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">_numOfSides</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="p">-(</span><span class="kt">void</span><span class="p">)</span><span class="nf">privateMethod</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Закрытый метод созданный с помощью расширения.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Экземпляр Shape не может вызвать этот метод.&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Протоколы</span>
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Протокол объявляет методы, которые могут быть реализованы с помощью</span>
+<span class="c1">// любого класса. Протоколы сами по себе не являются классами. Они просто</span>
+<span class="c1">// определяют интерфейс, который должен быть реализован другими объектами.</span>
+<span class="c1">// @protocol имя файла: &quot;CarUtilities.h&quot;</span>
+<span class="k">@protocol</span> <span class="nc">CarUtilities</span> <span class="o">&lt;</span><span class="bp">NSObject</span><span class="o">&gt;</span><span class="w"> </span><span class="c1">// &lt;NSObject&gt; =&gt; Имя другого протокола,</span>
+<span class="c1">// который включен в этот протокол.</span>
+<span class="w">    </span><span class="k">@property</span><span class="w"> </span><span class="kt">BOOL</span><span class="w"> </span><span class="n">engineOn</span><span class="p">;</span><span class="w"> </span><span class="c1">// Адаптирующий класс должен определить</span>
+<span class="c1">// все @synthesize для @property и</span>
+<span class="w">    </span><span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">turnOnEngine</span><span class="p">;</span><span class="w"> </span><span class="c1">// определить все методы.</span>
+<span class="k">@end</span>
+<span class="c1">// Ниже пример класса, реализующий протокол.</span>
+<span class="cp">#import &quot;CarUtilities.h&quot; </span><span class="c1">// Импорт файла с @protocol.</span>
+
+<span class="k">@interface</span> <span class="nc">Car</span> : <span class="bp">NSObject</span><span class="w"> </span><span class="o">&lt;</span><span class="n">CarUtilities</span><span class="o">&gt;</span><span class="w"> </span><span class="c1">// Внутри &lt;&gt; имя протокола</span>
+<span class="c1">// Здесь вам не нужно указывать @property или имена методов для CarUtilities.</span>
+<span class="c1">// Они нужны только для @implementation.</span>
+<span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">turnOnEngineWithUtilities</span><span class="o">:</span><span class="p">(</span><span class="kt">id</span><span class="w"> </span><span class="o">&lt;</span><span class="n">CarUtilities</span><span class="o">&gt;</span><span class="p">)</span><span class="n">car</span><span class="p">;</span><span class="w"> </span><span class="c1">// Вы также можете</span>
+<span class="c1">// указать тип протоколов.</span>
+<span class="k">@end</span>
+<span class="c1">// В @implementation нужно реализовать все @property и методы для протокола.</span>
+<span class="k">@implementation</span> <span class="nc">Car</span> : <span class="bp">NSObject</span><span class="w"> </span><span class="o">&lt;</span><span class="n">CarUtilities</span><span class="o">&gt;</span>
+
+<span class="k">@synthesize</span><span class="w"> </span><span class="n">engineOn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_engineOn</span><span class="p">;</span><span class="w"> </span><span class="c1">// Создайте @synthesize-оператор</span>
+<span class="c1">// для &quot;@property engineOn&quot;.</span>
+
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">turnOnEngine</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// Реализуйте turnOnEngine как вам угодно. Протоколы</span>
+<span class="c1">// не определят,</span>
+<span class="w">    </span><span class="n">_engineOn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">YES</span><span class="p">;</span><span class="w"> </span><span class="c1">// как вам реализовать метод, он только требует,</span>
+<span class="c1">// чтобы вы реализовали его.</span>
+<span class="p">}</span>
+<span class="c1">// Вы можете использовать протокол как данные, если вы знаете, что он реализует</span>
+<span class="c1">// методы и переменные.</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">turnOnEngineWithCarUtilities:</span><span class="p">(</span><span class="kt">id</span><span class="w"> </span><span class="o">&lt;</span><span class="n">CarUtilities</span><span class="o">&gt;</span><span class="p">)</span><span class="nv">objectOfSomeKind</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">    </span><span class="p">[</span><span class="n">objectOfSomeKind</span><span class="w"> </span><span class="n">engineOn</span><span class="p">];</span><span class="w"> </span><span class="c1">// У вас есть доступ к переменным объекта</span>
+<span class="w">    </span><span class="p">[</span><span class="n">objectOfSomeKind</span><span class="w"> </span><span class="n">turnOnEngine</span><span class="p">];</span><span class="w"> </span><span class="c1">// и методам.</span>
+<span class="w">    </span><span class="p">[</span><span class="n">objectOfSomeKind</span><span class="w"> </span><span class="n">engineOn</span><span class="p">];</span><span class="w"> </span><span class="c1">// Может или не может быть значение YES. Класс</span>
+<span class="c1">// реализует как нужно.</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+<span class="c1">// Экземпляры класса Car сейчас имеют доступ к протоколу.</span>
+<span class="n">Car</span><span class="w"> </span><span class="o">*</span><span class="n">carInstance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[[</span><span class="n">Car</span><span class="w"> </span><span class="n">alloc</span><span class="p">]</span><span class="w"> </span><span class="n">init</span><span class="p">];</span>
+<span class="p">[</span><span class="n">carInstance</span><span class="w"> </span><span class="n">setEngineOn</span><span class="o">:</span><span class="nb">NO</span><span class="p">];</span>
+<span class="p">[</span><span class="n">carInstance</span><span class="w"> </span><span class="n">turnOnEngine</span><span class="p">];</span>
+<span class="k">if</span><span class="w"> </span><span class="p">([</span><span class="n">carInstance</span><span class="w"> </span><span class="n">engineOn</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Двигатель запущен.&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// напечатает =&gt; &quot;Двигатель запущен.&quot;</span>
+<span class="p">}</span>
+<span class="c1">// Убедитись в том, что объект типа &#39;id&#39; реализует протокол перед вызовом методов протокола:</span>
+<span class="k">if</span><span class="w"> </span><span class="p">([</span><span class="n">myClass</span><span class="w"> </span><span class="n">conformsToProtocol</span><span class="o">:</span><span class="p">@</span><span class="n">protocol</span><span class="p">(</span><span class="n">CarUtilities</span><span class="p">)])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Не работает, т.к. класс MyClass не реализует протокол CarUtilities.&quot;</span><span class="p">);</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">([</span><span class="n">carInstance</span><span class="w"> </span><span class="n">conformsToProtocol</span><span class="o">:</span><span class="p">@</span><span class="n">protocol</span><span class="p">(</span><span class="n">CarUtilities</span><span class="p">)])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Работает как класс Car, который реализует протокол CarUtilities.&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">// Категории тоже могут реализовать протоколы:</span>
+<span class="c1">// @interface Car (CarCategory) &lt;CarUtilities&gt;</span>
+<span class="c1">// Вы можете реализовать много протоколов:</span>
+<span class="c1">// @interface Car : NSObject &lt;CarUtilities, CarCleaning&gt;</span>
+<span class="c1">// ЗАМЕЧАНИЕ: Если два или более протоколов полагаются друг на друга,</span>
+<span class="c1">// убедитесь, что они ранее объявлены:</span>
+<span class="cp">#import &quot;Brother.h&quot;</span>
+
+<span class="k">@protocol</span> <span class="nc">Brother</span>;<span class="w"> </span><span class="c1">// Оператор раннего объявления. Без него компилятор</span>
+<span class="c1">// выдаст ошибку.</span>
+
+<span class="k">@protocol</span> <span class="nc">Sister</span> <span class="o">&lt;</span><span class="bp">NSObject</span><span class="o">&gt;</span>
+
+<span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">beNiceToBrother</span><span class="o">:</span><span class="p">(</span><span class="kt">id</span><span class="w"> </span><span class="o">&lt;</span><span class="n">Brother</span><span class="o">&gt;</span><span class="p">)</span><span class="n">brother</span><span class="p">;</span>
+
+<span class="k">@end</span>
+
+<span class="c1">// Рассмотрите проблему, где протокол Sister полагается на протокол Brother,</span>
+<span class="c1">// а Brother полагается на Sister.</span>
+<span class="cp">#import &quot;Sister.h&quot;</span>
+
+<span class="k">@protocol</span> <span class="nc">Sister</span>;<span class="w"> </span><span class="c1">// Эти строки предотвращают рекурсию, решая этим проблему.</span>
+
+<span class="k">@protocol</span> <span class="nc">Brother</span> <span class="o">&lt;</span><span class="bp">NSObject</span><span class="o">&gt;</span>
+
+<span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">beNiceToSister</span><span class="o">:</span><span class="p">(</span><span class="kt">id</span><span class="w"> </span><span class="o">&lt;</span><span class="n">Sister</span><span class="o">&gt;</span><span class="p">)</span><span class="n">sister</span><span class="p">;</span>
+
+<span class="k">@end</span>
+
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Блоки</span>
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Блоки - это операторы кода, наподобие функции, которую возможно использовать</span>
+<span class="c1">// как данные.</span>
+<span class="c1">// Ниже простой блок с целочисленным аргументом, и возвращает аргумент плюс 4.</span>
+<span class="kt">int</span><span class="w"> </span><span class="p">(</span><span class="o">^</span><span class="n">addUp</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">);</span><span class="w"> </span><span class="c1">// Объявите переменную, чтобы сохранить блок.</span>
+<span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">^</span><span class="n">noParameterBlockVar</span><span class="p">)(</span><span class="kt">void</span><span class="p">);</span><span class="w"> </span><span class="c1">// Пример объявления блока-переменной</span>
+<span class="c1">// без аргументов.</span>
+<span class="c1">// Блоки имею доступ к переменным в той же области видимости. Но переменные</span>
+<span class="c1">// будут только для чтения, и значения переданных в блок станут значением</span>
+<span class="c1">// переменной, когда блок создастся.</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">outsideVar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">17</span><span class="p">;</span><span class="w"> </span><span class="c1">// Если мы редактируем outsideVar после объявления addUp,</span>
+<span class="c1">// outsideVar остается равным 17.</span>
+<span class="k">__block</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">mutableVar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="c1">// __block делают переменные перезаписываемыми</span>
+<span class="c1">// в блоках, в отличие от outsideVar.</span>
+<span class="n">addUp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">^</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// Удалите (int n) в блоке, чтобы не принимать</span>
+<span class="c1">// какие-либо параметры.</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;Вы можете иметь столько строк в блоке, сколько вы хотели.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="bp">NSSet</span><span class="w"> </span><span class="o">*</span><span class="n">blockSet</span><span class="p">;</span><span class="w"> </span><span class="c1">// Также вы можете объявить локальные переменные.</span>
+<span class="w">    </span><span class="n">mutableVar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">32</span><span class="p">;</span><span class="w"> </span><span class="c1">// Присвоить новое значение к __block-переменной.</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">outsideVar</span><span class="p">;</span><span class="w"> </span><span class="c1">// Необязательный оператор возврата.</span>
+<span class="p">}</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">addUp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">add</span><span class="p">(</span><span class="mi">10</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">16</span><span class="p">);</span><span class="w"> </span><span class="c1">// Вызывает блок кода с аргументами.</span>
+<span class="c1">// Блоки часто используются как аргументы функции, чтобы позже их вызвать, или</span>
+<span class="c1">// как функции обратного вызова (callbacks).</span>
+<span class="k">@implementation</span> <span class="nc">BlockExample</span> : <span class="bp">NSObject</span><span class="w"> </span>
+
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">runBlock:</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">^</span><span class="p">)(</span><span class="bp">NSString</span><span class="p">))</span><span class="nv">block</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;В аргументе блок ничего не возвращает и принимает NSString-объект.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">block</span><span class="p">(</span><span class="s">@&quot;Аргумент передан блоку на исполнение.&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// Вызов блока.</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Управление памятью</span>
+<span class="c1">///////////////////////////////////////</span>
+<span class="cm">/* </span>
+<span class="cm">Для каждого объекта, используемого в приложении, должна быть выделена память</span>
+<span class="cm">для таких объектов. Когда приложение прекращает использование объекта, память</span>
+<span class="cm">должна быть освобождена, чтобы гарантировать эффективность приложения.</span>
+<span class="cm">Objective-C не использует сборщик мусора, а вместо этого применяет подсчет ссылок.</span>
+<span class="cm">Пока существует по крайней мере одна ссылка на объект (также называется</span>
+<span class="cm">&quot;владение&quot; объектом), то объект будет доступен к использованию (еще известно</span>
+<span class="cm">как &quot;право владения&quot;).</span>
+
+<span class="cm">Когда экземпляр владеет объектом, его ссылка увеличивается на один. Когда</span>
+<span class="cm">объекта освобождается, счетчик ссылки уменьшается на один. Когда счетчик ссылки</span>
+<span class="cm">равен нулю, объект удаляется из памяти.</span>
+
+<span class="cm">Над всеми объектами взаимодействуют, следуя паттерну:</span>
+<span class="cm">(1) создание объекта, (2) использование объекта, (3) затем освобождение объекта из памяти.</span>
+<span class="cm">*/</span>
+
+<span class="bp">MyClass</span><span class="w"> </span><span class="o">*</span><span class="n">classVar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="bp">MyClass</span><span class="w"> </span><span class="n">alloc</span><span class="p">];</span><span class="w"> </span><span class="c1">// &#39;alloc&#39; устанавливает счетчик ссылки</span>
+<span class="c1">// объекта classVar на 1 и возвращает указатель на объект.</span>
+<span class="p">[</span><span class="n">classVar</span><span class="w"> </span><span class="k">release</span><span class="p">];</span><span class="w"> </span><span class="c1">// Уменьшает счетчик ссылки объекта classVar</span>
+<span class="c1">// &#39;retain&#39; заявляет право собственности на существующий экземпляр объекта</span>
+<span class="c1">// и увеличивает счетчик ссылки. Затем вернет указатель на объект.</span>
+<span class="bp">MyClass</span><span class="w"> </span><span class="o">*</span><span class="n">newVar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">classVar</span><span class="w"> </span><span class="k">retain</span><span class="p">];</span><span class="w"> </span><span class="c1">// Если classVar освободится, объект</span>
+<span class="c1">// останется в памяти, потому что newVar - владелец</span>
+<span class="p">[</span><span class="n">classVar</span><span class="w"> </span><span class="n">autorelease</span><span class="p">];</span><span class="w"> </span><span class="c1">// Удалит право на владение объектом</span>
+<span class="c1">// в конце @autoreleasepool блока. Вернет указатель на объект.</span>
+
+<span class="c1">// @property может использовать &#39;retain&#39; и &#39;assign&#39; тоже для маленького</span>
+<span class="c1">// удобного определения</span>
+<span class="k">@property</span><span class="w"> </span><span class="p">(</span><span class="k">retain</span><span class="p">)</span><span class="w"> </span><span class="bp">MyClass</span><span class="w"> </span><span class="o">*</span><span class="n">instance</span><span class="p">;</span><span class="w"> </span><span class="c1">// Освободит старое значение и сохранит</span>
+<span class="c1">// одно новое (строгая ссылка)</span>
+<span class="k">@property</span><span class="w"> </span><span class="p">(</span><span class="k">assign</span><span class="p">)</span><span class="w"> </span><span class="bp">NSSet</span><span class="w"> </span><span class="o">*</span><span class="n">set</span><span class="p">;</span><span class="w"> </span><span class="c1">// Укажет на новое значение</span>
+<span class="c1">// без сохранения/освобождения старого значения (слабая ссылка)</span>
+
+<span class="c1">// Автоматический подсчет ссылок (ARC)</span>
+<span class="c1">// Управление памятью может быть трудным, поэтому в Xcode 4.2 и iOS 4 введен</span>
+<span class="c1">// автоматический подсчет ссылок (ARC).</span>
+<span class="c1">// ARC - это особенность компилятора, который помещает &quot;retain&quot;, &quot;release&quot;</span>
+<span class="c1">// и &quot;autorelease&quot; автоматически за вас тогда, когда используется ARC,</span>
+<span class="c1">// вам не нужно больше обращаться к &quot;retain&quot;, &quot;release&quot; или &quot;autorelease&quot;</span>
+<span class="bp">MyClass</span><span class="w"> </span><span class="o">*</span><span class="n">arcMyClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[[</span><span class="bp">MyClass</span><span class="w"> </span><span class="n">alloc</span><span class="p">]</span><span class="w"> </span><span class="n">init</span><span class="p">];</span>
+<span class="c1">// ... код, использующий объект arcMyClass</span>
+<span class="c1">// Без ARC, вам нужно было бы вызвать: [arcMyClass release] после того, как вы</span>
+<span class="c1">// завершите работу с объектом arcMyClass. Но с ARC,</span>
+<span class="c1">// теперь этого не нужно делать. Он будет помещать release-вызов за вас</span>
+
+<span class="c1">// Что касается &#39;assign&#39; и &#39;retain&#39; @property атрибутов, в ARC вы должны</span>
+<span class="c1">// использовать &#39;weak&#39; и &#39;strong&#39;</span>
+<span class="k">@property</span><span class="w"> </span><span class="p">(</span><span class="k">weak</span><span class="p">)</span><span class="w"> </span><span class="bp">MyClass</span><span class="w"> </span><span class="o">*</span><span class="n">weakVar</span><span class="p">;</span><span class="w"> </span><span class="c1">// &#39;weak&#39; не принимает право на владение</span>
+<span class="c1">// объектом. Если исходный счетчик ссылки экземпляра обнуляется,</span>
+<span class="c1">// weakVar-свойство автоматически примет значение nil,</span>
+<span class="c1">// во избежание падения приложения</span>
+<span class="k">@property</span><span class="w"> </span><span class="p">(</span><span class="k">strong</span><span class="p">)</span><span class="w"> </span><span class="bp">MyClass</span><span class="w"> </span><span class="o">*</span><span class="n">strongVar</span><span class="p">;</span><span class="w"> </span><span class="c1">// &#39;strong&#39; принимает право на владение</span>
+<span class="c1">// объектом. Гарантирует, что объект останется в памяти для использования</span>
+
+<span class="c1">// Для обычных переменных (не объявленных с помощью @property), используйте</span>
+<span class="c1">// следующий способ:</span>
+<span class="k">__strong</span><span class="w"> </span><span class="bp">NSString</span><span class="w"> </span><span class="o">*</span><span class="n">strongString</span><span class="p">;</span><span class="w"> </span><span class="c1">// По умолчанию. Переменная сохраняется в памяти,</span>
+<span class="c1">// пока она не покинет область видимости</span>
+<span class="k">__weak</span><span class="w"> </span><span class="bp">NSSet</span><span class="w"> </span><span class="o">*</span><span class="n">weakSet</span><span class="p">;</span><span class="w"> </span><span class="c1">// Слабая ссылка на существующий объект. Когда существующий</span>
+<span class="c1">// объект освобождается, weakSet принимает nil</span>
+<span class="n">__unsafe_unretained</span><span class="w"> </span><span class="bp">NSArray</span><span class="w"> </span><span class="o">*</span><span class="n">unsafeArray</span><span class="p">;</span><span class="w"> </span><span class="c1">// Похож на __weak, но unsafeArray</span>
+<span class="c1">// не принимает nil, когда существующий объект освобождается</span>
+</pre></div>
 <h2>На почитать</h2>
 
 <p><a href="http://en.wikipedia.org/wiki/Objective-C">Wikipedia Objective-C</a></p>

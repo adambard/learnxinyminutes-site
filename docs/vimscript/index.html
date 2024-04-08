@@ -86,656 +86,656 @@
     <a href="/docs/files/learnvimscript.vim">learnvimscript.vim</a>
     </p>
   <div id="doc">
-    <div class="highlight"><pre class="highlight viml"><code><span class="c">" ##############</span>
-<span class="c">"  Introduction</span>
-<span class="c">" ##############</span>
-<span class="c">"</span>
-<span class="c">" Vim script (also called VimL) is the subset of Vim's ex-commands which</span>
-<span class="c">" supplies a number of features one would expect from a scripting language,</span>
-<span class="c">" such as values, variables, functions or loops. Always keep in the back of</span>
-<span class="c">" your mind that a Vim script file is just a sequence of ex-commands. It is</span>
-<span class="c">" very common for a script to mix programming-language features and raw</span>
-<span class="c">" ex-commands.</span>
-<span class="c">"</span>
-<span class="c">" You can run Vim script directly by entering the commands in command-line mode</span>
-<span class="c">" (press `:` to enter command-line mode), or you can write them to a file</span>
-<span class="c">" (without the leading `:`) and source it in a running Vim instance (`:source</span>
-<span class="c">" path/to/file`). Some files are sourced automatically as part of your</span>
-<span class="c">" configuration (see |startup|). This guide assumes that you are familiar</span>
-<span class="c">" with ex-commands and will only cover the scripting. Help topics to the</span>
-<span class="c">" relevant manual sections are included.</span>
-<span class="c">"</span>
-<span class="c">" See |usr_41.txt| for the official introduction to Vim script. A comment is</span>
-<span class="c">" anything following an unmatched `"` until the end of the line, and `|`</span>
-<span class="c">" separates instructions (what `;` does in most other languages). References to</span>
-<span class="c">" the manual as surrounded with `|`, such as |help.txt|.</span>
-
-<span class="c">" This is a comment</span>
-
-<span class="c">" The vertical line '|' (pipe) separates commands</span>
-echo <span class="s1">'Hello'</span> <span class="p">|</span> echo <span class="s1">'world!'</span>
-
-<span class="c">" Putting a comment after a command usually works</span>
-<span class="k">pwd</span>                   " Displays the current working <span class="nb">directory</span>
-
-<span class="c">" Except for some commands it does not; use the command delimiter before the</span>
-<span class="c">" comment (echo assumes that the quotation mark begins a string)</span>
-echo <span class="s1">'Hello world!'</span>  <span class="p">|</span> " Displays <span class="k">a</span> message
-
-<span class="c">" Line breaks can be escaped by placing a backslash as the first non-whitespace</span>
-<span class="c">" character on the *following* line. Only works in script files, not on the</span>
-<span class="c">" command line</span>
-echo " Hello
-<span class="se">    \</span> world "
-
-echo <span class="p">[</span><span class="m">1</span><span class="p">,</span> 
-<span class="se">    \</span> <span class="m">2</span><span class="p">]</span>
-
-echo <span class="p">{</span>
-<span class="se">    \</span> <span class="s1">'a'</span><span class="p">:</span> <span class="m">1</span><span class="p">,</span>
-<span class="se">    \</span> <span class="s1">'b'</span><span class="p">:</span> <span class="m">2</span>
-<span class="se">\</span><span class="p">}</span>
-
-
-<span class="c">" #######</span>
-<span class="c">"  Types</span>
-<span class="c">" #######</span>
-<span class="c">"</span>
-<span class="c">" For an overview of types see |E712|. For an overview of operators see</span>
-<span class="c">" |expression-syntax|</span>
-
-<span class="c">" Numbers (|expr-number|)</span>
-<span class="c">" #######</span>
-
-echo  <span class="m">123</span>         <span class="p">|</span> " Decimal
-echo  <span class="m">0</span>b1111011   <span class="p">|</span> " Binary
-echo  <span class="m">0173</span>        <span class="p">|</span> " Octal
-echo  <span class="m">0</span>x7B        <span class="p">|</span> " Hexadecimal
-echo  <span class="m">123</span><span class="p">.</span><span class="m">0</span>       <span class="p">|</span> " Floating<span class="p">-</span>point
-echo  <span class="m">1</span><span class="p">.</span><span class="m">23</span>e2      <span class="p">|</span> " Floating<span class="p">-</span>point <span class="p">(</span>scientific notation<span class="p">)</span>
-
-<span class="c">" Note that an *integer* number with a leading `0` is in octal notation. The</span>
-<span class="c">" usual arithmetic operations are supported.</span>
-
-echo  <span class="m">1</span> <span class="p">+</span> <span class="m">2</span>       <span class="p">|</span> " Addition
-echo  <span class="m">1</span> <span class="p">-</span> <span class="m">2</span>       <span class="p">|</span> " Subtraction
-echo  <span class="p">-</span> <span class="m">1</span>         <span class="p">|</span> " Negation <span class="p">(</span>unary minus<span class="p">)</span>
-echo  <span class="p">+</span> <span class="m">1</span>         <span class="p">|</span> " Unary plus <span class="p">(</span>does nothing really<span class="p">,</span> but still legal<span class="p">)</span>
-echo  <span class="m">1</span> * <span class="m">2</span>       <span class="p">|</span> " Multiplication
-echo  <span class="m">1</span> / <span class="m">2</span>       <span class="p">|</span> " Division
-echo  <span class="m">1</span> % <span class="m">2</span>       <span class="p">|</span> " Modulo <span class="p">(</span>remainder<span class="p">)</span>
-
-<span class="c">" Booleans (|Boolean|)</span>
-<span class="c">" ########</span>
-<span class="c">"</span>
-<span class="c">" The number 0 is false, every other number is true. Strings are implicitly</span>
-<span class="c">" converted to numbers (see below). There are two pre-defined semantic</span>
-<span class="c">" constants.</span>
-
-echo  <span class="k">v</span><span class="p">:</span>true      <span class="p">|</span> " Evaluates <span class="k">to</span> <span class="m">1</span> <span class="nb">or</span> the <span class="nb">string</span> <span class="s1">'v:true'</span>
-echo  <span class="k">v</span><span class="p">:</span>false     <span class="p">|</span> " Evaluates <span class="k">to</span> <span class="m">0</span> <span class="nb">or</span> the <span class="nb">string</span> <span class="s1">'v:false'</span>
-
-<span class="c">" Boolean values can result from comparison of two objects.</span>
-
-echo  <span class="k">x</span> <span class="p">==</span> <span class="k">y</span>             <span class="p">|</span> " Equality by value
-echo  <span class="k">x</span> <span class="p">!=</span> <span class="k">y</span>             <span class="p">|</span> " Inequality
-echo  <span class="k">x</span> <span class="p">&gt;</span>  <span class="k">y</span>             <span class="p">|</span> " Greater than
-echo  <span class="k">x</span> <span class="p">&gt;=</span> <span class="k">y</span>             <span class="p">|</span> " Greater than <span class="nb">or</span> equal
-echo  <span class="k">x</span> <span class="p">&lt;</span>  <span class="k">y</span>             <span class="p">|</span> " Smaller than
-echo  <span class="k">x</span> <span class="p">&lt;=</span> <span class="k">y</span>             <span class="p">|</span> " Smaller than <span class="nb">or</span> equal
-echo  <span class="k">x</span> <span class="k">is</span> <span class="k">y</span>             <span class="p">|</span> " Instance identity <span class="p">(</span>lists <span class="nb">and</span> dictionaries<span class="p">)</span>
-echo  <span class="k">x</span> isnot <span class="k">y</span>          <span class="p">|</span> " Instance non<span class="p">-</span>identity <span class="p">(</span>lists <span class="nb">and</span> dictionaries<span class="p">)</span>
-
-<span class="c">" Strings are compared based on their alphanumerical ordering</span>
-<span class="c">" echo 'a' &lt; 'b'. Case sensitivity depends on the setting of 'ignorecase'</span>
-<span class="c">"</span>
-<span class="c">" Explicit case-sensitivity is specified by appending '#' (match case) or '?'</span>
-<span class="c">" (ignore case) to the operator. Prefer explicitly case sensitivity when writing</span>
-<span class="c">" portable scripts.</span>
-
-echo  <span class="s1">'a'</span> <span class="p">&lt;</span>  <span class="s1">'B'</span>         <span class="p">|</span> " True <span class="nb">or</span> false depending <span class="k">on</span> <span class="s1">'ignorecase'</span>
-echo  <span class="s1">'a'</span> <span class="p">&lt;</span>? <span class="s1">'B'</span>         <span class="p">|</span> " True
-echo  <span class="s1">'a'</span> <span class="p">&lt;</span># <span class="s1">'B'</span>         <span class="p">|</span> " False
-
-<span class="c">" Regular expression matching</span>
-echo  <span class="s2">"hi"</span> <span class="p">=~</span>  <span class="s2">"hello"</span>    <span class="p">|</span> " Regular expression <span class="k">match</span><span class="p">,</span> uses <span class="s1">'ignorecase'</span>
-echo  <span class="s2">"hi"</span> <span class="p">=~</span># <span class="s2">"hello"</span>    <span class="p">|</span> " Regular expression <span class="k">match</span><span class="p">,</span> case sensitive
-echo  <span class="s2">"hi"</span> <span class="p">=~</span>? <span class="s2">"hello"</span>    <span class="p">|</span> " Regular expression <span class="k">match</span><span class="p">,</span> case insensitive
-echo  <span class="s2">"hi"</span> <span class="p">!~</span>  <span class="s2">"hello"</span>    <span class="p">|</span> " Regular expression unmatch<span class="p">,</span> use <span class="s1">'ignorecase'</span>
-echo  <span class="s2">"hi"</span> <span class="p">!~</span># <span class="s2">"hello"</span>    <span class="p">|</span> " Regular expression unmatch<span class="p">,</span> case sensitive
-echo  <span class="s2">"hi"</span> <span class="p">!~</span>? <span class="s2">"hello"</span>    <span class="p">|</span> " Regular expression unmatch<span class="p">,</span> case insensitive
-
-<span class="c">" Boolean operations are possible.</span>
-
-echo  <span class="k">v</span><span class="p">:</span>true &amp;&amp; <span class="k">v</span><span class="p">:</span>false       <span class="p">|</span> " Logical AND
-echo  <span class="k">v</span><span class="p">:</span>true <span class="p">||</span> <span class="k">v</span><span class="p">:</span>false       <span class="p">|</span> " Logical OR
-echo  <span class="p">!</span> <span class="k">v</span><span class="p">:</span>true                <span class="p">|</span> " Logical NOT
-echo  <span class="k">v</span><span class="p">:</span>true ? <span class="s1">'yes'</span> <span class="p">:</span> <span class="s1">'no'</span>   <span class="p">|</span> " Ternary operator
-
-
-<span class="c">" Strings (|String|)</span>
-<span class="c">" #######</span>
-<span class="c">"</span>
-<span class="c">" An ordered zero-indexed sequence of bytes. The encoding of text into bytes</span>
-<span class="c">" depends on the option |'encoding'|.</span>
-
-<span class="c">" Literal constructors</span>
-echo  <span class="s2">"Hello world\n"</span>   <span class="p">|</span> " The <span class="k">last</span> two characters stand <span class="k">for</span> newline
-echo  <span class="s1">'Hello world\n'</span>   <span class="p">|</span> " The <span class="k">last</span> two characters are literal
-echo  <span class="s1">'Let''s go!'</span>      <span class="p">|</span> " Two single quotes become one quote character
-
-<span class="c">" Single-quote strings take all characters are literal, except two single</span>
-<span class="c">" quotes, which are taken to be a single quote in the string itself. See </span>
-<span class="c">" |expr-quote| for all possible escape sequences.</span>
-
-<span class="c">" String concatenation</span>
-<span class="c">" The .. operator is preferred, but only supported in since Vim 8.1.1114</span>
-echo  <span class="s1">'Hello '</span> <span class="p">.</span>  <span class="s1">'world'</span>  <span class="p">|</span> " String concatenation
-echo  <span class="s1">'Hello '</span> <span class="p">..</span> <span class="s1">'world'</span>  <span class="p">|</span> " String concatenation <span class="p">(</span><span class="k">new</span> variant<span class="p">)</span>
-
-<span class="c">" String indexing</span>
-echo  <span class="s1">'Hello'</span><span class="p">[</span><span class="m">0</span><span class="p">]</span>           <span class="p">|</span> " First byte
-echo  <span class="s1">'Hello'</span><span class="p">[</span><span class="m">1</span><span class="p">]</span>           <span class="p">|</span> " Second byte
-echo  <span class="s1">'Hellö'</span><span class="p">[</span><span class="m">4</span><span class="p">]</span>           <span class="p">|</span> " Returns <span class="k">a</span> byte<span class="p">,</span> not the character <span class="s1">'ö'</span>
-
-<span class="c">" Substrings (second index is inclusive)</span>
-echo  <span class="s1">'Hello'</span><span class="p">[:]</span>           <span class="p">|</span> " Copy of entire <span class="nb">string</span>
-echo  <span class="s1">'Hello'</span><span class="p">[</span><span class="m">1</span><span class="p">:</span><span class="m">3</span><span class="p">]</span>         <span class="p">|</span> " Substring<span class="p">,</span> second <span class="k">to</span> fourth byte
-echo  <span class="s1">'Hello'</span><span class="p">[</span><span class="m">1</span><span class="p">:</span><span class="m">-2</span><span class="p">]</span>        <span class="p">|</span> " Substring until second <span class="k">to</span> <span class="k">last</span> byte
-echo  <span class="s1">'Hello'</span><span class="p">[</span><span class="m">1</span><span class="p">:]</span>          <span class="p">|</span> " Substring with starting <span class="nb">index</span>
-echo  <span class="s1">'Hello'</span><span class="p">[:</span><span class="m">2</span><span class="p">]</span>          <span class="p">|</span> " Substring with ending <span class="nb">index</span>
-echo  <span class="s1">'Hello'</span><span class="p">[</span><span class="m">-2</span><span class="p">:]</span>         <span class="p">|</span> " Substring relative <span class="k">to</span> end of <span class="nb">string</span>
-
-<span class="c">" A negative index is relative to the end of the string. See</span>
-<span class="c">" |string-functions| for all string-related functions.</span>
-
-<span class="c">" Lists (|List|)</span>
-<span class="c">" #####</span>
-<span class="c">"</span>
-<span class="c">" An ordered zero-indexed heterogeneous sequence of arbitrary Vim script</span>
-<span class="c">" objects.</span>
-
-<span class="c">" Literal constructor</span>
-echo  <span class="p">[]</span>                   <span class="p">|</span> " Empty <span class="k">list</span>
-echo  <span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="s1">'Hello'</span><span class="p">]</span>      <span class="p">|</span> " List with elements
-echo  <span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="s1">'Hello'</span><span class="p">,</span> <span class="p">]</span>    <span class="p">|</span> " Trailing comma permitted
-echo  <span class="p">[[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">],</span> <span class="s1">'Hello'</span><span class="p">]</span>    <span class="p">|</span> " Lists can be nested arbitrarily
-
-<span class="c">" List concatenation</span>
-echo  <span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">]</span> <span class="p">+</span> <span class="p">[</span><span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">]</span>      <span class="p">|</span> " Creates <span class="k">a</span> <span class="k">new</span> <span class="k">list</span>
-
-<span class="c">" List indexing, negative is relative to end of list (|list-index|)</span>
-echo  <span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">][</span><span class="m">2</span><span class="p">]</span>      <span class="p">|</span> " Third element
-echo  <span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">][</span><span class="m">-1</span><span class="p">]</span>     <span class="p">|</span> " Last element
-
-<span class="c">" List slicing (|sublist|)</span>
-echo  <span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">][:]</span>      <span class="p">|</span> " Shallow <span class="k">copy</span> of entire <span class="k">list</span>
-echo  <span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">][:</span><span class="m">2</span><span class="p">]</span>     <span class="p">|</span> " Sublist until third item <span class="p">(</span>inclusive<span class="p">)</span>
-echo  <span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">][</span><span class="m">2</span><span class="p">:]</span>     <span class="p">|</span> " Sublist from third item <span class="p">(</span>inclusive<span class="p">)</span>
-echo  <span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span><span class="p">][:</span><span class="m">-2</span><span class="p">]</span>    <span class="p">|</span> " Sublist until second<span class="p">-</span><span class="k">to</span><span class="p">-</span><span class="k">last</span> item <span class="p">(</span>inclusive<span class="p">)</span>
-
-<span class="c">" All slicing operations create new lists. To modify a list in-place use list</span>
-<span class="c">" functions (|list-functions|) or assign directly to an item (see below about</span>
-<span class="c">" variables).</span>
-
-
-<span class="c">" Dictionaries (|Dictionary|)</span>
-<span class="c">" ############</span>
-<span class="c">"</span>
-<span class="c">" An unordered sequence of key-value pairs, keys are always strings (numbers</span>
-<span class="c">" are implicitly converted to strings).</span>
-
-<span class="c">" Dictionary literal</span>
-echo  <span class="p">{}</span>                       <span class="p">|</span> " Empty <span class="nb">dictionary</span>
-echo  <span class="p">{</span><span class="s1">'a'</span><span class="p">:</span> <span class="m">1</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">:</span> <span class="m">2</span><span class="p">}</span>         <span class="p">|</span> " Dictionary literal
-echo  <span class="p">{</span><span class="s1">'a'</span><span class="p">:</span> <span class="m">1</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">:</span> <span class="m">2</span><span class="p">,</span> <span class="p">}</span>       <span class="p">|</span> " Trailing comma permitted
-echo  <span class="p">{</span><span class="s1">'x'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'a'</span><span class="p">:</span> <span class="m">1</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">:</span> <span class="m">2</span><span class="p">}}</span>  <span class="p">|</span> " Nested <span class="nb">dictionary</span>
-
-<span class="c">" Indexing a dictionary</span>
-echo  <span class="p">{</span><span class="s1">'a'</span><span class="p">:</span> <span class="m">1</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">:</span> <span class="m">2</span><span class="p">}[</span><span class="s1">'a'</span><span class="p">]</span>    <span class="p">|</span> " Literal <span class="nb">index</span>
-echo  <span class="p">{</span><span class="s1">'a'</span><span class="p">:</span> <span class="m">1</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">:</span> <span class="m">2</span><span class="p">}.</span><span class="k">a</span>       <span class="p">|</span> " Syntactic sugar <span class="k">for</span> simple <span class="nb">keys</span>
-
-<span class="c">" See |dict-functions| for dictionary manipulation functions.</span>
-
-
-<span class="c">" Funcref (|Funcref|)</span>
-<span class="c">" #######</span>
-<span class="c">"</span>
-<span class="c">" Reference to a function, uses the function name as a string for construction.</span>
-<span class="c">" When stored in a variable the name of the variable has the same restrictions</span>
-<span class="c">" as a function name (see below).</span>
-
-echo  <span class="k">function</span><span class="p">(</span><span class="s1">'type'</span><span class="p">)</span>                   <span class="p">|</span> " Reference <span class="k">to</span> <span class="k">function</span> <span class="nb">type</span><span class="p">()</span>
-<span class="c">" Note that `funcref('type')` will throw an error because the argument must be</span>
-<span class="c">" a user-defined function; see further below for defining your own functions.</span>
-echo  <span class="nb">funcref</span><span class="p">(</span><span class="s1">'type'</span><span class="p">)</span>                    <span class="p">|</span> " Reference by identity<span class="p">,</span> not name
-<span class="c">" A lambda (|lambda|) is an anonymous function; it can only contain one</span>
-<span class="c">" expression in its body, which is also its implicit return value.</span>
-echo  <span class="p">{</span><span class="k">x</span> <span class="p">-&gt;</span> <span class="k">x</span> * <span class="k">x</span><span class="p">}</span>                       <span class="p">|</span> " Anonymous <span class="k">function</span>
-echo  <span class="k">function</span><span class="p">(</span><span class="s1">'substitute'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'hello'</span><span class="p">])</span>  <span class="p">|</span> " Partial <span class="k">function</span>
-
-
-<span class="c">" Regular expression (|regular-expression|)</span>
-<span class="c">" ##################</span>
-<span class="c">"</span>
-<span class="c">" A regular expression pattern is generally a string, but in some cases you can</span>
-<span class="c">" also use a regular expression between a pair of delimiters (usually `/`, but</span>
-<span class="c">" you can choose anything).</span>
-
-<span class="c">" Substitute 'hello' for 'Hello'</span>
-<span class="nb">substitute</span><span class="sr">/hello/</span>Hello/
-
-
-<span class="c">" ###########################</span>
-<span class="c">"  Implicit type conversions</span>
-<span class="c">" ###########################</span>
-<span class="c">"</span>
-<span class="c">" Strings are converted to numbers, and numbers to strings when necessary. A</span>
-<span class="c">" number becomes its decimal notation as a string. A string becomes its</span>
-<span class="c">" numerical value if it can be parsed to a number, otherwise it becomes zero.</span>
-
-echo  <span class="s2">"1"</span> <span class="p">+</span> <span class="m">1</span>         <span class="p">|</span> " Number
-echo  <span class="s2">"1"</span> <span class="p">..</span> <span class="m">1</span>        <span class="p">|</span> " String
-echo  <span class="s2">"0xA"</span> <span class="p">+</span> <span class="m">1</span>       <span class="p">|</span> " Number
-
-<span class="c">" Strings are treated like numbers when used as booleans</span>
-echo <span class="s2">"true"</span> ? <span class="m">1</span> <span class="p">:</span> <span class="m">0</span>   <span class="p">|</span> " This <span class="nb">string</span> <span class="k">is</span> parsed <span class="k">to</span> <span class="m">0</span><span class="p">,</span> which <span class="k">is</span> false
-
-<span class="c">" ###########</span>
-<span class="c">"  Variables</span>
-<span class="c">" ###########</span>
-<span class="c">" </span>
-<span class="c">" Variables are bound within a scope; if no scope is provided a default is</span>
-<span class="c">" chosen by Vim. Use `:let` and `:const` to bind a value and `:unlet` to unbind</span>
-<span class="c">" it.</span>
-
-<span class="k">let</span> <span class="nv">b:my_var</span> <span class="p">=</span> <span class="m">1</span>        <span class="p">|</span> " Local <span class="k">to</span> current <span class="k">buffer</span>
-<span class="k">let</span> <span class="k">w</span><span class="p">:</span>my_var <span class="p">=</span> <span class="m">1</span>        <span class="p">|</span> " Local <span class="k">to</span> current <span class="nb">window</span>
-<span class="k">let</span> <span class="k">t</span><span class="p">:</span>my_var <span class="p">=</span> <span class="m">1</span>        <span class="p">|</span> " Local <span class="k">to</span> current <span class="k">tab</span> page
-<span class="k">let</span> <span class="nv">g:my_var</span> <span class="p">=</span> <span class="m">1</span>        <span class="p">|</span> " Global variable
-<span class="k">let</span> <span class="k">l</span><span class="p">:</span>my_var <span class="p">=</span> <span class="m">1</span>        <span class="p">|</span> " Local <span class="k">to</span> current <span class="k">function</span> <span class="p">(</span>see functions below<span class="p">)</span>
-<span class="k">let</span> <span class="nv">s:my_var</span> <span class="p">=</span> <span class="m">1</span>        <span class="p">|</span> " Local <span class="k">to</span> current script <span class="k">file</span>
-<span class="k">let</span> <span class="nv">a:my_arg</span> <span class="p">=</span> <span class="m">1</span>        <span class="p">|</span> " Function <span class="k">argument</span> <span class="p">(</span>see functions below<span class="p">)</span>
-
-<span class="c">" The Vim scope is read-only</span>
-echo  <span class="k">v</span><span class="p">:</span>true            <span class="p">|</span> " Special built<span class="p">-</span><span class="k">in</span> Vim variables <span class="p">(|</span><span class="k">v</span><span class="p">:</span>var<span class="p">|)</span>
-
-<span class="c">" Access special Vim memory like variables</span>
-<span class="k">let</span> @<span class="k">a</span> <span class="p">=</span> <span class="s1">'Hello'</span>        <span class="p">|</span> " Register
-<span class="k">let</span> $PATH<span class="p">=</span><span class="s1">''</span>            <span class="p">|</span> " Environment variable
-<span class="k">let</span> &amp;<span class="nb">textwidth</span> <span class="p">=</span> <span class="m">79</span>     <span class="p">|</span> " Option
-<span class="k">let</span> &amp;<span class="k">l</span><span class="p">:</span><span class="nb">textwidth</span> <span class="p">=</span> <span class="m">79</span>   <span class="p">|</span> " Local option
-<span class="k">let</span> &amp;<span class="nv">g:textwidth</span> <span class="p">=</span> <span class="m">79</span>   <span class="p">|</span> " Global option
-
-<span class="c">" Access scopes as dictionaries (can be modified like all dictionaries)</span>
-<span class="c">" See the |dict-functions|, especially |get()|, for access and manipulation</span>
-echo  <span class="k">b</span><span class="p">:</span>                <span class="p">|</span> " All <span class="k">buffer</span> variables
-echo  <span class="k">w</span><span class="p">:</span>                <span class="p">|</span> " All <span class="nb">window</span> variables
-echo  <span class="k">t</span><span class="p">:</span>                <span class="p">|</span> " All <span class="k">tab</span> page variables
-echo  <span class="k">g</span><span class="p">:</span>                <span class="p">|</span> " All global variables
-echo  <span class="k">l</span><span class="p">:</span>                <span class="p">|</span> " All local variables
-echo  s<span class="p">:</span>                <span class="p">|</span> " All script variables
-echo  <span class="k">a</span><span class="p">:</span>                <span class="p">|</span> " All <span class="k">function</span> arguments
-echo  <span class="k">v</span><span class="p">:</span>                <span class="p">|</span> " All Vim variables
-
-<span class="c">" Constant variables</span>
-<span class="k">const</span> <span class="k">x</span> <span class="p">=</span> <span class="m">10</span>            <span class="p">|</span> " See <span class="p">|:</span><span class="k">const</span><span class="p">|,</span> <span class="p">|:</span><span class="k">lockvar</span><span class="p">|</span>
-
-<span class="c">" Function reference variables have the same restrictions as function names</span>
-<span class="k">let</span> IsString <span class="p">=</span> <span class="p">{</span><span class="k">x</span> <span class="p">-&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="k">x</span><span class="p">)</span> <span class="p">==</span> <span class="nb">type</span><span class="p">(</span><span class="s1">''</span><span class="p">)}</span>    <span class="p">|</span> " Global<span class="p">:</span> capital letter
-<span class="k">let</span> <span class="nv">s:isNumber</span> <span class="p">=</span> <span class="p">{</span><span class="k">x</span> <span class="p">-&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="k">x</span><span class="p">)</span> <span class="p">==</span> <span class="nb">type</span><span class="p">(</span><span class="m">0</span><span class="p">)}</span>   <span class="p">|</span> " Local<span class="p">:</span> any name allowed
-
-<span class="c">" When omitted the scope `g:` is implied, except in functions, there `l:` is</span>
-<span class="c">" implied.</span>
-
-
-<span class="c">" Multiple value binding (list unpacking)</span>
-<span class="c">" #######################################</span>
-<span class="c">"</span>
-<span class="c">" Assign values of list to multiple variables (number of items must match)</span>
-<span class="k">let</span> <span class="p">[</span><span class="k">x</span><span class="p">,</span> <span class="k">y</span><span class="p">]</span> <span class="p">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">]</span>
-
-<span class="c">" Assign the remainder to a rest variable (note the semicolon)</span>
-<span class="k">let</span> <span class="p">[</span>mother<span class="p">,</span> father; children<span class="p">]</span> <span class="p">=</span> <span class="p">[</span><span class="s1">'Alice'</span><span class="p">,</span> <span class="s1">'Bob'</span><span class="p">,</span> <span class="s1">'Carol'</span><span class="p">,</span> <span class="s1">'Dennis'</span><span class="p">,</span> <span class="s1">'Emily'</span><span class="p">]</span>
-
-
-<span class="c">" ##############</span>
-<span class="c">"  Flow control</span>
-<span class="c">" ##############</span>
-
-<span class="c">" Conditional (|:if|, |:elseif|, |:else|, |:endif|)</span>
-<span class="c">" ###########</span>
-<span class="c">" </span>
-<span class="c">" Conditions are set between `if` and `endif`. They can be nested.</span>
-
-<span class="k">let</span> condition <span class="p">=</span> <span class="k">v</span><span class="p">:</span>true
+    <div class="highlight"><pre><span></span><span class="c">&quot; ##############</span>
+<span class="c">&quot;  Introduction</span>
+<span class="c">&quot; ##############</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; Vim script (also called VimL) is the subset of Vim&#39;s ex-commands which</span>
+<span class="c">&quot; supplies a number of features one would expect from a scripting language,</span>
+<span class="c">&quot; such as values, variables, functions or loops. Always keep in the back of</span>
+<span class="c">&quot; your mind that a Vim script file is just a sequence of ex-commands. It is</span>
+<span class="c">&quot; very common for a script to mix programming-language features and raw</span>
+<span class="c">&quot; ex-commands.</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; You can run Vim script directly by entering the commands in command-line mode</span>
+<span class="c">&quot; (press `:` to enter command-line mode), or you can write them to a file</span>
+<span class="c">&quot; (without the leading `:`) and source it in a running Vim instance (`:source</span>
+<span class="c">&quot; path/to/file`). Some files are sourced automatically as part of your</span>
+<span class="c">&quot; configuration (see |startup|). This guide assumes that you are familiar</span>
+<span class="c">&quot; with ex-commands and will only cover the scripting. Help topics to the</span>
+<span class="c">&quot; relevant manual sections are included.</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; See |usr_41.txt| for the official introduction to Vim script. A comment is</span>
+<span class="c">&quot; anything following an unmatched `&quot;` until the end of the line, and `|`</span>
+<span class="c">&quot; separates instructions (what `;` does in most other languages). References to</span>
+<span class="c">&quot; the manual as surrounded with `|`, such as |help.txt|.</span>
+
+<span class="c">&quot; This is a comment</span>
+
+<span class="c">&quot; The vertical line &#39;|&#39; (pipe) separates commands</span>
+echo <span class="s1">&#39;Hello&#39;</span> <span class="p">|</span> echo <span class="s1">&#39;world!&#39;</span>
+
+<span class="c">&quot; Putting a comment after a command usually works</span>
+<span class="k">pwd</span>                   <span class="c">&quot; Displays the current working directory</span>
+
+<span class="c">&quot; Except for some commands it does not; use the command delimiter before the</span>
+<span class="c">&quot; comment (echo assumes that the quotation mark begins a string)</span>
+echo <span class="s1">&#39;Hello world!&#39;</span>  <span class="p">|</span> <span class="c">&quot; Displays a message</span>
+
+<span class="c">&quot; Line breaks can be escaped by placing a backslash as the first non-whitespace</span>
+<span class="c">&quot; character on the *following* line. Only works in script files, not on the</span>
+<span class="c">&quot; command line</span>
+echo <span class="c">&quot; Hello</span>
+    \ world <span class="c">&quot;</span>
+
+echo [<span class="m">1</span><span class="p">,</span> 
+    \ <span class="m">2</span>]
+
+echo {
+    \ <span class="s1">&#39;a&#39;</span>: <span class="m">1</span><span class="p">,</span>
+    \ <span class="s1">&#39;b&#39;</span>: <span class="m">2</span>
+\}
+
+
+<span class="c">&quot; #######</span>
+<span class="c">&quot;  Types</span>
+<span class="c">&quot; #######</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; For an overview of types see |E712|. For an overview of operators see</span>
+<span class="c">&quot; |expression-syntax|</span>
+
+<span class="c">&quot; Numbers (|expr-number|)</span>
+<span class="c">&quot; #######</span>
+
+echo  <span class="m">123</span>         <span class="p">|</span> <span class="c">&quot; Decimal</span>
+echo  <span class="m">0</span>b<span class="m">1111011</span>   <span class="p">|</span> <span class="c">&quot; Binary</span>
+echo  <span class="m">0173</span>        <span class="p">|</span> <span class="c">&quot; Octal</span>
+echo  <span class="m">0</span>x<span class="m">7</span>B        <span class="p">|</span> <span class="c">&quot; Hexadecimal</span>
+echo  <span class="m">123</span>.<span class="m">0</span>       <span class="p">|</span> <span class="c">&quot; Floating-point</span>
+echo  <span class="m">1</span>.<span class="m">23</span>e<span class="m">2</span>      <span class="p">|</span> <span class="c">&quot; Floating-point (scientific notation)</span>
+
+<span class="c">&quot; Note that an *integer* number with a leading `0` is in octal notation. The</span>
+<span class="c">&quot; usual arithmetic operations are supported.</span>
+
+echo  <span class="m">1</span> <span class="p">+</span> <span class="m">2</span>       <span class="p">|</span> <span class="c">&quot; Addition</span>
+echo  <span class="m">1</span> <span class="p">-</span> <span class="m">2</span>       <span class="p">|</span> <span class="c">&quot; Subtraction</span>
+echo  <span class="p">-</span> <span class="m">1</span>         <span class="p">|</span> <span class="c">&quot; Negation (unary minus)</span>
+echo  <span class="p">+</span> <span class="m">1</span>         <span class="p">|</span> <span class="c">&quot; Unary plus (does nothing really, but still legal)</span>
+echo  <span class="m">1</span> * <span class="m">2</span>       <span class="p">|</span> <span class="c">&quot; Multiplication</span>
+echo  <span class="m">1</span> / <span class="m">2</span>       <span class="p">|</span> <span class="c">&quot; Division</span>
+echo  <span class="m">1</span> % <span class="m">2</span>       <span class="p">|</span> <span class="c">&quot; Modulo (remainder)</span>
+
+<span class="c">&quot; Booleans (|Boolean|)</span>
+<span class="c">&quot; ########</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; The number 0 is false, every other number is true. Strings are implicitly</span>
+<span class="c">&quot; converted to numbers (see below). There are two pre-defined semantic</span>
+<span class="c">&quot; constants.</span>
+
+echo  <span class="k">v</span>:true      <span class="p">|</span> <span class="c">&quot; Evaluates to 1 or the string &#39;v:true&#39;</span>
+echo  <span class="k">v</span>:false     <span class="p">|</span> <span class="c">&quot; Evaluates to 0 or the string &#39;v:false&#39;</span>
+
+<span class="c">&quot; Boolean values can result from comparison of two objects.</span>
+
+echo  <span class="k">x</span> <span class="p">==</span> <span class="k">y</span>             <span class="p">|</span> <span class="c">&quot; Equality by value</span>
+echo  <span class="k">x</span> <span class="p">!=</span> <span class="k">y</span>             <span class="p">|</span> <span class="c">&quot; Inequality</span>
+echo  <span class="k">x</span> <span class="p">&gt;</span>  <span class="k">y</span>             <span class="p">|</span> <span class="c">&quot; Greater than</span>
+echo  <span class="k">x</span> <span class="p">&gt;=</span> <span class="k">y</span>             <span class="p">|</span> <span class="c">&quot; Greater than or equal</span>
+echo  <span class="k">x</span> <span class="p">&lt;</span>  <span class="k">y</span>             <span class="p">|</span> <span class="c">&quot; Smaller than</span>
+echo  <span class="k">x</span> <span class="p">&lt;=</span> <span class="k">y</span>             <span class="p">|</span> <span class="c">&quot; Smaller than or equal</span>
+echo  <span class="k">x</span> <span class="k">is</span> <span class="k">y</span>             <span class="p">|</span> <span class="c">&quot; Instance identity (lists and dictionaries)</span>
+echo  <span class="k">x</span> isnot <span class="k">y</span>          <span class="p">|</span> <span class="c">&quot; Instance non-identity (lists and dictionaries)</span>
+
+<span class="c">&quot; Strings are compared based on their alphanumerical ordering</span>
+<span class="c">&quot; echo &#39;a&#39; &lt; &#39;b&#39;. Case sensitivity depends on the setting of &#39;ignorecase&#39;</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; Explicit case-sensitivity is specified by appending &#39;#&#39; (match case) or &#39;?&#39;</span>
+<span class="c">&quot; (ignore case) to the operator. Prefer explicitly case sensitivity when writing</span>
+<span class="c">&quot; portable scripts.</span>
+
+echo  <span class="s1">&#39;a&#39;</span> <span class="p">&lt;</span>  <span class="s1">&#39;B&#39;</span>         <span class="p">|</span> <span class="c">&quot; True or false depending on &#39;ignorecase&#39;</span>
+echo  <span class="s1">&#39;a&#39;</span> <span class="p">&lt;</span>? <span class="s1">&#39;B&#39;</span>         <span class="p">|</span> <span class="c">&quot; True</span>
+echo  <span class="s1">&#39;a&#39;</span> <span class="p">&lt;</span># <span class="s1">&#39;B&#39;</span>         <span class="p">|</span> <span class="c">&quot; False</span>
+
+<span class="c">&quot; Regular expression matching</span>
+echo  <span class="s2">&quot;hi&quot;</span> <span class="p">=~</span>  <span class="s2">&quot;hello&quot;</span>    <span class="p">|</span> <span class="c">&quot; Regular expression match, uses &#39;ignorecase&#39;</span>
+echo  <span class="s2">&quot;hi&quot;</span> <span class="p">=~</span># <span class="s2">&quot;hello&quot;</span>    <span class="p">|</span> <span class="c">&quot; Regular expression match, case sensitive</span>
+echo  <span class="s2">&quot;hi&quot;</span> <span class="p">=~</span>? <span class="s2">&quot;hello&quot;</span>    <span class="p">|</span> <span class="c">&quot; Regular expression match, case insensitive</span>
+echo  <span class="s2">&quot;hi&quot;</span> <span class="p">!~</span>  <span class="s2">&quot;hello&quot;</span>    <span class="p">|</span> <span class="c">&quot; Regular expression unmatch, use &#39;ignorecase&#39;</span>
+echo  <span class="s2">&quot;hi&quot;</span> <span class="p">!~</span># <span class="s2">&quot;hello&quot;</span>    <span class="p">|</span> <span class="c">&quot; Regular expression unmatch, case sensitive</span>
+echo  <span class="s2">&quot;hi&quot;</span> <span class="p">!~</span>? <span class="s2">&quot;hello&quot;</span>    <span class="p">|</span> <span class="c">&quot; Regular expression unmatch, case insensitive</span>
+
+<span class="c">&quot; Boolean operations are possible.</span>
+
+echo  <span class="k">v</span>:true &amp;&amp; <span class="k">v</span>:false       <span class="p">|</span> <span class="c">&quot; Logical AND</span>
+echo  <span class="k">v</span>:true <span class="p">||</span> <span class="k">v</span>:false       <span class="p">|</span> <span class="c">&quot; Logical OR</span>
+echo  <span class="p">!</span> <span class="k">v</span>:true                <span class="p">|</span> <span class="c">&quot; Logical NOT</span>
+echo  <span class="k">v</span>:true ? <span class="s1">&#39;yes&#39;</span> : <span class="s1">&#39;no&#39;</span>   <span class="p">|</span> <span class="c">&quot; Ternary operator</span>
+
+
+<span class="c">&quot; Strings (|String|)</span>
+<span class="c">&quot; #######</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; An ordered zero-indexed sequence of bytes. The encoding of text into bytes</span>
+<span class="c">&quot; depends on the option |&#39;encoding&#39;|.</span>
+
+<span class="c">&quot; Literal constructors</span>
+echo  <span class="s2">&quot;Hello world\n&quot;</span>   <span class="p">|</span> <span class="c">&quot; The last two characters stand for newline</span>
+echo  <span class="s1">&#39;Hello world\n&#39;</span>   <span class="p">|</span> <span class="c">&quot; The last two characters are literal</span>
+echo  <span class="s1">&#39;Let&#39;&#39;s go!&#39;</span>      <span class="p">|</span> <span class="c">&quot; Two single quotes become one quote character</span>
+
+<span class="c">&quot; Single-quote strings take all characters are literal, except two single</span>
+<span class="c">&quot; quotes, which are taken to be a single quote in the string itself. See </span>
+<span class="c">&quot; |expr-quote| for all possible escape sequences.</span>
+
+<span class="c">&quot; String concatenation</span>
+<span class="c">&quot; The .. operator is preferred, but only supported in since Vim 8.1.1114</span>
+echo  <span class="s1">&#39;Hello &#39;</span> .  <span class="s1">&#39;world&#39;</span>  <span class="p">|</span> <span class="c">&quot; String concatenation</span>
+echo  <span class="s1">&#39;Hello &#39;</span> .. <span class="s1">&#39;world&#39;</span>  <span class="p">|</span> <span class="c">&quot; String concatenation (new variant)</span>
+
+<span class="c">&quot; String indexing</span>
+echo  <span class="s1">&#39;Hello&#39;</span>[<span class="m">0</span>]           <span class="p">|</span> <span class="c">&quot; First byte</span>
+echo  <span class="s1">&#39;Hello&#39;</span>[<span class="m">1</span>]           <span class="p">|</span> <span class="c">&quot; Second byte</span>
+echo  <span class="s1">&#39;Hellö&#39;</span>[<span class="m">4</span>]           <span class="p">|</span> <span class="c">&quot; Returns a byte, not the character &#39;ö&#39;</span>
+
+<span class="c">&quot; Substrings (second index is inclusive)</span>
+echo  <span class="s1">&#39;Hello&#39;</span>[:]           <span class="p">|</span> <span class="c">&quot; Copy of entire string</span>
+echo  <span class="s1">&#39;Hello&#39;</span>[<span class="m">1</span>:<span class="m">3</span>]         <span class="p">|</span> <span class="c">&quot; Substring, second to fourth byte</span>
+echo  <span class="s1">&#39;Hello&#39;</span>[<span class="m">1</span>:<span class="m">-2</span>]        <span class="p">|</span> <span class="c">&quot; Substring until second to last byte</span>
+echo  <span class="s1">&#39;Hello&#39;</span>[<span class="m">1</span>:]          <span class="p">|</span> <span class="c">&quot; Substring with starting index</span>
+echo  <span class="s1">&#39;Hello&#39;</span>[:<span class="m">2</span>]          <span class="p">|</span> <span class="c">&quot; Substring with ending index</span>
+echo  <span class="s1">&#39;Hello&#39;</span>[<span class="m">-2</span>:]         <span class="p">|</span> <span class="c">&quot; Substring relative to end of string</span>
+
+<span class="c">&quot; A negative index is relative to the end of the string. See</span>
+<span class="c">&quot; |string-functions| for all string-related functions.</span>
+
+<span class="c">&quot; Lists (|List|)</span>
+<span class="c">&quot; #####</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; An ordered zero-indexed heterogeneous sequence of arbitrary Vim script</span>
+<span class="c">&quot; objects.</span>
+
+<span class="c">&quot; Literal constructor</span>
+echo  []                   <span class="p">|</span> <span class="c">&quot; Empty list</span>
+echo  [<span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="s1">&#39;Hello&#39;</span>]      <span class="p">|</span> <span class="c">&quot; List with elements</span>
+echo  [<span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="s1">&#39;Hello&#39;</span><span class="p">,</span> ]    <span class="p">|</span> <span class="c">&quot; Trailing comma permitted</span>
+echo  [[<span class="m">1</span><span class="p">,</span> <span class="m">2</span>]<span class="p">,</span> <span class="s1">&#39;Hello&#39;</span>]    <span class="p">|</span> <span class="c">&quot; Lists can be nested arbitrarily</span>
+
+<span class="c">&quot; List concatenation</span>
+echo  [<span class="m">1</span><span class="p">,</span> <span class="m">2</span>] <span class="p">+</span> [<span class="m">3</span><span class="p">,</span> <span class="m">4</span>]      <span class="p">|</span> <span class="c">&quot; Creates a new list</span>
+
+<span class="c">&quot; List indexing, negative is relative to end of list (|list-index|)</span>
+echo  [<span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span>][<span class="m">2</span>]      <span class="p">|</span> <span class="c">&quot; Third element</span>
+echo  [<span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span>][<span class="m">-1</span>]     <span class="p">|</span> <span class="c">&quot; Last element</span>
+
+<span class="c">&quot; List slicing (|sublist|)</span>
+echo  [<span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span>][:]      <span class="p">|</span> <span class="c">&quot; Shallow copy of entire list</span>
+echo  [<span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span>][:<span class="m">2</span>]     <span class="p">|</span> <span class="c">&quot; Sublist until third item (inclusive)</span>
+echo  [<span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span>][<span class="m">2</span>:]     <span class="p">|</span> <span class="c">&quot; Sublist from third item (inclusive)</span>
+echo  [<span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">4</span>][:<span class="m">-2</span>]    <span class="p">|</span> <span class="c">&quot; Sublist until second-to-last item (inclusive)</span>
+
+<span class="c">&quot; All slicing operations create new lists. To modify a list in-place use list</span>
+<span class="c">&quot; functions (|list-functions|) or assign directly to an item (see below about</span>
+<span class="c">&quot; variables).</span>
+
+
+<span class="c">&quot; Dictionaries (|Dictionary|)</span>
+<span class="c">&quot; ############</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; An unordered sequence of key-value pairs, keys are always strings (numbers</span>
+<span class="c">&quot; are implicitly converted to strings).</span>
+
+<span class="c">&quot; Dictionary literal</span>
+echo  {}                       <span class="p">|</span> <span class="c">&quot; Empty dictionary</span>
+echo  {<span class="s1">&#39;a&#39;</span>: <span class="m">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span>: <span class="m">2</span>}         <span class="p">|</span> <span class="c">&quot; Dictionary literal</span>
+echo  {<span class="s1">&#39;a&#39;</span>: <span class="m">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span>: <span class="m">2</span><span class="p">,</span> }       <span class="p">|</span> <span class="c">&quot; Trailing comma permitted</span>
+echo  {<span class="s1">&#39;x&#39;</span>: {<span class="s1">&#39;a&#39;</span>: <span class="m">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span>: <span class="m">2</span>}}  <span class="p">|</span> <span class="c">&quot; Nested dictionary</span>
+
+<span class="c">&quot; Indexing a dictionary</span>
+echo  {<span class="s1">&#39;a&#39;</span>: <span class="m">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span>: <span class="m">2</span>}[<span class="s1">&#39;a&#39;</span>]    <span class="p">|</span> <span class="c">&quot; Literal index</span>
+echo  {<span class="s1">&#39;a&#39;</span>: <span class="m">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span>: <span class="m">2</span>}.<span class="k">a</span>       <span class="p">|</span> <span class="c">&quot; Syntactic sugar for simple keys</span>
+
+<span class="c">&quot; See |dict-functions| for dictionary manipulation functions.</span>
+
+
+<span class="c">&quot; Funcref (|Funcref|)</span>
+<span class="c">&quot; #######</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; Reference to a function, uses the function name as a string for construction.</span>
+<span class="c">&quot; When stored in a variable the name of the variable has the same restrictions</span>
+<span class="c">&quot; as a function name (see below).</span>
+
+echo  <span class="k">function</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span>                   <span class="p">|</span> <span class="c">&quot; Reference to function type()</span>
+<span class="c">&quot; Note that `funcref(&#39;type&#39;)` will throw an error because the argument must be</span>
+<span class="c">&quot; a user-defined function; see further below for defining your own functions.</span>
+echo  funcref<span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span>                    <span class="p">|</span> <span class="c">&quot; Reference by identity, not name</span>
+<span class="c">&quot; A lambda (|lambda|) is an anonymous function; it can only contain one</span>
+<span class="c">&quot; expression in its body, which is also its implicit return value.</span>
+echo  {<span class="k">x</span> <span class="p">-&gt;</span> <span class="k">x</span> * <span class="k">x</span>}                       <span class="p">|</span> <span class="c">&quot; Anonymous function</span>
+echo  <span class="k">function</span><span class="p">(</span><span class="s1">&#39;substitute&#39;</span><span class="p">,</span> [<span class="s1">&#39;hello&#39;</span>]<span class="p">)</span>  <span class="p">|</span> <span class="c">&quot; Partial function</span>
+
+
+<span class="c">&quot; Regular expression (|regular-expression|)</span>
+<span class="c">&quot; ##################</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; A regular expression pattern is generally a string, but in some cases you can</span>
+<span class="c">&quot; also use a regular expression between a pair of delimiters (usually `/`, but</span>
+<span class="c">&quot; you can choose anything).</span>
+
+<span class="c">&quot; Substitute &#39;hello&#39; for &#39;Hello&#39;</span>
+substitute<span class="sr">/hello/</span>Hello/
+
+
+<span class="c">&quot; ###########################</span>
+<span class="c">&quot;  Implicit type conversions</span>
+<span class="c">&quot; ###########################</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; Strings are converted to numbers, and numbers to strings when necessary. A</span>
+<span class="c">&quot; number becomes its decimal notation as a string. A string becomes its</span>
+<span class="c">&quot; numerical value if it can be parsed to a number, otherwise it becomes zero.</span>
+
+echo  <span class="s2">&quot;1&quot;</span> <span class="p">+</span> <span class="m">1</span>         <span class="p">|</span> <span class="c">&quot; Number</span>
+echo  <span class="s2">&quot;1&quot;</span> .. <span class="m">1</span>        <span class="p">|</span> <span class="c">&quot; String</span>
+echo  <span class="s2">&quot;0xA&quot;</span> <span class="p">+</span> <span class="m">1</span>       <span class="p">|</span> <span class="c">&quot; Number</span>
+
+<span class="c">&quot; Strings are treated like numbers when used as booleans</span>
+echo <span class="s2">&quot;true&quot;</span> ? <span class="m">1</span> : <span class="m">0</span>   <span class="p">|</span> <span class="c">&quot; This string is parsed to 0, which is false</span>
+
+<span class="c">&quot; ###########</span>
+<span class="c">&quot;  Variables</span>
+<span class="c">&quot; ###########</span>
+<span class="c">&quot; </span>
+<span class="c">&quot; Variables are bound within a scope; if no scope is provided a default is</span>
+<span class="c">&quot; chosen by Vim. Use `:let` and `:const` to bind a value and `:unlet` to unbind</span>
+<span class="c">&quot; it.</span>
+
+<span class="k">let</span> <span class="k">b</span>:my_var <span class="p">=</span> <span class="m">1</span>        <span class="p">|</span> <span class="c">&quot; Local to current buffer</span>
+<span class="k">let</span> <span class="k">w</span>:my_var <span class="p">=</span> <span class="m">1</span>        <span class="p">|</span> <span class="c">&quot; Local to current window</span>
+<span class="k">let</span> <span class="k">t</span>:my_var <span class="p">=</span> <span class="m">1</span>        <span class="p">|</span> <span class="c">&quot; Local to current tab page</span>
+<span class="k">let</span> <span class="k">g</span>:my_var <span class="p">=</span> <span class="m">1</span>        <span class="p">|</span> <span class="c">&quot; Global variable</span>
+<span class="k">let</span> <span class="k">l</span>:my_var <span class="p">=</span> <span class="m">1</span>        <span class="p">|</span> <span class="c">&quot; Local to current function (see functions below)</span>
+<span class="k">let</span> s:my_var <span class="p">=</span> <span class="m">1</span>        <span class="p">|</span> <span class="c">&quot; Local to current script file</span>
+<span class="k">let</span> <span class="k">a</span>:my_arg <span class="p">=</span> <span class="m">1</span>        <span class="p">|</span> <span class="c">&quot; Function argument (see functions below)</span>
+
+<span class="c">&quot; The Vim scope is read-only</span>
+echo  <span class="k">v</span>:true            <span class="p">|</span> <span class="c">&quot; Special built-in Vim variables (|v:var|)</span>
+
+<span class="c">&quot; Access special Vim memory like variables</span>
+<span class="k">let</span> @<span class="k">a</span> <span class="p">=</span> <span class="s1">&#39;Hello&#39;</span>        <span class="p">|</span> <span class="c">&quot; Register</span>
+<span class="k">let</span> $PATH<span class="p">=</span><span class="s1">&#39;&#39;</span>            <span class="p">|</span> <span class="c">&quot; Environment variable</span>
+<span class="k">let</span> &amp;<span class="nb">textwidth</span> <span class="p">=</span> <span class="m">79</span>     <span class="p">|</span> <span class="c">&quot; Option</span>
+<span class="k">let</span> &amp;<span class="k">l</span>:<span class="nb">textwidth</span> <span class="p">=</span> <span class="m">79</span>   <span class="p">|</span> <span class="c">&quot; Local option</span>
+<span class="k">let</span> &amp;<span class="k">g</span>:<span class="nb">textwidth</span> <span class="p">=</span> <span class="m">79</span>   <span class="p">|</span> <span class="c">&quot; Global option</span>
+
+<span class="c">&quot; Access scopes as dictionaries (can be modified like all dictionaries)</span>
+<span class="c">&quot; See the |dict-functions|, especially |get()|, for access and manipulation</span>
+echo  <span class="k">b</span>:                <span class="p">|</span> <span class="c">&quot; All buffer variables</span>
+echo  <span class="k">w</span>:                <span class="p">|</span> <span class="c">&quot; All window variables</span>
+echo  <span class="k">t</span>:                <span class="p">|</span> <span class="c">&quot; All tab page variables</span>
+echo  <span class="k">g</span>:                <span class="p">|</span> <span class="c">&quot; All global variables</span>
+echo  <span class="k">l</span>:                <span class="p">|</span> <span class="c">&quot; All local variables</span>
+echo  s:                <span class="p">|</span> <span class="c">&quot; All script variables</span>
+echo  <span class="k">a</span>:                <span class="p">|</span> <span class="c">&quot; All function arguments</span>
+echo  <span class="k">v</span>:                <span class="p">|</span> <span class="c">&quot; All Vim variables</span>
+
+<span class="c">&quot; Constant variables</span>
+const <span class="k">x</span> <span class="p">=</span> <span class="m">10</span>            <span class="p">|</span> <span class="c">&quot; See |:const|, |:lockvar|</span>
+
+<span class="c">&quot; Function reference variables have the same restrictions as function names</span>
+<span class="k">let</span> IsString <span class="p">=</span> {<span class="k">x</span> <span class="p">-&gt;</span> type<span class="p">(</span><span class="k">x</span><span class="p">)</span> <span class="p">==</span> type<span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>}    <span class="p">|</span> <span class="c">&quot; Global: capital letter</span>
+<span class="k">let</span> s:isNumber <span class="p">=</span> {<span class="k">x</span> <span class="p">-&gt;</span> type<span class="p">(</span><span class="k">x</span><span class="p">)</span> <span class="p">==</span> type<span class="p">(</span><span class="m">0</span><span class="p">)</span>}   <span class="p">|</span> <span class="c">&quot; Local: any name allowed</span>
+
+<span class="c">&quot; When omitted the scope `g:` is implied, except in functions, there `l:` is</span>
+<span class="c">&quot; implied.</span>
+
+
+<span class="c">&quot; Multiple value binding (list unpacking)</span>
+<span class="c">&quot; #######################################</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; Assign values of list to multiple variables (number of items must match)</span>
+<span class="k">let</span> [<span class="k">x</span><span class="p">,</span> <span class="k">y</span>] <span class="p">=</span> [<span class="m">1</span><span class="p">,</span> <span class="m">2</span>]
+
+<span class="c">&quot; Assign the remainder to a rest variable (note the semicolon)</span>
+<span class="k">let</span> [mother<span class="p">,</span> father; children] <span class="p">=</span> [<span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;Carol&#39;</span><span class="p">,</span> <span class="s1">&#39;Dennis&#39;</span><span class="p">,</span> <span class="s1">&#39;Emily&#39;</span>]
+
+
+<span class="c">&quot; ##############</span>
+<span class="c">&quot;  Flow control</span>
+<span class="c">&quot; ##############</span>
+
+<span class="c">&quot; Conditional (|:if|, |:elseif|, |:else|, |:endif|)</span>
+<span class="c">&quot; ###########</span>
+<span class="c">&quot; </span>
+<span class="c">&quot; Conditions are set between `if` and `endif`. They can be nested.</span>
+
+<span class="k">let</span> condition <span class="p">=</span> <span class="k">v</span>:true
 
 <span class="k">if</span> condition
-    echo <span class="s1">'First condition'</span>
+    echo <span class="s1">&#39;First condition&#39;</span>
 <span class="k">elseif</span> another_condition
-    echo <span class="s1">'Second condition'</span>
+    echo <span class="s1">&#39;Second condition&#39;</span>
 <span class="k">else</span>
-    echo <span class="s1">'Fail'</span>
+    echo <span class="s1">&#39;Fail&#39;</span>
 <span class="k">endif</span>
 
-<span class="c">" Loops (|:for|, |:endfor|, |:while|, |:endwhile|, |:break|, |:continue|)</span>
-<span class="c">" #####</span>
-<span class="c">"</span>
-<span class="c">" Two types of loops: `:for` and `:while`. Use `:continue` to skip to the next</span>
-<span class="c">" iteration, `:break` to break out of the loop.</span>
+<span class="c">&quot; Loops (|:for|, |:endfor|, |:while|, |:endwhile|, |:break|, |:continue|)</span>
+<span class="c">&quot; #####</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; Two types of loops: `:for` and `:while`. Use `:continue` to skip to the next</span>
+<span class="c">&quot; iteration, `:break` to break out of the loop.</span>
 
-<span class="c">" For-loop (|:for|, |:endfor|)</span>
-<span class="c">" ========</span>
-<span class="c">"</span>
-<span class="c">" For-loops iterate over lists and nothing else. If you want to iterate over</span>
-<span class="c">" another sequence you need to use a function which will create a list.</span>
+<span class="c">&quot; For-loop (|:for|, |:endfor|)</span>
+<span class="c">&quot; ========</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; For-loops iterate over lists and nothing else. If you want to iterate over</span>
+<span class="c">&quot; another sequence you need to use a function which will create a list.</span>
 
-<span class="c">" Iterate over a list</span>
-<span class="k">for</span> person <span class="k">in</span> <span class="p">[</span><span class="s1">'Alice'</span><span class="p">,</span> <span class="s1">'Bob'</span><span class="p">,</span> <span class="s1">'Carol'</span><span class="p">,</span> <span class="s1">'Dennis'</span><span class="p">,</span> <span class="s1">'Emily'</span><span class="p">]</span>
-    echo <span class="s1">'Hello '</span> <span class="p">..</span> person
+<span class="c">&quot; Iterate over a list</span>
+<span class="k">for</span> person <span class="k">in</span> [<span class="s1">&#39;Alice&#39;</span><span class="p">,</span> <span class="s1">&#39;Bob&#39;</span><span class="p">,</span> <span class="s1">&#39;Carol&#39;</span><span class="p">,</span> <span class="s1">&#39;Dennis&#39;</span><span class="p">,</span> <span class="s1">&#39;Emily&#39;</span>]
+    echo <span class="s1">&#39;Hello &#39;</span> .. person
 <span class="k">endfor</span>
 
-<span class="c">" Iterate over a nested list by unpacking it</span>
-<span class="k">for</span> <span class="p">[</span><span class="k">x</span><span class="p">,</span> <span class="k">y</span><span class="p">]</span> <span class="k">in</span> <span class="p">[[</span><span class="m">1</span><span class="p">,</span> <span class="m">0</span><span class="p">],</span> <span class="p">[</span><span class="m">0</span><span class="p">,</span> <span class="m">1</span><span class="p">],</span> <span class="p">[</span><span class="m">-1</span><span class="p">,</span> <span class="m">0</span><span class="p">],</span> <span class="p">[</span><span class="m">0</span><span class="p">,</span> <span class="m">-1</span><span class="p">]]</span>
-    echo <span class="s1">'Position: x ='</span>  <span class="p">..</span> <span class="k">x</span> <span class="p">..</span> <span class="s1">', y = '</span> <span class="p">..</span> <span class="k">y</span>
+<span class="c">&quot; Iterate over a nested list by unpacking it</span>
+<span class="k">for</span> [<span class="k">x</span><span class="p">,</span> <span class="k">y</span>] <span class="k">in</span> [[<span class="m">1</span><span class="p">,</span> <span class="m">0</span>]<span class="p">,</span> [<span class="m">0</span><span class="p">,</span> <span class="m">1</span>]<span class="p">,</span> [<span class="m">-1</span><span class="p">,</span> <span class="m">0</span>]<span class="p">,</span> [<span class="m">0</span><span class="p">,</span> <span class="m">-1</span>]]
+    echo <span class="s1">&#39;Position: x =&#39;</span>  .. <span class="k">x</span> .. <span class="s1">&#39;, y = &#39;</span> .. <span class="k">y</span>
 <span class="k">endfor</span>
 
-<span class="c">" Iterate over a range of numbers</span>
-<span class="k">for</span> <span class="k">i</span> <span class="k">in</span> <span class="nb">range</span><span class="p">(</span><span class="m">10</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">-1</span><span class="p">)</span>  " Count down from <span class="m">10</span>
-    echo <span class="s1">'T minus'</span>  <span class="p">..</span> <span class="k">i</span>
+<span class="c">&quot; Iterate over a range of numbers</span>
+<span class="k">for</span> <span class="k">i</span> <span class="k">in</span> range<span class="p">(</span><span class="m">10</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">-1</span><span class="p">)</span>  <span class="c">&quot; Count down from 10</span>
+    echo <span class="s1">&#39;T minus&#39;</span>  .. <span class="k">i</span>
 <span class="k">endfor</span>
 
-<span class="c">" Iterate over the keys of a dictionary</span>
-<span class="k">for</span> symbol <span class="k">in</span> <span class="nb">keys</span><span class="p">({</span><span class="s1">'π'</span><span class="p">:</span> <span class="m">3</span><span class="p">.</span><span class="m">14</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">:</span> <span class="m">2</span><span class="p">.</span><span class="m">71</span><span class="p">})</span>
-    echo <span class="s1">'The constant '</span> <span class="p">..</span> symbol <span class="p">..</span> <span class="s1">' is a transcendent number'</span>
+<span class="c">&quot; Iterate over the keys of a dictionary</span>
+<span class="k">for</span> symbol <span class="k">in</span> keys<span class="p">(</span>{<span class="s1">&#39;π&#39;</span>: <span class="m">3</span>.<span class="m">14</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span>: <span class="m">2</span>.<span class="m">71</span>}<span class="p">)</span>
+    echo <span class="s1">&#39;The constant &#39;</span> .. symbol .. <span class="s1">&#39; is a transcendent number&#39;</span>
 <span class="k">endfor</span>
 
-<span class="c">" Iterate over the values of a dictionary</span>
-<span class="k">for</span> value <span class="k">in</span> <span class="nb">values</span><span class="p">({</span><span class="s1">'π'</span><span class="p">:</span> <span class="m">3</span><span class="p">.</span><span class="m">14</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">:</span> <span class="m">2</span><span class="p">.</span><span class="m">71</span><span class="p">})</span>
-    echo <span class="s1">'The value '</span> <span class="p">..</span> value <span class="p">..</span> <span class="s1">' approximates a transcendent number'</span>
+<span class="c">&quot; Iterate over the values of a dictionary</span>
+<span class="k">for</span> value <span class="k">in</span> values<span class="p">(</span>{<span class="s1">&#39;π&#39;</span>: <span class="m">3</span>.<span class="m">14</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span>: <span class="m">2</span>.<span class="m">71</span>}<span class="p">)</span>
+    echo <span class="s1">&#39;The value &#39;</span> .. value .. <span class="s1">&#39; approximates a transcendent number&#39;</span>
 <span class="k">endfor</span>
 
-<span class="c">" Iterate over the keys and values of a dictionary</span>
-<span class="k">for</span> <span class="p">[</span>symbol<span class="p">,</span> value<span class="p">]</span> <span class="k">in</span> <span class="nb">items</span><span class="p">({</span><span class="s1">'π'</span><span class="p">:</span> <span class="m">3</span><span class="p">.</span><span class="m">14</span><span class="p">,</span> <span class="s1">'e'</span><span class="p">:</span> <span class="m">2</span><span class="p">.</span><span class="m">71</span><span class="p">})</span>
-    echo <span class="s1">'The number '</span> <span class="p">..</span> symbol <span class="p">..</span> <span class="s1">' is approximately '</span> <span class="p">..</span> value
+<span class="c">&quot; Iterate over the keys and values of a dictionary</span>
+<span class="k">for</span> [symbol<span class="p">,</span> value] <span class="k">in</span> items<span class="p">(</span>{<span class="s1">&#39;π&#39;</span>: <span class="m">3</span>.<span class="m">14</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span>: <span class="m">2</span>.<span class="m">71</span>}<span class="p">)</span>
+    echo <span class="s1">&#39;The number &#39;</span> .. symbol .. <span class="s1">&#39; is approximately &#39;</span> .. value
 <span class="k">endfor</span>
 
-<span class="c">" While-loops (|:while|, |:endwhile|)</span>
+<span class="c">&quot; While-loops (|:while|, |:endwhile|)</span>
 
-<span class="k">let</span> there_yet <span class="p">=</span> <span class="k">v</span><span class="p">:</span>true
+<span class="k">let</span> there_yet <span class="p">=</span> <span class="k">v</span>:true
 <span class="k">while</span> <span class="p">!</span>there_yet
-    echo <span class="s1">'Are we there yet?'</span>
+    echo <span class="s1">&#39;Are we there yet?&#39;</span>
 <span class="k">endwhile</span>
 
 
-<span class="c">" Exception handling (|exception-handling|)</span>
-<span class="c">" ##################</span>
-<span class="c">"</span>
-<span class="c">" Throw new exceptions as strings, catch them by pattern-matching a regular</span>
-<span class="c">" expression against the string</span>
+<span class="c">&quot; Exception handling (|exception-handling|)</span>
+<span class="c">&quot; ##################</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; Throw new exceptions as strings, catch them by pattern-matching a regular</span>
+<span class="c">&quot; expression against the string</span>
 
-<span class="c">" Throw new exception</span>
-<span class="k">throw</span> <span class="s2">"Wrong arguments"</span>
+<span class="c">&quot; Throw new exception</span>
+<span class="k">throw</span> <span class="s2">&quot;Wrong arguments&quot;</span>
 
-<span class="c">" Guard against an exception (the second catch matches any exception)</span>
+<span class="c">&quot; Guard against an exception (the second catch matches any exception)</span>
 <span class="k">try</span>
-    <span class="k">source</span> <span class="nb">path</span><span class="sr">/to/</span><span class="k">file</span>
+    source <span class="nb">path</span><span class="sr">/to/</span><span class="k">file</span>
 <span class="k">catch</span> <span class="sr">/Cannot open/</span>
-    echo <span class="s1">'Looks like that file does not exist'</span>
+    echo <span class="s1">&#39;Looks like that file does not exist&#39;</span>
 <span class="k">catch</span> <span class="sr">/.*/</span>
-    echo <span class="s1">'Something went wrong, but I do not know what'</span>
+    echo <span class="s1">&#39;Something went wrong, but I do not know what&#39;</span>
 <span class="k">finally</span>
-    echo <span class="s1">'I am done trying'</span>
+    echo <span class="s1">&#39;I am done trying&#39;</span>
 <span class="k">endtry</span>
 
 
-<span class="c">" ##########</span>
-<span class="c">"  Functions</span>
-<span class="c">" ##########</span>
+<span class="c">&quot; ##########</span>
+<span class="c">&quot;  Functions</span>
+<span class="c">&quot; ##########</span>
 
-<span class="c">" Defining functions (|:function|, |:endfunction|)</span>
-<span class="c">" ##################</span>
+<span class="c">&quot; Defining functions (|:function|, |:endfunction|)</span>
+<span class="c">&quot; ##################</span>
 
-<span class="c">" Unscoped function names have to start with a capital letter</span>
+<span class="c">&quot; Unscoped function names have to start with a capital letter</span>
 <span class="k">function</span><span class="p">!</span> AddNumbersLoudly<span class="p">(</span><span class="k">x</span><span class="p">,</span> <span class="k">y</span><span class="p">)</span>
-    <span class="c">" Use a: scope to access arguments</span>
-    echo <span class="s1">'Adding'</span>  <span class="p">..</span> <span class="nv">a:x</span> <span class="p">..</span>  <span class="s1">'and'</span>  <span class="p">..</span> <span class="nv">a:y</span>   <span class="p">|</span> " A side effect
-    <span class="k">return</span> <span class="nv">a:x</span> <span class="p">+</span> <span class="nv">a:y</span>                          <span class="p">|</span> " A <span class="k">return</span> value
+<span class="c">    &quot; Use a: scope to access arguments</span>
+    echo <span class="s1">&#39;Adding&#39;</span>  .. <span class="k">a</span>:<span class="k">x</span> ..  <span class="s1">&#39;and&#39;</span>  .. <span class="k">a</span>:<span class="k">y</span>   <span class="p">|</span> <span class="c">&quot; A side effect</span>
+    <span class="k">return</span> <span class="k">a</span>:<span class="k">x</span> <span class="p">+</span> <span class="k">a</span>:<span class="k">y</span>                          <span class="p">|</span> <span class="c">&quot; A return value</span>
 <span class="k">endfunction</span>
 
-<span class="c">" Scoped function names may start with a lower-case letter</span>
-<span class="k">function</span><span class="p">!</span> <span class="nv">s:addNumbersLoudly</span><span class="p">(</span><span class="k">x</span><span class="p">,</span> <span class="k">y</span><span class="p">)</span>
-    echo <span class="s1">'Adding'</span>  <span class="p">..</span> <span class="nv">a:x</span> <span class="p">..</span>  <span class="s1">'and'</span>  <span class="p">..</span> <span class="nv">a:y</span>
-    <span class="k">return</span> <span class="nv">a:x</span> <span class="p">+</span> <span class="nv">a:y</span>
+<span class="c">&quot; Scoped function names may start with a lower-case letter</span>
+<span class="k">function</span><span class="p">!</span> s:addNumbersLoudly<span class="p">(</span><span class="k">x</span><span class="p">,</span> <span class="k">y</span><span class="p">)</span>
+    echo <span class="s1">&#39;Adding&#39;</span>  .. <span class="k">a</span>:<span class="k">x</span> ..  <span class="s1">&#39;and&#39;</span>  .. <span class="k">a</span>:<span class="k">y</span>
+    <span class="k">return</span> <span class="k">a</span>:<span class="k">x</span> <span class="p">+</span> <span class="k">a</span>:<span class="k">y</span>
 <span class="k">endfunction</span>
 
-<span class="c">" Without the exclamation mark it would be an error to re-define a function,</span>
-<span class="c">" with the exclamation mark the new definition can replace the old one. Since</span>
-<span class="c">" Vim script files can be reloaded several times over the course of a session</span>
-<span class="c">" it is best to use the exclamation mark unless you really know what you are</span>
-<span class="c">" doing.</span>
+<span class="c">&quot; Without the exclamation mark it would be an error to re-define a function,</span>
+<span class="c">&quot; with the exclamation mark the new definition can replace the old one. Since</span>
+<span class="c">&quot; Vim script files can be reloaded several times over the course of a session</span>
+<span class="c">&quot; it is best to use the exclamation mark unless you really know what you are</span>
+<span class="c">&quot; doing.</span>
 
-<span class="c">" Function definitions can have special qualifiers following the argument list.</span>
+<span class="c">&quot; Function definitions can have special qualifiers following the argument list.</span>
 
-<span class="c">" Range functions define two implicit arguments, which will be set to the range</span>
-<span class="c">" of the ex-command</span>
-<span class="k">function</span><span class="p">!</span> FirstAndLastLine<span class="p">()</span> <span class="nb">range</span>
-    echo <span class="p">[</span><span class="nv">a:firstline</span><span class="p">,</span> <span class="nv">a:lastline</span><span class="p">]</span>
+<span class="c">&quot; Range functions define two implicit arguments, which will be set to the range</span>
+<span class="c">&quot; of the ex-command</span>
+<span class="k">function</span><span class="p">!</span> FirstAndLastLine<span class="p">()</span> range
+    echo [<span class="k">a</span>:firstline<span class="p">,</span> <span class="k">a</span>:lastline]
 <span class="k">endfunction</span>
 
-<span class="c">" Prints the first and last line that match a pattern (|cmdline-ranges|)</span>
+<span class="c">&quot; Prints the first and last line that match a pattern (|cmdline-ranges|)</span>
 <span class="sr">/^#!/</span><span class="p">,</span><span class="sr">/!#$/</span><span class="k">call</span> FirstAndLastLine<span class="p">()</span>
 
-<span class="c">" Aborting functions, abort once error occurs (|:func-abort|)</span>
+<span class="c">&quot; Aborting functions, abort once error occurs (|:func-abort|)</span>
 <span class="k">function</span><span class="p">!</span> SourceMyFile<span class="p">()</span> abort
-    <span class="k">source</span> my<span class="p">-</span><span class="k">file</span><span class="p">.</span><span class="k">vim</span>        <span class="p">|</span> " Try sourcing non<span class="p">-</span>existing <span class="k">file</span>
-    echo <span class="s1">'This will never be printed'</span>
+    source my<span class="p">-</span><span class="k">file</span>.<span class="k">vim</span>        <span class="p">|</span> <span class="c">&quot; Try sourcing non-existing file</span>
+    echo <span class="s1">&#39;This will never be printed&#39;</span>
 <span class="k">endfunction</span>
 
-<span class="c">" Closures, functions carrying values from outer scope (|:func-closure|)</span>
+<span class="c">&quot; Closures, functions carrying values from outer scope (|:func-closure|)</span>
 <span class="k">function</span><span class="p">!</span> MakeAdder<span class="p">(</span><span class="k">x</span><span class="p">)</span>
     <span class="k">function</span><span class="p">!</span> Adder<span class="p">(</span><span class="k">n</span><span class="p">)</span> closure
-        <span class="k">return</span> <span class="nv">a:n</span> <span class="p">+</span> <span class="nv">a:x</span>
+        <span class="k">return</span> <span class="k">a</span>:<span class="k">n</span> <span class="p">+</span> <span class="k">a</span>:<span class="k">x</span>
     <span class="k">endfunction</span>
-    <span class="k">return</span> <span class="nb">funcref</span><span class="p">(</span><span class="s1">'Adder'</span><span class="p">)</span>
+    <span class="k">return</span> funcref<span class="p">(</span><span class="s1">&#39;Adder&#39;</span><span class="p">)</span>
 <span class="k">endfunction</span>
 <span class="k">let</span> AddFive <span class="p">=</span> MakeAdder<span class="p">(</span><span class="m">5</span><span class="p">)</span>
-echo AddFive<span class="p">(</span><span class="m">3</span><span class="p">)</span>               <span class="p">|</span> " Prints <span class="m">8</span>
+echo AddFive<span class="p">(</span><span class="m">3</span><span class="p">)</span>               <span class="p">|</span> <span class="c">&quot; Prints 8</span>
 
-<span class="c">" Dictionary functions, poor man's OOP methods (|Dictionary-function|)</span>
+<span class="c">&quot; Dictionary functions, poor man&#39;s OOP methods (|Dictionary-function|)</span>
 <span class="k">function</span><span class="p">!</span> Mylen<span class="p">()</span> <span class="nb">dict</span>
-    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span>self<span class="p">.</span>data<span class="p">)</span>     <span class="p">|</span> " Implicit variable self
+    <span class="k">return</span> len<span class="p">(</span>self.data<span class="p">)</span>     <span class="p">|</span> <span class="c">&quot; Implicit variable self</span>
 <span class="k">endfunction</span>
-<span class="k">let</span> mydict <span class="p">=</span> <span class="p">{</span><span class="s1">'data'</span><span class="p">:</span> <span class="p">[</span><span class="m">0</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">],</span> <span class="s1">'len'</span><span class="p">:</span> <span class="k">function</span><span class="p">(</span><span class="s2">"Mylen"</span><span class="p">)}</span>
-echo mydict<span class="p">.</span><span class="nb">len</span><span class="p">()</span>
+<span class="k">let</span> mydict <span class="p">=</span> {<span class="s1">&#39;data&#39;</span>: [<span class="m">0</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span>]<span class="p">,</span> <span class="s1">&#39;len&#39;</span>: <span class="k">function</span><span class="p">(</span><span class="s2">&quot;Mylen&quot;</span><span class="p">)</span>}
+echo mydict.len<span class="p">()</span>
 
-<span class="c">" Alternatively, more concise</span>
-<span class="k">let</span> mydict <span class="p">=</span> <span class="p">{</span><span class="s1">'data'</span><span class="p">:</span> <span class="p">[</span><span class="m">0</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span><span class="p">]}</span>
-<span class="k">function</span><span class="p">!</span> mydict<span class="p">.</span><span class="nb">len</span><span class="p">()</span>
-    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span>self<span class="p">.</span>data<span class="p">)</span>
+<span class="c">&quot; Alternatively, more concise</span>
+<span class="k">let</span> mydict <span class="p">=</span> {<span class="s1">&#39;data&#39;</span>: [<span class="m">0</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span>]}
+<span class="k">function</span><span class="p">!</span> mydict.len<span class="p">()</span>
+    <span class="k">return</span> len<span class="p">(</span>self.data<span class="p">)</span>
 <span class="k">endfunction</span>
 
-<span class="c">" Calling functions (|:call|)</span>
-<span class="c">" #################</span>
+<span class="c">&quot; Calling functions (|:call|)</span>
+<span class="c">&quot; #################</span>
 
-<span class="c">" Call a function for its return value, and possibly for its side effects</span>
-<span class="k">let</span> animals <span class="p">=</span> <span class="nb">keys</span><span class="p">({</span><span class="s1">'cow'</span><span class="p">:</span> <span class="s1">'moo'</span><span class="p">,</span> <span class="s1">'dog'</span><span class="p">:</span> <span class="s1">'woof'</span><span class="p">,</span> <span class="s1">'cat'</span><span class="p">:</span> <span class="s1">'meow'</span><span class="p">})</span>
+<span class="c">&quot; Call a function for its return value, and possibly for its side effects</span>
+<span class="k">let</span> animals <span class="p">=</span> keys<span class="p">(</span>{<span class="s1">&#39;cow&#39;</span>: <span class="s1">&#39;moo&#39;</span><span class="p">,</span> <span class="s1">&#39;dog&#39;</span>: <span class="s1">&#39;woof&#39;</span><span class="p">,</span> <span class="s1">&#39;cat&#39;</span>: <span class="s1">&#39;meow&#39;</span>}<span class="p">)</span>
 
-<span class="c">" Call a function for its side effects only, ignore potential return value</span>
-<span class="k">call</span> <span class="nb">sign_undefine</span><span class="p">()</span>
+<span class="c">&quot; Call a function for its side effects only, ignore potential return value</span>
+<span class="k">call</span> sign_undefine<span class="p">()</span>
 
-<span class="c">" The call() function calls a function reference and passes parameters as a</span>
-<span class="c">" list, and returns the function's result.</span>
-echo  <span class="k">call</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="s1">'get'</span><span class="p">),</span> <span class="p">[{</span><span class="s1">'a'</span><span class="p">:</span> <span class="m">1</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">:</span> <span class="m">2</span><span class="p">},</span> <span class="s1">'c'</span><span class="p">,</span> <span class="m">3</span><span class="p">])</span>   <span class="p">|</span> " Prints <span class="m">3</span>
+<span class="c">&quot; The call() function calls a function reference and passes parameters as a</span>
+<span class="c">&quot; list, and returns the function&#39;s result.</span>
+echo  <span class="k">call</span><span class="p">(</span><span class="k">function</span><span class="p">(</span><span class="s1">&#39;get&#39;</span><span class="p">),</span> [{<span class="s1">&#39;a&#39;</span>: <span class="m">1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span>: <span class="m">2</span>}<span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="m">3</span>]<span class="p">)</span>   <span class="p">|</span> <span class="c">&quot; Prints 3</span>
 
-<span class="c">" Recall that Vim script is embedded within the ex-commands, that is why we</span>
-<span class="c">" cannot just call a function directly, we have to use the `:call` ex-command.</span>
+<span class="c">&quot; Recall that Vim script is embedded within the ex-commands, that is why we</span>
+<span class="c">&quot; cannot just call a function directly, we have to use the `:call` ex-command.</span>
 
-<span class="c">" Function namespaces (|write-library-script|, |autoload|)</span>
-<span class="c">" ###################</span>
+<span class="c">&quot; Function namespaces (|write-library-script|, |autoload|)</span>
+<span class="c">&quot; ###################</span>
 
-<span class="c">" Must be defined in autoload/foo/bar.vim</span>
-<span class="c">" Namspaced function names do not have to start with a capital letter</span>
-<span class="k">function</span><span class="p">!</span> foo#bar#<span class="nb">log</span><span class="p">(</span>value<span class="p">)</span>
+<span class="c">&quot; Must be defined in autoload/foo/bar.vim</span>
+<span class="c">&quot; Namspaced function names do not have to start with a capital letter</span>
+<span class="k">function</span><span class="p">!</span> foo#bar#log<span class="p">(</span>value<span class="p">)</span>
     <span class="k">echomsg</span> value
 <span class="k">endfunction</span>
 
-<span class="k">call</span> foo#bar#<span class="nb">log</span><span class="p">(</span><span class="s1">'Hello'</span><span class="p">)</span>
+<span class="k">call</span> foo#bar#log<span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
 
 
-<span class="c">" #############################</span>
-<span class="c">"  Frequently used ex-commands</span>
-<span class="c">" #############################</span>
+<span class="c">&quot; #############################</span>
+<span class="c">&quot;  Frequently used ex-commands</span>
+<span class="c">&quot; #############################</span>
 
 
-<span class="c">" Sourcing runtime files (|'runtimepath'|)</span>
-<span class="c">" ######################</span>
+<span class="c">&quot; Sourcing runtime files (|&#39;runtimepath&#39;|)</span>
+<span class="c">&quot; ######################</span>
 
-<span class="c">" Source first match among runtime paths</span>
-<span class="k">runtime</span> plugin/my<span class="p">-</span>plugin<span class="p">.</span><span class="k">vim</span>
+<span class="c">&quot; Source first match among runtime paths</span>
+runtime plugin/my<span class="p">-</span>plugin.<span class="k">vim</span>
 
 
-<span class="c">" Defining new ex-commands (|40.2|, |:command|)</span>
-<span class="c">" ########################</span>
+<span class="c">&quot; Defining new ex-commands (|40.2|, |:command|)</span>
+<span class="c">&quot; ########################</span>
 
-<span class="c">" First argument here is the name of the command, rest is the command body</span>
+<span class="c">&quot; First argument here is the name of the command, rest is the command body</span>
 command<span class="p">!</span> SwapAdjacentLines normal<span class="p">!</span> ddp
 
-<span class="c">" The exclamation mark works the same as with `:function`. User-defined</span>
-<span class="c">" commands must start with a capital letter. The `:command` command can take a</span>
-<span class="c">" number of attributes (some of which have their own parameters with `=`), such</span>
-<span class="c">" as `-nargs`, all of them start with a dash to set them apart from the command</span>
-<span class="c">" name.</span>
+<span class="c">&quot; The exclamation mark works the same as with `:function`. User-defined</span>
+<span class="c">&quot; commands must start with a capital letter. The `:command` command can take a</span>
+<span class="c">&quot; number of attributes (some of which have their own parameters with `=`), such</span>
+<span class="c">&quot; as `-nargs`, all of them start with a dash to set them apart from the command</span>
+<span class="c">&quot; name.</span>
 
-command<span class="p">!</span> <span class="p">-</span>nargs<span class="p">=</span><span class="m">1</span> Error <span class="k">echoerr</span> <span class="p">&lt;</span><span class="k">args</span><span class="p">&gt;</span>
+command<span class="p">!</span> <span class="p">-</span>nargs<span class="p">=</span><span class="m">1</span> Error <span class="k">echoerr</span> <span class="p">&lt;</span>args<span class="p">&gt;</span>
 
 
-<span class="c">" Defining auto-commands (|40.3|, |autocmd|, |autocommand-events|)</span>
-<span class="c">" ######################</span>
+<span class="c">&quot; Defining auto-commands (|40.3|, |autocmd|, |autocommand-events|)</span>
+<span class="c">&quot; ######################</span>
 
-<span class="c">" The arguments are "events", "patterns", rest is "commands"</span>
-autocmd <span class="nb">BufWritePost</span> $MYVIMRC <span class="k">source</span> $MYVIMRC
+<span class="c">&quot; The arguments are &quot;events&quot;, &quot;patterns&quot;, rest is &quot;commands&quot;</span>
+autocmd <span class="nb">BufWritePost</span> $MYVIMRC source $MYVIMRC
 
-<span class="c">" Events and patterns are separated by commas with no space between. See</span>
-<span class="c">" |autocmd-events| for standard events, |User| for custom events. Everything</span>
-<span class="c">" else are the ex-commands which will be executed.</span>
+<span class="c">&quot; Events and patterns are separated by commas with no space between. See</span>
+<span class="c">&quot; |autocmd-events| for standard events, |User| for custom events. Everything</span>
+<span class="c">&quot; else are the ex-commands which will be executed.</span>
 
-<span class="c">" Auto groups</span>
-<span class="c">" ===========</span>
-<span class="c">"</span>
-<span class="c">" When a file is sourced multiple times the auto-commands are defined anew,</span>
-<span class="c">" without deleting the old ones, causing auto-commands to pile up over time.</span>
-<span class="c">" Use auto-groups and the following ritual to guard against this.</span>
+<span class="c">&quot; Auto groups</span>
+<span class="c">&quot; ===========</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; When a file is sourced multiple times the auto-commands are defined anew,</span>
+<span class="c">&quot; without deleting the old ones, causing auto-commands to pile up over time.</span>
+<span class="c">&quot; Use auto-groups and the following ritual to guard against this.</span>
 
-augroup auto<span class="p">-</span><span class="k">source</span>   <span class="p">|</span> " The name of the group <span class="k">is</span> arbitrary
-    autocmd<span class="p">!</span>          <span class="p">|</span> " Deletes <span class="k">all</span> auto<span class="p">-</span>commands <span class="k">in</span> the current group
-    autocmd <span class="nb">BufWritePost</span> $MYVIMRC <span class="k">source</span> $MYVIMRC
-augroup END           <span class="p">|</span> " Switch back <span class="k">to</span> default auto<span class="p">-</span>group
+augroup auto<span class="p">-</span>source   <span class="p">|</span> <span class="c">&quot; The name of the group is arbitrary</span>
+    autocmd<span class="p">!</span>          <span class="p">|</span> <span class="c">&quot; Deletes all auto-commands in the current group</span>
+    autocmd <span class="nb">BufWritePost</span> $MYVIMRC source $MYVIMRC
+augroup END           <span class="p">|</span> <span class="c">&quot; Switch back to default auto-group</span>
 
-<span class="c">" It is also possible to assign a group directly. This is useful if the</span>
-<span class="c">" definition of the group is in one script and the definition of the</span>
-<span class="c">" auto-command is in another script.</span>
+<span class="c">&quot; It is also possible to assign a group directly. This is useful if the</span>
+<span class="c">&quot; definition of the group is in one script and the definition of the</span>
+<span class="c">&quot; auto-command is in another script.</span>
 
-<span class="c">" In one file</span>
-augroup auto<span class="p">-</span><span class="k">source</span>
+<span class="c">&quot; In one file</span>
+augroup auto<span class="p">-</span>source
     autocmd<span class="p">!</span>
 augroup END
 
-<span class="c">" In another file</span>
-autocmd auto<span class="p">-</span><span class="k">source</span> <span class="nb">BufWritePost</span> $MYVIMRC <span class="k">source</span> $MYVIMRC
+<span class="c">&quot; In another file</span>
+autocmd auto<span class="p">-</span>source <span class="nb">BufWritePost</span> $MYVIMRC source $MYVIMRC
 
-<span class="c">" Executing (run-time macros of sorts)</span>
-<span class="c">" ####################################</span>
+<span class="c">&quot; Executing (run-time macros of sorts)</span>
+<span class="c">&quot; ####################################</span>
 
-<span class="c">" Sometimes we need to construct an ex-command where part of the command is not</span>
-<span class="c">" known until runtime.</span>
+<span class="c">&quot; Sometimes we need to construct an ex-command where part of the command is not</span>
+<span class="c">&quot; known until runtime.</span>
 
-<span class="k">let</span> <span class="nb">line</span> <span class="p">=</span> <span class="m">3</span>                <span class="p">|</span> " Line <span class="k">number</span> determined at <span class="k">runtime</span>
-<span class="nb">execute</span> <span class="nb">line</span> <span class="p">..</span> <span class="s1">'delete'</span>    <span class="p">|</span> " Delete <span class="k">a</span> <span class="nb">line</span>
+<span class="k">let</span> line <span class="p">=</span> <span class="m">3</span>                <span class="p">|</span> <span class="c">&quot; Line number determined at runtime</span>
+execute line .. <span class="s1">&#39;delete&#39;</span>    <span class="p">|</span> <span class="c">&quot; Delete a line</span>
 
-<span class="c">" Executing normal-mode commands</span>
-<span class="c">" ##############################</span>
-<span class="c">"</span>
-<span class="c">" Use `:normal` to play back a sequence of normal mode commands from the</span>
-<span class="c">" command-line. Add an exclamation mark to ignore user mappings.</span>
+<span class="c">&quot; Executing normal-mode commands</span>
+<span class="c">&quot; ##############################</span>
+<span class="c">&quot;</span>
+<span class="c">&quot; Use `:normal` to play back a sequence of normal mode commands from the</span>
+<span class="c">&quot; command-line. Add an exclamation mark to ignore user mappings.</span>
 
-normal<span class="p">!</span> ggddGp             <span class="p">|</span> " Transplant <span class="k">first</span> <span class="nb">line</span> <span class="k">to</span> end of <span class="k">buffer</span>
+normal<span class="p">!</span> ggddGp             <span class="p">|</span> <span class="c">&quot; Transplant first line to end of buffer</span>
 
-<span class="c">" Window commands can be used with :normal, or with :wincmd if :normal would</span>
-<span class="c">" not work</span>
-<span class="k">wincmd</span> L                   <span class="p">|</span> " Move current <span class="nb">window</span> <span class="k">all</span> the way <span class="k">to</span> the <span class="k">right</span>
-
-
-<span class="c">" ###########################</span>
-<span class="c">"  Frequently used functions</span>
-<span class="c">" ###########################</span>
-
-<span class="c">" Feature check</span>
-echo  <span class="nb">has</span><span class="p">(</span><span class="s1">'nvim'</span><span class="p">)</span>                  <span class="p">|</span> " Running Neovim
-echo  <span class="nb">has</span><span class="p">(</span><span class="s1">'python3'</span><span class="p">)</span>               <span class="p">|</span> " Support <span class="k">for</span> Python <span class="m">3</span> plugins
-echo  <span class="nb">has</span><span class="p">(</span><span class="s1">'unix'</span><span class="p">)</span>                  <span class="p">|</span> " Running <span class="k">on</span> <span class="k">a</span> Unix <span class="nb">system</span>
-echo  <span class="nb">has</span><span class="p">(</span><span class="s1">'win32'</span><span class="p">)</span>                 <span class="p">|</span> " Running <span class="k">on</span> <span class="k">a</span> Windows <span class="nb">system</span>
+<span class="c">&quot; Window commands can be used with :normal, or with :wincmd if :normal would</span>
+<span class="c">&quot; not work</span>
+<span class="k">wincmd</span> L                   <span class="p">|</span> <span class="c">&quot; Move current window all the way to the right</span>
 
 
-<span class="c">" Test if something exists</span>
-echo  <span class="nb">exists</span><span class="p">(</span><span class="s1">'&amp;mouse'</span><span class="p">)</span>             <span class="p">|</span> " Option <span class="p">(</span><span class="nb">exists</span> <span class="k">only</span><span class="p">)</span>
-echo  <span class="nb">exists</span><span class="p">(</span><span class="s1">'+mouse'</span><span class="p">)</span>             <span class="p">|</span> " Option <span class="p">(</span><span class="nb">exists</span> <span class="nb">and</span> works<span class="p">)</span>
-echo  <span class="nb">exists</span><span class="p">(</span><span class="s1">'$HOSTNAME'</span><span class="p">)</span>          <span class="p">|</span> " Environment variable
-echo  <span class="nb">exists</span><span class="p">(</span><span class="s1">'*strftime'</span><span class="p">)</span>          <span class="p">|</span> " Built<span class="p">-</span><span class="k">in</span> <span class="k">function</span>
-echo  <span class="nb">exists</span><span class="p">(</span><span class="s1">'**s:MyFunc'</span><span class="p">)</span>         <span class="p">|</span> " <span class="nb">User</span><span class="p">-</span>defined <span class="k">function</span>
-echo  <span class="nb">exists</span><span class="p">(</span><span class="s1">'bufcount'</span><span class="p">)</span>           <span class="p">|</span> " Variable <span class="p">(</span>scope optional<span class="p">)</span>
-echo  <span class="nb">exists</span><span class="p">(</span><span class="s1">'my_dict["foo"]'</span><span class="p">)</span>     <span class="p">|</span> " Variable <span class="p">(</span><span class="nb">dictionary</span> entry<span class="p">)</span>
-echo  <span class="nb">exists</span><span class="p">(</span><span class="s1">'my_dict["foo"]'</span><span class="p">)</span>     <span class="p">|</span> " Variable <span class="p">(</span><span class="nb">dictionary</span> entry<span class="p">)</span>
-echo  <span class="nb">exists</span><span class="p">(</span><span class="s1">':Make'</span><span class="p">)</span>              <span class="p">|</span> " Command
-echo  <span class="nb">exists</span><span class="p">(</span><span class="s2">"#CursorHold"</span><span class="p">)</span>        <span class="p">|</span> " Auto<span class="p">-</span>command defined <span class="k">for</span> event
-echo  <span class="nb">exists</span><span class="p">(</span><span class="s2">"#BufReadPre#*.gz"</span><span class="p">)</span>   <span class="p">|</span> " Event <span class="nb">and</span> pattern
-echo  <span class="nb">exists</span><span class="p">(</span><span class="s2">"#filetypeindent"</span><span class="p">)</span>    <span class="p">|</span> " Auto<span class="p">-</span>command group
-echo  <span class="nb">exists</span><span class="p">(</span><span class="s2">"##ColorScheme"</span><span class="p">)</span>      <span class="p">|</span> " Auto<span class="p">-</span>command supported <span class="k">for</span> event
+<span class="c">&quot; ###########################</span>
+<span class="c">&quot;  Frequently used functions</span>
+<span class="c">&quot; ###########################</span>
 
-<span class="c">" Various dynamic values (see |expand()|)</span>
-echo  <span class="nb">expand</span><span class="p">(</span><span class="s1">'%'</span><span class="p">)</span>                  <span class="p">|</span> " Current <span class="k">file</span> name
-echo  <span class="nb">expand</span><span class="p">(</span><span class="s1">'&lt;cword&gt;'</span><span class="p">)</span>            <span class="p">|</span> " Current word under <span class="nb">cursor</span>
-echo  <span class="nb">expand</span><span class="p">(</span><span class="s1">'%:p'</span><span class="p">)</span>                <span class="p">|</span> " Modifier are possible
-
-<span class="c">" Type tests</span>
-<span class="c">" There are unique constants defined for the following types. Older versions</span>
-<span class="c">" of Vim lack the type variables, see the reference " documentation for a</span>
-<span class="c">" workaround</span>
-echo  <span class="nb">type</span><span class="p">(</span>my_var<span class="p">)</span> <span class="p">==</span> <span class="k">v</span><span class="p">:</span>t_number      <span class="p">|</span> " Number
-echo  <span class="nb">type</span><span class="p">(</span>my_var<span class="p">)</span> <span class="p">==</span> <span class="k">v</span><span class="p">:</span>t_string      <span class="p">|</span> " String
-echo  <span class="nb">type</span><span class="p">(</span>my_var<span class="p">)</span> <span class="p">==</span> <span class="k">v</span><span class="p">:</span>t_func        <span class="p">|</span> " Funcref
-echo  <span class="nb">type</span><span class="p">(</span>my_var<span class="p">)</span> <span class="p">==</span> <span class="k">v</span><span class="p">:</span>t_list        <span class="p">|</span> " List
-echo  <span class="nb">type</span><span class="p">(</span>my_var<span class="p">)</span> <span class="p">==</span> <span class="k">v</span><span class="p">:</span>t_dict        <span class="p">|</span> " Dictionary
-echo  <span class="nb">type</span><span class="p">(</span>my_var<span class="p">)</span> <span class="p">==</span> <span class="k">v</span><span class="p">:</span>t_float       <span class="p">|</span> " Float
-echo  <span class="nb">type</span><span class="p">(</span>my_var<span class="p">)</span> <span class="p">==</span> <span class="k">v</span><span class="p">:</span>t_bool        <span class="p">|</span> " Explicit Boolean
-<span class="c">" For the null object should compare it against itself</span>
-echo  my_var <span class="k">is</span> <span class="k">v</span><span class="p">:</span>null
-
-<span class="c">" Format strings</span>
-echo  <span class="nb">printf</span><span class="p">(</span><span class="s1">'%d in hexadecimal is %X'</span><span class="p">,</span> <span class="m">123</span><span class="p">,</span> <span class="m">123</span><span class="p">)</span>
+<span class="c">&quot; Feature check</span>
+echo  has<span class="p">(</span><span class="s1">&#39;nvim&#39;</span><span class="p">)</span>                  <span class="p">|</span> <span class="c">&quot; Running Neovim</span>
+echo  has<span class="p">(</span><span class="s1">&#39;python3&#39;</span><span class="p">)</span>               <span class="p">|</span> <span class="c">&quot; Support for Python 3 plugins</span>
+echo  has<span class="p">(</span><span class="s1">&#39;unix&#39;</span><span class="p">)</span>                  <span class="p">|</span> <span class="c">&quot; Running on a Unix system</span>
+echo  has<span class="p">(</span><span class="s1">&#39;win32&#39;</span><span class="p">)</span>                 <span class="p">|</span> <span class="c">&quot; Running on a Windows system</span>
 
 
-<span class="c">" #####################</span>
-<span class="c">"  Tricks of the trade</span>
-<span class="c">" #####################</span>
+<span class="c">&quot; Test if something exists</span>
+echo  exists<span class="p">(</span><span class="s1">&#39;&amp;mouse&#39;</span><span class="p">)</span>             <span class="p">|</span> <span class="c">&quot; Option (exists only)</span>
+echo  exists<span class="p">(</span><span class="s1">&#39;+mouse&#39;</span><span class="p">)</span>             <span class="p">|</span> <span class="c">&quot; Option (exists and works)</span>
+echo  exists<span class="p">(</span><span class="s1">&#39;$HOSTNAME&#39;</span><span class="p">)</span>          <span class="p">|</span> <span class="c">&quot; Environment variable</span>
+echo  exists<span class="p">(</span><span class="s1">&#39;*strftime&#39;</span><span class="p">)</span>          <span class="p">|</span> <span class="c">&quot; Built-in function</span>
+echo  exists<span class="p">(</span><span class="s1">&#39;**s:MyFunc&#39;</span><span class="p">)</span>         <span class="p">|</span> <span class="c">&quot; User-defined function</span>
+echo  exists<span class="p">(</span><span class="s1">&#39;bufcount&#39;</span><span class="p">)</span>           <span class="p">|</span> <span class="c">&quot; Variable (scope optional)</span>
+echo  exists<span class="p">(</span><span class="s1">&#39;my_dict[&quot;foo&quot;]&#39;</span><span class="p">)</span>     <span class="p">|</span> <span class="c">&quot; Variable (dictionary entry)</span>
+echo  exists<span class="p">(</span><span class="s1">&#39;my_dict[&quot;foo&quot;]&#39;</span><span class="p">)</span>     <span class="p">|</span> <span class="c">&quot; Variable (dictionary entry)</span>
+echo  exists<span class="p">(</span><span class="s1">&#39;:Make&#39;</span><span class="p">)</span>              <span class="p">|</span> <span class="c">&quot; Command</span>
+echo  exists<span class="p">(</span><span class="s2">&quot;#CursorHold&quot;</span><span class="p">)</span>        <span class="p">|</span> <span class="c">&quot; Auto-command defined for event</span>
+echo  exists<span class="p">(</span><span class="s2">&quot;#BufReadPre#*.gz&quot;</span><span class="p">)</span>   <span class="p">|</span> <span class="c">&quot; Event and pattern</span>
+echo  exists<span class="p">(</span><span class="s2">&quot;#filetypeindent&quot;</span><span class="p">)</span>    <span class="p">|</span> <span class="c">&quot; Auto-command group</span>
+echo  exists<span class="p">(</span><span class="s2">&quot;##ColorScheme&quot;</span><span class="p">)</span>      <span class="p">|</span> <span class="c">&quot; Auto-command supported for event</span>
 
-<span class="c">" Source guard</span>
-<span class="c">" ############</span>
+<span class="c">&quot; Various dynamic values (see |expand()|)</span>
+echo  expand<span class="p">(</span><span class="s1">&#39;%&#39;</span><span class="p">)</span>                  <span class="p">|</span> <span class="c">&quot; Current file name</span>
+echo  expand<span class="p">(</span><span class="s1">&#39;&lt;cword&gt;&#39;</span><span class="p">)</span>            <span class="p">|</span> <span class="c">&quot; Current word under cursor</span>
+echo  expand<span class="p">(</span><span class="s1">&#39;%:p&#39;</span><span class="p">)</span>                <span class="p">|</span> <span class="c">&quot; Modifier are possible</span>
 
-<span class="c">" Prevent a file from being sourced multiple times; users can set the variable</span>
-<span class="c">" in their configuration to prevent the plugin from loading at all.</span>
-<span class="k">if</span> <span class="nb">exists</span><span class="p">(</span><span class="s1">'g:loaded_my_plugin'</span><span class="p">)</span>
+<span class="c">&quot; Type tests</span>
+<span class="c">&quot; There are unique constants defined for the following types. Older versions</span>
+<span class="c">&quot; of Vim lack the type variables, see the reference &quot; documentation for a</span>
+<span class="c">&quot; workaround</span>
+echo  type<span class="p">(</span>my_var<span class="p">)</span> <span class="p">==</span> <span class="k">v</span>:t_number      <span class="p">|</span> <span class="c">&quot; Number</span>
+echo  type<span class="p">(</span>my_var<span class="p">)</span> <span class="p">==</span> <span class="k">v</span>:t_string      <span class="p">|</span> <span class="c">&quot; String</span>
+echo  type<span class="p">(</span>my_var<span class="p">)</span> <span class="p">==</span> <span class="k">v</span>:t_func        <span class="p">|</span> <span class="c">&quot; Funcref</span>
+echo  type<span class="p">(</span>my_var<span class="p">)</span> <span class="p">==</span> <span class="k">v</span>:t_list        <span class="p">|</span> <span class="c">&quot; List</span>
+echo  type<span class="p">(</span>my_var<span class="p">)</span> <span class="p">==</span> <span class="k">v</span>:t_dict        <span class="p">|</span> <span class="c">&quot; Dictionary</span>
+echo  type<span class="p">(</span>my_var<span class="p">)</span> <span class="p">==</span> <span class="k">v</span>:t_float       <span class="p">|</span> <span class="c">&quot; Float</span>
+echo  type<span class="p">(</span>my_var<span class="p">)</span> <span class="p">==</span> <span class="k">v</span>:t_bool        <span class="p">|</span> <span class="c">&quot; Explicit Boolean</span>
+<span class="c">&quot; For the null object should compare it against itself</span>
+echo  my_var <span class="k">is</span> <span class="k">v</span>:null
+
+<span class="c">&quot; Format strings</span>
+echo  printf<span class="p">(</span><span class="s1">&#39;%d in hexadecimal is %X&#39;</span><span class="p">,</span> <span class="m">123</span><span class="p">,</span> <span class="m">123</span><span class="p">)</span>
+
+
+<span class="c">&quot; #####################</span>
+<span class="c">&quot;  Tricks of the trade</span>
+<span class="c">&quot; #####################</span>
+
+<span class="c">&quot; Source guard</span>
+<span class="c">&quot; ############</span>
+
+<span class="c">&quot; Prevent a file from being sourced multiple times; users can set the variable</span>
+<span class="c">&quot; in their configuration to prevent the plugin from loading at all.</span>
+<span class="k">if</span> exists<span class="p">(</span><span class="s1">&#39;g:loaded_my_plugin&#39;</span><span class="p">)</span>
     <span class="k">finish</span>
 <span class="k">endif</span>
-<span class="k">let</span> <span class="nv">g:loaded_my_plugin</span> <span class="p">=</span> <span class="k">v</span><span class="p">:</span>true
+<span class="k">let</span> <span class="k">g</span>:loaded_my_plugin <span class="p">=</span> <span class="k">v</span>:true
 
-<span class="c">" Default values</span>
-<span class="c">" ##############</span>
+<span class="c">&quot; Default values</span>
+<span class="c">&quot; ##############</span>
 
-<span class="c">" Get a default value: if the user defines a variable use it, otherwise use a</span>
-<span class="c">" hard-coded default. Uses the fact that a scope is also a dictionary.</span>
-<span class="k">let</span> <span class="nv">s:greeting</span> <span class="p">=</span> <span class="nb">get</span><span class="p">(</span><span class="k">g</span><span class="p">:,</span> <span class="s1">'my_plugin_greeting'</span><span class="p">,</span> <span class="s1">'Hello'</span><span class="p">)</span>
-</code></pre></div>
+<span class="c">&quot; Get a default value: if the user defines a variable use it, otherwise use a</span>
+<span class="c">&quot; hard-coded default. Uses the fact that a scope is also a dictionary.</span>
+<span class="k">let</span> s:greeting <span class="p">=</span> get<span class="p">(</span><span class="k">g</span>:<span class="p">,</span> <span class="s1">&#39;my_plugin_greeting&#39;</span><span class="p">,</span> <span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+</pre></div>
     <hr>
     <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the Github Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/vimscript.html.markdown">pull request</a> yourself!
     </p>
