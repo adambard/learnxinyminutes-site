@@ -1,101 +1,101 @@
 
 ;;;-----------------------------------------------------------------------------
-;;; 0. Syntax
+;;; 0. Синтаксис
 ;;;-----------------------------------------------------------------------------
 
-;;; General form
+;;; Основные формы
 
-;;; CL has two fundamental pieces of syntax: ATOM and S-EXPRESSION.
-;;; Typically, grouped S-expressions are called `forms`.
+;;; Существует два фундамента CL: АТОМ и S-выражение.
+;;; Как правило, сгруппированные S-выражения называют `формами`.
 
-10            ; an atom; it evaluates to itself
-:thing        ; another atom; evaluating to the symbol :thing
-t             ; another atom, denoting true
-(+ 1 2 3 4)   ; an s-expression
-'(4 :foo t)   ; another s-expression
+10            ; атом; вычисляется в самого себя
+:thing        ; другой атом; вычисляется в символ :thing
+t             ; ещё один атом, обозначает `истину` (true)
+(+ 1 2 3 4)   ; s-выражение
+'(4 :foo t)   ; ещё одно s-выражение
 
+;;; Комментарии
 
-;;; Comments
-
-;;; Single-line comments start with a semicolon; use four for file-level
-;;; comments, three for section descriptions, two inside definitions, and one
-;;; for single lines. For example,
+;;; Однострочные комментарии начинаются точкой с запятой. Четыре знака подряд
+;;; используют для комментария всего файла, три для раздела, два для текущего
+;;; определения; один для текущей строки. Например:
 
 ;;;; life.lisp
 
-;;; Foo bar baz, because quu quux. Optimized for maximum krakaboom and umph.
-;;; Needed by the function LINULUKO.
+;;; То-сё - пятое-десятое. Оптимизировано для максимального бадабума и ччччч.
+;;; Требуется для функции PoschitatBenzinIsRossiiVBelarus
 
 (defun meaning (life)
-  "Return the computed meaning of LIFE"
+  "Возвращает смысл Жизни"
   (let ((meh "abc"))
-    ;; Invoke krakaboom
+    ;; Вызывает бадабум
     (loop :for x :across meh
-       :collect x)))                    ; store values into x, then return it
+       :collect x)))                    ; сохранить значения в x, и потом вернуть
 
-;;; Block comments, on the other hand, allow for free-form comments. They are
-;;; delimited with #| and |#
+;;; А вот целый блок комментария можно использовать как угодно.
+;;; Для него используются #| и |#
 
-#| This is a block comment which
-   can span multiple lines and
+#| Целый блок комментария, который размазан
+   на несколько строк
     #|
-       they can be nested!
+       которые могут быть вложенными!
     |#
 |#
 
+;;; Чем пользоваться
 
-;;; Environment
+;;; Существует несколько реализаций: и коммерческих, и открытых.
+;;; Все они максимально соответствуют стандарту языка.
+;;; SBCL, например, добротен. А за дополнительными библиотеками
+;;; нужно ходить в Quicklisp
 
-;;; A variety of implementations exist; most are standards-conformant. SBCL
-;;; is a good starting point. Third party libraries can be easily installed with
-;;; Quicklisp
-
-;;; CL is usually developed with a text editor and a Read Eval Print
-;;; Loop (REPL) running at the same time. The REPL allows for interactive
-;;; exploration of the program while it is running "live".
-
+;;; Обычно разработка ведется в текстовом редакторе с запущенным в цикле
+;;; интерпретатором (в CL это Read Eval Print Loop). Этот цикл (REPL)
+;;; позволяет интерактивно выполнять части программы вживую сразу наблюдая
+;;; результат.
 
 ;;;-----------------------------------------------------------------------------
-;;; 1. Primitive datatypes and operators
+;;; 1. Базовые типы и операторы
 ;;;-----------------------------------------------------------------------------
 
-;;; Symbols
+;;; Символы
 
-'foo ; => FOO  Notice that the symbol is upper-cased automatically.
+'foo ; => FOO Символы автоматически приводятся к верхнему регистру.
 
-;;; INTERN manually creates a symbol from a string.
+;;; INTERN создаёт символ из строки.
 
 (intern "AAAA")        ; => AAAA
 (intern "aaa")         ; => |aaa|
 
-;;; Numbers
+;;; Числа
 
-9999999999999999999999 ; integers
-#b111                  ; binary => 7
-#o111                  ; octal => 73
-#x111                  ; hexadecimal => 273
-3.14159s0              ; single
-3.14159d0              ; double
-1/2                    ; ratios
-#C(1 2)                ; complex numbers
+9999999999999999999999 ; целые
+#b111                  ; двоичные => 7
+#o111                  ; восьмеричные => 73
+#x111                  ; шестнадцатиричные => 273
+3.14159s0              ; с плавающей точкой
+3.14159d0              ; с плавающей точкой с двойной точностью
+1/2                    ; рациональные)
+#C(1 2)                ; комплексные
 
-;;; Function application are written as (f x y z ...) where f is a function and
-;;; x, y, z, ... are the arguments.
+;;; Вызов функции пишется как s-выражение (f x y z ....), где f это функция,
+;;; x, y, z, ... аругменты.
 
 (+ 1 2)                ; => 3
 
-;;; If you want to create literal data, use QUOTE to prevent it from being
-;;; evaluated
+;;; Если вы хотите просто представить код как данные, воспользуйтесь формой QUOTE
+;;; Она не вычисляет аргументы, а возвращает их как есть.
+;;; Она даёт начало метапрограммированию
 
 (quote (+ 1 2))        ; => (+ 1 2)
 (quote a)              ; => A
 
-;;; The shorthand for QUOTE is '
+;;; QUOTE можно сокращенно записать знаком '
 
 '(+ 1 2)               ; => (+ 1 2)
 'a                     ; => A
 
-;;; Basic arithmetic operations
+;;; Арифметические операции
 
 (+ 1 1)                ; => 2
 (- 8 1)                ; => 7
@@ -106,78 +106,76 @@ t             ; another atom, denoting true
 (/ 1 3)                ; => 1/3
 (+ #C(1 2) #C(6 -4))   ; => #C(7 -2)
 
-;;; Booleans
+;;; Булевые
 
-t                      ; true; any non-NIL value is true
-nil                    ; false; also, the empty list: ()
+t                      ; истина; любое не-NIL значение `истинно`
+nil                    ; ложь; а ещё пустой список () тоже `ложь`
 (not nil)              ; => T
 (and 0 t)              ; => T
 (or 0 nil)             ; => 0
 
-;;; Characters
+;;; Строковые символы
 
 #\A                    ; => #\A
 #\λ                    ; => #\GREEK_SMALL_LETTER_LAMDA
 #\u03BB                ; => #\GREEK_SMALL_LETTER_LAMDA
 
-;;; Strings are fixed-length arrays of characters
+;;; Строки это фиксированные массивы символов
 
 "Hello, world!"
-"Benjamin \"Bugsy\" Siegel"   ; backslash is an escaping character
+"Тимур \"Каштан\" Бадтрудинов"   ; экранировать двойную кавычку обратным слешом
 
-;;; Strings can be concatenated
+;;; Строки можно соединять
 
-(concatenate 'string "Hello, " "world!") ; => "Hello, world!"
+(concatenate 'string "ПРивет, " "мир!") ; => "ПРивет, мир!"
 
-;;; A string can be treated like a sequence of characters
+;;; Можно пройтись по строке как по массиву символов
 
 (elt "Apple" 0) ; => #\A
 
-;;; FORMAT is used to create formatted output, which ranges from simple string
-;;; interpolation to loops and conditionals. The first argument to FORMAT
-;;; determines where will the formatted string go. If it is NIL, FORMAT
-;;; simply returns the formatted string as a value; if it is T, FORMAT outputs
-;;; to the standard output, usually the screen, then it returns NIL.
+;;; Для форматированного вывода используется FORMAT. Он умеет выводить, как просто значения,
+;;; так и производить циклы и учитывать условия. Первый агрумент указывает куда отправить
+;;; результат. Если NIL, FORMAT вернет результат как строку, если T результат отправиться
+;;; консоль вывода а форма вернет NIL.
 
-(format nil "~A, ~A!" "Hello" "world")   ; => "Hello, world!"
-(format t "~A, ~A!" "Hello" "world")     ; => NIL
+(format nil "~A, ~A!" "Привет" "мир")   ; => "Привет, мир!"
+(format t "~A, ~A!" "Привет" "мир")     ; => NIL
 
 
 ;;;-----------------------------------------------------------------------------
-;;; 2. Variables
+;;; 2. Переменные
 ;;;-----------------------------------------------------------------------------
 
-;;; You can create a global (dynamically scoped) variable using DEFVAR and
-;;; DEFPARAMETER. The variable name can use any character except: ()",'`;#|\
+;;; С помощью DEFVAR и DEFPARAMETER вы можете создать глобальную (динамческой видимости)
+;;; переменную.
+;;; Имя переменной может состоять из любых символов кроме: ()",'`;#|\
 
-;;; The difference between DEFVAR and DEFPARAMETER is that re-evaluating a
-;;; DEFVAR expression doesn't change the value of the variable. DEFPARAMETER,
-;;; on the other hand, does.
+;;; Разница между DEFVAR и DEFPARAMETER в том, что повторное выполнение DEFVAR
+;;; переменную не поменяет. А вот DEFPARAMETER меняет переменную при каждом вызове.
 
-;;; By convention, dynamically scoped variables have earmuffs in their name.
+;;; Обычно глобальные (динамически видимые) переменные содержат звездочки в имени.
 
 (defparameter *some-var* 5)
 *some-var* ; => 5
 
-;;; You can also use unicode characters.
-(defparameter *AΛB* nil)
+;;; Можете использовать unicode.
+(defparameter *КУКУ* nil)
 
-;;; Accessing a previously unbound variable results in an UNBOUND-VARIABLE
-;;; error, however it is defined behavior. Don't do it.
+;;; Доступ к необъявленной переменной - это непредсказуемое поведение. Не делайте так.
 
-;;; You can create local bindings with LET. In the following snippet, `me` is
-;;; bound to "dance with you" only within the (let ...). LET always returns
-;;; the value of the last `form` in the LET form.
+;;; С помощью LET можете сделать локальное связывание.
+;;; В следующем куске кода, `я` связывается с "танцую с тобой" только
+;;; внутри формы (let ...). LET всегда возвращает значение последней формы.
 
-(let ((me "dance with you")) me) ; => "dance with you"
+(let ((я "танцую с тобой")) я) ; => "танцую с тобой"
 
 
 ;;;-----------------------------------------------------------------------------;
-;;; 3. Structs and collections
+;;; 3. Структуры и коллекции
 ;;;-----------------------------------------------------------------------------;
 
 
-;;; Structs
+;;; Структуры
 
 (defstruct dog name breed age)
 (defparameter *rover*
@@ -188,45 +186,44 @@ nil                    ; false; also, the empty list: ()
 (dog-p *rover*)    ; => T
 (dog-name *rover*) ; => "rover"
 
-;;; DOG-P, MAKE-DOG, and DOG-NAME are all automatically created by DEFSTRUCT
+;;; DEFSTRUCT автоматически создала DOG-P, MAKE-DOG, и DOG-NAME
 
 
-;;; Pairs
+;;; Пары (cons-ячейки)
 
-;;; CONS constructs pairs. CAR and CDR return the head and tail of a CONS-pair.
+;;; CONS создаёт пары. CAR и CDR возвращают начало и конец CONS-пары.
 
 (cons 'SUBJECT 'VERB)         ; => '(SUBJECT . VERB)
 (car (cons 'SUBJECT 'VERB))   ; => SUBJECT
 (cdr (cons 'SUBJECT 'VERB))   ; => VERB
 
 
-;;; Lists
+;;; Списки
 
-;;; Lists are linked-list data structures, made of CONS pairs and end with a
-;;; NIL (or '()) to mark the end of the list
+;;; Списки это связанные CONS-пары, в конце самой последней из которых стоит NIL
+;;; (или '() ).
 
 (cons 1 (cons 2 (cons 3 nil)))     ; => '(1 2 3)
 
-;;; LIST is a convenience variadic constructor for lists
+;;; Списки с произвольным количеством элементов удобно создавать с помощью LIST
 
 (list 1 2 3)                       ; => '(1 2 3)
 
-;;; When the first argument to CONS is an atom and the second argument is a
-;;; list, CONS returns a new CONS-pair with the first argument as the first
-;;; item and the second argument as the rest of the CONS-pair
+;;; Если первый аргумент для CONS это атом и второй аргумент список, CONS
+;;; возвращает новую CONS-пару, которая представляет собой список
 
 (cons 4 '(1 2 3))                  ; => '(4 1 2 3)
 
-;;; Use APPEND to join lists
+;;; Чтобы объединить списки, используйте APPEND
 
 (append '(1 2) '(3 4))             ; => '(1 2 3 4)
 
-;;; Or CONCATENATE
+;;; Или CONCATENATE
 
 (concatenate 'list '(1 2) '(3 4))  ; => '(1 2 3 4)
 
-;;; Lists are a very central type, so there is a wide variety of functionality for
-;;; them, a few examples:
+;;; Списки это самый используемый элемент языка. Поэтому с ними можно делать
+;;; многие вещи. Вот несколько примеров:
 
 (mapcar #'1+ '(1 2 3))             ; => '(2 3 4)
 (mapcar #'+ '(1 2 3) '(10 20 30))  ; => '(11 22 33)
@@ -236,82 +233,81 @@ nil                    ; false; also, the empty list: ()
 (butlast '(subject verb object))   ; => (SUBJECT VERB)
 
 
-;;; Vectors
+;;; Вектора
 
-;;; Vector's literals are fixed-length arrays
+;;; Вектора заданные прямо в коде - это массивы с фиксированной длинной.
 
 #(1 2 3) ; => #(1 2 3)
 
-;;; Use CONCATENATE to add vectors together
+;;; Для соединения векторов используйте CONCATENATE
 
 (concatenate 'vector #(1 2 3) #(4 5 6)) ; => #(1 2 3 4 5 6)
 
 
-;;; Arrays
+;;; Массивы
 
-;;; Both vectors and strings are special-cases of arrays.
+;;; И вектора и строки это подмножества массивов.
 
-;;; 2D arrays
+;;; Двухмерные массивы
 
 (make-array (list 2 2))         ; => #2A((0 0) (0 0))
 (make-array '(2 2))             ; => #2A((0 0) (0 0))
 (make-array (list 2 2 2))       ; => #3A(((0 0) (0 0)) ((0 0) (0 0)))
 
-;;; Caution: the default initial values of MAKE-ARRAY are implementation-defined.
-;;; To explicitly specify them:
+;;; Внимание: значение по-умолчанию элемента массива зависит от реализации.
+;;; Лучше явно указывайте:
 
 (make-array '(2) :initial-element 'unset)  ; => #(UNSET UNSET)
 
-;;; To access the element at 1, 1, 1:
+;;; Для доступа к элементу в позиции 1, 1, 1:
 
 (aref (make-array (list 2 2 2)) 1 1 1)     ;  => 0
-;;; This value is implementation-defined:
-;;; NIL on ECL, 0 on SBCL and CCL.
 
-;;; Adjustable vectors
 
-;;; Adjustable vectors have the same printed representation as
-;;; fixed-length vector's literals.
+;;; Вектора с изменяемой длиной
+
+;;; Вектора с изменяемой длиной при выводе на консоль выглядят также,
+;;; как и вектора, с константной длиной
 
 (defparameter *adjvec* (make-array '(3) :initial-contents '(1 2 3)
                                    :adjustable t :fill-pointer t))
 *adjvec* ; => #(1 2 3)
 
-;;; Adding new elements
+;;; Добавление новых элементов
 
 (vector-push-extend 4 *adjvec*)   ; => 3
 *adjvec*                          ; => #(1 2 3 4)
 
 
-;;; Sets, naively, are just lists:
+;;; Множества, это просто списки:
 
 (set-difference '(1 2 3 4) '(4 5 6 7))   ; => (3 2 1)
 (intersection '(1 2 3 4) '(4 5 6 7))     ; => 4
 (union '(1 2 3 4) '(4 5 6 7))            ; => (3 2 1 4 5 6 7)
 (adjoin 4 '(1 2 3 4))                    ; => (1 2 3 4)
 
-;;; However, you'll need a better data structure than linked lists when working
-;;; with larger data sets
+;;; Несмотря на все, для действительно больших объемов данных, вам нужно что-то
+;;; лучше, чем просто связанные списки
 
-;;; Dictionaries are implemented as hash tables.
+;;; Словари представлены хеш таблицами.
 
-;;; Create a hash table
+;;; Создание хеш таблицы:
 
 (defparameter *m* (make-hash-table))
 
-;;; Set value
+;;; Установка пары ключ-значение
 
 (setf (gethash 'a *m*) 1)
 
-;;; Retrieve value
+;;; Возврат значения по ключу
 
 (gethash 'a *m*) ; => 1, T
 
-;;; CL expressions have the ability to return multiple values.
+;;; CL выражения умеют возвращать сразу несколько значений.
 
 (values 1 2) ; => 1, 2
 
-;;; which can be bound with MULTIPLE-VALUE-BIND
+;;; которые могут быть распределены по переменным с помощью MULTIPLE-VALUE-BIND
 
 (multiple-value-bind (x y)
     (values 1 2)
@@ -319,23 +315,23 @@ nil                    ; false; also, the empty list: ()
 
 ; => '(2 1)
 
-;;; GETHASH is an example of a function that returns multiple values. The first
-;;; value it return is the value of the key in the hash table; if the key is
-;;; not found it returns NIL.
+;;; GETHASH как раз та функция, которая возвращает несколько значений. Первое
+;;; значение - это значение по ключу в хеш таблицу. Если ключ не был найден,
+;;; возвращает NIL.
 
-;;; The second value determines if that key is indeed present in the hash
-;;; table. If a key is not found in the table it returns NIL. This behavior
-;;; allows us to check if the value of a key is actually NIL.
+;;; Второе возвращаемое значение, указывает был ли ключ в хеш таблице. Если ключа
+;;; не было, то возвращает NIL. Таким образом можно проверить, это значение
+;;; NIL, или ключа просто не было.
 
-;;; Retrieving a non-present value returns nil
+;;; Вот возврат значений, в случае когда ключа в хеш таблице не было:
 
 (gethash 'd *m*) ;=> NIL, NIL
 
-;;; You can provide a default value for missing keys
+;;; Можете задать значение по умолчанию.
 
 (gethash 'd *m* :not-found) ; => :NOT-FOUND
 
-;;; Let's handle the multiple return values here in code.
+;;; Давайте обработаем возврат несколько значений.
 
 (multiple-value-bind (a b)
     (gethash 'd *m*)
@@ -349,102 +345,103 @@ nil                    ; false; also, the empty list: ()
 
 
 ;;;-----------------------------------------------------------------------------
-;;; 3. Functions
+;;; 3. Функции
 ;;;-----------------------------------------------------------------------------
 
-;;; Use LAMBDA to create anonymous functions. Functions always returns the
-;;; value of the last expression. The exact printable representation of a
-;;; function varies between implementations.
+;;; Для создания анонимных функций используйте LAMBDA. Функций всегда возвращают
+;;; значение последнего своего выражения. Как выглядит функция при выводе в консоль
+;;; зависит от реализации.
 
-(lambda () "Hello World") ; => #<FUNCTION (LAMBDA ()) {1004E7818B}>
+(lambda () "Привет Мир") ; => #<FUNCTION (LAMBDA ()) {1004E7818B}>
 
-;;; Use FUNCALL to call anonymous functions
+;;; Для вызова анонимной функции пользуйтесь FUNCALL
 
-(funcall (lambda () "Hello World"))   ; => "Hello World"
+(funcall (lambda () "Привет Мир"))   ; => "Привет мир"
 (funcall #'+ 1 2 3)                   ; => 6
 
-;;; A call to FUNCALL is also implied when the lambda expression is the CAR of
-;;; an unquoted list
+;;; FUNCALL сработает и тогда, когда анонимная функция стоит в начале
+;;; неэкранированного списка
 
-((lambda () "Hello World"))           ; => "Hello World"
-((lambda (val) val) "Hello World")    ; => "Hello World"
+((lambda () "Привет Мир"))           ; => "Привет Мир"
+((lambda (val) val) "Привет Мир")    ; => "Привет Мир"
 
-;;; FUNCALL is used when the arguments are known beforehand. Otherwise, use APPLY
+;;; FUNCALL используется, когда аргументы заранее известны.
+;;; В противном случае используйте APPLY
 
 (apply #'+ '(1 2 3))   ; => 6
-(apply (lambda () "Hello World") nil) ; => "Hello World"
+(apply (lambda () "Привет Мир") nil) ; => "Привет Мир"
 
-;;; To name a function, use DEFUN
+;;; Для обычной функции с именем используйте DEFUN
 
-(defun hello-world () "Hello World")
-(hello-world) ; => "Hello World"
+(defun hello-world () "Привет Мир")
+(hello-world) ; => "Привет Мир"
 
-;;; The () in the definition above is the list of arguments
+;;; Выше видно пустой список (), это место для определения аргументов
 
 (defun hello (name) (format nil "Hello, ~A" name))
-(hello "Steve") ; => "Hello, Steve"
+(hello "Григорий") ; => "Привет, Григорий"
 
-;;; Functions can have optional arguments; they default to NIL
+;;; Можно указать необязательные аргументы. По умолчанию они будут NIL
 
 (defun hello (name &optional from)
   (if from
-      (format t "Hello, ~A, from ~A" name from)
-      (format t "Hello, ~A" name)))
+      (format t "Приветствие для ~A от ~A" name from)
+      (format t "Привет, ~A" name)))
 
-(hello "Jim" "Alpacas")       ; => Hello, Jim, from Alpacas
+(hello "Георгия" "Василия")       ; => Приветствие для Георгия от Василия
 
-;;; The default values can also be specified
+;;; Можно явно задать значения по умолчанию
 
-(defun hello (name &optional (from "The world"))
-   (format nil "Hello, ~A, from ~A" name from))
+(defun hello (name &optional (from "Мира"))
+   (format nil "Приветствие для ~A от ~A" name from))
 
-(hello "Steve")               ; => Hello, Steve, from The world
-(hello "Steve" "the alpacas") ; => Hello, Steve, from the alpacas
+(hello "Жоры")               ; => Приветствие для Жоры от Мира
+(hello "Жоры" "альпаки")     ; => Приветствие для Жоры от альпаки
 
-;;; Functions also have keyword arguments to allow non-positional arguments
+;;; Можно также задать именованные параметры
 
-(defun generalized-greeter (name &key (from "the world") (honorific "Mx"))
-  (format t "Hello, ~A ~A, from ~A" honorific name from))
+(defun generalized-greeter (name &key (from "Мира") (honorific "Господин"))
+  (format t "Здравствуйте, ~A ~A, от ~A" honorific name from))
 
-(generalized-greeter "Jim")
-; => Hello, Mx Jim, from the world
+(generalized-greeter "Григорий")
+; => Здравствуйте, Господин Григорий, от Мира
 
-(generalized-greeter "Jim" :from "the alpacas you met last summer" :honorific "Mr")
-; => Hello, Mr Jim, from the alpacas you met last summer
+(generalized-greeter "Григорий" :from "альпаки" :honorific "гражданин")
+; => Здравствуйте, Гражданин Григорий, от альпаки
 
 
 ;;;-----------------------------------------------------------------------------
-;;; 4. Equality
+;;; 4. Равенство или эквивалентность
 ;;;-----------------------------------------------------------------------------
 
-;;; CL has a sophisticated equality system. Some are covered here.
+;;; У CL сложная система эквивалентности. Взглянем одним глазом.
 
-;;; For numbers, use `='
+;;; Для чисел используйте `='
 (= 3 3.0)               ; => T
 (= 2 1)                 ; => NIL
 
-;;; For object identity (approximately) use EQL
+;;; Для идентичености объектов используйте EQL
 (eql 3 3)               ; => T
 (eql 3 3.0)             ; => NIL
 (eql (list 3) (list 3)) ; => NIL
 
-;;; for lists, strings, and bit-vectors use EQUAL
+;;; Для списков, строк, и битовых векторов - EQUAL
 (equal (list 'a 'b) (list 'a 'b)) ; => T
 (equal (list 'a 'b) (list 'b 'a)) ; => NIL
 
 
 ;;;-----------------------------------------------------------------------------
-;;; 5. Control Flow
+;;; 5. Циклы и ветвления
 ;;;-----------------------------------------------------------------------------
 
-;;; Conditionals
+;;; Ветвления
 
-(if t                ; test expression
-    "this is true"   ; then expression
-    "this is false") ; else expression
-; => "this is true"
+(if t                    ; проверямое значение
+    "случилась истина"   ; если, оно было истинно
+    "случилась ложь")    ; иначе, когда оно было ложно
+; => "случилась истина"
 
-;;; In conditionals, all non-NIL values are treated as true
+;;; В форме ветвления if, все не-NIL значения это `истина`
 
 (member 'Groucho '(Harpo Groucho Zeppo)) ; => '(GROUCHO ZEPPO)
 (if (member 'Groucho '(Harpo Groucho Zeppo))
@@ -452,21 +449,21 @@ nil                    ; false; also, the empty list: ()
     'nope)
 ; => 'YEP
 
-;;; COND chains a series of tests to select a result
-(cond ((> 2 2) (error "wrong!"))
-      ((< 2 2) (error "wrong again!"))
+;;; COND это цепочка проверок для нахождения искомого
+(cond ((> 2 2) (error "мимо!"))
+      ((< 2 2) (error "опять мимо!"))
       (t 'ok)) ; => 'OK
 
-;;; TYPECASE switches on the type of the value
+;;; TYPECASE выбирает ветку исходя из типа выражения
 (typecase 1
   (string :string)
   (integer :int))
 ; => :int
 
 
-;;; Looping
+;;; Циклы
 
-;;; Recursion
+;;; С рекурсией
 
 (defun fact (n)
   (if (< n 2)
@@ -475,7 +472,7 @@ nil                    ; false; also, the empty list: ()
 
 (fact 5) ; => 120
 
-;;; Iteration
+;;; И без
 
 (defun fact (n)
   (loop :for result = 1 :then (* result i)
@@ -484,7 +481,7 @@ nil                    ; false; also, the empty list: ()
 
 (fact 5) ; => 120
 
-(loop :for x :across "abcd" :collect x)
+(loop :for x :across "abc" :collect x)
 ; => (#\a #\b #\c #\d)
 
 (dolist (i '(1 2 3 4))
@@ -493,26 +490,25 @@ nil                    ; false; also, the empty list: ()
 
 
 ;;;-----------------------------------------------------------------------------
-;;; 6. Mutation
+;;; 6. Установка значений в переменные (и не только)
 ;;;-----------------------------------------------------------------------------
 
-;;; Use SETF to assign a new value to an existing variable. This was
-;;; demonstrated earlier in the hash table example.
+;;; Для присвоения переменной нового значения используйте SETF. Это уже было
+;;; при работе с хеш таблицами.
 
 (let ((variable 10))
     (setf variable 2))
 ; => 2
 
-;;; Good Lisp style is to minimize the use of destructive functions and to avoid
-;;; mutation when reasonable.
-
+;;; Для функционального подхода в программировании, старайтесь избегать измений
+;;; в переменных.
 
 ;;;-----------------------------------------------------------------------------
-;;; 7. Classes and objects
+;;; 7. Классы и объекты
 ;;;-----------------------------------------------------------------------------
 
-;;; No more animal classes. Let's have Human-Powered Mechanical
-;;; Conveyances.
+;;; Никаких больше животных в примерах. Берем устройства приводимые в движение
+;;; мускульной силой человека.
 
 (defclass human-powered-conveyance ()
   ((velocity
@@ -521,18 +517,17 @@ nil                    ; false; also, the empty list: ()
    (average-efficiency
     :accessor average-efficiency
    :initarg :average-efficiency))
-  (:documentation "A human powered conveyance"))
+  (:documentation "Устройство движимое человеческой силой"))
 
-;;; The arguments to DEFCLASS, in order are:
-;;; 1. class name
-;;; 2. superclass list
-;;; 3. slot list
-;;; 4. optional specifiers
+;;; Аргументы DEFCLASS:
+;;; 1. Имя класса
+;;; 2. Список родительских классов
+;;; 3. Список полей
+;;; 4. Необязательная метаинформация
 
-;;; When no superclass list is set, the empty list defaults to the
-;;; standard-object class. This *can* be changed, but not until you
-;;; know what you're doing. Look up the Art of the Metaobject Protocol
-;;; for more information.
+;;; Если родительские классы не заданы, используется "стандартный" класс
+;;; Это можно *изменить*, но хорошенько подумайте прежде. Если все-таки
+;;; решились вам поможет "Art of the Metaobject Protocol"
 
 (defclass bicycle (human-powered-conveyance)
   ((wheel-size
@@ -555,7 +550,7 @@ nil                    ; false; also, the empty list: ()
     :accessor number-of-rowers
     :initarg :number-of-rowers)))
 
-;;; Calling DESCRIBE on the HUMAN-POWERED-CONVEYANCE class in the REPL gives:
+;;; Если вызвать DESCRIBE для HUMAN-POWERED-CONVEYANCE то получите следующее:
 
 (describe 'human-powered-conveyance)
 
@@ -577,43 +572,43 @@ nil                    ; false; also, the empty list: ()
 ;      Readers: AVERAGE-EFFICIENCY
 ;      Writers: (SETF AVERAGE-EFFICIENCY)
 
-;;; Note the reflective behavior available. CL was designed to be an
-;;; interactive system
+;;; CL задизайнен как интерактивная система. В рантайме доступна информация о
+;;; типе объектов.
 
-;;; To define a method, let's find out what our circumference of the
-;;; bike wheel turns out to be using the equation: C = d * pi
+;;; Давайте посчитаем расстояние, которое пройдет велосипед за один оборот колеса
+;;; по формуле C = d * pi
 
 (defmethod circumference ((object bicycle))
   (* pi (wheel-size object)))
 
-;;; PI is defined as a built-in in CL
+;;; PI - это константа в CL
 
-;;; Let's suppose we find out that the efficiency value of the number
-;;; of rowers in a canoe is roughly logarithmic. This should probably be set
-;;; in the constructor/initializer.
+;;; Предположим мы нашли, что критерий эффективности логарифмически связан
+;;; с гребцами каноэ. Тогда вычисление можем сделать сразу при инициализации.
 
-;;; To initialize your instance after CL gets done constructing it:
+;;; Инициализируем объект после его создания:
 
 (defmethod initialize-instance :after ((object canoe) &rest args)
   (setf (average-efficiency object)  (log (1+ (number-of-rowers object)))))
 
-;;; Then to construct an instance and check the average efficiency...
+
+;;; Давайте проверим что получилось с этой самой эффективностью...
 
 (average-efficiency (make-instance 'canoe :number-of-rowers 15))
 ; => 2.7725887
 
 
 ;;;-----------------------------------------------------------------------------
-;;; 8. Macros
+;;; 8. Макросы
 ;;;-----------------------------------------------------------------------------
 
-;;; Macros let you extend the syntax of the language. CL doesn't come
-;;; with a WHILE loop, however, it's trivial to write one. If we obey our
-;;; assembler instincts, we wind up with:
+;;; Макросы позволяют расширить синаксис языка. В CL нет например цикла WHILE,
+;;; но его проще простого реализовать на макросах. Если мы отбросим наши
+;;; ассемблерные (или алгольные) инстинкты, мы взлетим на крыльях:
 
 (defmacro while (condition &body body)
-    "While `condition` is true, `body` is executed.
-`condition` is tested prior to each execution of `body`"
+    "Пока `условие` истинно, выполняется `тело`.
+`Условие` проверяется перед каждым выполнением `тела`"
     (let ((block-name (gensym)) (done (gensym)))
         `(tagbody
            ,block-name
@@ -624,27 +619,30 @@ nil                    ; false; also, the empty list: ()
            (go ,block-name)
            ,done)))
 
-;;; Let's look at the high-level version of this:
+;;; Взглянем на более высокоуровневую версию этого макроса:
 
 (defmacro while (condition &body body)
-    "While `condition` is true, `body` is executed.
-`condition` is tested prior to each execution of `body`"
+    "Пока `условие` истинно, выполняется `тело`.
+`Условие` проверяется перед каждым выполнением `тела`"
   `(loop while ,condition
          do
          (progn
             ,@body)))
 
-;;; However, with a modern compiler, this is not required; the LOOP form
-;;; compiles equally well and is easier to read.
+;;; В современных комиляторах LOOP так же эффективен как и приведенный
+;;; выше код. Поэтому используйте его, его проще читать.
 
-;;; Note that  is used, as well as `,` and `@`.  is a quote-type operator
-;;; known as quasiquote; it allows the use of `,` . `,` allows "unquoting"
-;;; variables. @ interpolates lists.
+;;; В макросах используются символы , `,` и `@`.  - это оператор
+;;; квазиквотирования - это значит что форма исполнятся не будет, а вернется
+;;; как данные. Оператаор `,` позволяет исполнить форму внутри
+;;; квазиквотирования. Оператор `@` исполняет форму внутри квазиквотирования
+;;; но полученный список вклеивает по месту.
 
-;;; GENSYM creates a unique symbol guaranteed to not exist elsewhere in
-;;; the system. This is because macros are expanded at compile time and
-;;; variables declared in the macro can collide with variables used in
-;;; regular code.
+;;; GENSYM создаёт уникальный символ, который гарантировано больше нигде в
+;;; системе не используется. Так надо потому, что макросы разворачиваются
+;;; во время компиляции и переменные объявленные в макросе могут совпасть
+;;; по имени с переменными в обычном коде.
 
-;;; See Practical Common Lisp and On Lisp for more information on macros.
+;;; Дальнйешую информацию о макросах ищите в книгах Practical Common Lisp
+;;; и On Lisp
 

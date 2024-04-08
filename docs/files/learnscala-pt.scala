@@ -1,133 +1,179 @@
 
+/////////////////////////////////////////////////
+// 0. O básico
+/////////////////////////////////////////////////
 /*
-  Prepare tudo:
+  Configurando o Scala:
 
-  1) Faça Download do Scala - http://www.scala-lang.org/downloads
-  2) Faça unzip/untar para onde preferir e coloque o subdirectório `bin` na
-     variável de ambiente `PATH`
-  3) Inicie a REPL de Scala correndo o comando `scala`. Deve aparecer:
-
-  scala>
-
-  Isto é chamado de REPL (Read-Eval-Print Loop / Lê-Avalia-Imprime Repete).
-  Pode escrever qualquer expressão de Scala e o resultado será imprimido.
-  Vamos mostrar ficheiros de Scala mais à frente neste tutorial mas, para já,
-  vamos começar com os básicos.
-
+  1) Baixe o instalador do Scala - http://www.scala-lang.org/downloads
+  2) Extraia (unzip ou tar) para sua localização favorita e coloque o subdiretório
+  bin na variável de ambiente `PATH`
 */
 
-
-/////////////////////////////////////////////////
-// 1. Basicos
-/////////////////////////////////////////////////
-
-// Uma linha de comentários é marcada com duas barras
-
 /*
-  Comentários de multiplas linhas, como se pode ver neste exemplo, são assim.
+  Tente o REPL
+
+  Scala tem uma ferramenta chamada REPL (Read-Eval-Print Loop) que é análogo a
+  interpretadores de linha de comando de outras linguagens. Você pode digitar
+  qualquer expressão de Scala e o resultado será calculado e impresso.
+
+  O REPL é uma ferramenta muito conveniente para testar e verificar código. Use-o
+  enquanto você lê o tutorial para explorar os conceitos rapidamente por conta própria.
 */
 
-// Imprimir, forçando uma nova linha no final
+//Inicialize um REPL de Scala executando o comando scala no terminal. Você deve ver o prompt:
+$ scala
+scala>
+
+//Por padrão, cada expressão que você executa é salva como um novo valor enumerado:
+scala> 2 + 2
+res0: Int = 4
+
+// Valores padrões podem ser reutilizados. Observe o tipo do valor exibido no resultado...
+scala> res0 + 2
+res1: Int = 6
+
+// Scala é uma linguagem fortemente tipada. Você pode usar o REPL para verfificar o tipo
+// sem avaliar uma expressão.
+
+scala> :type (true, 2.0)
+(Boolean, Double)
+
+// As sessões do REPL podem ser salvas
+scala> :save /sites/repl-test.scala
+
+//Arquivos podem ser carregados no REPL
+scala> :load /sites/repl-test.scala
+Loading /sites/repl-test.scala...
+res2: Int = 4
+res3: Int = 6
+
+// Você pode pesquisar em seu histórico recente
+scala> :h?
+1 2 + 2
+2 res0 + 2
+3 :save /sites/repl-test.scala
+4 :load /sites/repl-test.scala
+5 :h?
+
+// Agora que você já sabe brincar, vamos aprender um pouco de Scala...
+
+/////////////////////////////////////////////////
+// 1. Introdução
+/////////////////////////////////////////////////
+
+// Comentários de uma linha começam com duas barras
+
+/*
+  Comentários com múltiplas linhas, como você já pode ver, são assim.
+*/
+
+// Imprimir e forçar uma linha na próxima impressão
 println("Hello world!")
 println(10)
+// Hello world!
+// 10
 
-// Imprimir, sem forçar uma nova linha no final
+//Imprimir sem forçar uma nova linha na próxima impressão
 print("Hello world")
+print(10)
+// Hello world10
 
-// Valores são declarados com var ou val.
-// As declarações val são imutáveis, enquanto que vars são mutáveis.
-// A immutabilidade é uma propriedade geralmente vantajosa.
-val x = 10 // x é agora 10
-x = 20     // erro: reatribuição de um val
+//A declaração de valores pode ser feita usando tanto o var quanto o val.
+// Declarações feitas com `val` são imutáveis, enquanto que declarações feitas
+// com var são mutáveis. Imutabilidade é uma coisa boa.
+val x = 10 // x is now 10
+x = 20     // error: reassignment to val
 var y = 10
-y = 20     // y é agora 12
+ = 20     // y agora é 20
 
 /*
-  Scala é uma linguagem estaticamente tipada, no entanto, nas declarações acima
-  não especificamos um tipo. Isto é devido a uma funcionalidade chamada
-  inferência de tipos. Na maior parte dos casos, o compilador de scala consegue
-  inferir qual o tipo de uma variável, pelo que não o temos de o declarar sempre.
-  Podemos declarar o tipo de uma variável da seguinte forma:
+  Scala é uma linguagem estaticamente tipada. Observe ainda que nas declarações
+  acima nós não especificamos um tipo. Isso se deve a um recurso da linguagem
+  chamado de inferência. Na maioria dos casos, o compilador do Scala consegue
+  adivinhar qual tipo é, de forma que você não precisa digitar sempre. Nós
+  podemos declarar o tipo da variável de maneira explícita asim:
 */
+
 val z: Int = 10
 val a: Double = 1.0
 
-// Note a conversão automática de Int para Double: o resultado é 10.0, não 10
+// Note que a conversão automática de Int para Double, o resultado é 10.0, não 10
 val b: Double = 10
 
-// Valores booleanos
+//Valores booleanos
 true
 false
 
-// Operações booleanas
+//Operações booleanas
 !true         // false
 !false        // true
 true == false // false
 10 > 5        // true
 
-// A matemática funciona da maneira habitual
+// Matemática é como o de costume
 1 + 1   // 2
 2 - 1   // 1
 5 * 3   // 15
 6 / 2   // 3
 6 / 4   // 1
 6.0 / 4 // 1.5
+6 / 4.0 // 1.5
 
-
-// Avaliar expressões na REPL dá o tipo e valor do resultado
-
+// Calcular uma expressão no REPL te dá o tipo e o valor do resultado
 1 + 7
 
 /* A linha acima resulta em:
-
   scala> 1 + 7
   res29: Int = 8
 
-  Isto significa que o resultado de avaliar 1 + 7 é um objecto do tipo Int com
-  o valor 8.
+  Isso significa que o resultado ao culcular  1 + 7 é um objeto do tipo Int com
+  valor 8.
 
-  Note que "res29" é um nome de uma variavel gerado sequencialmente para
-  armazenar os resultados das expressões que escreveu, por isso o resultado
-  pode ser ligeiramente diferente.
+  Note que "res29" é o nome de uma variável gerada sequencialmente para guardar
+  os resultados das expressões que você executa, logo seu nome pode ser
+  diferente.
 */
 
-"Strings em scala são rodeadas por aspas"
-'a' // Um caracter de Scala
-// 'Strings entre plicas não existem' <= Isto causa um erro
+"Strings em Scala são delimitadas por aspas duplas"
+'a' // Um caractere em Scala
+// 'Strings com aspas simples não existem em Scala.' <= isso causa um erro.
 
-// Strings tem os métodos de Java habituais definidos
-"olá mundo".length
-"olá mundo".substring(2, 6)
-"olá mundo".replace("á", "é")
+// Strings possuem os métodos comuns de Java definidos
+"hello world".length
+"hello world".substring(2, 6)
+"hello world".replace("C", "3")
 
-// Para além disso, também possuem métodos de Scala.
-// Ver: scala.collection.immutable.StringOps
-"olá mundo".take(5)
-"olá mundo".drop(5)
+// Elas também possuem alguns métodos extras do Scala. Veja também:
+scala.collection.immutable.StringOps
+"hello world".take(5)
+"hello world".drop(5)
 
-// Interpolação de Strings: repare no prefixo "s"
+//Interpolação de string: observe o prefixo "s"
 val n = 45
-s"Temos $n maçãs" // => "Temos 45 maçãs"
+s"We have $n apples" // => "We have 45 apples"
 
-// Expressões dentro de Strings interpoladas também são possíveis
+// Também é possível ter expressões dentro de interpolação de strings
 val a = Array(11, 9, 6)
-s"A minha segunda filha tem ${a(0) - a(2)} anos." // => "A minha segunda filha tem 5 anos."
-s"Temos o dobro de ${n / 2.0} em maçãs."          // => "Temos o dobro de 22.5 em maçãs."
-s"Potência de 2: ${math.pow(2, 2)}"               // => "Potência de 2: 4"
+s"My second daughter is ${a(0) - a(2)} years old."    // => "My second daughter is 5 years old."
+s"We have double the amount of ${n / 2.0} in apples." // => "We have double the amount of 22.5 in apples."
+s"Power of 2: ${math.pow(2, 2)}"                      // => "Power of 2: 4"
 
-// Strings interpoladas são formatadas com o prefixo "f"
-f"Potência de 5: ${math.pow(5, 2)}%1.0f"     // "Potência de 5: 25"
-f"Raíz quadrada 122: ${math.sqrt(122)}%1.4f" // "Raíz quadrada de 122: 11.0454"
+// Formatação de strings interpoladas com o prefixo "f"
+f"Power of 5: ${math.pow(5, 2)}%1.0f"         // "Power of 5: 25"
+f"Square root of 122: ${math.sqrt(122)}%1.4f" // "Square root of 122: 11.0454"
 
-// Strings prefixadas com "raw" ignoram caracteres especiais
-raw"Nova linha: \n. Retorno: \r." // => "Nova Linha: \n. Retorno: \r."
 
-// Alguns caracteres tem de ser "escapados", e.g. uma aspa dentro de uma string:
-"Esperaram fora do  \"Rose and Crown\"" // => "Esperaram fora do "Rose and Crown""
+// Strings cruas, ignorando caracteres especiais
+raw"New line feed: \n. Carriage return: \r." // => "New line feed: \n. Carriage return: \r."
 
-// Strings rodeadas por três aspas podem-se estender por varias linhas e conter aspas
+//Alguns caracteres precisam ser "escapados", ex. uma aspa dupla dentro de uma string
+
+"They stood outside the \"Rose and Crown\"" // => "They stood outside the "Rose and Crown""
+
+// Aspas triplas permitem strings a abrangerem múltiplas linhas e conter Aspas
 val html = """<form id="daform">
-                <p>Carrega aqui, Zé</p>
+                <p>Press belo', Joe</p>
                 <input type="submit">
               </form>"""
 
@@ -136,74 +182,72 @@ val html = """<form id="daform">
 // 2. Funções
 /////////////////////////////////////////////////
 
-// Funções são definidas como:
+// Funções são definidas da seguinte maneira:
 //
-//   def nomeDaFuncao(args...): TipoDeRetorno = { corpo... }
+//   def nomeDaFuncao(args ...): TipoDeRetorno = {body ...}
 //
-// Se vem de linugagens mais tradicionais, repare na omissão da palavra
-// return keyword. Em Scala, a ultima expressão de um bloco é o seu
-// valor de retorno
-def somaQuadrados(x: Int, y: Int): Int = {
+// Se você vem de linguagens mais tradicionais, note a omissão da palavra chave
+//return. Em Scala a última expressão no bloco da função é o valor de retorno
+def sumOfSquares(x: Int, y: Int): Int = {
   val x2 = x * x
   val y2 = y * y
   x2 + y2
 }
 
-// As { } podem ser omitidas se o corpo da função for apenas uma expressão:
-def somaQuadradosCurto(x: Int, y: Int): Int = x * x + y * y
+// As { } podem ser omitidas se o corpo da função possui apenas uma expressão:
+def sumOfSquaresShort(x: Int, y: Int): Int = x * x + y * y
 
-// A sintaxe para chamar funções deve ser familiar:
-somaQuadrados(3, 4)  // => 25
+// A sintaxe para chamar funções é familiar:
+sumOfSquares(3, 4)  // => 25
 
-// Na maior parte dos casos (sendo funções recursivas a principal excepção), o
-// tipo de retorno da função pode ser omitido, sendo que a inferencia de tipos
-// é aplicada aos valores de retorno
-def quadrado(x: Int) = x * x  // O compilador infere o tipo de retorno Int
+// Você poode usar o nome dos parâmetros para especificá-los numa ordem diferente
+def subtract(x: Int, y: Int): Int = x - y
 
-// Funções podem ter parâmetros por omissão:
-def somaComOmissão(x: Int, y: Int = 5) = x + y
-somaComOmissão(1, 2) // => 3
-somaComOmissão(1)    // => 6
+subtract(10, 3)     // => 7
+subtract(y=10, x=3) // => -7
 
+// Na maioria dos casos (sendo funções recursivas a a exceção mais notável) o
+// tipo de retorno da função pode ser omitido, e o mesmo tipo de inferência que
+// vimos nas variáveis funcionará com o valor de retorno da função:
+def sq(x: Int) = x * x  // O compilador consegue adivinhar que o tipo de retorno é Int
 
-// Funções anónimas são definidas da seguinte forma:
+// Funções podem ter parâmetros padrão:
+def addWithDefault(x: Int, y: Int = 5) = x + y
+addWithDefault(1, 2) // => 3
+addWithDefault(1)    // => 6
+
+// Funções anônimas são semelhantes a essa:
 (x: Int) => x * x
 
-// Ao contrário de defs, o tipo de input de funções anónimas pode ser omitido
-// se o contexto o tornar óbvio. Note que o tipo "Int => Int" representa uma
-// funão que recebe Int e retorna Int.
-val quadrado: Int => Int = x => x * x
+// Diferente de defs, até mesmo a entrada de funções anônimas podem ser omitidas
+// se o contexto deixar isso claro. Observe o tipo "Int => Int", que significa
+// uma função que recebe umn Int e retorna um Int.
+val sq: Int => Int = x => x * x
 
-// Funcões anónimas são chamadas como funções normais:
-quadrado(10)   // => 100
+// Se cada argumento na sua função anônima é usado apenas uma vez, Scala te fornece
+// uma maneira ainda mais curta de definí-lo. Estas funções anônimas acabam por
+// ser muito comuns, como será mostrado na sessão de estrutura de dados.
+val addOne: Int => Int = _ + 1
+val weirdSum: (Int, Int) => Int = (_ * 2 + _ * 3)
 
-// Se cada argumento de uma função anónima for usado apenas uma vez, existe
-// uma forma ainda mais curta de os definir. Estas funções anónumas são
-// extremamente comuns, como será visto na secção sobre estruturas de dados.
-val somaUm: Int => Int = _ + 1
-val somaEstranha: (Int, Int) => Int = (_ * 2 + _ * 3)
+addOne(5)      // => 6
+weirdSum(2, 4) // => 16
 
-somaUm(5)          // => 6
-somaEstranha(2, 4) // => 16
-
-
-// O código return existe em Scala, mas apenas retorna do def mais interior
-// que o rodeia.
-// AVISO: Usar return em Scala deve ser evitado, pois facilmente leva a erros.
-// Não tem qualquer efeito em funções anónimas, por exemplo:
+// A palavra chave return existe em Scala, mas só retorna do def mais profundo que o cerca.
+//AVISO: O uso do return em Scala é propenso a erros e deve ser evitado.
+//Não há efeito em funções anônimas. Per exemplo:
 def foo(x: Int): Int = {
-  val funcAnon: Int => Int = { z =>
+  val anonFunc: Int => Int = { z =>
     if (z > 5)
-      return z // Esta linha faz com que z seja o retorno de foo!
+      return z // Esta linha faz Z retornar o valor de foo!
     else
-      z + 2    // Esta linha define o retorno de funcAnon
+      z + 2    // Esta linha retorna o valor de anonFunc
   }
-  funcAnon(x)  // Esta linha define o valor de retorno de foo
+  anonFunc(x) // Esta linha retorna o valor de foo
 }
 
-
 /////////////////////////////////////////////////
-// 3. Controlo de fluxo
+// 3. Controle de Fluxo
 /////////////////////////////////////////////////
 
 1 to 5
@@ -211,416 +255,398 @@ val r = 1 to 5
 r.foreach(println)
 
 r foreach println
-// NB: Scala é bastante brando no que toca a pontos e parentisis - estude as
-// regras separadamente. Isto permite escrever APIs e DSLs bastante legiveis
+///N.B.: Scala é bem flexível quando se fala de pontos e parêntesis - estude as regras
+//separadamente. Isso ajuda a escrever DSLs e APIs que são lidas como inglês.
 
 (5 to 1 by -1) foreach (println)
 
-// Ciclos while
+// Um loop while
 var i = 0
 while (i < 10) { println("i " + i); i += 1 }
 
-while (i < 10) { println("i " + i); i += 1 }   // Sim, outra vez. O que aconteceu? Porquê?
+while (i < 10) { println("i " + i); i += 1 }   // Sim, de novo. O que aconteceu? Por quê?
 
-i    // Mostra o valor de i. Note que o while é um ciclo no sentido clássico -
-     // executa sequencialmente enquanto muda uma variável. Ciclos while são
-     // rápidos, por vezes até mais que ciclos de Java, mas combinadores e
-     // compreensões (usados anteriormente) são mais fáceis de entender e
-     // paralelizar
+i    // Exibe o valor de i. Note que o while é um loop no senso clássico -
+     // executa sequencialmente enquanto muda a variável do loop. While é muito
+     // rápido, mas usar os combinadores e compreenões acima é mais fácil
+     // para entender e paralizar
 
-// Um ciclo do while
+// Um loop do-while
 i = 0
 do {
   println("i ainda é menor que 10")
   i += 1
 } while (i < 10)
 
-// A forma idiomática em Scala de definir acções recorrentes é através de
-// recursão em cauda.
-// Funções recursivas necessitam de um tipo de retorno definido explicitamente.
-// Neste caso, é Unit.
-def mostraNumerosEntre(a: Int, b: Int): Unit = {
+
+// Recursão é a forma mais idiomática de repetir uma ação em Scala (assim como na
+// maioria das linguagens de programação funcional)
+// Funções recursivas precisam de um tipo de retorno explícito, o compilador não
+// consegue inferir;
+// Aqui está o Unit
+def showNumbersInRange(a: Int, b: Int): Unit = {
   print(a)
   if (a < b)
-    mostraNumerosEntre(a + 1, b)
+    showNumbersInRange(a + 1, b)
 }
-mostraNumerosEntre(1, 14)
-
+showNumbersInRange(1, 14)
 
 // Condicionais
 
-val x = 10
+al x = 10
 
 if (x == 1) println("yeah")
 if (x == 10) println("yeah")
 if (x == 11) println("yeah")
-if (x == 11) println ("yeah") else println("nay")
+if (x == 11) println("yeah") else println("nay")
 
 println(if (x == 10) "yeah" else "nope")
 val text = if (x == 10) "yeah" else "nope"
 
-
 /////////////////////////////////////////////////
-// 4. Estruturas de dados
+// 4. Estrutura de Dados
 /////////////////////////////////////////////////
 
 val a = Array(1, 2, 3, 5, 8, 13)
-a(0)
-a(3)
-a(21)    // Lança uma excepção
-
-val m = Map("fork" -> "tenedor", "spoon" -> "cuchara", "knife" -> "cuchillo")
-m("fork")
-m("spoon")
-m("bottle")       // Lança uma excepção
+a(0)     // Int = 1
+a(3)     // Int = 5
+a(21)    // Lança uma exceção
 
 val safeM = m.withDefaultValue("no lo se")
-safeM("bottle")
+safeM("bottle")   // java.lang.String = no lo se
 
 val s = Set(1, 3, 7)
-s(0)
-s(1)
+s(0)      // Boolean = false
+s(1)      // Boolean = true
 
-/* Veja a documentação de mapas de scala em -
+/* Veja a documantação do map aqui -
  * http://www.scala-lang.org/api/current/index.html#scala.collection.immutable.Map
- * e verifique que a consegue aceder
+ * e garanta que você leia
  */
 
+ // Tuplas
 
-// Tuplos
+ (1, 2)
 
-(1, 2)
+ (4, 3, 2)
 
-(4, 3, 2)
+ (1, 2, "three")
 
-(1, 2, "três")
+ (a, 2, "three")
 
-(a, 2, "três")
+ //Por que ter isso?
+ val divideInts = (x: Int, y: Int) => (x / y, x % y)
 
-// Porquê ter isto?
-val divideInts = (x: Int, y: Int) => (x / y, x % y)
+//A função divideInts te dá o resultado e o resultado
+divideInts(10, 3)    // (Int, Int) = (3,1)
 
-divideInts(10, 3) // A função divideInts returna o resultado e o resto
+//Para acessar os elementos de uma tupla, use _._n onde n é o índex do elemento
 
-// Para aceder aos elementos de um tuplo, pode-se usar _._n, onde n é o indice
-// (começado em 1) do elemento
-val d = divideInts(10, 3)
+val d = divideInts(10, 3)    // (Int, Int) = (3,1)
 
-d._1
+d._1    // Int = 3
+d._2    // Int = 1
 
-d._2
+// Alternativamente, você pode atribuir múltiplas variáveis para uma tupla, o
+// que é mais conveniente e legível em muitos casos
+val (div, mod) = divideInts(10, 3)
 
+div     // Int = 3
+mod     // Int = 1
 
 /////////////////////////////////////////////////
-// 5. Programação Orientada a Objectos
+// 5. Object Oriented Programming
 /////////////////////////////////////////////////
 
 /*
-  Aparte: Até agora tudo o que fizemos neste tutorial foram expressões simples
-  (valores, funções, etc). Estas expressões são suficientes para executar no
-  interpretador da linha de comandos para testes rápidos, mas não podem existir
-  isoladas num ficheiro de Scala. Por exemplo, não é possivel correr um
-  ficheiro scala que apenas contenha "val x = 5". Em vez disso, as únicas
-  construções de topo permitidas são:
+    Tudo o que vimos até agora neste tutorial foram expressões simples (valores, funções, etc).
+    Essas expressões são boas para digitar no interpretador da linha de comando para
+    testes rápidos, mas elas não podem existir por si só em um arquivo Scala. Por exemplo,
+    você não pode ter simplesmente "val x = 5" em um arquivo Scala. Ao invés disso, os únicos
+    construtores de alto nível permitidos em Scala são:
 
-  - object
-  - class
-  - case class
-  - trait
+    - objects
+    - classes
+    - case classes
+    - traits
 
-  Vamos agora explicar o que são:
+    E agora vamos explicar o que é cada um deles.
 */
 
-// Classes são semelhantes a classes noutras linguagens. Os argumentos do
-// construtor são declarados após o nome da classe, sendo a inicialização feita
-// no corpo da classe.
-class Cão(rc: String) {
-  // Código de construção
-  var raça: String = rc
+//classes são similares a classes em outras linguagens. Os argumentos do construtor
+// são declarados logo depois do nome da classe e a inicialização é feita no corpo da classe.
 
-  // Define um método chamado "ladra", que retorna uma String
-  def ladra = "Woof, woof!"
+class Dog(br: String) {
+  // codigo do construtor aqui
+  var breed: String = br
 
-  // Valores e métodos são assumidos como públicos, mas é possivel usar
-  // os códigos "protected" and "private".
-  private def dormir(horas: Int) =
-    println(s"Vou dormir por $horas horas")
+  // Define um método chamado bark que retorna uma String
+  def bark = "Woof, woof!"
 
-  // Métodos abstractos são métodos sem corpo. Se descomentarmos a próxima
-  // linha, a classe Cão é declarada como abstracta
-  //   abstract class Cão(...) { ... }
-  // def persegue(oQue: String): String
+  // Assume-se que os métodos e valores são públicos. As palavras chave "protected"
+  // e "private" também estão disponíveis.
+  private def sleep(hours: Int) =
+    println(s"I'm sleeping for $hours hours")
+
+  // Métodos abstratos são simplesmente métodos sem corpo. Se a gente remover o
+  // comentário da próxima linha a classe Dog teria que ser declarada como abstrata
+
+  //   abstract class Dog(...) { ... }
+  // def chaseAfter(what: String): String
 }
 
-val oMeuCão = new Cão("greyhound")
-println(oMeuCão.raça)  // => "greyhound"
-println(oMeuCão.ladra) // => "Woof, woof!"
+// A palavra chave "object" cria um tipo e uma instância singlenton desse tipo.
+// É comum para classes em Scala ter um "companion object" (objeto companheiro),
+// onde, por exemlo, o comportamento é capturado pelas classes em si, mas o comportamento
+// relacionado a toda instância da classe vai em objects. A diferença é semelhante
+// a métodos versus métodos estáticos em outras linguagens. Note que objects e
+// classes podem ter o mesmo nome.
 
-
-// O termo "object" cria um tipo e uma instancia singleton desse tipo. É comum
-// que classes de Scala possuam um "objecto companheiro", onde o comportamento
-// por instância é capturado nas classes, equanto que o comportamento
-// relacionado com todas as instancias dessa classe ficam no objecto.
-// A diferença é semelhante a métodos de classes e métodos estáticos noutras
-// linguagens. Note que objectos e classes podem ter o mesmo nome.
-object Cão {
-  def raçasConhecidas = List("pitbull", "shepherd", "retriever")
-  def criarCão(raça: String) = new Cão(raça)
+object Dog {
+  def allKnownBreeds = List("pitbull", "shepherd", "retriever")
+  def createDog(breed: String) = new Dog(breed)
 }
 
+// Case classes são classes que possuem uma funcionalidade extra incorporada.
+// Uma dúvida comum para iniciantes em Scala é quando usar classes e quando usar
+// case classes. A linha é bem tênue, mas em geral classes tendem a focar em encapsulamento,
+// polimorfismo e comportamento. Os valores nestas classes tendem a ser privados e
+// apenas métodos ficam expostos. O propósito primário de uma case class é guardar
+// dados imutáveis. Às vezes as case classes possuem alguns poucos métodos, os quais
+// raramente possuem efeitos colaterais (side effects).
+case class Person(name: String, phoneNumber: String)
 
-// Case classes são classes com funcionalidades extra incluidas. Uma questão
-// comum de iniciantes de scala é quando devem usar classes e quando devem usar
-// case classes. A linha é difusa mas, em geral, classes tendem a concentrar-se
-// em encapsulamento, polimorfismo e comportamento. Os valores nestas classes
-// tendem a ser privados, sendo apenas exposotos métodos. O propósito principal
-// das case classes é armazenarem dados imutáveis. Geralmente possuem poucos
-// métods, sendo que estes raramente possuem efeitos secundários.
-case class Pessoa(nome: String, telefone: String)
+// Cria uma nova instância. Observe que case classes não precisam de usar "new" ao serem instanciadas
+val george = Person("George", "1234")
+val kate = Person("Kate", "4567")
 
-// Cria uma nova instancia. De notar que case classes não precisam de "new"
-val jorge = Pessoa("Jorge", "1234")
-val cátia = Pessoa("Cátia", "4567")
+// Com case classes você ganha algumas regalias, como getters:
+// With case classes, you get a few perks for free, like getters:
+george.phoneNumber  // => "1234"
 
-// Case classes trazem algumas vantagens de borla, como acessores:
-jorge.telefone  // => "1234"
+// Verificação de igualdade por campo (sem a necessidade de sobrescrever o método equals)
+Person("George", "1234") == Person("Kate", "1236")  // => false
 
-// Igualdade por campo (não é preciso fazer override do .equals)
-Pessoa("Jorge", "1234") == Pessoa("Cátia", "1236")  // => false
+// Uma maneira fácil de copiar
+// otherGeorge == Person("george", "9876")
+val otherGeorge = george.copy(phoneNumber = "9876")
 
-// Cópia simples
-// outroJorge == Person("jorge", "9876")
-val outroJorge = jorge.copy(telefone = "9876")
+// E muitas outras. Case classes também possuem pattern matching de graça. Veja no próximo tópico.
 
-// Entre outras. Case classes também suportam correspondência de padrões de
-// borla, como pode ser visto de seguida.
-
-
-// Traits em breve!
+// Traits a caminho.
 
 
 /////////////////////////////////////////////////
-// 6. Correspondência de Padrões
+// 6. Pattern Matching
 /////////////////////////////////////////////////
 
-// A correspondência de padrões é uma funcionalidade poderosa e bastante
-// utilizada em Scala. Eis como fazer correspondência de padrões numa case class:
-// Nota: Ao contrário de outras linguagens, cases em scala não necessitam de
-// breaks, a computação termina no primeiro sucesso.
+// Pattern matching é um recurso muito poderoso e muito usado em Scala. Aqui
+// mostramos como o seu pattern se adequa a uma case class.
+// NB: Diferente de outras linguagens, Scala não precisa de quebras. Entrar em
+// todas as condições do pattern matching simples não acontece.
 
-def reconhecePessoa(pessoa: Pessoa): String = pessoa match {
-  // Agora, especifique os padrões:
-  case Pessoa("Jorge", tel) => "Encontramos o Jorge! O seu número é " + tel
-  case Pessoa("Cátia", tel) => "Encontramos a Cátia! O seu número é " + tel
-  case Pessoa(nome, tel)    => "Econtramos alguém : " + nome + ", telefone : " + tel
+def matchPerson(person: Person): String = person match {
+  // Enrão você especifica os padrões
+  case Person("George", number) => "We found George! His number is " + number
+  case Person("Kate", number)   => "We found Kate! Her number is " + number
+  case Person(name, number)     => "We matched someone : " + name + ", phone : " + number
 }
 
 val email = "(.*)@(.*)".r  // Define uma regex para o próximo exemplo.
 
-// A correspondência de padrões pode parecer familiar aos switches em linguagens
-// derivadas de C, mas é muto mais poderoso. Em Scala, é possível fazer
-// correspondências com muito mais:
-def correspondeTudo(obj: Any): String = obj match {
-  // Pode-se corresponder valores:
-  case "Olá mundo" => "Recebi uma string Olá mundo."
+// Pattern matching pode parecer com o comando switch nas liguagens da família C,
+// mas é muito mais poderoso. Em Scala você pode encontrar mais correpondências:
 
-  // Corresponder por tipo:
-  case x: Double => "Recebi um Double: " + x
+def matchEverything(obj: Any): String = obj match {
+  // Você pode encontrar valores correspondentes:
+  case "Hello world" => "Got the string Hello world"
 
-  // Corresponder tendo em conta condições especificas:
-  case x: Int if x > 10000 => "Recebi um número bem grande!"
+  // Você pode fazer correspondência por tipo:
+  case x: Double => "Got a Double: " + x
 
-  // Fazer correspondências com case classes (visto anteriormente):
-  case Pessoa(nome, tel) => s"Recebi o contacto para $nome!"
+  // Você pode especificar condições:
+  case x: Int if x > 10000 => "Got a pretty big number!"
 
-  // Fazer correspondência com expressões regulares:
-  case email(nome, dominio) => s"Recebi o endereço de email $nome@$dominio"
+  // Você pode encontrar correspondência com case classes, como fizemos antes:
+  case Person(name, number) => s"Got contact info for $name!"
 
-  // Corresponder tuplos:
-  case (a: Int, b: Double, c: String) => s"Recebi o tuplo: $a, $b, $c"
+  // Você pode encontrar correspondências por regex:
+  case email(name, domain) => s"Got email address $name@$domain"
 
-  // Corresponder estruturas de dados:
-  case List(1, b, c) => s"Recebi uma lista de 3 elementos começada em 1: 1, $b, $c"
+  // Você pode encontrar correspondencias por tuplas:
+  case (a: Int, b: Double, c: String) => s"Got a tuple: $a, $b, $c"
 
-  // Combinar padrões:
-  case List(List((1, 2, "YAY"))) => "Recebi uma lista de lista de triplo"
+  // Você pode encontrar corresponências por estruturas de dados:
+  case List(1, b, c) => s"Got a list with three elements and starts with 1: 1, $b, $c"
+
+  // Você pode aninhar padrões:
+  case List(List((1, 2, "YAY"))) => "Got a list of list of tuple"
+
+  // Retornar qualquer valor (padrão - default) caso nenhuma das possibilidades é correspondente.
+  case _ => "Got unknown object"
+
+  // Na verdade, você pode fazer correspondência de padrão de qualquer objeto que
+  // tenha o método "unnaply". Este recurso é tão poderoso que o Scala te deixa
+  // criar funções inteiras como patterns:
+
+  val patternFunc: Person => String = {
+    case Person("George", number) => s"George's number: $number"
+    case Person(name, number) => s"Random person's number: $number"
+  }
 }
-
-// Na realidade, é possível fazer correspondência com qualquer objecto que
-// defina o método "unapply". Esta funcionalidade é tão poderosa que permite
-// definir funções sob a forma de padrões:
-val funcPaddrao: Pessoa => String = {
-  case Pessoa("Jorge", tel) => s"Número do Jorge: $tel"
-  case Pessoa(nome, tel)    => s"Número de alguém: $tel"
-}
-
 
 /////////////////////////////////////////////////
 // 7. Programação Funcional
 /////////////////////////////////////////////////
 
-// Scala permite que funções e métodos retornem, ou recebam como parámetros,
-// outras funções ou métodos
+// Scala permite que métodos e funções recebam ou retornem outras funções ou métodos.
 
-val soma10: Int => Int = _ + 10 // Função que recebe um Int e retorna um Int
-List(1, 2, 3) map soma10 // List(11, 12, 13) - soma10 é aplicado a cada elemento
+val add10: Int => Int = _ + 10 // A function taking an Int and returning an Int
+List(1, 2, 3) map add10 // List(11, 12, 13) - add10 is applied to each element
 
-// Funções anónimas também podem ser usadas
+// Funções anônimas podem ser usadas ao invés de funções com nomes:
 List(1, 2, 3) map (x => x + 10)
 
-// Sendo que o símbolo _ também pode ser usado se a função anónima só receber
-// um argumento. Este fica com o valor da variável
+// E o símbolo underline ("_") pode ser usado quando há apenas um argumento para a função anônima.
 List(1, 2, 3) map (_ + 10)
 
-// Se tanto o bloco como a função apenas receberem um argumento, o próprio
-// _ pode ser omitido
-List("Dom", "Bob", "Natalia") foreach println
-
+// Se tanto o bloco animo quanto a função que você estiver usando receberem apenas
+// um argumento, você pode inclusive omitir o símbolo _
+List(1, 2, 3) map (_ + 10)
 
 // Combinadores
 
-s.map(quadrado)
+s.map(sq)
 
-val sQuadrado = s.map(quadrado)
+val sSquared = s. map(sq)
 
-sQuadrado.filter(_ < 10)
+sSquared.filter(_ < 10)
 
-sQuadrado.reduce (_+_)
+sSquared.reduce (_+_)
 
-// O método filter recebe um predicado (uma função de A => Boolean) e escolhe
-// todos os elementos que satisfazem o predicado
+// A função filter recebe um predicado (uma função do tipo A -> Boolean) e seleciona
+// todos os elementos que satisfazem o predicado.
 List(1, 2, 3) filter (_ > 2) // List(3)
-case class Pessoa(nome: String, idade: Int)
+case class Person(name: String, age: Int)
 List(
-  Pessoa(nome = "Dom", idade = 23),
-  Pessoa(nome = "Bob", idade = 30)
-).filter(_.idade > 25) // List(Pessoa("Bob", 30))
+  Person(name = "Dom", age = 23),
+  Person(name = "Bob", age = 30)
+).filter(_.age > 25) // List(Person("Bob", 30))
 
-
-// O método foreach recebe uma função de A => Unit, executando essa função em
-// cada elemento da colecção
+// Scala tem o método foreach definido em algumas collections em específico, o qual
+// recebe um tipo e retorna Unit (um método void)
 val aListOfNumbers = List(1, 2, 3, 4, 10, 20, 100)
 aListOfNumbers foreach (x => println(x))
 aListOfNumbers foreach println
 
-// Compreensões For
-
-for { n <- s } yield quadrado(n)
-
-val nQuadrado2 = for { n <- s } yield quadrado(n)
-
-for { n <- nQuadrado2 if n < 10 } yield n
-
-for { n <- s; nQuadrado = n * n if nQuadrado < 10} yield nQuadrado
-
-/* Nota: isto não são ciclos for: A semântica de um ciclo é 'repetir', enquanto
-   que uma compreensão define a relação entre dois conjuntos de dados. */
+/* NB Ests não são laços for. A semântica dos laços for é 'repetir' enquanto um
+  for-comprehension define um relacionamento entre dois conjuntos de dados */
 
 
 /////////////////////////////////////////////////
-// 8. Implicitos
+// 8. Implicits
 /////////////////////////////////////////////////
 
-/* AVISO IMPORTANTE: Implicitos são um conjunto de funcionalidades muito
- * poderosas em Scala, que podem ser fácilmente abusadas. Iniciantes devem
- * resistir a tentação de usá-los até que compreendam não só como funcionam,
- * mas também as melhores práticas. Apenas incluimos esta secção no tutorial
- * devido a estes serem tão comuns em bibliotecas de Scala que muitas delas
- * se tornam impossíveis de usar sem conhecer implicitos. Este capítulo serve
- * para compreender como trabalhar com implicitos, não como declará-los.
+/* ALERTA ALERTA:
+  Implicits são um conjunto de recursos poderosos de Scala e consequentemente é
+  fácil abusar deles. Iniciantes em Scala deveriam resistir a tentação de usá-los
+  até que eles entendam não apenas como eles funcionam mas também as melhores práticas
+  deles. Incluimos uma sessão neste tutorial sobre isso porque implicits são tão
+  corriqueiros em bibliotecas do Scala que é impossível fazer qualqeuer coisa expressiva
+  sem utilizar uma biblioteca que usa implicits. Isto é para você entender e trabalhar
+  com implicits. Não declare seus próprios implicits por conta própria.
 */
 
-// Qualquer valor (vals, funções, objectos, etc) pode ser declarado como
-// implicito usando a palavra "implicit". Vamos usar a classe Cão da secção 5
-// nestes exemplos
+// qualquer valor (val, function, objects, etc) pode ser declarado para ser implícito
+// usando a, você adivinhou, palavra chave "implicit". Usaremos a classe Dog definida
+// na sessão 5 para os próximos exemplos.
+implicit val myImplicitInt = 100
+implicit def myImplicitFunction(breed: String) = new Dog("Golden " + breed)
 
-implicit val oMeuIntImplicito = 100
-implicit def aMinhaFunçãoImplicita(raça: String) = new Cão("Golden " + raça)
+// A palavra chave implicit não muda o comportamento do valor por si só, então
+// os valores acima podem ser usados como de costume.
+myImplicitInt + 2                   // => 102
+myImplicitFunction("Pitbull").breed // => "Golden Pitbull"
 
-// Por si só, a palavra implicit não altera o comportamento de um valor, sendo
-// que estes podem ser usados da forma habitual.
-oMeuIntImplicito + 2                   // => 102
-aMinhaFunçãoImplicita("Pitbull").raça // => "Golden Pitbull"
+A diferença é que agora esses valores são elegíveis para serem usados quando outra
+// parte do código "precisa" de um valor implícito. Uma situação é uma função
+// com argumentos implícitos:
+def sendGreetings(toWhom: String)(implicit howMany: Int) =
+  s"Hello $toWhom, $howMany blessings to you and yours!"
 
-// A diferença é que estes valores podem ser utilizados quando outro pedaço de
-// código "necessite" de uma valor implicito. Um exemplo são argumentos
-// implicitos de funções:
-def enviaCumprimentos(aQuem: String)(implicit quantos: Int) =
-  s"Olá $aQuem, $quantos cumprimentos para ti e para os teus!"
+// Se fornecermos um valor para "howMany" a função se comporta como sempre
+sendGreetings("John")(1000)  // => "Hello John, 1000 blessings to you and yours!"
 
-// Se dermos um valor a "quantos", a função comporta-se normalmente
-enviaCumprimentos("João")(1000)  // => "Olá João, 1000 cumprimentos para ti e para os teus!"
+// Mas se omitirmos o parâmetro implícito um valor implícito de mesmo tipo é usado,
+// neste caso, "myImplicitInt":
+sendGreetings("Jane")  // => "Hello Jane, 100 blessings to you and yours!"
 
-// Mas, se omitirmos o parâmetro implicito, um valor implicito do mesmo tipo é
-// usado, neste caso, "oMeuInteiroImplicito"
-enviaCumprimentos("Joana")  // => "Olá Joana, 100 cumprimentos para ti e para os teus!"
-
-// Parâmentros implicitos de funções permitem-nos simular classes de tipos de
-// outras linguagens funcionais. Isto é tão comum que tem a sua própria notação.
-// As seguintes linhas representam a mesma coisa
+// Parâmetros implícitos de funções nos permitem simular type classes em outras
+//linguagens funcionais. As linhas abaixo são a mesma coisa:
 // def foo[T](implicit c: C[T]) = ...
 // def foo[T : C] = ...
 
+// Outro caso no qual o compilador procura por um implicit é quando você tem obj.method(...)
+// mas "obj" não possui "method" como um método. Neste caso, se houver uma conversão
+// de implicit do tipo A => B, onde A é o tipo do "obj" e B tem um método chamado
+// "method", a conversão é aplicada. Então, tendo myImplicitFunction acima em escopo, podemos dizer:
+"Retriever".breed // => "Golden Retriever"
+"Sheperd".bark    // => "Woof, woof!"
 
-// Outra situação em que o compilador prouca um implicito é se encontrar uma
-// expressão
-//    obj.método(...)
-// mas "obj" não possuir um método chamado "método". Neste cso, se houver uma
-// conversão implicita A => B, onde A é o tipo de obj, e B possui um método
-// chamado "método", a conversão é aplicada. Ou seja, tendo
-// aMinhaFunçãoImplicita definida, podemos dizer
-"Retriever".raça // => "Golden Retriever"
-"Sheperd".ladra  // => "Woof, woof!"
-
-// Neste caso, a String é primeiro convertida para Cão usando a nossa funão,
-// sendo depois chamado o método apropriado. Esta é uma funcionalidade
-// incrivelmente poderosa, sendo que deve ser usada com cautela. Na verdade,
-// ao definir a função implicita, o compilador deve lançar um aviso a insisitir
-// que só deve definir a função se souber o que está a fazer.
-
+// Aqui, a String é convertida para Dog usando nossa função acima, então o método
+// apropriado é chamado. Isso é um recurso extremamente poderoso, mas de novo, não
+// é para ser usado de maneira leviana. Na verdade, quando você define a função
+// implícita, o seu compilador deve exibir um aviso de que você não deveria fazer isso,
+// a menos que você realmente saiba o que você está fazendo.
 
 /////////////////////////////////////////////////
 // 9. Misc
 /////////////////////////////////////////////////
 
-// Importar coisas
+// Importando coisas
 import scala.collection.immutable.List
 
-// Importar todos os "sub pacotes"
+// Importando todos os sub pacotes
 import scala.collection.immutable._
 
-// Importar multiplas classes numa linha
+// Importando várias classes em um único comando
 import scala.collection.immutable.{List, Map}
 
-// Renomear uma classe importada usando '=>'
+// Renomeando um import usando '=>'
 import scala.collection.immutable.{List => ImmutableList}
 
-// Importar todas as classes excepto algumas. Set e Map são excluidos:
+// Importa todas as classes, com exceção de algumas. O import abaixo importa todas as classes excluindo Map e Set:
 import scala.collection.immutable.{Map => _, Set => _, _}
 
-// O ponto de entrada de um programa em Scala é definido por un ficheiro .scala
-// com um método main:
-object Aplicação {
+// Classes Java também podem ser importadas. A syntaxe de Scala pode ser usada:
+import java.swing.{JFrame, JWindow}
+
+// O ponto de entrada do seu programa é definido em um arquivo Scala usando um object com um único método main:
+object Application {
   def main(args: Array[String]): Unit = {
-    // código aqui.
+    // o código fica aqui
   }
 }
 
-// Ficheiros podem conter várias classes o objectos. Compilar com scalac
+// Arquivos podem ter múltiplas classes e objects. Compile com scalac
 
+// Entrada e saída
 
-
-
-// Input e output
-
-// Ler um ficheiro linha a linha
+// Para ler um arquivo linha a linha
 import scala.io.Source
-for(linha <- Source.fromFile("ficheiro.txt").getLines())
-  println(linha)
+for(line <- Source.fromFile("myfile.txt").getLines())
+  println(line)
 
-// Escrever um ficheiro usando o PrintWriter de Java
-val writer = new PrintWriter("ficheiro.txt")
-writer.write("Escrevendo linha por linha" + util.Properties.lineSeparator)
-writer.write("Outra linha aqui" + util.Properties.lineSeparator)
+// Para escrever um arquivo use o PrintWriter do Javaval writer = new PrintWriter("myfile.txt")
+writer.write("Writing line for line" + util.Properties.lineSeparator)
+writer.write("Another line here" + util.Properties.lineSeparator)
 writer.close()
+
+##  Recursos adicionais
+
+* [Scala for the impatient](http://horstmann.com/scala/)
+* [Twitter Scala school](http://twitter.github.io/scala_school/)
+* [Documentação de Scala](http://docs.scala-lang.org/)
+* [Tente Scala no seu navegador](http://scalatutorials.com/tour/)
+* Junte [Scala user group](https://groups.google.com/forum/#!forum/scala-user)
 
