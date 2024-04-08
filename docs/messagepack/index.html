@@ -89,156 +89,156 @@
     <p>MessagePack is an efficient binary serialization format. It lets you exchange data among multiple languages like JSON. The benefits over other formats is that it&rsquo;s faster and smaller. </p>
 
 <p>In MessagePack, small integers are encoded into a single byte, and typical short strings require only one extra byte in addition to the strings themselves. This makes MessagePack useful for efficient transmission over wire.</p>
-<div class="highlight"><pre><span></span><span class="err">#</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="w"> </span><span class="nx">Understanding</span><span class="w"> </span><span class="nx">The</span><span class="w"> </span><span class="nx">Structure</span><span class="w"> </span><span class="o">====</span>
+<div class="highlight"><pre><span></span># 0. Understanding The Structure ====
 
-<span class="nx">JSON</span><span class="p">,</span><span class="w"> </span><span class="mi">40</span><span class="w"> </span><span class="nx">Bytes</span><span class="w"> </span><span class="nx">UTF</span><span class="o">-</span><span class="mi">8</span>
+JSON, 40 Bytes UTF-8
 
-<span class="o">----------------------------------------------</span>
-<span class="o">|</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="s">&quot;John Doe&quot;</span><span class="p">,</span><span class="s">&quot;age&quot;</span><span class="p">:</span><span class="mi">12</span><span class="p">}</span><span class="w">               </span><span class="o">|</span>
-<span class="o">----------------------------------------------</span>
-<span class="o">|</span><span class="w">  </span><span class="p">{</span><span class="s">&quot;         | 7B 22                        |</span>
-<span class="s">|    name     | 6E 61 6D 65                  |</span>
-<span class="s">|  &quot;</span><span class="p">:</span><span class="s">&quot;        | 22 3A 22                     |</span>
-<span class="s">|    John Doe | 4A 6F 68 6E 20 44 6F 65      |</span>
-<span class="s">|  &quot;</span><span class="p">,</span><span class="s">&quot;        | 22 2C 22                     |</span>
-<span class="s">|    age      | 61 67 65                     |</span>
-<span class="s">|  &quot;</span><span class="p">:</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="mi">22</span><span class="w"> </span><span class="mi">3</span><span class="nx">A</span><span class="w"> </span><span class="mi">20</span><span class="w">                     </span><span class="o">|</span>
-<span class="o">|</span><span class="w">    </span><span class="mi">12</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="mi">31</span><span class="w"> </span><span class="mi">32</span><span class="w">                        </span><span class="o">|</span>
-<span class="o">|</span><span class="w">  </span><span class="p">}</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="mi">7</span><span class="nx">D</span><span class="w">                           </span><span class="o">|</span>
-<span class="o">----------------------------------------------</span>
-
-
-<span class="nx">MessagePack</span><span class="p">,</span><span class="w"> </span><span class="mi">27</span><span class="w"> </span><span class="nx">Bytes</span><span class="w"> </span><span class="nx">UTF</span><span class="o">-</span><span class="mi">8</span>
-
-<span class="o">----------------------------------------------</span>
-<span class="o">|</span><span class="w"> </span><span class="err">‚¤</span><span class="nx">name</span><span class="err">¨</span><span class="nx">John</span><span class="w"> </span><span class="nx">Doe</span><span class="err">£</span><span class="nx">age</span><span class="m m-Double">.1</span><span class="mi">2</span><span class="w">                     </span><span class="o">|</span>
-<span class="o">----------------------------------------------</span>
-<span class="o">|</span><span class="w">  </span><span class="err">‚¤</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="mi">82</span><span class="w"> </span><span class="mi">84</span><span class="w">                        </span><span class="o">|</span>
-<span class="o">|</span><span class="w">    </span><span class="nx">name</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">6</span><span class="nx">E</span><span class="w"> </span><span class="mi">61</span><span class="w"> </span><span class="mi">6</span><span class="nx">D</span><span class="w"> </span><span class="mi">65</span><span class="w">                  </span><span class="o">|</span>
-<span class="o">|</span><span class="w">  </span><span class="err">¨</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="nx">A8</span><span class="w">                           </span><span class="o">|</span>
-<span class="o">|</span><span class="w">    </span><span class="nx">John</span><span class="w"> </span><span class="nx">Doe</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">4</span><span class="nx">A</span><span class="w"> </span><span class="mi">6</span><span class="nx">F</span><span class="w"> </span><span class="mi">68</span><span class="w"> </span><span class="mi">6</span><span class="nx">E</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="mi">44</span><span class="w"> </span><span class="mi">6</span><span class="nx">F</span><span class="w"> </span><span class="mi">65</span><span class="w">      </span><span class="o">|</span>
-<span class="o">|</span><span class="w">  </span><span class="err">£</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="nx">A3</span><span class="w">                           </span><span class="o">|</span>
-<span class="o">|</span><span class="w">    </span><span class="nx">age</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="mi">61</span><span class="w"> </span><span class="mi">67</span><span class="w"> </span><span class="mi">65</span><span class="w">                     </span><span class="o">|</span>
-<span class="o">|</span><span class="w">  </span><span class="p">.</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="nx">C</span><span class="w">                           </span><span class="o">|</span>
-<span class="o">|</span><span class="w">    </span><span class="mi">12</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="mi">31</span><span class="w"> </span><span class="mi">32</span><span class="w">                        </span><span class="o">|</span>
-<span class="o">----------------------------------------------</span>
-
-<span class="err">#</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="w"> </span><span class="nx">JAVA</span><span class="w"> </span><span class="o">====</span>
-
-<span class="s">&quot;&quot;&quot; Installing with Maven</span>
-<span class="s">&quot;&quot;&quot;</span>
-
-<span class="p">&lt;</span><span class="nx">dependencies</span><span class="p">&gt;</span>
-<span class="w">  </span><span class="o">...</span>
-<span class="w">  </span><span class="p">&lt;</span><span class="nx">dependency</span><span class="p">&gt;</span>
-<span class="w">    </span><span class="p">&lt;</span><span class="nx">groupId</span><span class="p">&gt;</span><span class="nx">org</span><span class="p">.</span><span class="nx">msgpack</span><span class="p">&lt;</span><span class="o">/</span><span class="nx">groupId</span><span class="p">&gt;</span>
-<span class="w">    </span><span class="p">&lt;</span><span class="nx">artifactId</span><span class="p">&gt;</span><span class="nx">msgpack</span><span class="p">&lt;</span><span class="o">/</span><span class="nx">artifactId</span><span class="p">&gt;</span>
-<span class="w">    </span><span class="p">&lt;</span><span class="nx">version</span><span class="p">&gt;</span><span class="err">$</span><span class="p">{</span><span class="nx">msgpack</span><span class="p">.</span><span class="nx">version</span><span class="p">}&lt;</span><span class="o">/</span><span class="nx">version</span><span class="p">&gt;</span>
-<span class="w">  </span><span class="p">&lt;</span><span class="o">/</span><span class="nx">dependency</span><span class="p">&gt;</span>
-<span class="w">  </span><span class="o">...</span>
-<span class="p">&lt;</span><span class="o">/</span><span class="nx">dependencies</span><span class="p">&gt;</span>
+----------------------------------------------
+| {&quot;name&quot;:&quot;John Doe&quot;,&quot;age&quot;:12}               |
+----------------------------------------------
+|  {&quot;         | 7B 22                        |
+|    name     | 6E 61 6D 65                  |
+|  &quot;:&quot;        | 22 3A 22                     |
+|    John Doe | 4A 6F 68 6E 20 44 6F 65      |
+|  &quot;,&quot;        | 22 2C 22                     |
+|    age      | 61 67 65                     |
+|  &quot;:         | 22 3A 20                     |
+|    12       | 31 32                        |
+|  }          | 7D                           |
+----------------------------------------------
 
 
-<span class="s">&quot;&quot;&quot; Simple Serialization/Deserialization</span>
-<span class="s">&quot;&quot;&quot;</span>
+MessagePack, 27 Bytes UTF-8
 
-<span class="c1">// Create serialize objects.</span>
-<span class="nx">List</span><span class="p">&lt;</span><span class="nx">String</span><span class="p">&gt;</span><span class="w"> </span><span class="nx">src</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">new</span><span class="w"> </span><span class="nx">ArrayList</span><span class="p">&lt;</span><span class="nx">String</span><span class="p">&gt;();</span>
-<span class="nx">src</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s">&quot;msgpack&quot;</span><span class="p">);</span>
-<span class="nx">src</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s">&quot;kumofs&quot;</span><span class="p">);</span>
+----------------------------------------------
+| ‚¤name¨John Doe£age.12                     |
+----------------------------------------------
+|  ‚¤         | 82 84                        |
+|    name     | 6E 61 6D 65                  |
+|  ¨          | A8                           |
+|    John Doe | 4A 6F 68 6E 20 44 6F 65      |
+|  £          | A3                           |
+|    age      | 61 67 65                     |
+|  .          | 0C                           |
+|    12       | 31 32                        |
+----------------------------------------------
 
-<span class="nx">MessagePack</span><span class="w"> </span><span class="nx">msgpack</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">new</span><span class="w"> </span><span class="nx">MessagePack</span><span class="p">();</span>
-<span class="c1">// Serialize</span>
-<span class="nx">byte</span><span class="p">[]</span><span class="w"> </span><span class="nx">raw</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">msgpack</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">src</span><span class="p">);</span>
+# 1. JAVA ====
 
-<span class="c1">// Deserialize directly using a template</span>
-<span class="nx">List</span><span class="p">&lt;</span><span class="nx">String</span><span class="p">&gt;</span><span class="w"> </span><span class="nx">dst1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">msgpack</span><span class="p">.</span><span class="nx">read</span><span class="p">(</span><span class="nx">raw</span><span class="p">,</span><span class="w"> </span><span class="nx">Templates</span><span class="p">.</span><span class="nx">tList</span><span class="p">(</span><span class="nx">Templates</span><span class="p">.</span><span class="nx">TString</span><span class="p">));</span>
-<span class="nx">System</span><span class="p">.</span><span class="nx">out</span><span class="p">.</span><span class="nx">println</span><span class="p">(</span><span class="nx">dst1</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
-<span class="nx">System</span><span class="p">.</span><span class="nx">out</span><span class="p">.</span><span class="nx">println</span><span class="p">(</span><span class="nx">dst1</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+&quot;&quot;&quot; Installing with Maven
+&quot;&quot;&quot;
 
-<span class="c1">// Or, Deserialze to Value then convert type.</span>
-<span class="nx">Value</span><span class="w"> </span><span class="nx">dynamic</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">msgpack</span><span class="p">.</span><span class="nx">read</span><span class="p">(</span><span class="nx">raw</span><span class="p">);</span>
-<span class="nx">List</span><span class="p">&lt;</span><span class="nx">String</span><span class="p">&gt;</span><span class="w"> </span><span class="nx">dst2</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">new</span><span class="w"> </span><span class="nx">Converter</span><span class="p">(</span><span class="nx">dynamic</span><span class="p">)</span>
-<span class="w">    </span><span class="p">.</span><span class="nx">read</span><span class="p">(</span><span class="nx">Templates</span><span class="p">.</span><span class="nx">tList</span><span class="p">(</span><span class="nx">Templates</span><span class="p">.</span><span class="nx">TString</span><span class="p">));</span>
-<span class="nx">System</span><span class="p">.</span><span class="nx">out</span><span class="p">.</span><span class="nx">println</span><span class="p">(</span><span class="nx">dst2</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
-<span class="nx">System</span><span class="p">.</span><span class="nx">out</span><span class="p">.</span><span class="nx">println</span><span class="p">(</span><span class="nx">dst2</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+&lt;dependencies&gt;
+  ...
+  &lt;dependency&gt;
+    &lt;groupId&gt;org.msgpack&lt;/groupId&gt;
+    &lt;artifactId&gt;msgpack&lt;/artifactId&gt;
+    &lt;version&gt;${msgpack.version}&lt;/version&gt;
+  &lt;/dependency&gt;
+  ...
+&lt;/dependencies&gt;
 
 
-<span class="err">#</span><span class="w"> </span><span class="mi">2</span><span class="p">.</span><span class="w"> </span><span class="nx">RUBY</span><span class="w"> </span><span class="o">====</span>
+&quot;&quot;&quot; Simple Serialization/Deserialization
+&quot;&quot;&quot;
 
-<span class="s">&quot;&quot;&quot; Installing the Gem</span>
-<span class="s">&quot;&quot;&quot;</span>
+// Create serialize objects.
+List&lt;String&gt; src = new ArrayList&lt;String&gt;();
+src.add(&quot;msgpack&quot;);
+src.add(&quot;kumofs&quot;);
 
-<span class="nx">gem</span><span class="w"> </span><span class="nx">install</span><span class="w"> </span><span class="nx">msgpack</span>
+MessagePack msgpack = new MessagePack();
+// Serialize
+byte[] raw = msgpack.write(src);
 
-<span class="s">&quot;&quot;&quot; Streaming API</span>
-<span class="s">&quot;&quot;&quot;</span>
+// Deserialize directly using a template
+List&lt;String&gt; dst1 = msgpack.read(raw, Templates.tList(Templates.TString));
+System.out.println(dst1.get(0));
+System.out.println(dst1.get(1));
 
-<span class="err">#</span><span class="w"> </span><span class="nx">serialize</span><span class="w"> </span><span class="nx">a</span><span class="w"> </span><span class="mi">2</span><span class="o">-</span><span class="nx">element</span><span class="w"> </span><span class="nx">array</span><span class="w"> </span><span class="p">[</span><span class="nx">e1</span><span class="p">,</span><span class="w"> </span><span class="nx">e2</span><span class="p">]</span>
-<span class="nx">pk</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">MessagePack</span><span class="o">::</span><span class="nx">Packer</span><span class="p">.</span><span class="nx">new</span><span class="p">(</span><span class="nx">io</span><span class="p">)</span>
-<span class="nx">pk</span><span class="p">.</span><span class="nx">write_array_header</span><span class="p">(</span><span class="mi">2</span><span class="p">).</span><span class="nx">write</span><span class="p">(</span><span class="nx">e1</span><span class="p">).</span><span class="nx">write</span><span class="p">(</span><span class="nx">e2</span><span class="p">).</span><span class="nx">flush</span>
+// Or, Deserialze to Value then convert type.
+Value dynamic = msgpack.read(raw);
+List&lt;String&gt; dst2 = new Converter(dynamic)
+    .read(Templates.tList(Templates.TString));
+System.out.println(dst2.get(0));
+System.out.println(dst2.get(1));
 
-<span class="err">#</span><span class="w"> </span><span class="nx">deserialize</span><span class="w"> </span><span class="nx">objects</span><span class="w"> </span><span class="nx">from</span><span class="w"> </span><span class="nx">an</span><span class="w"> </span><span class="nx">IO</span>
-<span class="nx">u</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">MessagePack</span><span class="o">::</span><span class="nx">Unpacker</span><span class="p">.</span><span class="nx">new</span><span class="p">(</span><span class="nx">io</span><span class="p">)</span>
-<span class="nx">u</span><span class="p">.</span><span class="nx">each</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="nx">obj</span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w"> </span><span class="p">}</span>
 
-<span class="err">#</span><span class="w"> </span><span class="nx">event</span><span class="o">-</span><span class="nx">driven</span><span class="w"> </span><span class="nx">deserialization</span>
-<span class="nx">def</span><span class="w"> </span><span class="nx">on_read</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span>
-<span class="w">  </span><span class="err">@</span><span class="nx">u</span><span class="w"> </span><span class="o">||</span><span class="p">=</span><span class="w"> </span><span class="nx">MessagePack</span><span class="o">::</span><span class="nx">Unpacker</span><span class="p">.</span><span class="nx">new</span>
-<span class="w">  </span><span class="err">@</span><span class="nx">u</span><span class="p">.</span><span class="nx">feed_each</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="nx">obj</span><span class="o">|</span><span class="w"> </span><span class="o">...</span><span class="w"> </span><span class="p">}</span>
-<span class="nx">end</span>
+# 2. RUBY ====
 
-<span class="err">#</span><span class="w"> </span><span class="mi">3</span><span class="p">.</span><span class="w"> </span><span class="nx">NODE</span><span class="p">.</span><span class="nx">JS</span><span class="w"> </span><span class="o">====</span>
+&quot;&quot;&quot; Installing the Gem
+&quot;&quot;&quot;
 
-<span class="s">&quot;&quot;&quot; Installing with NPM</span>
-<span class="s">&quot;&quot;&quot;</span>
+gem install msgpack
 
-<span class="nx">npm</span><span class="w"> </span><span class="nx">install</span><span class="w"> </span><span class="nx">msgpack5</span><span class="w"> </span><span class="o">--</span><span class="nx">save</span>
+&quot;&quot;&quot; Streaming API
+&quot;&quot;&quot;
 
-<span class="s">&quot;&quot;&quot; Using in Node</span>
-<span class="s">&quot;&quot;&quot;</span>
+# serialize a 2-element array [e1, e2]
+pk = MessagePack::Packer.new(io)
+pk.write_array_header(2).write(e1).write(e2).flush
 
-<span class="kd">var</span><span class="w"> </span><span class="nx">msgpack</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="err">&#39;</span><span class="nx">msgpack5</span><span class="err">&#39;</span><span class="p">)()</span><span class="w"> </span><span class="c1">// namespace our extensions</span>
-<span class="w">  </span><span class="p">,</span><span class="w"> </span><span class="nx">a</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="nx">new</span><span class="w"> </span><span class="nx">MyType</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">)</span>
-<span class="w">  </span><span class="p">,</span><span class="w"> </span><span class="nx">encode</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="nx">msgpack</span><span class="p">.</span><span class="nx">encode</span>
-<span class="w">  </span><span class="p">,</span><span class="w"> </span><span class="nx">decode</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="nx">msgpack</span><span class="p">.</span><span class="nx">decode</span>
+# deserialize objects from an IO
+u = MessagePack::Unpacker.new(io)
+u.each { |obj| ... }
 
-<span class="nx">msgpack</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="mh">0x4</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nx">MyType</span><span class="p">,</span><span class="w"> </span><span class="nx">mytipeEncode</span><span class="p">,</span><span class="w"> </span><span class="nx">mytipeDecode</span><span class="p">)</span>
+# event-driven deserialization
+def on_read(data)
+  @u ||= MessagePack::Unpacker.new
+  @u.feed_each(data) { |obj| ... }
+end
 
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">encode</span><span class="p">({</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">hello</span><span class="err">&#39;</span><span class="p">:</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">world</span><span class="err">&#39;</span><span class="w"> </span><span class="p">}).</span><span class="nx">toString</span><span class="p">(</span><span class="err">&#39;</span><span class="nx">hex</span><span class="err">&#39;</span><span class="p">))</span>
-<span class="c1">// 81a568656c6c6fa5776f726c64</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">decode</span><span class="p">(</span><span class="nx">encode</span><span class="p">({</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">hello</span><span class="err">&#39;</span><span class="p">:</span><span class="w"> </span><span class="err">&#39;</span><span class="nx">world</span><span class="err">&#39;</span><span class="w"> </span><span class="p">})))</span>
-<span class="c1">// { hello: &#39;world&#39; }</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">encode</span><span class="p">(</span><span class="nx">a</span><span class="p">).</span><span class="nx">toString</span><span class="p">(</span><span class="err">&#39;</span><span class="nx">hex</span><span class="err">&#39;</span><span class="p">))</span>
-<span class="c1">// d5426161</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">decode</span><span class="p">(</span><span class="nx">encode</span><span class="p">(</span><span class="nx">a</span><span class="p">))</span><span class="w"> </span><span class="nx">instanceof</span><span class="w"> </span><span class="nx">MyType</span><span class="p">)</span>
-<span class="c1">// true</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">decode</span><span class="p">(</span><span class="nx">encode</span><span class="p">(</span><span class="nx">a</span><span class="p">)))</span>
-<span class="c1">// { value: &#39;a&#39;, size: 2 }</span>
+# 3. NODE.JS ====
 
-<span class="nx">function</span><span class="w"> </span><span class="nx">MyType</span><span class="p">(</span><span class="nx">size</span><span class="p">,</span><span class="w"> </span><span class="nx">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nx">this</span><span class="p">.</span><span class="nx">value</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">value</span>
-<span class="w">  </span><span class="nx">this</span><span class="p">.</span><span class="nx">size</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="nx">size</span>
-<span class="p">}</span>
+&quot;&quot;&quot; Installing with NPM
+&quot;&quot;&quot;
 
-<span class="nx">function</span><span class="w"> </span><span class="nx">mytipeEncode</span><span class="p">(</span><span class="nx">obj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">var</span><span class="w"> </span><span class="nx">buf</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">new</span><span class="w"> </span><span class="nx">Buffer</span><span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">size</span><span class="p">)</span>
-<span class="w">  </span><span class="nx">buf</span><span class="p">.</span><span class="nx">fill</span><span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">buf</span>
-<span class="p">}</span>
+npm install msgpack5 --save
 
-<span class="nx">function</span><span class="w"> </span><span class="nx">mytipeDecode</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">var</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">new</span><span class="w"> </span><span class="nx">MyType</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span><span class="w"> </span><span class="nx">data</span><span class="p">.</span><span class="nx">toString</span><span class="p">(</span><span class="err">&#39;</span><span class="nx">utf8</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span>
-<span class="w">    </span><span class="p">,</span><span class="w"> </span><span class="nx">i</span>
+&quot;&quot;&quot; Using in Node
+&quot;&quot;&quot;
 
-<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="nx">i</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="nx">data</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">readUInt8</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nx">data</span><span class="p">.</span><span class="nx">readUInt8</span><span class="p">(</span><span class="nx">i</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nx">throw</span><span class="w"> </span><span class="nx">new</span><span class="w"> </span><span class="nx">Error</span><span class="p">(</span><span class="err">&#39;</span><span class="nx">should</span><span class="w"> </span><span class="nx">all</span><span class="w"> </span><span class="nx">be</span><span class="w"> </span><span class="nx">the</span><span class="w"> </span><span class="nx">same</span><span class="err">&#39;</span><span class="p">)</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}</span>
+var msgpack = require(&#39;msgpack5&#39;)() // namespace our extensions
+  , a       = new MyType(2, &#39;a&#39;)
+  , encode  = msgpack.encode
+  , decode  = msgpack.decode
 
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">result</span>
-<span class="p">}</span>
+msgpack.register(0x42, MyType, mytipeEncode, mytipeDecode)
+
+console.log(encode({ &#39;hello&#39;: &#39;world&#39; }).toString(&#39;hex&#39;))
+// 81a568656c6c6fa5776f726c64
+console.log(decode(encode({ &#39;hello&#39;: &#39;world&#39; })))
+// { hello: &#39;world&#39; }
+console.log(encode(a).toString(&#39;hex&#39;))
+// d5426161
+console.log(decode(encode(a)) instanceof MyType)
+// true
+console.log(decode(encode(a)))
+// { value: &#39;a&#39;, size: 2 }
+
+function MyType(size, value) {
+  this.value = value
+  this.size  = size
+}
+
+function mytipeEncode(obj) {
+  var buf = new Buffer(obj.size)
+  buf.fill(obj.value)
+  return buf
+}
+
+function mytipeDecode(data) {
+  var result = new MyType(data.length, data.toString(&#39;utf8&#39;, 0, 1))
+    , i
+
+  for (i = 0; i &lt; data.length; i++) {
+    if (data.readUInt8(0) != data.readUInt8(i)) {
+      throw new Error(&#39;should all be the same&#39;)
+    }
+  }
+
+  return result
+}
 </pre></div>
 <h1>References</h1>
 

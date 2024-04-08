@@ -156,56 +156,56 @@ Você pode encadear vários relacionamentos. Este path descreve o amigo de um am
 Uma encadeamento também pode ser direcionada. Este path descreve que <strong>a</strong> é o chefe de <strong>b</strong> e o grande chefe de <strong>c</strong>.</p>
 
 <p>Padrões frequentemente usados ​​(do Neo4j doc) :</p>
-<div class="highlight"><pre><span></span><span class="o">//</span><span class="w"> </span><span class="n">Amigo</span><span class="w"> </span><span class="n">de</span><span class="w"> </span><span class="n">um</span><span class="w"> </span><span class="nf">amigo</span>
-<span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="o">-</span><span class="p">[</span><span class="o">:</span><span class="n">KNOWS</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="n">friend</span><span class="p">)</span><span class="o">-</span><span class="p">[</span><span class="o">:</span><span class="n">KNOWS</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="n">foaf</span><span class="p">)</span>
+<div class="highlight"><pre><span></span>// Amigo de um amigo
+(user)-[:KNOWS]-(friend)-[:KNOWS]-(foaf)
 
-<span class="o">//</span><span class="w"> </span><span class="n">Path</span><span class="w"> </span><span class="n">mais</span><span class="w"> </span><span class="n">curto</span>
-<span class="n">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">shortestPath</span><span class="p">(</span><span class="w"> </span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="o">-</span><span class="p">[</span><span class="o">:</span><span class="n">KNOWS</span><span class="o">*</span><span class="kc">..5</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
+// Path mais curto
+path = shortestPath( (user)-[:KNOWS*..5]-(other) )
 
-<span class="o">//</span><span class="w"> </span><span class="n">Filtragem</span><span class="w"> </span><span class="nf">colaborativa</span>
-<span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="o">-</span><span class="p">[</span><span class="o">:</span><span class="n">PURCHASED</span><span class="p">]</span><span class="o">-&gt;</span><span class="p">(</span><span class="n">product</span><span class="p">)</span><span class="o">&lt;-</span><span class="p">[</span><span class="o">:</span><span class="n">PURCHASED</span><span class="p">]</span><span class="o">-</span><span class="p">()</span><span class="o">-</span><span class="p">[</span><span class="o">:</span><span class="n">PURCHASED</span><span class="p">]</span><span class="o">-&gt;</span><span class="p">(</span><span class="n">otherProduct</span><span class="p">)</span>
+// Filtragem colaborativa
+(user)-[:PURCHASED]-&gt;(product)&lt;-[:PURCHASED]-()-[:PURCHASED]-&gt;(otherProduct)
 
-<span class="o">//</span><span class="w"> </span><span class="n">Navegação</span><span class="w"> </span><span class="n">de</span><span class="w"> </span>á<span class="nf">rvore</span>
-<span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">&lt;-</span><span class="p">[</span><span class="o">:</span><span class="n">PARENT</span><span class="o">*</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="n">leaf</span><span class="o">:</span><span class="n">Category</span><span class="p">)</span><span class="o">-</span><span class="p">[</span><span class="o">:</span><span class="n">ITEM</span><span class="p">]</span><span class="o">-&gt;</span><span class="p">(</span><span class="n">data</span><span class="o">:</span><span class="n">Product</span><span class="p">)</span>
+// Navegação de árvore
+(root)&lt;-[:PARENT*]-(leaf:Category)-[:ITEM]-&gt;(data:Product)
 </pre></div>
 <h2>Crie consultas</h2>
 
 <p>Crie um novo nó</p>
-<div class="highlight"><pre><span></span><span class="nv">CREATE</span><span class="w"> </span><span class="ss">(</span><span class="nv">a</span>:<span class="nv">Person</span><span class="w"> </span>{<span class="nv">name</span>:<span class="s2">&quot;Théo Gauchoux&quot;</span>}<span class="ss">)</span>
-<span class="k">RETURN</span><span class="w"> </span><span class="nv">a</span>
+<div class="highlight"><pre><span></span>CREATE (a:Person {name:&quot;Théo Gauchoux&quot;})
+RETURN a
 </pre></div>
 <p><em><code>RETURN</code> permite ter um resultado após a consulta. Pode ser múltiplo, como <code>RETURN a, b</code>.</em></p>
 
 <p>Crie um novo relacionamento (com 2 novos nós)</p>
-<div class="highlight"><pre><span></span><span class="nv">CREATE</span><span class="w"> </span><span class="ss">(</span><span class="nv">a</span>:<span class="nv">Person</span><span class="ss">)</span><span class="o">-</span>[<span class="nv">k</span>:<span class="nv">KNOWS</span>]<span class="o">-</span><span class="ss">(</span><span class="nv">b</span>:<span class="nv">Person</span><span class="ss">)</span>
-<span class="k">RETURN</span><span class="w"> </span><span class="nv">a</span>,<span class="nv">k</span>,<span class="nv">b</span>
+<div class="highlight"><pre><span></span>CREATE (a:Person)-[k:KNOWS]-(b:Person)
+RETURN a,k,b
 </pre></div>
 <h2>Consultas que casam</h2>
 
 <p>Casam todos os nós</p>
-<div class="highlight"><pre><span></span><span class="nv">MATCH</span><span class="w"> </span><span class="ss">(</span><span class="nv">n</span><span class="ss">)</span>
-<span class="k">RETURN</span><span class="w"> </span><span class="nv">n</span>
+<div class="highlight"><pre><span></span>MATCH (n)
+RETURN n
 </pre></div>
 <p>Casam nós por label</p>
-<div class="highlight"><pre><span></span><span class="nv">MATCH</span><span class="w"> </span><span class="ss">(</span><span class="nv">a</span>:<span class="nv">Person</span><span class="ss">)</span>
-<span class="k">RETURN</span><span class="w"> </span><span class="nv">a</span>
+<div class="highlight"><pre><span></span>MATCH (a:Person)
+RETURN a
 </pre></div>
 <p>Casam nós por label e propriedade</p>
-<div class="highlight"><pre><span></span><span class="nv">MATCH</span><span class="w"> </span><span class="ss">(</span><span class="nv">a</span>:<span class="nv">Person</span><span class="w"> </span>{<span class="nv">name</span>:<span class="s2">&quot;Théo Gauchoux&quot;</span>}<span class="ss">)</span>
-<span class="k">RETURN</span><span class="w"> </span><span class="nv">a</span>
+<div class="highlight"><pre><span></span>MATCH (a:Person {name:&quot;Théo Gauchoux&quot;})
+RETURN a
 </pre></div>
 <p>Casam nós de acordo com os relacionamentos (não direcionados)</p>
-<div class="highlight"><pre><span></span><span class="nv">MATCH</span><span class="w"> </span><span class="ss">(</span><span class="nv">a</span><span class="ss">)</span><span class="o">-</span>[:<span class="nv">KNOWS</span>]<span class="o">-</span><span class="ss">(</span><span class="nv">b</span><span class="ss">)</span>
-<span class="k">RETURN</span><span class="w"> </span><span class="nv">a</span>,<span class="nv">b</span>
+<div class="highlight"><pre><span></span>MATCH (a)-[:KNOWS]-(b)
+RETURN a,b
 </pre></div>
 <p>Casam nós de acordo com os relacionamentos (direcionados)</p>
-<div class="highlight"><pre><span></span><span class="n">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-</span><span class="p">[</span><span class="o">:</span><span class="n">MANAGES</span><span class="p">]</span><span class="o">-&gt;</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-<span class="kr">RETURN</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="n">b</span>
+<div class="highlight"><pre><span></span>MATCH (a)-[:MANAGES]-&gt;(b)
+RETURN a,b
 </pre></div>
 <p>Casam nós com um cláusula <code>WHERE</code></p>
-<div class="highlight"><pre><span></span><span class="n">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="o">:</span><span class="n">Person</span><span class="w"> </span><span class="p">{</span><span class="n">name</span><span class="o">:</span><span class="s">&quot;Théo Gauchoux&quot;</span><span class="p">})</span><span class="o">-</span><span class="p">[</span><span class="n">s</span><span class="o">:</span><span class="n">LIVES_IN</span><span class="p">]</span><span class="o">-&gt;</span><span class="p">(</span><span class="n">city</span><span class="o">:</span><span class="n">City</span><span class="p">)</span>
-<span class="n">WHERE</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">since</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2015</span>
-<span class="kr">RETURN</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="n">state</span>
+<div class="highlight"><pre><span></span>MATCH (p:Person {name:&quot;Théo Gauchoux&quot;})-[s:LIVES_IN]-&gt;(city:City)
+WHERE s.since = 2015
+RETURN p,state
 </pre></div>
 <p>Você pode usa a cláusula <code>MATCH WHERE</code> com a cláusula <code>CREATE</code></p>
 <div class="highlight"><pre><span></span>MATCH (a), (b)
@@ -237,9 +237,9 @@ SET p:Internship
 <h2>Excluir consultas</h2>
 
 <p>Excluir um nó específico (os relacionamentos vinculados devem ser excluídos antes)</p>
-<div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="nl">p</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span><span class="o">-[</span><span class="n">relationship</span><span class="o">]-</span><span class="p">()</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;Théo Gauchoux&quot;</span>
-<span class="k">DELETE</span><span class="w"> </span><span class="n">relationship</span><span class="p">,</span><span class="w"> </span><span class="n">p</span>
+<div class="highlight"><pre><span></span>MATCH (p:Person)-[relationship]-()
+WHERE p.name = &quot;Théo Gauchoux&quot;
+DELETE relationship, p
 </pre></div>
 <p>Remover uma propriedade em um nó específico</p>
 <div class="highlight"><pre><span></span>MATCH (p:Person)
@@ -254,9 +254,9 @@ WHERE p.name = &quot;Théo Gauchoux&quot;
 DELETE p:Person
 </pre></div>
 <p>Excluir o banco de dados inteiro</p>
-<div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-<span class="n">OPTIONAL</span><span class="w"> </span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">-[</span><span class="n">r</span><span class="o">]-</span><span class="p">()</span>
-<span class="k">DELETE</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">r</span>
+<div class="highlight"><pre><span></span>MATCH (n)
+OPTIONAL MATCH (n)-[r]-()
+DELETE n, r
 </pre></div>
 <p><em>Sério, é o <code>rm -rf /</code> do Cypher !</em></p>
 
