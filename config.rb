@@ -6,6 +6,7 @@ activate :directory_indexes
 activate :syntax
 module ::Middleman::Syntax::Highlighter
   def self.highlight(code, language=nil, opts={})
+    language ||= 'text' # disable language guessing
     Pygments.highlight(code, lexer: language)
   end
 end
