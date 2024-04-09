@@ -1,48 +1,85 @@
 
-# CoffeeScript est un langage préprocesseur, il permet de générer du Javascript.
-# Il suit les tendances de certains langages récents.
-# Par exemple, les commentaires se définissent comme en Ruby ou en Python.
+# CoffeeScript je jazyk hipsterov.
+# Ide s trendom mnohých moderných jazykov.
+# Komentáre sú podobné tým v Ruby a Pythone, používajú symbol #.
 
 ###
-Ceci est un bloc de commentaires
-il est converti directement avec '/ *' et '* /'
-pour correspondre aux commentaires Javascript
+Blokové komentáre vyzerajú takto, prekladajú sa priamo do '/ * ... * /'
+pre výsledný kód JavaScriptu.
 
-Vous devez comprendre la syntaxe du langage JavaScript pour continuer.
+Predtým, než budeš pokračovať, mal by si rozumieť sémantike JavaScriptu.
 ###
 
-# Affectation :
-number   = 42 #=> var number = 42;
-opposite = true #=> var opposite = true;
+# Priradenia:
+cislo = 42   #=> var cislo = 42;
+opak  = true #=> var opak = true;
 
-# Structures de contrôle :
-number = -42 if opposite #=> if(opposite) { number = -42; }
+# Podmienky:
+cislo = -42 if opak #=> if(opak) { cislo = -42; }
 
-# Fonctions :
-square = (x) -> x * x #=> var square = function(x) { return x * x; }
+# Funkcie:
+stvorec = (x) -> x * x #=> var stvorec = function(x) { return x * x; }
 
-# Intervals :
-list = [1..5] #=> var list = [1, 2, 3, 4, 5];
+vypln = (nadoba, tekutina = "káva") ->
+  "#{nadoba} sa napĺňa tekutinou #{tekutina}..."
+#=>var vypln;
+#
+#vypln = function(nadoba, tekutina) {
+#  if (tekutina == null) {
+#    tekutina = "káva";
+#  }
+#  return nadoba + " sa napĺňa tekutinou " + tekutina + "...";
+#};
 
-# Objets :
-math =
-  root:   Math.sqrt
-  square: square
-  cube:   (x) -> x * square x
-#=> var math = {
-#  "root": Math.sqrt,
-#  "square": square,
-#  "cube": function(x) { return x * square(x); }
+# Rozsahy:
+zoznam = [1..5] #=> var zoznam = [1, 2, 3, 4, 5];
+
+# Objekty:
+matika =
+  zaklad:  Math.sqrt
+  stvorec: square
+  kocka:   (x) -> x * square x
+#=> var matika = {
+#  "zaklad": Math.sqrt,
+#  "stvorec": square,
+#  "kocka": function(x) { return x * square(x); }
 #}
 
-# Liste d'arguments variables :
-race = (winner, runners...) ->
-  print winner, runners
+# Splat operátor:
+zavod = (vitaz, bezci...) ->
+  print vitaz, bezci
+#=>zavod = function() {
+#  var vitaz, bezci;
+#  vitaz = arguments[0],
+#  bezci = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+#  return print(vitaz, bezci);
+#};
 
-# Existance :
-alert "I knew it!" if elvis?
-#=> if(typeof elvis !== "undefined" && elvis !== null) { alert("I knew it!"); }
+# Existencia:
+alert "Vedel som to!" if elvis?
+#=> if(typeof elvis !== "undefined" && elvis !== null)
+# { alert("Vedel som to!"); }
 
-# Lecture d'un tableau :
-cubes = (math.cube num for num in list) #=> ...
+# Pole:
+kocky = (matika.kocka cislo for cislo in zoznam)
+#=>kocky = (function() {
+#	var _i, _len, _results;
+#	_results = [];
+# 	for (_i = 0, _len = zoznam.length; _i < _len; _i++) {
+#		cislo = zoznam[_i];
+#		_results.push(matika.kocka(cislo));
+#	}
+#	return _results;
+#  })();
+
+jedla = ['brokolica', 'špenát', 'čokoláda']
+zjedz jedlo for jedlo in jedla when jedlo isnt 'čokoláda'
+#=>jedla = ['brokolica', 'špenát', 'čokoláda'];
+#
+#for (_k = 0, _len2 = jedla.length; _k < _len2; _k++) {
+#  jedlo = jedla[_k];
+#  if (jedlo !== 'čokoláda') {
+#    zjedz(jedlo);
+#  }
+#}
 
