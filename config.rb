@@ -297,7 +297,7 @@ class ArticleManager
     @articles_by_category_en = @articles_en.group_by{|r| r.category}
     @articles_by_name_en = @articles_en.group_by(&:name)
 
-    @categories_en = ["Algorithms & Data Structures", "language", "tool"] | articles_by_category_en.keys
+    @categories_en = ["Algorithms & Data Structures", "language", "framework", "tool"] | articles_by_category_en.keys
 
     #@articles.each{|a| puts a.url + ": " + a.language + " (" + a.category + ")"}
     @articles.select{|a| a.language != "en" and not a.name.nil?}.each{|a|
