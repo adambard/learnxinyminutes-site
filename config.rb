@@ -228,19 +228,17 @@ class Article
     path = File.join(*dir, filename + '.markdown')
     # Returns no output but status code 0
     # stdout, stderr, status = Open3.capture3('git', 'shortlog', '-s', '--', path, chdir: 'source/docs')
-    stdout, stderr, status = Open3.capture3('git', 'blame', '--', path, chdir: 'source/docs')
+    stdout, stderr, status = Open3.capture3('git', 'blame', '--line-porcelain', '--', path, chdir: 'source/docs')
     if status.success?
-      names = stdout.lines.map{ |line|
-        # TODO: doesn't handle spaces in names
-        name = line.split(' ')[1] || ''
-        name[1..name.length]
-      }
+      names = stdout.each_line.select { |line| line.start_with?('author ') }
+                    .map { |line| line.sub('author ', '').strip }
 
       cnt = Set::new(names).length + @contributors.length - 2
       @contributor_count = (cnt > 0 ? cnt : 0)
 
     else
       puts "git blame error: #{stderr}"
+      @contributor_count = 0
     end
   end
 
