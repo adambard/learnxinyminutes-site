@@ -17,7 +17,7 @@
 / We have integers, which are 8 byte by default
 3 / => 3
 
-/ And floats, also 8 byte as standard.  Trailing f distinguishes from int
+/ And floats, also 8 byte as standard. Trailing f distinguishes from int
 3.0 / => 3f
 
 / 4 byte numerical types can also be specified with trailing chars
@@ -626,7 +626,7 @@ t lj le
 / => Polly  52  160    f   85
 / => John   25  178    m   78
 
-/ aj is an asof join.  This is not a standard SQL join, and can be very powerful
+/ aj is an asof join. This is not a standard SQL join, and can be very powerful
 / The canonical example of this is joining financial trades and quotes tables
 trades:([]time:10:01:01 10:01:03 10:01:04;sym:`msft`ibm`ge;qty:100 200 150)
 quotes:([]time:10:01:00 10:01:01 10:01:01 10:01:03;
@@ -670,7 +670,7 @@ first each (1 2 3;4 5 6;7 8 9)
 
 / The true alternatives to loops in q are the adverbs scan (\) and over (/)
 / their behaviour differs based on the number of arguments the function they
-/ are modifying receives.  Here I'll summarise some of the most useful cases
+/ are modifying receives. Here I'll summarise some of the most useful cases
 / a single argument function modified by scan given 2 args behaves like "do"
 {x * 2}\[5;1] / => 1 2 4 8 16 32 (i.e. multiply by 2, 5 times)
 {x * 2}/[5;1] / => 32 (using over only the final result is shown)
@@ -731,8 +731,8 @@ select from splayed / (the columns are read from disk on request)
 ////// Frameworks //////
 / kdb+ is typically used for data capture and analysis.
 / This involves using an architecture with multiple processes
-/ working together.  kdb+ frameworks are available to streamline the setup
+/ working together. kdb+ frameworks are available to streamline the setup
 / and configuration of this architecture and add additional functionality
 / such as disaster recovery, logging, access, load balancing etc.
-/ https://github.com/AquaQAnalytics/TorQ
+/ https://github.com/DataIntellectTech/TorQ
 
