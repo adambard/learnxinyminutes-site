@@ -3,56 +3,59 @@ import sys
 from PyQt4 import QtGui
 
 def window():
-    # 创建应用对象
+	# Create an application object
     app = QtGui.QApplication(sys.argv)
-    # 创建一个 widget，作为 label 的父控件
+	# Create a widget where our label will be placed in
     w = QtGui.QWidget()
-    # 在 widget 中添加一个 label 子控件
+	# Add a label to the widget
     b = QtGui.QLabel(w)
-    # 设置 label 的文字
+	# Set some text for the label
     b.setText("Hello World!")
-    # 设置 widget 的尺寸和位置
+	# Give some size and placement information
     w.setGeometry(100, 100, 200, 50)
     b.move(50, 20)
-    # 设置窗口的标题
+	# Give our window a nice title
     w.setWindowTitle("PyQt")
-    # 显示 widget 及其所有子控件
+	# Have everything display
     w.show()
-    # 下面让程序跑起来，这行代码会启动事件循环并阻塞直到应用程序退出。
+	# Execute what we have asked for, once all setup
     sys.exit(app.exec_())
+
 if __name__ == '__main__':
     window()
 
 import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+
+
 def window():
     app = QApplication(sys.argv)
     w = QWidget()
-    # 创建一个按钮并添加到 widget 控件 w
+    # Create a button and attach to widget w
     b = QPushButton(w)
     b.setText("Press me")
     b.move(50, 50)
-    # 当按钮 b 被点击时调用 showdialog 函数
-    # 注意函数调用时没有“()”，这样函数就能以对象的方式传入而非传入执行它所得到的返回值
-    # 更多关于 pyqt 函数调用、传参等的内容见 pyqt 的信号机制
+    # Tell b to call this function when clicked
+    # notice the lack of "()" on the function call
     b.clicked.connect(showdialog)
     w.setWindowTitle("PyQt Dialog")
     w.show()
     sys.exit(app.exec_())
 
-# 对话框窗口创建函数
-# 当窗口中的按钮被点击时退出本程序
+# This function should create a dialog window with a button
+# that waits to be clicked and then exits the program
 def showdialog():
     d = QDialog()
     b1 = QPushButton("ok", d)
     b1.move(50, 50)
     d.setWindowTitle("Dialog")
-    # 这里的模态实现了在对话框弹出时阻塞程序同时屏蔽父窗口
+    # This modality tells the popup to block the parent whilst it's active
     d.setWindowModality(Qt.ApplicationModal)
-    # 当按钮被点击时整个进程将会结束
+    # On click I'd like the entire process to end
     b1.clicked.connect(sys.exit)
     d.exec_()
+
 if __name__ == '__main__':
     window()
 
