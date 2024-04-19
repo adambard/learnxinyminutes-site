@@ -205,7 +205,7 @@ moreNumbers.length = 3; // Error, length is read-only
 numbers = moreNumbers; // Error, mutating methods are missing
 
 // Tagged Union Types for modelling state that can be in one of many shapes
-type State = 
+type State =
   | { type: "loading" }
   | { type: "success", value: number }
   | { type: "error", message: string };
@@ -253,11 +253,11 @@ let foo = {} // Creating foo as an empty object
 foo.bar = 123 // Error: property 'bar' does not exist on `{}`
 foo.baz = 'hello world' // Error: property 'baz' does not exist on `{}`
 
-// Because the inferred type of foo is `{}` (an object with 0 properties), you 
+// Because the inferred type of foo is `{}` (an object with 0 properties), you
 // are not allowed to add bar and baz to it. However with type assertion,
 // the following will pass:
 
-interface Foo { 
+interface Foo {
   bar: number;
   baz: string;
 }

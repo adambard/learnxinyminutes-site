@@ -55,7 +55,7 @@ interface Person {
   move(): void;
 }
 
-// Object นี้ implements "Person" interface ทำให้มันเป็นชนิด Person และมันก็มี property name และ function move() 
+// Object นี้ implements "Person" interface ทำให้มันเป็นชนิด Person และมันก็มี property name และ function move()
 let p: Person = { name: "Bobby", move: () => { } };
 // Objects นี้เป็นชนิด Person ด้วย และมี optional property หรือ age?: นั่นเอง
 let validPerson: Person = { name: "Bobby", age: 42, move: () => { } };
@@ -200,7 +200,7 @@ moreNumbers.length = 3; // Error, เพราะ length ก็ต้อง read
 numbers = moreNumbers;  // Error, method ที่ทำให้อะเรย์เปลี่ยนได้จะไม่อนุญาต
 
 // Tagged Union Types สำหรับโมเดลสเตท ที่อาจจะมีได้หลายๆ สเตท
-type State = 
+type State =
   | { type: "loading" }
   | { type: "success", value: number }
   | { type: "error", message: string };

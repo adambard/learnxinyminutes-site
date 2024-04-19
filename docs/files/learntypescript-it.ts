@@ -95,7 +95,7 @@ class Punto {
 }
 
 // Le classi possono anche implementare esplicitamente delle interfacce.
-// Il compilatore restituirà un errore nel caso in cui manchino delle proprietà. 
+// Il compilatore restituirà un errore nel caso in cui manchino delle proprietà.
 class PersonaDiRiferimento implements Persona {
     nome: string
     saluta() {}
