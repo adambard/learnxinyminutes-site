@@ -126,11 +126,11 @@ export namespace Geometry {
 let s1 = new Geometry.Square(5);
 
 // Generics
-// AssemblyScript compiles generics to one concrete method or function per set 
-// of unique contextual type arguments, also known as [monomorphisation]. 
-// Implications are that a module only includes and exports concrete functions 
-// for sets of type arguments actually used and that concrete functions can be 
-// shortcutted with [static type checks] at compile time, which turned out to 
+// AssemblyScript compiles generics to one concrete method or function per set
+// of unique contextual type arguments, also known as [monomorphisation].
+// Implications are that a module only includes and exports concrete functions
+// for sets of type arguments actually used and that concrete functions can be
+// shortcutted with [static type checks] at compile time, which turned out to
 // be quite useful.
 // Classes
 export class Tuple<T1, T2> {
