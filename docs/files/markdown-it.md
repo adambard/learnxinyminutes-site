@@ -1,7 +1,7 @@
 
 <!-- Questo significa che possiamo usare elementi di HTML in Markdown, come per esempio i commenti,
-e questi non saranno modificati dal parser di Markdown. State attenti però, 
-se inserite un elemento HTML nel vostro file Markdown, non potrete usare la sua sintassi 
+e questi non saranno modificati dal parser di Markdown. State attenti però,
+se inserite un elemento HTML nel vostro file Markdown, non potrete usare la sua sintassi
 all'interno del contenuto dell'elemento. -->
 
 # Questo è un <h1>
@@ -50,7 +50,6 @@ C'è un <br /> sopra di me!
 > Potete utilizzare anche più di un livello
 >>  di indentazione!
 > Quanto è comodo?
-
 
 * Oggetto
 * Oggetto

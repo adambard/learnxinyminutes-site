@@ -38,7 +38,7 @@ Je suis toujours dans le paragraphe 2!
 
 Puis là, eh oui, le paragraphe 3!
 
-J'ai deux espaces vides à la fin (sélectionnez moi pour les voir).
+J'ai deux espaces vides à la fin (sélectionnez moi pour les voir).  
 
 Bigre, il y a un <br /> au dessus de moi!
 

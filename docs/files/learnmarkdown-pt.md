@@ -37,16 +37,16 @@ Ainda continuo no parágrafo 2!
 
 Eu estou no parágrafo três!
 
-Termino com dois espaços (selecione essa linha para vê-los). 
+Termino com dois espaços (selecione essa linha para vê-los).  
 
 Há um <br /> acima de mim!
 
-> Este é um bloco de citação. Você pode 
+> Este é um bloco de citação. Você pode
 > Quebrar manualmente suas linhas e colocar um `>` antes de cada linha ou você
 > pode deixar suas linhas ficarem muito longas e quebrarem por conta própria.
 > Não faz diferença, desde que elas comecem com um `>`.
 
-> Você também pode usar mais de um nível 
+> Você também pode usar mais de um nível
 >> De recuo?
 > O quão legal é isso?
 
@@ -101,7 +101,7 @@ John não sabia nem o que a função `go_to()` fazia!
 
 ***
 ---
-- - - 
+- - -
 ****************
 
 [Clique aqui!](http://test.com/)
@@ -125,16 +125,16 @@ John não sabia nem o que a função `go_to()` fazia!
 - [Capítulo](#capitulo)
   - [Subcapítulo <h3 />](#subcapitulo-h3-)
 
-![Este é alt-text (texto alternativo) para minha imagem](http://imgur.com/myimage.jpg "Um título opcional") 
+![Este é alt-text (texto alternativo) para minha imagem](http://imgur.com/myimage.jpg "Um título opcional")
 
 ![Esse é o alt-attribute.][myimage]
 
 [Minha imagem]: relative/urls/cool/image.jpg "se precisar de um título, está aqui"
 
-<http://testwebsite.com/> é equivalente a 
-[http://testwebsite.com/](http://testwebsite.com/) 
+<http://testwebsite.com/> é equivalente a
+[http://testwebsite.com/](http://testwebsite.com/)
 
-<foo@bar.com> 
+<foo@bar.com>
 
 Seu computador travou? Tente apertar
 <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Del</kbd>

@@ -1,10 +1,10 @@
 
-<!-- To znamená, že v Markdownu můžeme používat HTML elementy jako například 
-komentáře, které nebudou ovlivněny parserem Markdownu. Na druhou stranu to také 
-znamená, že pokud ve svém Markdown kódu vytvoříte HTML element, už v rámci 
-tohoto elementu nelze použít Markdown. 
+<!-- To znamená, že v Markdownu můžeme používat HTML elementy jako například
+komentáře, které nebudou ovlivněny parserem Markdownu. Na druhou stranu to také
+znamená, že pokud ve svém Markdown kódu vytvoříte HTML element, už v rámci
+tohoto elementu nelze použít Markdown.
 
-Markdown využívá i tato stránka, a tak by tento text, kdyby nebyl obalen v bloku 
+Markdown využívá i tato stránka, a tak by tento text, kdyby nebyl obalen v bloku
 kódu (viz níže), jako validní HTML komentář vůbec nebyl vidět. -->
 
 # Toto je <h1>
@@ -44,7 +44,7 @@ Tento odstavec končí dvěma mezerami.
 Nad tímto odstavcem je <br />!
 
 > Toto je bloková citace. Můžete dokonce
-> manuálně rozdělit řádky, a před každý vložit >, nebo nechat vaše řádky 
+> manuálně rozdělit řádky, a před každý vložit >, nebo nechat vaše řádky
 > jakkoli dlouhé, ať se zarovnají samy.
 > Je to jedno, pokud vždy začínají symbolem `>`.
 
@@ -72,7 +72,7 @@ nebo
 2. Položka dvě
 3. Položka tři
 
-<!-- Čísla ani nemusíte psát popořadě. Markdown je umí zobrazit správně, jenom 
+<!-- Čísla ani nemusíte psát popořadě. Markdown je umí zobrazit správně, jenom
 je třeba vždy překontrolovat, že číslování funguje správně. -->
 
 1. Položka jedna
@@ -109,8 +109,8 @@ Honza neměl tušení, co dělá funkce `go_to()`!
 - - -
 ****************
 
-<!-- Jedna z nejlepších vlastností Markdownu je, jak snadno lze s jeho pomocí 
-vytvářet odkazy. Text odkazu, který chcete zobrazit vložte do [] a hned za něj 
+<!-- Jedna z nejlepších vlastností Markdownu je, jak snadno lze s jeho pomocí
+vytvářet odkazy. Text odkazu, který chcete zobrazit vložte do [] a hned za něj
 v kulatých závorkách () připojte url adresu. -->
 
 [Klikni na mě!](http://test.com/)
@@ -134,12 +134,12 @@ v kulatých závorkách () připojte url adresu. -->
 [link1]: http://test.com/ "Cool!"
 [neco]: http://neco.czz/ "Dobře!"
 
-<!-- Titulek v tomto případě může být v jednoduchých uvozovkách, závorkách, nebo 
-zcela vynechaný. Reference může být kdekoliv ve vašem dokumentu a identifikátory 
+<!-- Titulek v tomto případě může být v jednoduchých uvozovkách, závorkách, nebo
+zcela vynechaný. Reference může být kdekoliv ve vašem dokumentu a identifikátory
 mohou být jakékoli, pokud jsou unikátní. -->
 
 
-<!-- V markdownu existuje rovněž "implicitní pojmenování", které použije text 
+<!-- V markdownu existuje rovněž "implicitní pojmenování", které použije text
 odkazu jako své id -->
 
 [Toto][] je odkaz..
@@ -163,7 +163,7 @@ odkazu jako své id -->
 
 [mujobrazek]: relativni/cesta/obrazek.jpg "a toto by byl titulek"
 
-<http://stranka.cz/> 
+<http://stranka.cz/>
 
 je stejné jako
 
@@ -171,10 +171,10 @@ je stejné jako
 
 <jmeno@prijmeni.cz>
 
-Chci napsat *tento text obklopený hvězdičkami*, ale protože nechci, aby to bylo 
+Chci napsat *tento text obklopený hvězdičkami*, ale protože nechci, aby to bylo
 kurzívou, tak hvězdičky vyescapuji `\`: \*tento text bude obklopený hvězdičkami\*.
 
-<!-- V Markdownu od GitHubu můžete použít tag <kbd> k označení kláves na 
+<!-- V Markdownu od GitHubu můžete použít tag <kbd> k označení kláves na
 počítači -->
 
 Váš počítač přestal pracovat? Zkuste
