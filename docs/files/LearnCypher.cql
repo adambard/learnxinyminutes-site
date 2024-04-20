@@ -1,5 +1,5 @@
 
-// Friend-of-a-friend 
+// Friend-of-a-friend
 (user)-[:KNOWS]-(friend)-[:KNOWS]-(foaf)
 
 // Shortest path
@@ -8,7 +8,7 @@ path = shortestPath( (user)-[:KNOWS*..5]-(other) )
 // Collaborative filtering
 (user)-[:PURCHASED]->(product)<-[:PURCHASED]-()-[:PURCHASED]->(otherProduct)
 
-// Tree navigation 
+// Tree navigation
 (root)<-[:PARENT*]-(leaf:Category)-[:ITEM]->(data:Product)
 
 CREATE (a:Person {name:"Théo Gauchoux"})
@@ -50,7 +50,7 @@ SET p = {name: "Michel", age: 23}
 
 MATCH (p:Person)
 WHERE p.name = "Théo Gauchoux"
-SET p + = {studies: "IT Engineering"}
+SET p += {studies: "IT Engineering"}
 
 MATCH (p:Person)
 WHERE p.name = "Théo Gauchoux"

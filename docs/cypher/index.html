@@ -86,31 +86,23 @@
     <a href="/docs/files/LearnCypher.cql">LearnCypher.cql</a>
     </p>
   <div id="doc">
-    <p>Cypher is the Neo4j’s query language to manipulate graphs easily. It reuses syntax from SQL and mixes it with kind of ascii-art to represent graphs.
+    <p>Cypher is Neo4j&rsquo;s query language for easily manipulating graphs.
+It reuses syntax from SQL and mixes it with kind of an ASCII-art to represent graphs.
 This tutorial assumes that you already know graph concepts like nodes and relationships.</p>
 
-<p><a href="https://neo4j.com/developer/cypher-query-language/">Read more here.</a></p>
+<h2>Nodes represent a record in a graph</h2>
 
-<h2>Nodes</h2>
+<p><code>()</code> is an empty <em>node</em>, to indicate that there is a <em>node</em>, but it&rsquo;s not relevant for the query.</p>
 
-<p><strong>Represents a record in a graph.</strong></p>
+<p><code>(n)</code> is a <em>node</em> referred by the variable <code>n</code>, reusable in the query. It begins with lowercase and uses camelCase.</p>
 
-<p><code>()</code>
-It&rsquo;s an empty <em>node</em>, to indicate that there is a <em>node</em>, but it&rsquo;s not relevant for the query.</p>
+<p><code>(p:Person)</code> - you can add a <em>label</em> to your node, here <code>Person</code>. It&rsquo;s like a type/class/category. It begins with uppercase and uses camelCase.</p>
 
-<p><code>(n)</code>
-It&rsquo;s a <em>node</em> referred by the variable <strong>n</strong>, reusable in the query. It begins with lowercase and uses camelCase.</p>
+<p><code>(p:Person:Manager)</code> - a node can have many <em>labels</em>.</p>
 
-<p><code>(p:Person)</code>
-You can add a <em>label</em> to your node, here <strong>Person</strong>. It&rsquo;s like a type / a class / a category. It begins with uppercase and uses camelCase.</p>
+<p><code>(p:Person {name : &#39;Théo Gauchoux&#39;, age : 22})</code> - a node can have some <em>properties</em>, here <code>name</code> and <code>age</code>. It begins with lowercase and uses camelCase.</p>
 
-<p><code>(p:Person:Manager)</code>
-A node can have many <em>labels</em>.</p>
-
-<p><code>(p:Person {name : &#39;Théo Gauchoux&#39;, age : 22})</code>
-A node can have some <em>properties</em>, here <strong>name</strong> and <strong>age</strong>. It begins with lowercase and uses camelCase.</p>
-
-<p>The types allowed in properties :</p>
+<p>The types allowed in properties:</p>
 
 <ul>
 <li>Numeric</li>
@@ -119,173 +111,159 @@ A node can have some <em>properties</em>, here <strong>name</strong> and <strong
 <li>List of previous primitive types</li>
 </ul>
 
-<p><em>Warning : there isn&rsquo;t datetime property in Cypher ! You can use String with a specific pattern or a Numeric from a specific date.</em></p>
+<p><em>Warning: there&rsquo;s no datetime properties in Cypher! You can use a String with a specific pattern or a Numeric from a specific date.</em></p>
 
-<p><code>p.name</code>
-You can access to a property with the dot style.</p>
+<p><code>p.name</code> - you can access a property with the dot style.</p>
 
-<h2>Relationships (or Edges)</h2>
+<h2>Relationships (or Edges) connect two nodes</h2>
 
-<p><strong>Connects two nodes</strong></p>
+<p><code>[:KNOWS]</code> is a <em>relationship</em> with the <em>label</em> <code>KNOWS</code>. It&rsquo;s a <em>label</em> as the node&rsquo;s label. It begins with uppercase and use UPPER_SNAKE_CASE.</p>
 
-<p><code>[:KNOWS]</code>
-It&rsquo;s a <em>relationship</em> with the <em>label</em> <strong>KNOWS</strong>. It&rsquo;s a <em>label</em> as the node&rsquo;s label. It begins with uppercase and use UPPER_SNAKE_CASE.</p>
+<p><code>[k:KNOWS]</code> - the same <em>relationship</em>, referred by the variable <code>k</code>, reusable in the query, but it&rsquo;s not necessary.</p>
 
-<p><code>[k:KNOWS]</code>
-The same <em>relationship</em>, referred by the variable <strong>k</strong>, reusable in the query, but it&rsquo;s not necessary.</p>
+<p><code>[k:KNOWS {since:2017}]</code> - the same <em>relationship</em>, with <em>properties</em> (like <em>node</em>), here <code>since</code>.</p>
 
-<p><code>[k:KNOWS {since:2017}]</code>
-The same <em>relationship</em>, with <em>properties</em> (like <em>node</em>), here <strong>since</strong>.</p>
+<p><code>[k:KNOWS*..4]</code> is structural information to use in a <em>path</em> (seen later). Here, <code>\*..4</code> says &ldquo;Match the pattern, with the relationship <code>k</code> which can be repeated between 1 and 4 times.</p>
 
-<p><code>[k:KNOWS*..4]</code>
-It&rsquo;s a structural information to use in a <em>path</em> (seen later). Here, <strong>*..4</strong> says &ldquo;Match the pattern, with the relationship <strong>k</strong> which be repeated between 1 and 4 times.</p>
+<h2>Paths - the way to mix nodes and relationships.</h2>
 
-<h2>Paths</h2>
+<p><code>(a:Person)-[:KNOWS]-(b:Person)</code> - a path describing that <code>a</code> and <code>b</code> know each other.</p>
 
-<p><strong>The way to mix nodes and relationships.</strong></p>
+<p><code>(a:Person)-[:MANAGES]-&gt;(b:Person)</code> - a path can be directed. This path describes that <code>a</code> is the manager of <code>b</code>.</p>
 
-<p><code>(a:Person)-[:KNOWS]-(b:Person)</code>
-A path describing that <strong>a</strong> and <strong>b</strong> know each other.</p>
+<p><code>(a:Person)-[:KNOWS]-(b:Person)-[:KNOWS]-(c:Person)</code> - you can chain multiple relationships. This path describes the friend of a friend.</p>
 
-<p><code>(a:Person)-[:MANAGES]-&gt;(b:Person)</code>
-A path can be directed. This path describes that <strong>a</strong> is the manager of <strong>b</strong>.</p>
+<p><code>(a:Person)-[:MANAGES]-&gt;(b:Person)-[:MANAGES]-&gt;(c:Person)</code> - a chain can also be directed. This path describes that <code>a</code> is the boss of <code>b</code> and the big boss of <code>c</code>.</p>
 
-<p><code>(a:Person)-[:KNOWS]-(b:Person)-[:KNOWS]-(c:Person)</code>
-You can chain multiple relationships. This path describes the friend of a friend.</p>
+<p>Commonly used patterns (from Neo4j documentation):</p>
+<div class="highlight"><pre><span></span><span class="c1">// Friend-of-a-friend</span>
+<span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">KNOWS</span><span class="o">]-</span><span class="p">(</span><span class="n">friend</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">KNOWS</span><span class="o">]-</span><span class="p">(</span><span class="n">foaf</span><span class="p">)</span>
 
-<p><code>(a:Person)-[:MANAGES]-&gt;(b:Person)-[:MANAGES]-&gt;(c:Person)</code>
-A chain can also be directed. This path describes that <strong>a</strong> is the boss of <strong>b</strong> and the big boss of <strong>c</strong>.</p>
+<span class="c1">// Shortest path</span>
+<span class="n">path</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">shortestPath</span><span class="p">(</span><span class="w"> </span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">KNOWS</span><span class="p">*..</span><span class="m">5</span><span class="o">]-</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
 
-<p>Patterns often used (from Neo4j doc) :</p>
-<div class="highlight"><pre><span></span>// Friend-of-a-friend 
-(user)-[:KNOWS]-(friend)-[:KNOWS]-(foaf)
+<span class="c1">// Collaborative filtering</span>
+<span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">PURCHASED</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">product</span><span class="p">)</span><span class="o">&lt;-[</span><span class="p">:</span><span class="n">PURCHASED</span><span class="o">]-</span><span class="p">()</span><span class="o">-[</span><span class="p">:</span><span class="n">PURCHASED</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">otherProduct</span><span class="p">)</span>
 
-// Shortest path
-path = shortestPath( (user)-[:KNOWS*..5]-(other) )
-
-// Collaborative filtering
-(user)-[:PURCHASED]-&gt;(product)&lt;-[:PURCHASED]-()-[:PURCHASED]-&gt;(otherProduct)
-
-// Tree navigation 
-(root)&lt;-[:PARENT*]-(leaf:Category)-[:ITEM]-&gt;(data:Product)
+<span class="c1">// Tree navigation</span>
+<span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">&lt;-[</span><span class="p">:</span><span class="n">PARENT</span><span class="p">*</span><span class="o">]-</span><span class="p">(</span><span class="n">leaf</span><span class="p">:</span><span class="n">Category</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">ITEM</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">data</span><span class="p">:</span><span class="n">Product</span><span class="p">)</span>
 </pre></div>
 <h2>Create queries</h2>
 
 <p>Create a new node</p>
-<div class="highlight"><pre><span></span>CREATE (a:Person {name:&quot;Théo Gauchoux&quot;})
-RETURN a
+<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="n">Person</span><span class="w"> </span><span class="p">{</span><span class="n">name</span><span class="p">:</span><span class="s">&quot;Théo Gauchoux&quot;</span><span class="p">})</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">a</span>
 </pre></div>
 <p><em><code>RETURN</code> allows to have a result after the query. It can be multiple, as <code>RETURN a, b</code>.</em></p>
 
 <p>Create a new relationship (with 2 new nodes)</p>
-<div class="highlight"><pre><span></span>CREATE (a:Person)-[k:KNOWS]-(b:Person)
-RETURN a,k,b
+<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span><span class="o">-[</span><span class="n">k</span><span class="p">:</span><span class="n">KNOWS</span><span class="o">]-</span><span class="p">(</span><span class="n">b</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">b</span>
 </pre></div>
 <h2>Match queries</h2>
 
 <p>Match all nodes</p>
-<div class="highlight"><pre><span></span>MATCH (n)
-RETURN n
+<div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">n</span>
 </pre></div>
 <p>Match nodes by label</p>
-<div class="highlight"><pre><span></span>MATCH (a:Person)
-RETURN a
+<div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">a</span>
 </pre></div>
 <p>Match nodes by label and property</p>
-<div class="highlight"><pre><span></span>MATCH (a:Person {name:&quot;Théo Gauchoux&quot;})
-RETURN a
+<div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="n">Person</span><span class="w"> </span><span class="p">{</span><span class="n">name</span><span class="p">:</span><span class="s">&quot;Théo Gauchoux&quot;</span><span class="p">})</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">a</span>
 </pre></div>
 <p>Match nodes according to relationships (undirected)</p>
-<div class="highlight"><pre><span></span>MATCH (a)-[:KNOWS]-(b)
-RETURN a,b
+<div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">KNOWS</span><span class="o">]-</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="n">b</span>
 </pre></div>
 <p>Match nodes according to relationships (directed)</p>
-<div class="highlight"><pre><span></span>MATCH (a)-[:MANAGES]-&gt;(b)
-RETURN a,b
+<div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">MANAGES</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="n">b</span>
 </pre></div>
 <p>Match nodes with a <code>WHERE</code> clause</p>
-<div class="highlight"><pre><span></span>MATCH (p:Person {name:&quot;Théo Gauchoux&quot;})-[s:LIVES_IN]-&gt;(city:City)
-WHERE s.since = 2015
-RETURN p,state
+<div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Person</span><span class="w"> </span><span class="p">{</span><span class="n">name</span><span class="p">:</span><span class="s">&quot;Théo Gauchoux&quot;</span><span class="p">})</span><span class="o">-[</span><span class="n">s</span><span class="p">:</span><span class="n">LIVES_IN</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">city</span><span class="p">:</span><span class="n">City</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">since</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="m">2015</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="n">state</span>
 </pre></div>
 <p>You can use <code>MATCH WHERE</code> clause with <code>CREATE</code> clause</p>
-<div class="highlight"><pre><span></span>MATCH (a), (b)
-WHERE a.name = &quot;Jacquie&quot; AND b.name = &quot;Michel&quot;
-CREATE (a)-[:KNOWS]-(b)
+<div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Jacquie&quot;</span><span class="w"> </span><span class="n">AND</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Michel&quot;</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">KNOWS</span><span class="o">]-</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
 </pre></div>
 <h2>Update queries</h2>
 
 <p>Update a specific property of a node</p>
-<div class="highlight"><pre><span></span>MATCH (p:Person)
-WHERE p.name = &quot;Théo Gauchoux&quot;
-SET p.age = 23
+<div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Théo Gauchoux&quot;</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">age</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="m">23</span>
 </pre></div>
 <p>Replace all properties of a node</p>
-<div class="highlight"><pre><span></span>MATCH (p:Person)
-WHERE p.name = &quot;Théo Gauchoux&quot;
-SET p = {name: &quot;Michel&quot;, age: 23}
+<div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Théo Gauchoux&quot;</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{</span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Michel&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">:</span><span class="w"> </span><span class="m">23</span><span class="p">}</span>
 </pre></div>
 <p>Add new property to a node</p>
-<div class="highlight"><pre><span></span>MATCH (p:Person)
-WHERE p.name = &quot;Théo Gauchoux&quot;
-SET p + = {studies: &quot;IT Engineering&quot;}
+<div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Théo Gauchoux&quot;</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="err">+</span><span class="p">=</span><span class="w"> </span><span class="p">{</span><span class="n">studies</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;IT Engineering&quot;</span><span class="p">}</span>
 </pre></div>
 <p>Add a label to a node</p>
-<div class="highlight"><pre><span></span>MATCH (p:Person)
-WHERE p.name = &quot;Théo Gauchoux&quot;
-SET p:Internship
+<div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Théo Gauchoux&quot;</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">p</span><span class="p">:</span><span class="n">Internship</span>
 </pre></div>
 <h2>Delete queries</h2>
 
 <p>Delete a specific node (linked relationships must be deleted before)</p>
-<div class="highlight"><pre><span></span>MATCH (p:Person)-[relationship]-()
-WHERE p.name = &quot;Théo Gauchoux&quot;
-DELETE relationship, p
+<div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span><span class="o">-[</span><span class="n">relationship</span><span class="o">]-</span><span class="p">()</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Théo Gauchoux&quot;</span>
+<span class="k">DELETE</span><span class="w"> </span><span class="n">relationship</span><span class="p">,</span><span class="w"> </span><span class="n">p</span>
 </pre></div>
 <p>Remove a property in a specific node</p>
-<div class="highlight"><pre><span></span>MATCH (p:Person)
-WHERE p.name = &quot;Théo Gauchoux&quot;
-REMOVE p.age
+<div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Théo Gauchoux&quot;</span>
+<span class="k">REMOVE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">age</span>
 </pre></div>
-<p><em>Pay attention to the <code>REMOVE</code>keyword, it&rsquo;s not <code>DELETE</code> !</em></p>
+<p><em>Pay attention to the <code>REMOVE</code> keyword, it&rsquo;s not <code>DELETE</code>!</em></p>
 
 <p>Remove a label from a specific node</p>
-<div class="highlight"><pre><span></span>MATCH (p:Person)
-WHERE p.name = &quot;Théo Gauchoux&quot;
-DELETE p:Person
+<div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Théo Gauchoux&quot;</span>
+<span class="k">DELETE</span><span class="w"> </span><span class="n">p</span><span class="p">:</span><span class="n">Person</span>
 </pre></div>
 <p>Delete entire database</p>
-<div class="highlight"><pre><span></span>MATCH (n)
-OPTIONAL MATCH (n)-[r]-()
-DELETE n, r
+<div class="highlight"><pre><span></span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="k">OPTIONAL</span><span class="w"> </span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">-[</span><span class="n">r</span><span class="o">]-</span><span class="p">()</span>
+<span class="k">DELETE</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">r</span>
 </pre></div>
-<p><em>Seriously, it&rsquo;s the <code>rm -rf /</code> of Cypher !</em></p>
+<p><em>Seriously, it&rsquo;s the <code>rm -rf /</code> of Cypher!</em></p>
 
 <h2>Other useful clauses</h2>
 
-<p><code>PROFILE</code>
-Before a query, show the execution plan of it.</p>
+<p><code>PROFILE</code> - before a query, show its execution plan.</p>
 
-<p><code>COUNT(e)</code>
-Count entities (nodes or relationships) matching <strong>e</strong>.</p>
+<p><code>COUNT(e)</code> - count entities (nodes or relationships) matching <code>e</code>.</p>
 
-<p><code>LIMIT x</code>
-Limit the result to the x first results.</p>
+<p><code>LIMIT x</code> - limit the result to the first <code>x</code> results.</p>
 
 <h2>Special hints</h2>
 
 <ul>
-<li>There is just single-line comments in Cypher, with double-slash : // Comments</li>
-<li>You can execute a Cypher script stored in a <strong>.cql</strong> file directly in Neo4j (it&rsquo;s an import). However, you can&rsquo;t have multiple statements in this file (separated by <strong>;</strong>).</li>
+<li>Cypher only has single-line comments, using double-slashes: <code>// comment</code></li>
+<li>You can execute a Cypher script stored in a .cql file directly in Neo4j (it&rsquo;s an import). However, you can&rsquo;t have multiple statements in this file (separated by <code>;</code>).</li>
 <li>Use the Neo4j shell to write Cypher, it&rsquo;s really awesome.</li>
-<li>The Cypher will be the standard query language for all graph databases (known as <strong>OpenCypher</strong>).</li>
+<li>Cypher will be the standard query language for all graph databases (known as <a href="https://opencypher.org/">openCypher</a>).</li>
 </ul>
+
+<p>Read more <a href="https://neo4j.com/developer/cypher-query-language/">here</a>.</p>
 
     <hr>
     <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the GitHub Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/cypher.html.markdown">pull request</a> yourself!
     </p>
     <p class="contributed">
-    Originally contributed by Théo Gauchoux, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/cypher.html.markdown">4 contributors</a>.
+    Originally contributed by Théo Gauchoux, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/cypher.html.markdown">1 contributor</a>.
     </p>
 
     <footer>
