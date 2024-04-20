@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="fr-fr" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="fr-fr" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="fr-fr" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="fr-fr" class="no-js"> <!--<![endif]-->
+    <head>
+      <!-- Google tag (gtag.js) -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-WXC8R75DEN');
+      </script>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="fr-fr">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn PCRE in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/fr-fr/pcre-fr/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+
+                if (theme === "dark" ) {
+                    el.className = "dark";
+                } else {
+                    el.className = "light";
+                }
+
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (theme) {
+                set_theme(theme);
+              }
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.addEventListener("load", function(){
+              load_theme();
+            });
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Ffr-fr%2Fpcre-fr%2F&text=Apprendre+X+en+Y+minutes%2C+o%C3%B9+X%3DPCRE">
+        Partager cette page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Choisis un thème:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">clair</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">sombre</button>
+  </div>
+  <h1><a href="/">Apprendre X en Y minutes</a></h1>
+  <h2>Où X=PCRE</h2>
+    <p class="filelink">
+    Récupérer le code:
+    <a href="/docs/files/pcre-fr.txt">pcre-fr.txt</a>
+    </p>
+  <div id="doc">
+    <p>Une expression régulière (regex ou regexp en abrégé) est une chaîne de texte spéciale pour décrire un masque de recherche. Par exemple, pour extraire le protocole d&#39;une URL, nous pouvons dire <code>/^[a-z]+:/</code> et cela correspondra à <code>http:</code> à partir de <code>http://github.com/</code>.</p>
+
+<p>PCRE (Perl Compatible Regular Expressions) est une bibliothèque C implémentant les expressions régulières. Elle a été écrite en 1997, à l&#39;époque où Perl était le choix de facto pour les tâches complexes de traitement de texte. La syntaxe utilisée dans PCRE ressemble beaucoup à Perl, et est utilisée dans de nombreux grands projets, notamment PHP, Apache et R, pour n&#39;en citer que quelques-uns.</p>
+
+<p>Il existe deux sortes de méta-caractères :</p>
+
+<ul>
+<li>Ceux reconnus n&#39;importe où dans le masque, sauf entre crochets, sont :</li>
+</ul>
+<div class="highlight"><pre><span></span>  \      caractère d&#39;échappement général ayant plusieurs usages
+  ^      définit le début de la chaîne (ou de la ligne, en mode multiligne)
+  $      définit la fin de la chaîne (ou de la ligne, en mode multiligne)
+  .      correspond à n&#39;importe quel caractère à l&#39;exception de la nouvelle ligne (par défaut)
+  [      début de définition d&#39;une classe de caractères
+  |      début d&#39;une branche alternative
+  (      début d&#39;un sous-masque
+  )      fin d&#39;un sous-masque
+  ?      étend le sens de (
+         et aussi : quantificateur 0 ou 1
+         et aussi : quantificateur de minimisation (fait correspondre un sous-masque avec le moins de caractères)
+  *      quantificateur 0 ou plus
+  +      quantificateur 1 ou plus
+         et aussi : quantificateur possessive (fait correspondre un sous-masque avec le plus de caractères)
+  {      début d&#39;un quantificateur min/max
+</pre></div>
+<ul>
+<li>Ceux reconnus entre crochets, en dehors des crochets, et appelées également classes de caractères, sont :</li>
+</ul>
+<div class="highlight"><pre><span></span>  \      caractère d&#39;échappement général
+  ^      négation de la classe, mais uniquement si placé au tout début de la classe
+  -      indique une plage de caractères
+  [      classe de caractères POSIX (uniquement si elle est suivie d&#39;une syntaxe POSIX)
+  ]      termine la classe de caractères
+</pre></div>
+<p>PCRE fournit des types de caractères génériques, également appelés classes de caractères.</p>
+<div class="highlight"><pre><span></span>  \d     tout chiffre décimal
+  \D     tout sauf un chiffre décimal
+  \h     tout caractère d&#39;espace horizontal blanc
+  \H     tout sauf un caractère d&#39;espace horizontal blanc
+  \s     tout caractère d&#39;espace blanc
+  \S     tout sauf un caractère d&#39;espace blanc
+  \v     tout caractère d&#39;espace vertical blanc
+  \V     tout sauf un caractère d&#39;espace vertical blanc
+  \w     tout caractère pouvant former un mot (lettre, chiffre, underscore)
+  \W     tout sauf un caractère pouvant former un mot (lettre, chiffre, underscore)
+``
+
+## Exemples
+
+Nous allons tester nos exemples sur la chaîne sujet suivante :
+</pre></div>
+<p>66.249.64.13 - - [18/Sep/2004:11:07:48 +1000] &ldquo;GET /robots.txt HTTP/1.0&rdquo; 200 468 &ldquo;-&rdquo; &ldquo;Googlebot/2.1&rdquo;
+&ldquo;`</p>
+
+<p>Il s&#39;agit d&#39;un log d&#39;accès Apache standard.</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Regex</th>
+<th style="text-align: left">Résultat</th>
+<th style="text-align: left">Commentaire</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left"><code>GET</code></td>
+<td style="text-align: left">GET</td>
+<td style="text-align: left"><code>GET</code> correspond à <code>GET</code> littéralement (sensible à la casse)</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>\d+.\d+.\d+.\d+</code></td>
+<td style="text-align: left">66.249.64.13</td>
+<td style="text-align: left"><code>\d+</code> correspond à un chiffre [0-9] une ou plusieurs fois, définit par le quantificateur <code>+</code>, <code>\.</code> correspond à <code>.</code> littéralement</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>(\d+\.){3}\d+</code></td>
+<td style="text-align: left">66.249.64.13</td>
+<td style="text-align: left"><code>(\d+\.){3}</code> essaye de faire correspondre le sous-masque (<code>\d+\.</code>) exactement trois fois.</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>\[.+\]</code></td>
+<td style="text-align: left">[18/Sep/2004:11:07:48 +1000]</td>
+<td style="text-align: left"><code>.+</code> fait correspondre tout caractère (sauf la nouvelle ligne), plusieurs fois, <code>.</code> remplace n&#39;importe quel caractère</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>^\S+</code></td>
+<td style="text-align: left">66.249.64.13</td>
+<td style="text-align: left"><code>^</code> correspond au début de la ligne, <code>\S+</code> correspond à n&#39;importe quel nombre de caractère non-vide</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>\+[0-9]+</code></td>
+<td style="text-align: left">+1000</td>
+<td style="text-align: left"><code>\+</code> correspond au caractère <code>+</code> littéralement. <code>[0-9]</code> classe de caractère, faisant correspondre un seul chiffre. La même chose peut être obtenu en utilisant <code>\+\d+</code></td>
+</tr>
+</tbody></table>
+
+<h2>Lectures complémentaires</h2>
+
+<p><a href="https://regex101.com/">Regex101</a> - Regular Expression tester et debugger</p>
+
+    <hr>
+    <p>Vous avez une suggestion ? Peut-être une correction ? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Ouvrez un ticket</a> sur GitHub, ou faites vous-même une <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/fr-fr/pcre-fr.html.markdown">pull request</a> !
+    </p>
+    <p class="contributed">
+    Version originale par Sachin Divekar, mis à jour par <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/fr-fr/pcre-fr.html.markdown">0 contributeur(s)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://github.com/ssd532">Sachin Divekar</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/Th3G33k">Th3G33k</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+    </body>
+</html>
