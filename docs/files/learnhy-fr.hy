@@ -106,8 +106,8 @@ True ; => True
 
 ;; les importations fonctionnent comme en Python
 (import datetime)
-(import [functools [partial reduce]]) ; importe fun1 et fun2 de module1
-(import [matplotlib.pyplot :as plt]) ; faire une importation foo comme bar
+(import functools [partial reduce]) ; importe fun1 et fun2 de module1
+(import matplotlib.pyplot :as plt) ; faire une importation foo comme bar
 ; toutes les méthodes natives de Python sont accessibles à partir de Hy
 ; a.foo(arg) est appelé (.foo a arg)
 (.split (.strip "hello world  ")) ;=> ["hello" "world"]
