@@ -20,7 +20,7 @@ Titel werden auch mit Gleichheitszeichen unterstrichen
 Untertitel werden mit Strichen gekennzeichnet
 ---------------------------------------------
 
-Text in *kursiv* oder in **fett**. Du kannst Text als Code "makieren", wenn
+Text in *kursiv* oder in **fett**. Du kannst Text als Code "markieren", wenn
 du doppelte Backquotes verwendest ``: ``print()``.
 
 Listen sind so einfach wie in Markdown:
@@ -52,7 +52,7 @@ Es gibt mehrere Möglichkeiten um Links zu machen:
 - Wenn man einen Unterstrich hinter einem Wort hinzufügt: GitHub_ Zusätzlich 
 muss man die Zielurl nach dem Text hinzufügen. 
 (Dies hat den Vorteil, dass man keine unnötigen Urls in lesbaren Text einfügt.
-- Wenn man die vollständige Url eingibt : https://github.com/
+- Wenn man die vollständige Url eingibt: https://github.com/
 (Dies wird automatisch in ein Link konvertiert.)
 - Wenn man es mehr Markdown ähnlich eingibt: `GitHub <https://github.com/>`_ .
 
