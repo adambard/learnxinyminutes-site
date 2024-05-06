@@ -11,7 +11,7 @@ def window():
     b = QtGui.QLabel(w)
 	# Setzt einen Text für das Label.
     b.setText("Hello World!")
-	# Setzt die Größe und die Platzierungsinfomationen.
+	# Setzt die Größe und die Platzierungsinformationen.
     w.setGeometry(100, 100, 200, 50)
     b.move(50, 20)
 	# Setzt unserem Fenster einen schönen Titel.
@@ -44,7 +44,7 @@ def window():
     sys.exit(app.exec_())
 
 # Diese Funktion soll ein Dialogfenster mit einem Knopf erschaffen.
-# Der Knopf wartet bis er geklickt wird und beendet das Programm
+# Der Knopf wartet, bis er geklickt wird, und beendet das Programm.
 def showdialog():
     d = QDialog()
     b1 = QPushButton("ok", d)
@@ -52,7 +52,7 @@ def showdialog():
     d.setWindowTitle("Dialog")
     # Diese Modalität sagt dem Popup, dass es den Parent blocken soll, solange es aktiv ist.
     d.setWindowModality(Qt.ApplicationModal)
-    # Beim klicken möchte ich, dass der gesamte Prozess beendet wird.
+    # Beim Klicken möchte ich, dass der gesamte Prozess beendet wird.
     b1.clicked.connect(sys.exit)
     d.exec_()
 
