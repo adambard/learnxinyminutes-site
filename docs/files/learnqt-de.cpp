@@ -8,7 +8,7 @@
 #include <QLineEdit>
 
 int main(int argc, char *argv[]) {
-    // Erstellt ein Objekt um applikationsweit die Resourcen zu managen.
+    // Erstellt ein Objekt um applikationsweit die Ressourcen zu managen.
     QApplication app(argc, argv);
 
     // Erstellt ein Line edit Widget und zeigt es auf dem Bildschirm
@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
     QDialog dialogWindow;
     dialogWindow.show();
     
-    // Füge ein vertikales Layout hinzu
+    // Füge ein vertikales Layout hinzu.
     QVBoxLayout layout;
     dialogWindow.setLayout(&layout);  
 
