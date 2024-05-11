@@ -37,7 +37,7 @@
 
 ;; Aber wenn du versuchst das mit einer zitierten Liste zu machen wirst du
 ;; einen Fehler bekommen, weil das Argument auch zitiert sein wird.
-;; Um dies zu umgehen, bietet Clojure einee Art und Weise Macros zu zitieren: `
+;; Um dies zu umgehen, bietet Clojure eine Art und Weise Macros zu zitieren: `
 ;; In ` kannst du ~ verwenden um in den äußeren Bereich zu kommen.
 (defmacro inc2-quoted [arg]
   `(+ 2 ~arg))
