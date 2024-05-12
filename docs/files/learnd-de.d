@@ -19,7 +19,7 @@ void main() {
     }
 
     auto n = 1; // auto um den Typ vom Compiler bestimmen zu lassen
-    
+
     // Zahlenliterale können _ verwenden für lesbarkeit
     while(n < 10_000) {
         n += n;
@@ -55,7 +55,7 @@ struct LinkedList(T) {
 
 class BinTree(T) {
     T data = null;
-    
+
     // Wenn es nur einen T Parameter gibt, können die Klammern um ihn weggelassen werden
     BinTree!T left;
     BinTree!T right;
@@ -114,13 +114,13 @@ class MyClass(T, U) {
 class MyClass(T, U) {
     T _data;
     U _other;
-    
+
     // Konstruktoren heißen immer `this`
     this(T t, U u) {
         data = t;
         other = u;
     }
-    
+
     // getters
     @property T data() {
         return _data;
@@ -130,8 +130,8 @@ class MyClass(T, U) {
         return _other;
     }
 
-    // setters    
-	// @property kann genauso gut am ende der Methodensignatur stehen
+    // setters
+    // @property kann genauso gut am ende der Methodensignatur stehen
     void data(T t) @property {
         _data = t;
     }
@@ -147,7 +147,7 @@ void main() {
 
     mc.data = 7;
     mc.other = "seven";
-    
+
     writeln(mc.data);
     writeln(mc.other);
 }
@@ -158,10 +158,10 @@ import std.range : iota; // builds an end-exclusive range
 void main() {
     // Wir wollen die Summe aller Quadratzahlen zwischen
     // 1 und 100 ausgeben. Nichts leichter als das!
- 
+
     // Einfach eine Lambda-Funktion als Template Parameter übergeben
     // Es ist genau so gut möglich eine normale Funktion hier zu übergeben
-	// Lambdas bieten sich hier aber an.
+    // Lambdas bieten sich hier aber an.
     auto num = iota(1, 101).filter!(x => x % 2 == 0)
                            .map!(y => y ^^ 2)
                            .reduce!((a, b) => a + b);

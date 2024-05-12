@@ -53,8 +53,8 @@ void main() {
 struct LinkedList(T) {
     T data = null;
 
-	// Utilisez '!' pour instancier un type paramétré.
-	// Encore une fois semblable à '<T>'
+    // Utilisez '!' pour instancier un type paramétré.
+    // Encore une fois semblable à '<T>'
     LinkedList!(T)* next;
 }
 
@@ -118,9 +118,9 @@ class MyClass(T, U) {
     T _data;
     U _other;
 
-	// Les constructeurs s'appellent toujours 'this'.
+    // Les constructeurs s'appellent toujours 'this'.
     this(T t, U u) {
-		// Ceci va appeller les setters ci-dessous.
+        // Ceci va appeller les setters ci-dessous.
         data = t;
         other = u;
     }
@@ -148,18 +148,18 @@ class MyClass(T, U) {
 void main() {
     auto mc = new MyClass!(int, string)(7, "seven");
 
-	// Importer le module 'stdio' de la bibliothèque standard permet
-	// d'écrire dans la console (les imports peuvent être locaux à une portée)
+    // Importer le module 'stdio' de la bibliothèque standard permet
+    // d'écrire dans la console (les imports peuvent être locaux à une portée)
     import std.stdio;
 
-	// On appelle les getters pour obtenir les valeurs.
+    // On appelle les getters pour obtenir les valeurs.
     writefln("Earlier: data = %d, str = %s", mc.data, mc.other);
 
-	// On appelle les setter pour assigner de nouvelles valeurs.
+    // On appelle les setter pour assigner de nouvelles valeurs.
     mc.data = 8;
     mc.other = "eight";
 
-	// On appelle les setter pour obtenir les nouvelles valeurs.
+    // On appelle les setter pour obtenir les nouvelles valeurs.
     writefln("Later: data = %d, str = %s", mc.data, mc.other);
 }
 
@@ -167,12 +167,12 @@ import std.algorithm : map, filter, reduce;
 import std.range : iota; // construit un intervalle excluant la dernière valeur.
 
 void main() {
-	// On veut un algorithme qui affiche la somme de la liste des carrés
-	// des entiers paires de 1 à 100. Un jeu d'enfant !
+    // On veut un algorithme qui affiche la somme de la liste des carrés
+    // des entiers paires de 1 à 100. Un jeu d'enfant !
 
-	// On se contente de passer des expressions lambda en paramètre à des templates.
-	// On peut fournir au template n'importe quelle fonction, mais dans notre
-	// cas, les lambdas sont pratiques.
+    // On se contente de passer des expressions lambda en paramètre à des templates.
+    // On peut fournir au template n'importe quelle fonction, mais dans notre
+    // cas, les lambdas sont pratiques.
     auto num = iota(1, 101).filter!(x => x % 2 == 0)
                            .map!(y => y ^^ 2)
                            .reduce!((a, b) => a + b);
