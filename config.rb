@@ -440,3 +440,11 @@ redirect 'docs/es-es/perl6-es/index.html', to: '/docs/es-es/raku-es/'
 # fortran
 redirect 'docs/fortran95/index.html', to: '/docs/fortran/'
 redirect 'docs/fortran90/index.html', to: '/docs/fortran/'
+
+# lowercase
+redirect 'docs/ATS/index.html', to: '/docs/ats/'
+redirect 'docs/CHICKEN/index.html', to: '/docs/chicken/'
+redirect 'docs/LOLCODE/index.html', to: '/docs/lolcode/'
+redirect 'docs/de-de/LOLCODE-de/index.html', to: '/docs/de-de/lolcode-de/'
+redirect 'docs/fr-fr/HTML-fr/index.html', to: '/docs/fr-fr/html-fr/'
+redirect 'docs/no-nb/JSON-no/index.html', to: '/docs/no-nb/json-no/'
