@@ -13,7 +13,7 @@
 # Eckige-Klammern sind nur Quoting-Mechanismen, keine Code-Block-Konstruktoren
 # und auch keine Listen-Konstruktoren. In Tcl gibt es diese beiden Dinge nicht.
 # Eckige-Klammern werden verwendet um Spezial-Zeichen in Prozeduren zu escapen
-# und in Zeichenketten die als Listen formattiert sind.
+# und in Zeichenketten die als Listen formatiert sind.
 
 ################################################################################
 ## 2. Syntax 
@@ -22,7 +22,7 @@
 # Jede Zeile ist ein Befehl. Das erste Wort ist der Name des Befehls, jedes
 # weitere Wort ist ein Argument des Befehls. Wörter sind begrenzt durch
 # Leerzeichen. Da jedes Wort auch ein String ist, sind keine speziellen
-# auszeichnungen wie Anführungs-Zeichen, Klammern oder Backslashes nötig.
+# Auszeichnungen wie Anführungs-Zeichen, Klammern oder Backslashes nötig.
 # Selbst wenn Anführungs-Zeichen verwendet werden, denn sie sind ja keine
 # String-Konstruktoren, sondern nur Escape-Zeichen.
 
