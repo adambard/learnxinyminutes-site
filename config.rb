@@ -392,7 +392,7 @@ end
 # and python -> pythonlegacy (no redirect)
 redirect 'docs/python3/index.html', to: '/docs/python/'
 redirect 'docs/ar-ar/python3-ar/index.html', to: '/docs/ar-ar/python-ar/'
-redirect 'docs/cs-cz/python3/index.html',    to: '/docs/cs-cz/python/'
+redirect 'docs/cs-cz/python3/index.html', to: '/docs/cs-cz/python/'
 redirect 'docs/de-de/python3-de/index.html', to: '/docs/de-de/python-de/'
 redirect 'docs/el-gr/python3-gr/index.html', to: '/docs/el-gr/python-gr/'
 redirect 'docs/es-es/python3-es/index.html', to: '/docs/es-es/python-es/'
@@ -407,6 +407,8 @@ redirect 'docs/zh-cn/python3-cn/index.html', to: '/docs/zh-cn/python-cn/'
 
 # brainfuck -> bf
 redirect 'docs/brainfuck/index.html', to: '/docs/bf/'
+redirect 'docs/cs-cz/brainfuck/index.html', to: '/docs/cs-cz/bf/'
+redirect 'docs/de-de/brainfuck-de/index.html', to: '/docs/de-de/bf-de/'
 redirect 'docs/es-es/brainfuck-es/index.html', to: '/docs/es-es/bf-es/'
 redirect 'docs/fa-ir/brainfuck-fa/index.html', to: '/docs/fa-ir/bf-fa/'
 redirect 'docs/fr-fr/brainfuck-fr/index.html', to: '/docs/fr-fr/bf-fr/'
@@ -414,14 +416,17 @@ redirect 'docs/it-it/brainfuck-it/index.html', to: '/docs/it-it/bf-it/'
 redirect 'docs/ko-kr/brainfuck-kr/index.html', to: '/docs/ko-kr/bf-kr/'
 redirect 'docs/nl-nl/brainfuck-nl/index.html', to: '/docs/nl-nl/bf/'
 redirect 'docs/pl-pl/brainfuck-pl/index.html', to: '/docs/pl-pl/bf-pl/'
-redirect 'docs/pt-br/brainfuck-pt/index.html', to: '/docs/pt-br/bf/'
-redirect 'docs/pt-pt/brainfuck-pt/index.html', to: '/docs/pt-pt/bf/'
+redirect 'docs/pt-br/brainfuck-pt/index.html', to: '/docs/pt-br/bf-pt/'
+redirect 'docs/pt-pt/brainfuck-pt/index.html', to: '/docs/pt-pt/bf-pt/'
 redirect 'docs/ru-ru/brainfuck-ru/index.html', to: '/docs/ru-ru/bf/'
+redirect 'docs/sv-se/brainfuck-sv/index.html', to: '/docs/sv-se/bf-sv/'
 redirect 'docs/tr-tr/brainfuck-tr/index.html', to: '/docs/tr-tr/bf-tr/'
 redirect 'docs/zh-cn/brainfuck-cn/index.html', to: '/docs/zh-cn/bf-cn/'
-redirect 'docs/cs-cz/brainfuck/index.html',    to: '/docs/cs-cz/bf/'
-redirect 'docs/de-de/brainfuck-de/index.html', to: '/docs/de-de/bf-de/'
-redirect 'docs/sv-se/brainfuck-sv/index.html', to: '/docs/sv-se/bf-sv/'
+# older brainfuck redirects
+redirect 'docs/sv-sv/brainfuck-sv/index.html', to: '/docs/sv-se/bf-sv/'
+redirect 'docs/bf-it/index.html', to: '/docs/it-it/bf-it/'
+redirect 'docs/pt-br/brainfuck/index.html', to: '/docs/pt-br/bf-pt/'
+redirect 'docs/pt-pt/brainfuck/index.html', to: '/docs/pt-pt/bf-pt/'
 
 # hd-hd -> hi-in
 redirect 'docs/hd-hd/amd/index.html', to: '/docs/hi-in/amd/'
@@ -432,14 +437,62 @@ redirect 'docs/ta_in/css-ta/index.html', to: '/docs/ta-in/css-ta/'
 redirect 'docs/ta_in/javascript-ta/index.html', to: '/docs/ta-in/javascript-ta/'
 redirect 'docs/ta_in/json-ta/index.html', to: '/docs/ta-in/json-ta/'
 redirect 'docs/ta_in/xml-ta/index.html', to: '/docs/ta-in/xml-ta/'
+redirect 'docs/ta_in/css/index.html', to: '/docs/ta-in/css-ta/'
+redirect 'docs/ta_in/javascript/index.html', to: '/docs/ta-in/javascript-ta/'
+redirect 'docs/ta_in/json/index.html', to: '/docs/ta-in/json-ta/'
+redirect 'docs/ta_in/xml/index.html', to: '/docs/ta-in/xml-ta/'
+
+# ua-ua -> uk-ua
+redirect 'docs/ua-ua/bash-ua/index.html', to: '/docs/uk-ua/bash-ua/'
+redirect 'docs/ua-ua/json-ua/index.html', to: '/docs/uk-ua/json-ua/'
+redirect 'docs/ua-ua/javascript-ua/index.html', to: '/docs/uk-ua/javascript-ua/'
+
+# repeat language codes in filenames
+redirect 'docs/fa-ir/css/index.html', to: '/docs/fa-ir/css-fa/'
+redirect 'docs/fa-ir/javascript/index.html', to: '/docs/fa-ir/javascript-fa/'
+redirect 'docs/fr-fr/d/index.html', to: '/docs/fr-fr/d-fr/'
+redirect 'docs/fr-fr/haskell/index.html', to: '/docs/fr-fr/haskell-fr/'
+redirect 'docs/fr-fr/markdown/index.html', to: '/docs/fr-fr/markdown-fr/'
+redirect 'docs/fr-fr/php/index.html', to: '/docs/fr-fr/php-fr/'
+redirect 'docs/fr-fr/php/index.html', to: '/docs/fr-fr/php-fr/'
+redirect 'docs/fr-fr/scala/index.html', to: '/docs/fr-fr/scala-fr/'
+redirect 'docs/fr-fr/vim/index.html', to: '/docs/fr-fr/vim-fr/'
+redirect 'docs/hu-hu/go/index.html', to: '/docs/hu-hu/go-hu/'
+redirect 'docs/hu-hu/ruby/index.html', to: '/docs/hu-hu/ruby-hu/'
+redirect 'docs/ja-jp/php/index.html', to: '/docs/ja-jp/php-jp/'
+redirect 'docs/pt-br/amd/index.html', to: '/docs/pt-br/amd-pt/'
+redirect 'docs/pt-br/csharp/index.html', to: '/docs/pt-br/csharp-pt/'
+redirect 'docs/pt-br/elixir/index.html', to: '/docs/pt-br/elixir-pt/'
+redirect 'docs/pt-br/pythonstatcomp/index.html', to: '/docs/pt-br/pythonstatcomp-pt/'
+redirect 'docs/pt-pt/swift/index.html', to: '/docs/pt-pt/swift-pt/'
+redirect 'docs/ro-ro/latex/index.html', to: '/docs/ro-ro/latex-ro/'
+redirect 'docs/sk-sk/bash/index.html', to: '/docs/sk-sk/bash-sk/'
+redirect 'docs/sk-sk/coffeescript/index.html', to: '/docs/sk-sk/coffeescript-sk/'
+redirect 'docs/sk-sk/elixir/index.html', to: '/docs/sk-sk/elixir-sk/'
+redirect 'docs/sk-sk/git/index.html', to: '/docs/sk-sk/git-sk/'
+redirect 'docs/sk-sk/json/index.html', to: '/docs/sk-sk/json-sk/'
+redirect 'docs/sk-sk/ruby/index.html', to: '/docs/sk-sk/ruby-sk/'
+redirect 'docs/tr-tr/css/index.html', to: '/docs/tr-tr/css-tr/'
+redirect 'docs/zh-cn/common-lisp/index.html', to: '/docs/zh-cn/common-lisp-cn/'
+redirect 'docs/zh-cn/javascript/index.html', to: '/docs/zh-cn/javascript-cn/'
+redirect 'docs/zh-cn/sql/index.html', to: '/docs/zh-cn/sql-cn/'
+
+redirect 'docs/zh-cn/go-zh/index.html', to: '/docs/zh-cn/go-cn/'
+
+# typos
+redirect 'docs/pt-br/asymptoticnotation-pt/index.html', to: '/docs/pt-br/asymptotic-notation-pt/'
+# wrong directory
+redirect 'docs/rust-pt/index.html', to: '/docs/pt-br/rust-pt/'
 
 # perl6 -> raku
+redirect 'docs/perl6/index.html', to: '/docs/raku/'
 redirect 'docs/perl6-pod/index.html', to: '/docs/raku-pod/'
 redirect 'docs/es-es/perl6-es/index.html', to: '/docs/es-es/raku-es/'
 
 # fortran
 redirect 'docs/fortran95/index.html', to: '/docs/fortran/'
 redirect 'docs/fortran90/index.html', to: '/docs/fortran/'
+redirect 'docs/zh-cn/fortran95-cn/index.html', to: '/docs/zh-cn/fortran-cn/'
 
 # lowercase
 redirect 'docs/ATS/index.html', to: '/docs/ats/'
