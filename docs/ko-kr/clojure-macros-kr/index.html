@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="ko-kr" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="ko-kr" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="ko-kr" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="ko-kr" class="no-js"> <!--<![endif]-->
+    <head>
+      <!-- Google tag (gtag.js) -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-WXC8R75DEN');
+      </script>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="ko-kr">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn clojure macros in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/ko-kr/clojure-macros-kr/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+                el.className = theme === "dark" ? "dark" : "light";
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (!theme) {
+                theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+              }
+              set_theme(theme)
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.onload = function(){
+              load_theme();
+            };
+
+            // Listen for system preference change
+            window
+              .matchMedia("(prefers-color-scheme: dark)")
+              .addEventListener("change", ({matches:isDark}) => {
+                set_theme(isDark ? "dark" : "light")
+              })
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fko-kr%2Fclojure-macros-kr%2F&text=Y%EB%B6%84%EC%97%90+X%EB%A5%BC+%EB%B0%B0%EC%9A%B0%EB%8B%A4%2C+%EC%97%AC%EA%B8%B0%EC%84%9C+X%3Dclojure+macros">
+        페이지 공유
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">테마 선택 :</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">밝은</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">어두운</button>
+  </div>
+  <h1><a href="/">Y분에 X를 배우다</a></h1>
+  <h2>여기서 X=clojure macros</h2>
+    <p class="filelink">
+    코드를 다운받다:
+    <a href="/docs/files/learnclojuremacros-kr.clj">learnclojuremacros-kr.clj</a>
+    </p>
+  <div id="doc">
+    <p>다른 모든 Lisp와 마찬가지로, Clojure가 가진 <a href="https://en.wikipedia.org/wiki/Homoiconic">동형성(homoiconicity)</a>은
+ &ldquo;매크로&quot;라고 불리는 코드 생성 루틴을 작성할 수 있도록 언어의 전체적인 범위에 접근할 수 있게 해줍니다.
+ 매크로는 필요에 맞게 언어를 바꿀 수 있는 강력한 방법을 제공합니다.</p>
+
+<p>주의하시기 바랍니다. 함수로도 충분히 해결할 수 있는 문제를 매크로로 작성하게 된다면, 좋은 코드라고 할 수 없습니다.
+인자가 평가되는 시점을 제어해야 할 때만 매크로를 사용하는게 좋습니다.</p>
+
+<p>Clojure랑 친해지면 쉽게 따라갈 수 있습니다. <a href="/docs/ko-kr/clojure-kr/">Clojure in Y Minutes</a>를 한번 읽어보세요.</p>
+<div class="highlight"><pre><span></span><span class="c1">;; defmacro로 매크로를 정의합니다.</span>
+<span class="c1">;; 매크로는 clojure 코드로 평가될 수 있는 리스트를 반환해야 합니다.</span>
+<span class="c1">;;</span>
+<span class="c1">;; 다음 매크로는 (reverse &quot;Hello World&quot;) 라고 쓴 것과 같습니다.</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">my-first-macro</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">list reverse </span><span class="s">&quot;Hello World&quot;</span><span class="p">))</span>
+
+<span class="c1">;; macroexpand나 macroexpand-1을 사용해서 매크로의 결과를 확인할 수 있습니다.</span>
+<span class="c1">;;</span>
+<span class="c1">;; 호출하는 부분이 &#39;(quote)된 것을 주목합니다.</span>
+<span class="p">(</span><span class="nb">macroexpand </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">my-first-macro</span><span class="p">))</span>
+<span class="c1">;; -&gt; (#&lt;core$reverse clojure.core$reverse@xxxxxxxx&gt; &quot;Hello World&quot;)</span>
+
+<span class="c1">;; macroexpand의 결과를 바로 평가할 수 있습니다.</span>
+<span class="p">(</span><span class="nb">eval </span><span class="p">(</span><span class="nb">macroexpand </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">my-first-macro</span><span class="p">)))</span>
+<span class="c1">; -&gt; (\d \l \o \r \W \space \o \l \l \e \H)</span>
+
+<span class="c1">;; 하지만, 함수와 같이 좀 더 간결한 구문을 이용하는게 좋습니다:</span>
+<span class="p">(</span><span class="nf">my-first-macro</span><span class="p">)</span><span class="w">  </span><span class="c1">; -&gt; (\d \l \o \r \W \space \o \l \l \e \H)</span>
+
+<span class="c1">;; 더 간결한 quote 구문 ( &#39; )을 이용하여, 보다 편리하게 매크로 안에서 리스트를 만들 수 있습니다:</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">my-first-quoted-macro</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="o">&#39;</span><span class="p">(</span><span class="nb">reverse </span><span class="s">&quot;Hello World&quot;</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">macroexpand </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">my-first-quoted-macro</span><span class="p">))</span>
+<span class="c1">;; -&gt; (reverse &quot;Hello World&quot;)</span>
+<span class="c1">;; reverse는 더 이상 함수 객체가 아니라 심볼이라는 것에 주목하세요.</span>
+
+<span class="c1">;; 매크로는 인자를 받을 수 있습니다.</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">inc2</span><span class="w"> </span><span class="p">[</span><span class="nv">arg</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">list + </span><span class="mi">2</span><span class="w"> </span><span class="nv">arg</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nf">inc2</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; 4</span>
+
+<span class="c1">;; 하지만, quote된 리스트를 사용하면 에러가 발생합니다.</span>
+<span class="c1">;; 인자도 quote되기 때문입니다.</span>
+<span class="c1">;; 이를 해결하기 위해, clojure는 매크로를 quote할 수 있는 방법을 제공합니다: `.</span>
+<span class="c1">;; ` 안에서 ~를 사용하면 외부 스코프에 접근할 수 있습니다.</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">inc2-quoted</span><span class="w"> </span><span class="p">[</span><span class="nv">arg</span><span class="p">]</span>
+<span class="w">  </span><span class="o">`</span><span class="p">(</span><span class="nb">+ </span><span class="mi">2</span><span class="w"> </span><span class="o">~</span><span class="nv">arg</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nf">inc2-quoted</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1">;; destructuring args도 사용할 수 있습니다. ~@를 사용하여 리스트 변수를 확장할 수 있습니다.</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">unless</span><span class="w"> </span><span class="p">[</span><span class="nv">arg</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nv">body</span><span class="p">]</span>
+<span class="w">  </span><span class="o">`</span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">not </span><span class="o">~</span><span class="nv">arg</span><span class="p">)</span>
+<span class="w">     </span><span class="p">(</span><span class="k">do </span><span class="o">~@</span><span class="nv">body</span><span class="p">)))</span><span class="w"> </span><span class="c1">; do를 빼먹지 마세요!</span>
+
+<span class="p">(</span><span class="nb">macroexpand </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">unless</span><span class="w"> </span><span class="nv">true</span><span class="w"> </span><span class="p">(</span><span class="nb">reverse </span><span class="s">&quot;Hello World&quot;</span><span class="p">)))</span>
+<span class="c1">;; -&gt;</span>
+<span class="c1">;; (if (clojure.core/not true) (do (reverse &quot;Hello World&quot;)))</span>
+
+<span class="c1">;; (unless)는 첫 번째 인자가 false일 때, body를 평가하고 반환합니다.</span>
+<span class="c1">;; 그렇지않으면, nil을 반환합니다.</span>
+<span class="p">(</span><span class="nf">unless</span><span class="w"> </span><span class="nv">true</span><span class="w"> </span><span class="s">&quot;Hello&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; nil</span>
+<span class="p">(</span><span class="nf">unless</span><span class="w"> </span><span class="nv">false</span><span class="w"> </span><span class="s">&quot;Hello&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; &quot;Hello&quot;</span>
+
+<span class="c1">;; 주의하지 않으면, 매크로는 변수를 덮어쓰는 등 큰 문제를 일으킬 수 있습니다.</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">define-x</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">do</span>
+<span class="w">     </span><span class="p">(</span><span class="k">def </span><span class="nv">x</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">     </span><span class="p">(</span><span class="nb">list </span><span class="nv">x</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">x</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">define-x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span>
+<span class="p">(</span><span class="nb">list </span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span>
+
+<span class="c1">;; 이를 피하기 위해, gensym을 이용하여 고유한 식별자를 얻을 수 있습니다.</span>
+<span class="p">(</span><span class="nb">gensym </span><span class="ss">&#39;x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; x1281 (혹은 다른 식별자)</span>
+
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">define-x-safely</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sym</span><span class="w"> </span><span class="p">(</span><span class="nb">gensym </span><span class="ss">&#39;x</span><span class="p">)]</span>
+<span class="w">    </span><span class="o">`</span><span class="p">(</span><span class="nf">do</span>
+<span class="w">       </span><span class="p">(</span><span class="k">def </span><span class="o">~</span><span class="nv">sym</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">       </span><span class="p">(</span><span class="nb">list </span><span class="o">~</span><span class="nv">sym</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">x</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">define-x-safely</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span>
+<span class="p">(</span><span class="nb">list </span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (4)</span>
+
+<span class="c1">;; ` 안에서 #를 사용하면 자동으로 각 심볼에 대한 gensym을 생성할 수 있습니다.</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">define-x-hygienically</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="o">`</span><span class="p">(</span><span class="nf">do</span>
+<span class="w">     </span><span class="p">(</span><span class="k">def </span><span class="nv">x#</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">     </span><span class="p">(</span><span class="nb">list </span><span class="nv">x#</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">x</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">define-x-hygienically</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span>
+<span class="p">(</span><span class="nb">list </span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (4)</span>
+
+<span class="c1">;; 매크로를 만들 때는 보통 헬퍼 함수를 많이 이용합니다.</span>
+<span class="c1">;; 인라인 산술 문법을 지원하는 몇 개의 헬퍼 함수를 만들어 봅시다.</span>
+<span class="p">(</span><span class="kd">declare </span><span class="nv">inline-2-helper</span><span class="p">)</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">clean-arg</span><span class="w"> </span><span class="p">[</span><span class="nv">arg</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">seq? </span><span class="nv">arg</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">inline-2-helper</span><span class="w"> </span><span class="nv">arg</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">arg</span><span class="p">))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">apply-arg</span>
+<span class="w">  </span><span class="s">&quot;Given args [x (+ y)], return (+ x y)&quot;</span>
+<span class="w">  </span><span class="p">[</span><span class="nb">val </span><span class="p">[</span><span class="nv">op</span><span class="w"> </span><span class="nv">arg</span><span class="p">]]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">list </span><span class="nv">op</span><span class="w"> </span><span class="nb">val </span><span class="p">(</span><span class="nf">clean-arg</span><span class="w"> </span><span class="nv">arg</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">inline-2-helper</span>
+<span class="w">  </span><span class="p">[[</span><span class="nv">arg1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nv">ops-and-args</span><span class="p">]]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">ops</span><span class="w"> </span><span class="p">(</span><span class="nf">partition</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="nv">ops-and-args</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">reduce </span><span class="nv">apply-arg</span><span class="w"> </span><span class="p">(</span><span class="nf">clean-arg</span><span class="w"> </span><span class="nv">arg1</span><span class="p">)</span><span class="w"> </span><span class="nv">ops</span><span class="p">)))</span>
+
+<span class="c1">;; 매크로를 만들지 않고, 바로 테스트해볼 수 있습니다.</span>
+<span class="p">(</span><span class="nf">inline-2-helper</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">a</span><span class="w"> </span><span class="nb">+ </span><span class="p">(</span><span class="nf">b</span><span class="w"> </span><span class="nb">- </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">- </span><span class="p">(</span><span class="nf">c</span><span class="w"> </span><span class="nb">* </span><span class="mi">5</span><span class="p">)))</span><span class="w"> </span><span class="c1">; -&gt; (- (+ a (- b 2)) (* c 5))</span>
+
+<span class="c1">; 하지만, 이 함수를 컴파일 타임에 실행하려면 매크로로 만들어야 합니다.</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">inline-2</span><span class="w"> </span><span class="p">[</span><span class="nv">form</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">inline-2-helper</span><span class="w"> </span><span class="nv">form</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">macroexpand </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">inline-2</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="nb">+ </span><span class="p">(</span><span class="mi">3</span><span class="w"> </span><span class="nb">/ </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">- </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="nb">/ </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">+ </span><span class="mi">1</span><span class="p">)))</span>
+<span class="c1">; -&gt; (+ (- (+ 1 (/ 3 2)) (/ 1 2)) 1)</span>
+
+<span class="p">(</span><span class="nf">inline-2</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="nb">+ </span><span class="p">(</span><span class="mi">3</span><span class="w"> </span><span class="nb">/ </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">- </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="nb">/ </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">+ </span><span class="mi">1</span><span class="p">))</span>
+<span class="c1">; -&gt; 3 (실제로는 3N이라는 결과가 나옵니다. / 연산자를 사용하면 숫자가 유리수로 캐스팅되기 때문입니다.)</span>
+</pre></div>
+<h3>더 읽어볼거리</h3>
+
+<ul>
+<li><a href="http://www.braveclojure.com/writing-macros/">Writing Macros</a></li>
+<li><a href="http://clojure.org/macros">Official docs</a></li>
+<li><a href="https://lispcast.com/when-to-use-a-macro/">When to use macros?</a></li>
+</ul>
+
+    <hr>
+    <p>제안이 있으세요? 아니면 실수를 찾으셨어요? GitHub에서 <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">issue</a> 또는 <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/ko-kr/clojure-macros-kr.html.markdown">pull request</a>를 만드세요
+    </p>
+    <p class="contributed">
+    원작자는 Adam Bard, 그리고 <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/ko-kr/clojure-macros-kr.html.markdown">0 기여자들</a> 수정했다
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://adambard.com/">Adam Bard</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/netpyoung">Eunpyoung Kim</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+    </body>
+</html>
