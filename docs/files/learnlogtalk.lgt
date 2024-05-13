@@ -246,6 +246,9 @@ yes
 
 :- end_category.
 
+?- set_logtalk_flag(complements, allow).
+yes
+
 ?- {patch}.
 yes
 
@@ -298,6 +301,9 @@ yes
 
 :- end_object.
 
+?- set_logtalk_flag(events, allow).
+yes
+
 ?- list::member(X, [1,2,3]).
 
 call: list <-- member(X, [1,2,3]) from user
@@ -309,7 +315,7 @@ exit: list <-- member(3, [1,2,3]) from user
 X = 3
 yes
 
-?- {library(metapredicates_loader)}.
+?- {meta(loader)}.
 yes
 
 ?- meta::map([X,Y]>>(Y is 2*X), [1,2,3], Ys).
