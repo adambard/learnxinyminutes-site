@@ -278,8 +278,9 @@ y := x asBag.                                     "convert string to bag collect
 y := x asSet.                                     "convert string to set collection"
 y := x shuffled.                                  "randomly shuffle string"
 
-| b x y sum max |
+| b x y z sum max |
 x := #(4 3 2 1).                                 "constant array"
+z := #(1 2 3 'hi').                              "mixed type array"
 x := Array with: 5 with: 4 with: 3 with: 2.      "create array with up to 4 elements"
 x := Array new: 4.                               "allocate an array with specified size"
 x                                                "set array elements"
