@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="es-es" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="es-es" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="es-es" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="es-es" class="no-js"> <!--<![endif]-->
+    <head>
+      <!-- Google tag (gtag.js) -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-WXC8R75DEN');
+      </script>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="es-es">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn Logtalk in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/es-es/logtalk-es/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+                el.className = theme === "dark" ? "dark" : "light";
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (!theme) {
+                theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+              }
+              set_theme(theme)
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.onload = function(){
+              load_theme();
+            };
+
+            // Listen for system preference change
+            window
+              .matchMedia("(prefers-color-scheme: dark)")
+              .addEventListener("change", ({matches:isDark}) => {
+                set_theme(isDark ? "dark" : "light")
+              })
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fes-es%2Flogtalk-es%2F&text=Aprende+X+en+Y+minutos%2C+donde+X%3DLogtalk">
+        Comparte esta página
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Seleccione el tema:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">ligero</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">oscuro</button>
+  </div>
+  <h1><a href="/">Aprende X en Y minutos</a></h1>
+  <h2>Donde X=Logtalk</h2>
+    <p class="filelink">
+    Descarga el código:
+    <a href="/docs/files/learnlogtalk.lgt">learnlogtalk.lgt</a>
+    </p>
+  <div id="doc">
+    <p>Logtalk nació en 1998 debido a los problemas de Prolog al escribir aplicaciones grandes. Diseñado por Paulo Moura, se trata de acercar Smalltalk y Prolog. De este modo el elemento fundamental de Logtalk serán los objetos, no las clases. A través de objetos podremos hacer clases si es lo que deseamos, o podemos usarlos como prototipos. Logtalk se ejecuta por encima de un sistema Prolog, sobre todo aquellos que implementen el estándar ISO Prolog. Actualmente Logtalk soporta: B-Prolog, Ciao Prolog, CxProlog, ECLiPSe, GNU Prolog, JIProlog, LVM, Quintus Prolog, Scryer Prolog, SICStus Prolog, SWI Prolog, Tau Prolog, Trealla Prolog, XSB y YAP. El código 100% Logtalk debería ser portable entre estos sistemas.</p>
+
+<p>Podemos instalar Logtalk desde <a href="https://logtalk.org/">logtalk.org</a>.</p>
+
+<p>En Logtalk existen tres tipos de entidades: objetos, protocolos y categorías.</p>
+
+<h1>Objetos</h1>
+
+<p>El elemento fundamental de Logtalk es el objeto. Veremos que casi todo en Logtalk son objetos. Estos objetos no tienen estado ya que son puramente declarativos. Con los objetos podemos construir jerarquías tipo prototipo (ideal para objetos únicos) y tipo clase (ideal para objetos de los que se harán muchos).</p>
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">object</span>(python).
+
+<span class="p">    :- </span><span class="k">public</span>(say_creator<span class="o">/</span><span class="m">0</span>).
+    say_creator <span class="o">:-</span>
+        <span class="k">write</span>(<span class="s">&#39;Created by: Guido van Rossum&#39;</span>),<span class="k">nl</span>.
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Este código crea un objeto llamado <em>python</em> con un predicado o método público, llamado <em>say_creator</em> con aridad 0. El predicado en sí lo que hace es imprimir por pantalla un texto. Lo vamos a guardar en un fichero llamado langs.lgt (lgt es la extensión de Logtalk).</p>
+
+<p>Vamos a ejecutarlo. Para ello, lanzamos el comando de Logtalk de nuestro Prolog, por ejemplo, en Scryer Prolog, es <em>scryerlgt</em>. Si usas SWI Prolog, es <em>swilgt</em>. Si todo va bien, verás una terminal similar a la de Prolog. Una vez allí, cargamos el fichero con <em>logtalk_load</em>.</p>
+<div class="highlight"><pre><span></span><span class="o">?-</span> <span class="k">logtalk_load</span>(<span class="s">&#39;langs.lgt&#39;</span>).
+</pre></div>
+<p>Si todo va bien, ahora podremos mandar un mensaje al objeto python.</p>
+<div class="highlight"><pre><span></span><span class="o">?-</span> python<span class="o">::</span>say_creator.
+<span class="nv">Creator</span><span class="o">:</span> <span class="nv">Guido</span> van <span class="nv">Rossum</span>
+   <span class="k">true</span>.
+</pre></div>
+<p>Si no existe predicado en el objeto o si la visibilidad del método no lo permite, el envío falla. Se podría decir mucho de los mensajes como que emiten eventos, se puede hacer broadcasting, etc pero esto es más avanzado.</p>
+
+<p>Los objetos pueden: <em>implementar</em> protocolos, <em>importar</em> categorías, <em>extender</em> otros objetos, <em>instanciar</em> un objeto (clase) y <em>especializar</em> otro objeto (clase). Las jerarquías de objetos se pueden realizar mediante extensiones (prototipos) o mediante instancias y especializaciones (clases).</p>
+
+<p>Por ejemplo, un objeto que <em>extienda</em> otro se haría así:</p>
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">object</span>(animal).
+
+<span class="p">    :- </span><span class="k">public</span>(run<span class="o">/</span><span class="m">0</span>).
+    run <span class="o">:-</span>
+        <span class="k">write</span>(<span class="s">&#39;Animal is running&#39;</span>),<span class="k">nl</span>.
+
+<span class="p">:- </span><span class="k">end_object</span>.
+
+<span class="p">:- </span><span class="k">object</span>(dog, <span class="k">extends</span>(animal)).
+
+<span class="p">    :- </span><span class="k">public</span>(sleep<span class="o">/</span><span class="m">0</span>).
+    sleep <span class="o">:-</span>
+        <span class="k">write</span>(<span class="s">&#39;Dog is sleeping&#39;</span>),<span class="k">nl</span>.
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Si cargamos el fichero, veremos que el objeto animal tiene solo el método run, mientras que dog tiene el método run y sleep.</p>
+
+<p>Aquí podemos introducir también las otras dos formas de mandar un mensaje. Con <em>::</em> podemos mandar un mensaje al mismo objeto en el que estamos. Y con <em>^^</em> podemos mandar un mensaje al superobjeto (es decir, del que estamos extendiendo).</p>
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">object</span>(animal).
+
+<span class="p">    :- </span><span class="k">public</span>(run<span class="o">/</span><span class="m">0</span>).
+    run <span class="o">:-</span>
+        <span class="k">write</span>(<span class="s">&#39;Animal is running&#39;</span>),<span class="k">nl</span>.
+
+<span class="p">:- </span><span class="k">end_object</span>.
+
+<span class="p">:- </span><span class="k">object</span>(dog, <span class="k">extends</span>(animal)).
+
+<span class="p">    :- </span><span class="k">public</span>(run<span class="o">/</span><span class="m">0</span>).
+    run <span class="o">:-</span>
+        <span class="k">write</span>(<span class="s">&#39;Dog is running&#39;</span>),<span class="k">nl</span>,
+        <span class="o">^^</span>run.
+
+<span class="p">    :- </span><span class="k">public</span>(sleep<span class="o">/</span><span class="m">0</span>).
+    sleep <span class="o">:-</span>
+        <span class="k">write</span>(<span class="s">&#39;Dog is sleeping&#39;</span>),<span class="k">nl</span>.
+
+<span class="p">    :- </span><span class="k">public</span>(run_and_sleep<span class="o">/</span><span class="m">0</span>).
+    run_and_sleep <span class="o">:-</span>
+        <span class="o">::</span>run,
+        <span class="o">::</span>sleep.
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Al ejecutar <em>dog::run</em>and<em>sleep/0</em> obtendremos:</p>
+<div class="highlight"><pre><span></span>Dog is running
+Animal is running
+Dog is sleeping
+</pre></div>
+<p>Adicionalmente podemos usar <em>self/1</em> para obtener una referencia al objeto actual. <em>run_and_sleep/0</em> puede escribirse también así:</p>
+<div class="highlight"><pre><span></span>    run_and_sleep <span class="o">:-</span>
+        <span class="k">self</span>(<span class="nv">Self</span>),
+        <span class="nv">Self</span><span class="o">::</span>run,
+        <span class="nv">Self</span><span class="o">::</span>sleep.
+</pre></div>
+<h2>Crear objetos de forma dinámica</h2>
+
+<p>Si has programado en otros lenguaje OOP quizá te esté extrañando que todos los objetos existan desde el principio en Logtalk. Afortunadamente, esto era porque no habíamos llegado todavía a la parte donde se crean de forma dinámica. Esto se hace mediante el predicado <em>create_object/4</em>.</p>
+
+<p>El primer argumento será la variable o el nombre del objeto. Seguidamente irán las relaciones. En tercer lugar las directivas (ahora las vemos pero básicamente public, private, info,&hellip;) y en cuarto lugar las cláusulas.</p>
+
+<p>Por ejemplo, estos dos códigos son equivalentes:</p>
+<div class="highlight"><pre><span></span><span class="o">?-</span> <span class="k">create_object</span>(foo, [extends(bar)], [public(foo<span class="o">/</span><span class="m">1</span>)], [foo(<span class="m">1</span>), foo(<span class="m">2</span>)]).
+
+<span class="c">%%%%</span>
+
+<span class="p">:- </span><span class="k">object</span>(foo, <span class="k">extends</span>(bar)).
+
+<span class="p">    :- </span><span class="k">dynamic</span>.
+
+<span class="p">    :- </span><span class="k">public</span>(foo<span class="o">/</span><span class="m">1</span>).
+    foo(<span class="m">1</span>).
+    foo(<span class="m">2</span>).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Lo normal es dejar la creación de objetos dinámicos en un objeto prototito o en una metaclase.</p>
+
+<p>Los objetos dinámicos se pueden borrar con <em>abolish_object/1</em>.</p>
+
+<h2>Objetos paramétricos</h2>
+
+<p>Existen unos objetos algo diferentes, los objetos paramétricos. Son objetos cuyo identificador no es un átomo sino un término compuesto de Prolog. De este modo los propios objetos cargan con información en su definición de nombre.</p>
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">object</span>(ruby(<span class="nv">_Creator</span>)).
+
+<span class="p">    :- </span><span class="k">public</span>(say_creator<span class="o">/</span><span class="m">0</span>).
+    say_creator <span class="o">:-</span>
+        <span class="k">write</span>(<span class="s">&#39;Created by: &#39;</span>),
+        <span class="k">parameter</span>(<span class="m">1</span>, <span class="nv">Creator</span>),
+        <span class="k">write</span>(<span class="nv">Creator</span>),<span class="k">nl</span>.
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Y lo tendremos que ejecutar de esta forma: <em>ruby(&lsquo;Matz&rsquo;)::say_creator.</em>. Los objetos paramétricos también pueden usar <em>this/1</em> y la sintaxis de doble underscore (_Creator_). Pero como siempre, para estas cosas extra, lo recomendable es mirar el Logtalk Handbook.</p>
+
+<h1>Protocolos</h1>
+
+<p>Lo siguiente dentro de Logtalk son los protocolos. Los protocolos permiten separar la interfaz de la implementación. Los protocolos solo incluyen las declaraciones de los predicados, pero no su lógica.</p>
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">protocol</span>(langp).
+
+<span class="p">    :- </span><span class="k">public</span>(say_creator<span class="o">/</span><span class="m">0</span>).
+
+<span class="p">:- </span><span class="k">end_protocol</span>.
+
+<span class="p">:- </span><span class="k">object</span>(python, <span class="k">implements</span>(langp)).
+
+    say_creator <span class="o">:-</span>
+        <span class="k">write</span>(<span class="s">&#39;Created by: Guido van Rossum&#39;</span>),<span class="k">nl</span>.
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Ahora definimos un protocolo llamado langp, que el objeto python implementa. Ahora ya no necesitamos incluir la directiva de visibilidad en el objeto ya que esa forma parte de la interfaz al exterior del objeto.</p>
+
+<h1>Categorías</h1>
+
+<p>Las categorías son unidades de código reutilizables. Podemos pensar en ellos como partes de un objeto que se pueden añadir a otros objetos.</p>
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">category</span>(reverse_creator(<span class="nv">_Creator_</span>)).
+
+<span class="p">    :- </span><span class="k">uses</span>(list, [reverse<span class="o">/</span><span class="m">2</span>]).
+
+<span class="p">    :- </span><span class="k">public</span>(reverse_creator<span class="o">/</span><span class="m">1</span>).
+    reverse_creator(<span class="nv">Reversed</span>) <span class="o">:-</span>
+        reverse(<span class="nv">_Creator_</span>, <span class="nv">Reversed</span>).
+
+<span class="p">:- </span><span class="k">end_category</span>.
+
+<span class="p">:- </span><span class="k">object</span>(ruby(<span class="nv">CreatorParam</span>), <span class="k">implements</span>(langp), <span class="k">imports</span>(reverse_creator(<span class="nv">CreatorParam</span>))).
+
+    say_creator <span class="o">:-</span>
+        <span class="k">write</span>(<span class="s">&#39;Created by: &#39;</span>),
+        <span class="k">parameter</span>(<span class="m">1</span>, <span class="nv">Creator</span>),
+        <span class="k">write</span>(<span class="nv">Creator</span>),<span class="k">nl</span>.
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>En este ejemplo, vamos a tener una categoría (paramétrica) y vamos a importarlo desde nuestro objeto paramétrico. Así podemos ver como los objetos paramétricos se pueden pasar los parámetros entre sí. Además, en el ejemplo se usa la directiva use, que nos permite &ldquo;importar&rdquo; ciertos predicados de algunos objetos (en este caso del objeto list) para no tener que escribir la sintaxis larga de mandar mensaje.</p>
+
+<p>Para que esto funcione, vamos a tener que cargar la librería con el objeto list en Logtalk primero.</p>
+<div class="highlight"><pre><span></span><span class="o">?-</span> <span class="k">logtalk_load</span>(types(loader)).
+    ....
+<span class="o">?-</span> <span class="k">logtalk_load</span>(<span class="s">&#39;langs.lgt&#39;</span>).
+    ....
+<span class="o">?-</span> ruby(<span class="s">&quot;Matz&quot;</span>)<span class="o">::</span>reverse_creator(<span class="nv">X</span>).
+    <span class="nv">X</span> <span class="o">=</span> <span class="s">&quot;ztaM&quot;</span>.
+</pre></div>
+<p>Esto nos lleva a la pregunta de, ¿hay alguna forma de organizar los proyectos en Logtalk?</p>
+
+<h1>Estructura proyecto Logtalk</h1>
+
+<p>Por norma general un proyecto Logtalk consta de archivos lgt. Hay dos especiales, loader.lgt y tester.lgt.</p>
+
+<p>loader.lgt deberá contener todo lo necesario para cargar la aplicación, normalmente cargar todos los ficheros y librerías en el orden correcto.</p>
+<div class="highlight"><pre><span></span><span class="p">:- </span><span class="k">initialization</span>((
+    <span class="k">logtalk_load</span>(sets(loader)),
+    <span class="k">logtalk_load</span>(meta(loader)),
+    <span class="k">logtalk_load</span>(app)
+)).
+</pre></div>
+<p>Este es un ejemplo de fichero loader, que carga las librerías sets, meta y el fichero app.lgt.</p>
+
+<p>El fichero tester.lgt es igual, pero deberá incluir una llamada a ejecutar los tests de lgtUnit. lgtUnit es el framework de testing de Logtalk, muy interesante pero del que hablaré en otro artículo.</p>
+
+<h1>Lambdas y más</h1>
+
+<p>Logtalk incluye predicados lambda, es decir, predicados definidos sobre un metapredicado.</p>
+<div class="highlight"><pre><span></span><span class="o">?-</span> meta<span class="o">::</span>map([<span class="nv">X</span>, <span class="nv">Y</span>]<span class="o">&gt;&gt;</span>(<span class="nv">Y</span> <span class="k">is</span> <span class="m">2</span><span class="o">*</span><span class="nv">X</span>), [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>], <span class="nv">Ys</span>).
+   <span class="nv">Ys</span> <span class="o">=</span> [<span class="m">2</span>,<span class="m">4</span>,<span class="m">6</span>].
+</pre></div>
+<p>En este caso, el predicado lambda es equivalente al predicado:</p>
+<div class="highlight"><pre><span></span>times2(<span class="nv">X</span>, <span class="nv">Y</span>) <span class="o">:-</span> <span class="nv">Y</span> <span class="k">is</span> <span class="m">2</span> <span class="o">*</span> <span class="nv">X</span>.
+</pre></div>
+<p>Pero sin tener que haber definido un nombre ni ubicarlo en otro sitio.</p>
+
+<p>Logtalk incluye más funcionalidad aparte de objetos, protocolos y categorías. Eventos, multithreading, type checking, debugger, documentation, tests, etc. Definitivamente, escribir sobre todo ello llevaría un buen rato.</p>
+
+<p>Esto es solo una introducción a Logtalk. Aparte del <a href="https://logtalk.org/manuals/index.html">handbook</a> también puedes ver los <a href="https://github.com/LogtalkDotOrg/logtalk3/">ejemplos del repo de GitHub</a>.</p>
+
+    <hr>
+    <p>¿Tienes una sugerencia o rectificación? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Abre un issue</a> en el repositorio de GitHub, o haz un <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/es-es/logtalk-es.html.markdown">pull request</a> tu mismo
+    </p>
+    <p class="contributed">
+    Originalmente contribuido por Paulo Moura, y actualizado por <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/es-es/logtalk-es.html.markdown">1 colaborador(es)</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://github.com/pmoura">Paulo Moura</a>,
+        <a href="https://adrianistan.eu">Adrián Arroyo Calle</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+    </body>
+</html>
