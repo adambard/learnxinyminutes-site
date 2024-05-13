@@ -98,28 +98,53 @@ usability for systems administrators.</p>
 
 <h3>Virtual Devices</h3>
 
-<p>A VDEV is similar to a raid device presented by a RAID card, there are several different
-types of VDEV&rsquo;s that offer various advantages, including redundancy and speed.  In general
-VDEV&rsquo;s offer better reliability and safety than a RAID card.  It is discouraged to use a
-RAID setup with ZFS, as ZFS expects to directly manage the underlying disks.</p>
+<p>A VDEV (Virtual Device) in ZFS is analogous to a RAID device and simmilaly offers different
+benefits in terms of redundancy and performance. In general VDEV&rsquo;s offer better reliability
+and safety than a RAID card. It is discouraged to use a RAID setup with ZFS, as ZFS expects
+to directly manage the underlying disks.</p>
 
-<p>Types of VDEV&rsquo;s</p>
+<table><thead>
+<tr>
+<th>VDEV Type</th>
+<th>Similar RAID</th>
+<th>Notes</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>Mirror</td>
+<td>RAID 1</td>
+<td>Supports n-way mirroring for redundancy.</td>
+</tr>
+<tr>
+<td>raidz1</td>
+<td>RAID 5</td>
+<td>Single disk parity, offering fault tolerance of one disk failure.</td>
+</tr>
+<tr>
+<td>raidz2</td>
+<td>RAID 6</td>
+<td>Two-disk parity, can tolerate two disk failures.</td>
+</tr>
+<tr>
+<td>raidz3</td>
+<td>-</td>
+<td>Three-disk parity, can tolerate three disk failures.</td>
+</tr>
+<tr>
+<td>Disk</td>
+<td>-</td>
+<td>Represents a single physical disk in a VDEV.</td>
+</tr>
+<tr>
+<td>File</td>
+<td>-</td>
+<td>File-based VDEV, not recommended for production as it adds complexity and reduces reliability.</td>
+</tr>
+</tbody></table>
 
-<ul>
-<li>mirror (n-way mirrors supported)</li>
-<li>raidz
-
-<ul>
-<li>raidz1 (1-disk parity, similar to RAID 5)</li>
-<li>raidz2 (2-disk parity, similar to RAID 6)</li>
-<li>raidz3 (3-disk parity, no RAID analog)</li>
-</ul></li>
-<li>disk</li>
-<li>file (not recommended for production due to another filesystem adding unnecessary layering)</li>
-</ul>
-
-<p>Your data is striped across all the VDEV&rsquo;s present in your Storage Pool, so more VDEV&rsquo;s will
-increase your IOPS.</p>
+<p>Data in a ZFS storage pool is striped across all VDEVs. Adding more VDEVs, Logs, or Caches
+can increase IOPS (Input/Output Operations Per Second), enhancing performance. It&rsquo;s crucial
+to balance VDEVs for optimal performance and redundancy.</p>
 
 <h3>Storage Pools</h3>
 
@@ -316,6 +341,109 @@ zroot/home<span class="w">                                                      
 zroot/var<span class="w">                                                           </span>none<span class="w">    </span>none
 ...
 </pre></div>
+<h3>Write Log Pool</h3>
+
+<p>The ZFS Intent Log (ZIL) is a write log designed to speed up syncronus writes. This is
+typically a faster drive or drive partition than the larger storage pools.</p>
+<div class="highlight"><pre><span></span><span class="c1"># Add a log pool</span>
+$<span class="w"> </span>zpool<span class="w"> </span>add<span class="w"> </span>mypool/lamb<span class="w"> </span>log<span class="w"> </span>/dev/sdX
+
+<span class="c1"># Check the configureation</span>
+$<span class="w"> </span>zpool<span class="w"> </span>status<span class="w"> </span>mypool/lamb
+</pre></div>
+<h3>Read Cache Pool</h3>
+
+<p>The Level 2 Adaptive Replacement Cache (L2ARC) extends the primary ARC (in-RAM cache) and is
+used for read caching. This is typically a faster drive or drive partition than the larger
+storage pools.</p>
+<div class="highlight"><pre><span></span><span class="c1"># Add a cache pool</span>
+$<span class="w"> </span>zpool<span class="w"> </span>add<span class="w"> </span>mypool/lamb<span class="w"> </span>cache<span class="w"> </span>/dev/sdY
+
+<span class="c1"># Check the configureation</span>
+$<span class="w"> </span>zpool<span class="w"> </span>status<span class="w"> </span>mypool/lamb
+</pre></div>
+<h3>Data Compression</h3>
+
+<p>Data compression reduces the amount of space data occupies on disk in excange for some extra
+CPU usage. When enabled, it can enhance performance by reducing the amount of disk I/O. It
+especially beneficial on systems with more CPU resources than disk bandwidth.</p>
+<div class="highlight"><pre><span></span><span class="c1"># Get compression options</span>
+$<span class="w"> </span>zfs<span class="w"> </span>get<span class="w"> </span>-help
+...
+compression<span class="w">     </span>NO<span class="w">       </span>YES<span class="w">   </span>on<span class="w"> </span><span class="p">|</span><span class="w"> </span>off<span class="w"> </span><span class="p">|</span><span class="w"> </span>lzjb<span class="w"> </span><span class="p">|</span><span class="w"> </span>gzip<span class="w"> </span><span class="p">|</span><span class="w"> </span>gzip-<span class="o">[</span><span class="m">1</span>-9<span class="o">]</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>zle<span class="w"> </span><span class="p">|</span><span class="w"> </span>lz4<span class="w"> </span><span class="p">|</span><span class="w"> </span>zstd<span class="w"> </span><span class="p">|</span><span class="w"> </span>zstd-<span class="o">[</span><span class="m">1</span>-19<span class="o">]</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>zstd-fast<span class="w"> </span><span class="p">|</span><span class="w"> </span>zstd-fast-<span class="o">[</span><span class="m">1</span>-10,20,30,40,50,60,70,80,90,100,500,1000<span class="o">]</span>
+...
+
+<span class="c1"># Set compression</span>
+$<span class="w"> </span>zfs<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="nv">compression</span><span class="o">=</span>on<span class="w"> </span>mypool/lamb
+
+<span class="c1"># Check the configureation</span>
+$<span class="w"> </span>zpool<span class="w"> </span>get<span class="w"> </span>compression<span class="w"> </span>mypool/lamb
+</pre></div>
+<h3>Encryption at Rest</h3>
+
+<p>Encryption allows data to be encrypted on the device at the cost of extra CPU cycles. This
+propery can only be set when a dataset is being created.</p>
+<div class="highlight"><pre><span></span><span class="c1"># Enable encryption on the pool</span>
+$<span class="w"> </span>zpool<span class="w"> </span><span class="nb">set</span><span class="w"> </span>feature@encryption<span class="o">=</span>enabled<span class="w"> </span>black_hole
+
+<span class="c1"># Create an encrypted dataset with a prompt</span>
+$<span class="w"> </span>zfs<span class="w"> </span>create<span class="w"> </span>-o<span class="w"> </span><span class="nv">encryption</span><span class="o">=</span>on<span class="w"> </span>-o<span class="w"> </span><span class="nv">keyformat</span><span class="o">=</span>passphrase<span class="w"> </span>black_hole/enc
+
+<span class="c1"># Check the configureation</span>
+$<span class="w"> </span>zfs<span class="w"> </span>get<span class="w"> </span>encryption<span class="w"> </span>black_hole/enc
+</pre></div>
+<p>It should be noted that there are parts of the system where the data is not encrypted. See
+the table below for a breakdown.</p>
+
+<table><thead>
+<tr>
+<th>Component</th>
+<th>Encrypted</th>
+<th>Notes</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>Main Data Storage</td>
+<td>Yes</td>
+<td>Data in datasets/volumes is encrypted.</td>
+</tr>
+<tr>
+<td>ZFS Intent Log (ZIL)</td>
+<td>Yes</td>
+<td>Synchronous write requests are encrypted.</td>
+</tr>
+<tr>
+<td>L2ARC (Cache)</td>
+<td>Yes</td>
+<td>Cached data is stored in an encrypted form.</td>
+</tr>
+<tr>
+<td>RAM (ARC)</td>
+<td>No</td>
+<td>Data in the primary ARC, in RAM, is not encrypted.</td>
+</tr>
+<tr>
+<td>Swap Area</td>
+<td>Conditional</td>
+<td>Encrypted if the ZFS swap dataset is encrypted.</td>
+</tr>
+<tr>
+<td>ZFS Metadata</td>
+<td>Yes</td>
+<td>Metadata is encrypted for encrypted datasets.</td>
+</tr>
+<tr>
+<td>Snapshot Data</td>
+<td>Yes</td>
+<td>Snapshots of encrypted datasets are also encrypted.</td>
+</tr>
+<tr>
+<td>ZFS Send/Receive</td>
+<td>Conditional</td>
+<td>Encrypted during send/receive if datasets are encrypted and <code>-w</code> flag is used.</td>
+</tr>
+</tbody></table>
+
 <h3>Snapshots</h3>
 
 <p>ZFS snapshots are one of the things about zfs that are a really big deal</p>
@@ -446,7 +574,7 @@ jail<span class="w"> </span>-c<span class="w"> </span>staging
     <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the GitHub Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/zfs.html.markdown">pull request</a> yourself!
     </p>
     <p class="contributed">
-    Originally contributed by sarlalian, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/zfs.html.markdown">7 contributors</a>.
+    Originally contributed by sarlalian, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/zfs.html.markdown">9 contributors</a>.
     </p>
 
     <footer>
@@ -454,6 +582,7 @@ jail<span class="w"> </span>-c<span class="w"> </span>staging
     <p>
     &copy; 2024
         <a href="http://github.com/sarlalian">sarlalian</a>,
+        <a href="https://github.com/81reap">81reap</a>,
         <a href="https://github.com/A1EF">A1EF</a>
     </p>
 
