@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="ja-jp" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="ja-jp" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="ja-jp" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="ja-jp" class="no-js"> <!--<![endif]-->
+    <head>
+      <!-- Google tag (gtag.js) -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-WXC8R75DEN');
+      </script>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="ja-jp">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn Nim in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/ja-jp/nim-jp/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+                el.className = theme === "dark" ? "dark" : "light";
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (!theme) {
+                theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+              }
+              set_theme(theme)
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.onload = function(){
+              load_theme();
+            };
+
+            // Listen for system preference change
+            window
+              .matchMedia("(prefers-color-scheme: dark)")
+              .addEventListener("change", ({matches:isDark}) => {
+                set_theme(isDark ? "dark" : "light")
+              })
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fja-jp%2Fnim-jp%2F&text=X%E3%82%92Y%E5%88%86%E3%81%A7%E5%AD%A6%E3%81%B6%2C+%E3%81%9F%E3%81%A0%E3%81%97+X%3DNim">
+        このページをシェアする
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">外観の選択：</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">ライト</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">ダーク</button>
+  </div>
+  <h1><a href="/">XをY分で学ぶ</a></h1>
+  <h2>ただし X=Nim</h2>
+    <p class="filelink">
+    ソースコードの取得：
+    <a href="/docs/files/learnNim-jp.nim">learnNim-jp.nim</a>
+    </p>
+  <div id="doc">
+    <p>Nim (元 Nimrod)は、静的型付けの命令型言語です。ランタイムの効率を損なうこと
+なく、プログラマーに恩恵を与えてくれます。</p>
+
+<p>Nimは、効率的で、表現力があり、エレガントです。</p>
+<div class="highlight"><pre><span></span><span class="c"># 単一行コメントは # で開始</span>
+
+<span class="cm">#[</span>
+<span class="cm">  複数行コメントです。</span>
+<span class="cm">  Nimでは、複数行コメントはネスト可能で、#[で始まり、</span>
+<span class="cm">  ... そして終了は ]#</span>
+<span class="cm">]#</span>
+
+<span class="k">discard</span><span class="w"> </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s">これも複数行コメントとして機能します。</span>
+<span class="s">あるいは、解析不能のコードです。</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+
+<span class="kd">var</span><span class="w">                     </span><span class="c"># 変数宣言 (そして割当て)</span>
+<span class="w">  </span><span class="n">letter</span><span class="p">:</span><span class="w"> </span><span class="nb">char</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;n&#39;</span><span class="w">    </span><span class="c"># 型注釈ありとなし</span>
+<span class="w">  </span><span class="n">lang</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;N&quot;</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="s">&quot;im&quot;</span>
+<span class="w">  </span><span class="n">nLength</span><span class="p">:</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">len</span><span class="p">(</span><span class="n">lang</span><span class="p">)</span>
+<span class="w">  </span><span class="n">boat</span><span class="p">:</span><span class="w"> </span><span class="nb">float</span>
+<span class="w">  </span><span class="n">truth</span><span class="p">:</span><span class="w"> </span><span class="nb">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">false</span>
+
+<span class="k">let</span><span class="w">            </span><span class="c"># letで変数を*1回(イミュータブル)*束縛します</span>
+<span class="w">  </span><span class="n">legs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">400</span><span class="w">   </span><span class="c"># legsはイミュータブル</span>
+<span class="w">  </span><span class="n">arms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2_000</span><span class="w"> </span><span class="c"># _ は無視され、長い数値を読みやすくします</span>
+<span class="w">  </span><span class="n">aboutPi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3.15</span>
+
+<span class="k">const</span><span class="w">            </span><span class="c"># 定数はコンパイル時に評価されます。</span>
+<span class="w">  </span><span class="n">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">true</span><span class="w">   </span><span class="c"># これにより実行速度を高めます。</span>
+<span class="w">  </span><span class="n">compileBadCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">false</span>
+
+<span class="k">when</span><span class="w"> </span><span class="n">compileBadCode</span><span class="p">:</span><span class="w">            </span><span class="c"># `when`はコンパイル時の`if`です。</span>
+<span class="w">  </span><span class="n">legs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">legs</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">               </span><span class="c"># この部分はコンパイルされません。ed.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">readline</span><span class="p">(</span><span class="n">stdin</span><span class="p">)</span><span class="w"> </span><span class="c"># 定数値はコンパイル時に決まっていなければ</span>
+<span class="w">                                </span><span class="c"># なりません。</span>
+
+<span class="k">discard</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="c"># Note: コンパイラーはある式の結果が使われていないと警告を</span>
+<span class="w">              </span><span class="c"># 表示します。`discard`により、これを回避できます。</span>
+
+
+<span class="c">#</span>
+<span class="c"># データ構造</span>
+<span class="c">#</span>
+
+<span class="c"># タプル</span>
+
+<span class="kd">var</span>
+<span class="w">  </span><span class="n">child</span><span class="p">:</span><span class="w"> </span><span class="k">tuple</span><span class="o">[</span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="nb">string</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">:</span><span class="w"> </span><span class="nb">int</span><span class="o">]</span><span class="w">   </span><span class="c"># タプルにはフィールド名</span>
+<span class="w">  </span><span class="n">today</span><span class="p">:</span><span class="w"> </span><span class="k">tuple</span><span class="o">[</span><span class="n">sun</span><span class="p">:</span><span class="w"> </span><span class="nb">string</span><span class="p">,</span><span class="w"> </span><span class="n">temp</span><span class="p">:</span><span class="w"> </span><span class="nb">float</span><span class="o">]</span><span class="w"> </span><span class="c"># *そして*順序の*両方*があります</span>
+
+<span class="n">child</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Rudiger&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c"># ()リテラルで両方同時に割当て</span>
+<span class="n">today</span><span class="p">.</span><span class="n">sun</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Overcast&quot;</span><span class="w">            </span><span class="c"># あるいは、個別のフィールドに割当て</span>
+<span class="n">today</span><span class="p">.</span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">70.1</span>
+
+<span class="c"># シーケンス</span>
+
+<span class="kd">var</span>
+<span class="w">  </span><span class="n">drinks</span><span class="p">:</span><span class="w"> </span><span class="nb">seq</span><span class="o">[</span><span class="nb">string</span><span class="o">]</span>
+
+<span class="n">drinks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">@[</span><span class="s">&quot;Water&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Juice&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Chocolate&quot;</span><span class="o">]</span><span class="w"> </span><span class="c"># シーケンスリテラルは@[V1,..,Vn]</span>
+
+<span class="n">drinks</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;Milk&quot;</span><span class="p">)</span>
+
+<span class="k">if</span><span class="w"> </span><span class="s">&quot;Milk&quot;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">drinks</span><span class="p">:</span>
+<span class="w">  </span><span class="n">echo</span><span class="w"> </span><span class="s">&quot;We have Milk and &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">drinks</span><span class="p">.</span><span class="n">len</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot; other drinks&quot;</span>
+
+<span class="k">let</span><span class="w"> </span><span class="n">myDrink</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">drinks</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span>
+
+<span class="c">#</span>
+<span class="c"># 型の定義</span>
+<span class="c">#</span>
+
+<span class="c"># あなた自身の型を定義することで、コンパイラーにより多くの仕事をさせられます。</span>
+<span class="c"># それにより静的型付けがパワフルで便利なものになります。</span>
+
+<span class="k">type</span>
+<span class="w">  </span><span class="n">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">string</span><span class="w"> </span><span class="c"># 型エイリアスは、既存の型と置き換え可能でありながら、</span>
+<span class="w">  </span><span class="n">Age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">int</span><span class="w">     </span><span class="c"># より記述的な型を提供します。</span>
+<span class="w">  </span><span class="n">Person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">tuple</span><span class="o">[</span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="n">Name</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">:</span><span class="w"> </span><span class="n">Age</span><span class="o">]</span><span class="w"> </span><span class="c"># データ構造も定義できます。</span>
+<span class="w">  </span><span class="n">AnotherSyntax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">tuple</span>
+<span class="w">    </span><span class="n">fieldOne</span><span class="p">:</span><span class="w"> </span><span class="nb">string</span>
+<span class="w">    </span><span class="n">secondField</span><span class="p">:</span><span class="w"> </span><span class="nb">int</span>
+
+<span class="kd">var</span>
+<span class="w">  </span><span class="n">john</span><span class="p">:</span><span class="w"> </span><span class="n">Person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;John B.&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">:</span><span class="w"> </span><span class="mi">17</span><span class="p">)</span>
+<span class="w">  </span><span class="n">newage</span><span class="p">:</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="c"># ここはint型よりもAge型を使ったほうが良いでしょう。</span>
+
+<span class="n">john</span><span class="p">.</span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newage</span><span class="w"> </span><span class="c"># intとAgeは同じ型なので、これで動作します。</span>
+
+<span class="k">type</span>
+<span class="w">  </span><span class="n">Cash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">distinct</span><span class="w"> </span><span class="nb">int</span><span class="w">    </span><span class="c"># `distinct`を使うと、新しい型と</span>
+<span class="w">  </span><span class="n">Desc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">distinct</span><span class="w"> </span><span class="nb">string</span><span class="w"> </span><span class="c"># 元の型の互換性がなくなります。</span>
+
+<span class="kd">var</span>
+<span class="w">  </span><span class="n">money</span><span class="p">:</span><span class="w"> </span><span class="n">Cash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">100.</span><span class="n">Cash</span><span class="w">  </span><span class="c"># `.Cash`がint型をわれわれ独自の型に</span>
+<span class="w">                          </span><span class="c">#変換しています。</span>
+<span class="w">  </span><span class="n">description</span><span class="p">:</span><span class="w"> </span><span class="n">Desc</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Interesting&quot;</span><span class="p">.</span><span class="n">Desc</span>
+
+<span class="k">when</span><span class="w"> </span><span class="n">compileBadCode</span><span class="p">:</span>
+<span class="w">  </span><span class="n">john</span><span class="p">.</span><span class="n">age</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">money</span><span class="w">        </span><span class="c"># エラー! ageはint型でmoneyはCash型です。</span>
+<span class="w">  </span><span class="n">john</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">description</span><span class="w">  </span><span class="c"># コンパイル時のエラーになります。</span>
+
+<span class="c">#</span>
+<span class="c"># さらに型とデータ構造</span>
+<span class="c">#</span>
+
+<span class="c"># 列挙は型にいくつかの値の中から1つの値をとることを許します。</span>
+
+<span class="k">type</span>
+<span class="w">  </span><span class="n">Color</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="n">cRed</span><span class="p">,</span><span class="w"> </span><span class="n">cBlue</span><span class="p">,</span><span class="w"> </span><span class="n">cGreen</span>
+<span class="w">  </span><span class="n">Direction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">enum</span><span class="w">  </span><span class="c"># 別の書き方</span>
+<span class="w">    </span><span class="n">dNorth</span>
+<span class="w">    </span><span class="n">dWest</span>
+<span class="w">    </span><span class="n">dEast</span>
+<span class="w">    </span><span class="n">dSouth</span>
+<span class="kd">var</span>
+<span class="w">  </span><span class="n">orient</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dNorth</span><span class="w"> </span><span class="c"># `orient`はDirection型で値は`dNorth`</span>
+<span class="w">  </span><span class="n">pixel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cGreen</span><span class="w">  </span><span class="c"># `pixel`はColor型で値は`cGreen`</span>
+
+<span class="k">discard</span><span class="w"> </span><span class="n">dNorth</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">dEast</span><span class="w"> </span><span class="c"># 列挙には通常、順序があります。</span>
+
+<span class="c"># サブレンジは有効な値の範囲を限定します。</span>
+
+<span class="k">type</span>
+<span class="w">  </span><span class="n">DieFaces</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">range</span><span class="o">[</span><span class="mf">1</span><span class="p">..</span><span class="mi">20</span><span class="o">]</span><span class="w"> </span><span class="c"># 1から20のintだけが有効な値です。</span>
+<span class="kd">var</span>
+<span class="w">  </span><span class="n">my_roll</span><span class="p">:</span><span class="w"> </span><span class="n">DieFaces</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">13</span>
+
+<span class="k">when</span><span class="w"> </span><span class="n">compileBadCode</span><span class="p">:</span>
+<span class="w">  </span><span class="n">my_roll</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">23</span><span class="w"> </span><span class="c"># エラー!</span>
+
+<span class="c"># 配列</span>
+
+<span class="k">type</span>
+<span class="w">  </span><span class="n">RollCounter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">array</span><span class="o">[</span><span class="n">DieFaces</span><span class="p">,</span><span class="w"> </span><span class="nb">int</span><span class="o">]</span><span class="w">  </span><span class="c"># 配列の長さは固定で、順序のある型の</span>
+<span class="w">  </span><span class="n">DirNames</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">array</span><span class="o">[</span><span class="n">Direction</span><span class="p">,</span><span class="w"> </span><span class="nb">string</span><span class="o">]</span><span class="w"> </span><span class="c"># どれかをインデックスとします。</span>
+<span class="w">  </span><span class="n">Truths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">array</span><span class="o">[</span><span class="mf">42</span><span class="p">..</span><span class="mi">44</span><span class="p">,</span><span class="w"> </span><span class="nb">bool</span><span class="o">]</span>
+<span class="kd">var</span>
+<span class="w">  </span><span class="n">counter</span><span class="p">:</span><span class="w"> </span><span class="n">RollCounter</span>
+<span class="w">  </span><span class="n">directions</span><span class="p">:</span><span class="w"> </span><span class="n">DirNames</span>
+<span class="w">  </span><span class="n">possible</span><span class="p">:</span><span class="w"> </span><span class="n">Truths</span>
+
+<span class="n">possible</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="kp">false</span><span class="p">,</span><span class="w"> </span><span class="kp">false</span><span class="p">,</span><span class="w"> </span><span class="kp">false</span><span class="o">]</span><span class="w"> </span><span class="c"># [V1,..,Vn]で配列を作れます。</span>
+<span class="n">possible</span><span class="o">[</span><span class="mi">42</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">true</span>
+
+<span class="n">directions</span><span class="o">[</span><span class="n">dNorth</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Ahh. The Great White North!&quot;</span>
+<span class="n">directions</span><span class="o">[</span><span class="n">dWest</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;No, don&#39;t go there.&quot;</span>
+
+<span class="n">my_roll</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">13</span>
+<span class="n">counter</span><span class="o">[</span><span class="n">my_roll</span><span class="o">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span>
+<span class="n">counter</span><span class="o">[</span><span class="n">my_roll</span><span class="o">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="kd">var</span><span class="w"> </span><span class="n">anotherArray</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="s">&quot;Default index&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;starts at&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;0&quot;</span><span class="o">]</span>
+
+<span class="c"># 他にも表、集合、リスト、キュー、Crit-bit treeなどのデータ構造があります。</span>
+<span class="c"># http://nim-lang.org/docs/lib.html#collections-and-algorithms</span>
+
+<span class="c">#</span>
+<span class="c"># IOと制御</span>
+<span class="c">#</span>
+
+<span class="c"># `case`, `readLine()`</span>
+
+<span class="n">echo</span><span class="w"> </span><span class="s">&quot;Read any good books lately?&quot;</span>
+<span class="k">case</span><span class="w"> </span><span class="n">readLine</span><span class="p">(</span><span class="n">stdin</span><span class="p">)</span>
+<span class="k">of</span><span class="w"> </span><span class="nl">&quot;no&quot;</span><span class="p">,</span><span class="w"> </span><span class="nl">&quot;No&quot;</span><span class="o">:</span>
+<span class="w">  </span><span class="n">echo</span><span class="w"> </span><span class="s">&quot;Go to your local library.&quot;</span>
+<span class="k">of</span><span class="w"> </span><span class="nl">&quot;yes&quot;</span><span class="p">,</span><span class="w"> </span><span class="nl">&quot;Yes&quot;</span><span class="o">:</span>
+<span class="w">  </span><span class="n">echo</span><span class="w"> </span><span class="s">&quot;Carry on, then.&quot;</span>
+<span class="k">else</span><span class="p">:</span>
+<span class="w">  </span><span class="n">echo</span><span class="w"> </span><span class="s">&quot;That&#39;s great; I assume.&quot;</span>
+
+<span class="c"># `while`, `if`, `continue`, `break`</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="n">strutils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="c"># http://nim-lang.org/docs/strutils.html</span>
+<span class="n">echo</span><span class="w"> </span><span class="s">&quot;I&#39;m thinking of a number between 41 and 43. Guess which!&quot;</span>
+<span class="k">let</span><span class="w"> </span><span class="n">number</span><span class="p">:</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span>
+<span class="kd">var</span>
+<span class="w">  </span><span class="n">raw_guess</span><span class="p">:</span><span class="w"> </span><span class="nb">string</span>
+<span class="w">  </span><span class="n">guess</span><span class="p">:</span><span class="w"> </span><span class="nb">int</span>
+<span class="k">while</span><span class="w"> </span><span class="n">guess</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">number</span><span class="p">:</span>
+<span class="w">  </span><span class="n">raw_guess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">readLine</span><span class="p">(</span><span class="n">stdin</span><span class="p">)</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="n">raw_guess</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">:</span><span class="w"> </span><span class="k">continue</span><span class="w"> </span><span class="c"># この繰り返しを飛ばす。</span>
+<span class="w">  </span><span class="n">guess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">str</span><span class="p">.</span><span class="n">parseInt</span><span class="p">(</span><span class="n">raw_guess</span><span class="p">)</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="n">guess</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1001</span><span class="p">:</span>
+<span class="w">    </span><span class="n">echo</span><span class="p">(</span><span class="s">&quot;AAAAAAGGG!&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="k">break</span>
+<span class="w">  </span><span class="k">elif</span><span class="w"> </span><span class="n">guess</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">number</span><span class="p">:</span>
+<span class="w">    </span><span class="n">echo</span><span class="p">(</span><span class="s">&quot;Nope. Too high.&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="k">elif</span><span class="w"> </span><span class="n">guess</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">number</span><span class="p">:</span>
+<span class="w">    </span><span class="n">echo</span><span class="p">(</span><span class="n">guess</span><span class="p">,</span><span class="w"> </span><span class="s">&quot; is too low&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="k">else</span><span class="p">:</span>
+<span class="w">    </span><span class="n">echo</span><span class="p">(</span><span class="s">&quot;Yeeeeeehaw!&quot;</span><span class="p">)</span>
+
+<span class="c">#</span>
+<span class="c"># 繰返し</span>
+<span class="c">#</span>
+
+<span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">elem</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="o">[</span><span class="s">&quot;Yes&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;No&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Maybe so&quot;</span><span class="o">]</span><span class="p">:</span><span class="w"> </span><span class="c"># または単に`for elem in`</span>
+<span class="w">  </span><span class="n">echo</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span><span class="w"> </span><span class="s">&quot; is at index: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">)</span>
+
+<span class="k">for</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">items</span><span class="p">(</span><span class="o">@[</span><span class="p">(</span><span class="n">person</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;You&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">power</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="n">person</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Me&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">power</span><span class="p">:</span><span class="w"> </span><span class="mi">9000</span><span class="p">)</span><span class="o">]</span><span class="p">):</span>
+<span class="w">  </span><span class="n">echo</span><span class="w"> </span><span class="n">v</span>
+
+<span class="k">let</span><span class="w"> </span><span class="n">myString</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s">an &lt;example&gt;</span>
+<span class="s">`string` to</span>
+<span class="s">play with</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="w"> </span><span class="c"># 複数行の生文字列</span>
+
+<span class="k">for</span><span class="w"> </span><span class="n">line</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">splitLines</span><span class="p">(</span><span class="n">myString</span><span class="p">):</span>
+<span class="w">  </span><span class="n">echo</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+<span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">myString</span><span class="p">:</span><span class="w">       </span><span class="c"># インデックスと文字。</span>
+<span class="w">                            </span><span class="c"># あるいは`for j in`で文字だけ。</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="ow">mod</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span><span class="w"> </span><span class="k">continue</span><span class="w"> </span><span class="c"># `if`構文の簡易版</span>
+<span class="w">  </span><span class="k">elif</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;X&#39;</span><span class="p">:</span><span class="w"> </span><span class="k">break</span>
+<span class="w">  </span><span class="k">else</span><span class="p">:</span><span class="w"> </span><span class="n">echo</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+<span class="c">#</span>
+<span class="c"># プロシージャ</span>
+<span class="c">#</span>
+
+<span class="k">type</span><span class="w"> </span><span class="n">Answer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="n">aYes</span><span class="p">,</span><span class="w"> </span><span class="n">aNo</span>
+
+<span class="k">proc</span><span class="w"> </span><span class="nf">ask</span><span class="p">(</span><span class="n">question</span><span class="p">:</span><span class="w"> </span><span class="nb">string</span><span class="p">):</span><span class="w"> </span><span class="n">Answer</span><span class="w"> </span><span class="o">=</span>
+<span class="w">  </span><span class="n">echo</span><span class="p">(</span><span class="n">question</span><span class="p">,</span><span class="w"> </span><span class="s">&quot; (y/n)&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="kp">true</span><span class="p">:</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">readLine</span><span class="p">(</span><span class="n">stdin</span><span class="p">)</span>
+<span class="w">    </span><span class="k">of</span><span class="w"> </span><span class="nl">&quot;y&quot;</span><span class="p">,</span><span class="w"> </span><span class="nl">&quot;Y&quot;</span><span class="p">,</span><span class="w"> </span><span class="nl">&quot;yes&quot;</span><span class="p">,</span><span class="w"> </span><span class="nl">&quot;Yes&quot;</span><span class="o">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">Answer</span><span class="p">.</span><span class="n">aYes</span><span class="w">  </span><span class="c"># 列挙に限定することができます。</span>
+<span class="w">    </span><span class="k">of</span><span class="w"> </span><span class="nl">&quot;n&quot;</span><span class="p">,</span><span class="w"> </span><span class="nl">&quot;N&quot;</span><span class="p">,</span><span class="w"> </span><span class="nl">&quot;no&quot;</span><span class="p">,</span><span class="w"> </span><span class="nl">&quot;No&quot;</span><span class="o">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">Answer</span><span class="p">.</span><span class="n">aNo</span>
+<span class="w">    </span><span class="k">else</span><span class="p">:</span><span class="w"> </span><span class="n">echo</span><span class="p">(</span><span class="s">&quot;Please be clear: yes or no&quot;</span><span class="p">)</span>
+
+<span class="k">proc</span><span class="w"> </span><span class="nf">addSugar</span><span class="p">(</span><span class="n">amount</span><span class="p">:</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="c"># amountのデフォルトは2、戻り値はなし</span>
+<span class="w">  </span><span class="n">assert</span><span class="p">(</span><span class="n">amount</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">amount</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">9000</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Crazy Sugar&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="mf">1</span><span class="p">..</span><span class="n">amount</span><span class="p">:</span>
+<span class="w">    </span><span class="n">echo</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="s">&quot; sugar...&quot;</span><span class="p">)</span>
+
+<span class="k">case</span><span class="w"> </span><span class="n">ask</span><span class="p">(</span><span class="s">&quot;Would you like sugar in your tea?&quot;</span><span class="p">)</span>
+<span class="k">of</span><span class="w"> </span><span class="nl">aYes</span><span class="o">:</span>
+<span class="w">  </span><span class="n">addSugar</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">of</span><span class="w"> </span><span class="nl">aNo</span><span class="o">:</span>
+<span class="w">  </span><span class="n">echo</span><span class="w"> </span><span class="s">&quot;Oh do take a little!&quot;</span>
+<span class="w">  </span><span class="n">addSugar</span><span class="p">()</span>
+<span class="c"># ここで可能な値は`yes`か`no`だけなので、`else`は必要ない</span>
+
+<span class="c">#</span>
+<span class="c"># FFI</span>
+<span class="c">#</span>
+
+<span class="c"># NimはCへとコンパイルされるので、容易にFFIができる:</span>
+
+<span class="k">proc</span><span class="w"> </span><span class="nf">strcmp</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">:</span><span class="w"> </span><span class="n">cstring</span><span class="p">):</span><span class="w"> </span><span class="n">cint</span><span class="w"> </span><span class="sx">{.importc</span>:<span class="w"> </span><span class="sx">&quot;strcmp&quot;, nodecl.}</span>
+
+<span class="k">let</span><span class="w"> </span><span class="n">cmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strcmp</span><span class="p">(</span><span class="s">&quot;C?&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Easy!&quot;</span><span class="p">)</span>
+</pre></div>
+<p>これらの他に、Nimはほかの言語と比較してメタプログラミング、
+実行時パフォーマンス、コンパイル時の機能で特長があります。</p>
+
+<h2>参考</h2>
+
+<ul>
+<li><a href="http://nim-lang.org">Home Page</a></li>
+<li><a href="http://nim-lang.org/download.html">Download</a></li>
+<li><a href="http://nim-lang.org/community.html">Community</a></li>
+<li><a href="http://nim-lang.org/question.html">FAQ</a></li>
+<li><a href="http://nim-lang.org/documentation.html">Documentation</a></li>
+<li><a href="http://nim-lang.org/docs/manual.html">Manual</a></li>
+<li><a href="http://nim-lang.org/docs/lib.html">Standard Library</a></li>
+<li><a href="http://rosettacode.org/wiki/Category:Nim">Rosetta Code</a></li>
+</ul>
+
+    <hr>
+    <p>提案がありますか？それとも修正が必要ですか？ GitHubレポジトリで<a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Issueを開く</a>か自分で<a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/ja-jp/nim-jp.html.markdown">プルリクエスト</a>を作ってください。
+    </p>
+    <p class="contributed">
+    Jason J. Ayala P.が初めて貢献し、後に<a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/ja-jp/nim-jp.html.markdown">1人の貢献者</a>が更新してきました。
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://JasonAyala.com">Jason J. Ayala P.</a>,
+        <a href="https://dennis.felsing.org">Dennis Felsing</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/s-ariga">Seiichi Ariga</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+    </body>
+</html>
