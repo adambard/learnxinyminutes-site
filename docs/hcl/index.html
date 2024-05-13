@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en-us" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en-us" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en-us" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en-us" class="no-js"> <!--<![endif]-->
+    <head>
+      <!-- Google tag (gtag.js) -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-WXC8R75DEN');
+      </script>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn X in Y Minutes: Scenic Programming Language Tours</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/hcl/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+                el.className = theme === "dark" ? "dark" : "light";
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (!theme) {
+                theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+              }
+              set_theme(theme)
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.onload = function(){
+              load_theme();
+            };
+
+            // Listen for system preference change
+            window
+              .matchMedia("(prefers-color-scheme: dark)")
+              .addEventListener("change", ({matches:isDark}) => {
+                set_theme(isDark ? "dark" : "light")
+              })
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fhcl%2F&text=Learn+X+in+Y+minutes%2C+where+X%3DHCL">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=HCL</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/terraform.txt">terraform.txt</a>
+    </p>
+  <div id="doc">
+    <h2>Introduction</h2>
+
+<p>HCL (Hashicorp Configuration Language) is a high-level configuration language used in tools from
+Hashicorp (such as Terraform). HCL/Terraform is widely used in provisioning cloud infastructure and
+configuring platforms/services through APIs. This document focuses on HCL 0.13 syntax.</p>
+
+<p>HCL is a declarative language and Terraform will consume all <code>*.tf</code> files in the current folder, so code
+placement and sequence has no significance. Sub-folders can be consumed through modules.</p>
+
+<p>This guide is focused on HCL specifics, you should already be familiar with what Terraform is.</p>
+<div class="highlight"><pre><span></span><span class="c1">// Top-level HCL file will interactively ask user values for the variables</span>
+<span class="c1">// which do not have a default value</span>
+<span class="kr">variable</span><span class="w"> </span><span class="nv">&quot;ready&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Ready to learn?&quot;</span>
+<span class="w">  </span><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">bool</span>
+<span class="c1">  // default = true</span>
+<span class="p">}</span>
+
+<span class="c1">// Module block consults a specified folder for *.tf files, would</span>
+<span class="c1">// effectively prefix all resources IDs with &quot;module.learn-basics.&quot;</span>
+<span class="kr">module</span><span class="w"> </span><span class="nv">&quot;learn-basics&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;./learn-basics&quot;</span>
+<span class="w">  </span><span class="na">ready_to_learn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.ready</span>
+<span class="p">}</span>
+
+<span class="kr">output</span><span class="w"> </span><span class="nv">&quot;knowledge&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">module.learn-basics.knowledge</span>
+<span class="p">}</span>
+</pre></div>
+<h2>learn-basics</h2>
+<div class="highlight"><pre><span></span><span class="c1">// Variables are not automatically passed into modules</span>
+<span class="c1">// and can be typeless.</span>
+<span class="kr">variable</span><span class="w"> </span><span class="nv">&quot;ready&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="p">}</span>
+
+<span class="c1">// It is good practice to define a type though. There are 3 primitive types -</span>
+<span class="c1">// 3 collection types and 2 structural types. Structural types define</span>
+<span class="c1">// types recursively</span>
+<span class="kr">variable</span><span class="w"> </span><span class="nv">&quot;structural-types&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">object</span><span class="p">({</span>
+<span class="w">    </span><span class="kt">object</span><span class="p">:</span><span class="w"> </span><span class="kt">object</span><span class="p">({</span>
+<span class="w">      </span><span class="err">can-be-nested</span><span class="p">:</span><span class="w"> </span><span class="kt">bool</span>
+<span class="w">    </span><span class="p">}),</span>
+<span class="w">    </span><span class="kt">tuple</span><span class="p">:</span><span class="w"> </span><span class="kt">tuple</span><span class="p">([</span><span class="nb">int, string</span><span class="p">])</span>
+<span class="w">  </span><span class="p">})</span>
+
+<span class="w">  </span><span class="nb">default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nb">object</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">can-be-nested</span><span class="p">:</span><span class="w"> </span><span class="no">true</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="na">tuple</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cm&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Collection types may specify a type, but can also be &quot;any&quot;.</span>
+<span class="kr">variable</span><span class="w"> </span><span class="nv">&quot;list&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="err">type</span><span class="p">:</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="kt">string</span><span class="p">)</span>
+<span class="w">  </span><span class="na">default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="kr">variable</span><span class="w"> </span><span class="nv">&quot;map&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="err">type</span><span class="p">:</span><span class="w"> </span><span class="nf">map</span><span class="p">(</span><span class="err">any</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="na">red</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;#FF0000&quot;</span>
+<span class="w">    </span><span class="s2">&quot;green&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;#00FF00&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kr">variable</span><span class="w"> </span><span class="nv">&quot;favourites&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="err">type</span><span class="p">:</span><span class="w"> </span><span class="kt">set</span>
+<span class="w">  </span><span class="na">default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;red&quot;, &quot;blue&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="c1">// When the type is not specified or is a mix of scalars</span>
+<span class="c1">// they will be converted to strings.</span>
+
+<span class="c1">// Use modern IDEs for type completion features. It does not matter</span>
+<span class="c1">// in which file and in which order you define a variable, it becomes</span>
+<span class="c1">// accessible from anywhere.</span>
+
+<span class="c1">// Default values for variables may not use expressions, but you can</span>
+<span class="c1">// use locals for that. You don&#39;t specify types for locals. With locals</span>
+<span class="c1">// you can create intermediate products from other variables, modules,</span>
+<span class="c1">// and functions.</span>
+
+<span class="nb">locals</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">ready</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.ready</span><span class="w"> </span><span class="p">?</span><span class="w"> </span><span class="s2">&quot;yes&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;no&quot;</span>
+
+<span class="w">  </span><span class="na">yaml</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">yamldecode</span><span class="p">(</span><span class="nf">file</span><span class="p">(</span><span class="s2">&quot;${path.module}/file-in-current-folder.yaml&quot;</span><span class="p">))</span>
+<span class="p">}</span>
+
+<span class="c1">// &#39;locals&#39; blocks can be defined multiple times, but all variables,</span>
+<span class="c1">// resources and local names should be unique</span>
+
+<span class="nb">locals</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">toset</span><span class="p">(</span><span class="nv">var.map</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kr">module</span><span class="w"> </span><span class="nv">&quot;more-resources&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../more-learning&quot;</span>
+<span class="w">  </span><span class="na">yaml-data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">local.yaml</span>
+<span class="p">}</span>
+
+<span class="c1">// Modules can declare outputs, that can be optionally referenced</span>
+<span class="c1">// (see above), typically outputs appear at the bottom of the file or</span>
+<span class="c1">// in &quot;outputs.tf&quot;.</span>
+<span class="kr">output</span><span class="w"> </span><span class="nv">&quot;knowledge&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;types so far, more to come&quot;</span>
+<span class="p">}</span>
+</pre></div>
+<p>Terraform exists for managing cloud &ldquo;resources&rdquo;. A resource could be anything as long as it
+can be created and destroyed through an API call. (compute instance, distribution,
+DNS record, S3 bucket, SSL certificate or permission grant). Terraform relies on &ldquo;providers&rdquo;
+for implementing specific vendor APIs. For example the &ldquo;aws&rdquo; provider enables use of resources
+for managing AWS cloud resources.</p>
+
+<p>When <code>terraform</code> is invoked (<code>terraform apply</code>) it will validate code, create all resources
+in memory, load their existing state from a file (state file), refresh against the current
+cloud APIs and then calculate the differences. Based on the differences, Terraform proposes
+a &ldquo;plan&rdquo; - series of create, modify or delete actions to bring your infrastructrue in
+alignment with an HCL definition.</p>
+
+<p>Terraform will also automatically calculate dependencies between resources and will maintain
+the correct create / destroy order. Failure during execution allows you to retry the entire
+process, which will usually pick off where things finished.</p>
+
+<h2>more-learning</h2>
+
+<p>Time to introduce resources.</p>
+<div class="highlight"><pre><span></span><span class="kr">variable</span><span class="w"> </span><span class="nv">&quot;yaml-data&quot;</span><span class="w"> </span><span class="p">{</span>
+
+<span class="c1">  // config is sourced from a .yaml file, so technically it is a</span>
+<span class="c1">  // map(any), but we can narrow down type like this:</span>
+<span class="w">  </span><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">map</span><span class="p">(</span><span class="kt">string</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// You do not need to explicitly define providers, they all have reasonable</span>
+<span class="c1">// defaults with environment variables. Using a resource that relies on a</span>
+<span class="c1">// provider will also transparently initialize it (when you invoke terraform init)</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_s3_bucket&quot;</span><span class="w"> </span><span class="nv">&quot;bucket&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">bucket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;abc&quot;</span>
+<span class="p">}</span>
+
+<span class="c1">// You can also create provider aliases</span>
+<span class="kr">provider</span><span class="w"> </span><span class="nv">&quot;aws&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">alias</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;as-role&quot;</span>
+<span class="w">  </span><span class="nb">assume_role</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="na">role_arn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;..&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// then use them to create resources</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_s3_bucket_object&quot;</span><span class="w"> </span><span class="nv">&quot;test-file&quot;</span><span class="w"> </span><span class="p">{</span>
+
+<span class="c1">  // all resources have attributes that can be referenced. Some of those</span>
+<span class="c1">  // will be available right away (like bucket) and others may only</span>
+<span class="c1">  // become available after the plan begins executing. The test-file resource</span>
+<span class="c1">  // will be created only after aws_s3_bucket.bucket finishes being created</span>
+
+<span class="c1">  // depends_on = aws_s3_bucket.bucket</span>
+<span class="w">  </span><span class="na">bucket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_s3_bucket.bucket.bucket</span>
+<span class="w">  </span><span class="na">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;index.html&quot;</span>
+<span class="w">  </span><span class="na">content</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">file</span><span class="p">(</span><span class="s2">&quot;${path.module}/index.html&quot;</span><span class="p">)</span>
+
+<span class="c1">  // you can also manually specify provider alias</span>
+<span class="w">  </span><span class="na">provider</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aws.as-role</span>
+<span class="p">}</span>
+
+<span class="c1">// Each resource will receive an ID in state, like &quot;aws_s3_bucket.bucket&quot;.</span>
+<span class="c1">// When resources are created inside a module, their state ID is prepended</span>
+<span class="c1">// with module.&lt;module-name&gt;</span>
+
+<span class="kr">module</span><span class="w"> </span><span class="nv">&quot;learn-each&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../learn-each&quot;</span>
+<span class="p">}</span>
+
+<span class="c1">// Nesting modules like this may not be the best practice, and it&#39;s only</span>
+<span class="c1">// used here for illustration purposes</span>
+</pre></div>
+<h2>learn-each</h2>
+
+<p>Terraform offers some great features for creating series of objects:</p>
+<div class="highlight"><pre><span></span><span class="nb">locals</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_s3_bucket&quot;</span><span class="w"> </span><span class="nv">&quot;badly-coloured-bucket&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">count</span><span class="p">(</span><span class="nv">local.list</span><span class="p">)</span>
+<span class="w">  </span><span class="na">bucket_prefix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;${local.list[count.index]}-&quot;</span>
+<span class="p">}</span>
+<span class="c1">// will create 3 buckets, prefixed with &quot;red-&quot;, etc. and followed by</span>
+<span class="c1">// a unique identifier. Some resources will automatically generate</span>
+<span class="c1">// a random name if not specified. The actual name of the resource</span>
+<span class="c1">// (or bucket in this example) can be referenced as attributes</span>
+
+<span class="kr">output</span><span class="w"> </span><span class="nv">&quot;red-bucket-name&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_s3_bucket.badly-coloured-bucket[0].bucket</span>
+<span class="p">}</span>
+
+<span class="c1">// note that bucket resource ID will be &quot;aws_s3_bucket.badly-coloured-bucket[0]&quot;</span>
+<span class="c1">// through to 2, because they are list index elements. If you remove &quot;red&quot; from</span>
+<span class="c1">// the list, however, it will re-create all the buckets as they would now</span>
+<span class="c1">// have new IDs. A better way is to use for_each</span>
+
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_s3_bucket&quot;</span><span class="w"> </span><span class="nv">&quot;coloured-bucket&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="c1">  // for_each only supports maps and sets</span>
+<span class="w">  </span><span class="na">for_each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">toset</span><span class="p">(</span><span class="nv">local.list</span><span class="p">)</span>
+<span class="w">  </span><span class="na">bucket_prefix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;${each.value}-&quot;</span>
+<span class="p">}</span>
+
+<span class="c1">// the name for this resource would be aws_s3_bucket.coloured-bucket[red]</span>
+
+<span class="kr">output</span><span class="w"> </span><span class="nv">&quot;red-bucket-name2&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_s3_bucket.badly-coloured-bucket</span><span class="p">[</span><span class="s2">&quot;red&quot;</span><span class="p">].</span><span class="err">bucket</span>
+<span class="p">}</span>
+
+<span class="kr">output</span><span class="w"> </span><span class="nv">&quot;all-bucket-names&quot;</span><span class="w"> </span><span class="p">{</span>
+
+<span class="c1">  // returns a list containing bucket names - using a &quot;splat expression&quot;</span>
+<span class="w">  </span><span class="na">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_s3_bucket.coloured-bucket</span><span class="p">[</span><span class="err">*</span><span class="p">].</span><span class="err">bucket</span>
+<span class="p">}</span>
+
+<span class="c1">// there are other splat expressions:</span>
+<span class="kr">output</span><span class="w"> </span><span class="nv">&quot;all-bucket-names2&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="err">for</span><span class="w"> </span><span class="err">b</span><span class="w"> </span><span class="err">in</span><span class="w"> </span><span class="nv">aws_s3_bucket.coloured-bucket</span><span class="p">:</span><span class="w"> </span><span class="nv">b.bucket</span><span class="p">]</span>
+<span class="p">}</span>
+<span class="c1">// can also include a filter</span>
+<span class="kr">output</span><span class="w"> </span><span class="nv">&quot;filtered-bucket-names&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="err">for</span><span class="w"> </span><span class="err">b</span><span class="w"> </span><span class="err">in</span><span class="w"> </span><span class="nv">aws_s3_bucket.coloured-bucket</span><span class="p">:</span>
+<span class="w">    </span><span class="nv">b.bucket</span><span class="w"> </span><span class="err">if</span><span class="w"> </span><span class="nf">length</span><span class="p">(</span><span class="nv">b.bucket</span><span class="p">)</span><span class="w"> </span><span class="err">&lt;</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="c1">// here are some ways to generate maps {red: &quot;red-123123..&quot;}</span>
+<span class="kr">output</span><span class="w"> </span><span class="nv">&quot;bucket-map&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nb">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="err">for</span><span class="w"> </span><span class="err">b</span><span class="w"> </span><span class="err">in</span><span class="w"> </span><span class="nv">aws_s3_bucket.coloured-bucket</span><span class="p">:</span>
+<span class="w">       </span><span class="nf">trimsuffix</span><span class="p">(</span><span class="nv">b.bucket_prefix</span><span class="p">,</span><span class="w"> </span><span class="err">&#39;-&#39;</span><span class="p">)</span>
+<span class="w">         </span><span class="p">=</span><span class="err">&gt;</span><span class="w"> </span><span class="nv">b.bucket</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// as of Terraform 0.13 it is now also possible to use count/each for modules</span>
+
+<span class="kr">variable</span><span class="w"> </span><span class="nv">&quot;learn-functions&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">bool</span>
+<span class="w">  </span><span class="na">default</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">true</span>
+<span class="p">}</span>
+
+<span class="kr">module</span><span class="w"> </span><span class="nv">&quot;learn-functions&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.learn-functions</span><span class="w"> </span><span class="p">?</span><span class="w"> </span><span class="m">1</span><span class="p">:</span><span class="w"> </span><span class="m">0</span>
+<span class="w">  </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../learn-functions&quot;</span>
+<span class="p">}</span>
+</pre></div>
+<p>This is now popular syntax that works in Terraform 0.13 that allows including modules conditionally.</p>
+
+<h2>learn-functions</h2>
+
+<p>Terraform does not allow you to define your own functions, but there&rsquo;s an extensive list of built-in functions</p>
+<div class="highlight"><pre><span></span><span class="nb">locals</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;one&quot;, &quot;two&quot;, &quot;three&quot;</span><span class="p">]</span>
+
+<span class="w">  </span><span class="na">upper_list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="err">for</span><span class="w"> </span><span class="err">x</span><span class="w"> </span><span class="err">in</span><span class="w"> </span><span class="nv">local.list</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nf">upper</span><span class="p">(</span><span class="err">x</span><span class="p">)</span><span class="w"> </span><span class="p">]</span><span class="c1"> // &quot;ONE&quot;, &quot;TWO&quot;, &quot;THREE&quot;</span>
+
+<span class="w">  </span><span class="nb">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="err">for</span><span class="w"> </span><span class="err">x</span><span class="w"> </span><span class="err">in</span><span class="w"> </span><span class="nv">local.list</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="na">x</span><span class="w"> </span><span class="o">=</span><span class="err">&gt;</span><span class="w"> </span><span class="nf">upper</span><span class="p">(</span><span class="err">x</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="c1"> // &quot;one&quot;:&quot;ONE&quot;, &quot;two&quot;:&quot;TWO&quot;, &quot;three&quot;:&quot;THREE&quot;</span>
+
+<span class="w">  </span><span class="na">filtered_list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="err">for</span><span class="w"> </span><span class="err">k</span><span class="p">,</span><span class="w"> </span><span class="err">v</span><span class="w"> </span><span class="err">in</span><span class="w"> </span><span class="nv">local.map</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="nf">substr</span><span class="p">(</span><span class="err">v</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">2</span><span class="p">)</span><span class="w"> </span><span class="err">if</span><span class="w"> </span><span class="err">k</span><span class="w"> </span><span class="p">!=</span><span class="w"> </span><span class="s2">&quot;two&quot; } // &quot;ON&quot;, &quot;TH&quot;</span>
+
+<span class="w">  </span><span class="na">prefixed_list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="err">for</span><span class="w"> </span><span class="err">v</span><span class="w"> </span><span class="err">in</span><span class="w"> </span><span class="nv">local.filtered_list</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pre-${k}&quot; } // &quot;pre-ON&quot;, &quot;pre-TH&quot;</span>
+
+<span class="w">  </span><span class="na">joined_list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">join</span><span class="p">(</span><span class="nv">local.upper_list</span><span class="p">,</span><span class="err">local</span><span class="p">.</span><span class="w"> </span><span class="err">filtered_list</span><span class="p">)</span><span class="c1"> // &quot;ONE&quot;, &quot;TWO&quot;, &quot;THREE&quot;, &quot;pre-ON&quot;, &quot;pre-TH&quot;</span>
+
+<span class="c1">  // Set is very similar to List, but element order is irrelevant</span>
+<span class="w">  </span><span class="na">joined_set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">toset</span><span class="p">(</span><span class="nv">local.joined_list</span><span class="p">)</span><span class="c1"> // &quot;ONE&quot;, &quot;TWO&quot;, &quot;THREE&quot;, &quot;pre-ON&quot;, &quot;pre-TH&quot;</span>
+
+<span class="w">  </span><span class="na">map_again</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">map</span><span class="p">(</span><span class="nf">slice</span><span class="p">(</span><span class="nv">local.joined_list</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">,</span><span class="w"> </span><span class="m">4</span><span class="p">))</span><span class="c1"> // &quot;ONE&quot;:&quot;TWO&quot;, &quot;THREE&quot;:&quot;pre-ON&quot;</span>
+<span class="p">}</span>
+
+<span class="c1">// Usually list manipulation can be useful either for a resource with for_each or</span>
+<span class="c1">// to specify a dynamic block for a resource. This creates a bucket with some tags:</span>
+
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_s3_bucket&quot;</span><span class="w"> </span><span class="nv">&quot;bucket&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test-bucket&quot;</span>
+<span class="w">  </span><span class="na">tags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">local.map_again</span>
+<span class="p">}</span>
+
+<span class="c1">// this is identical to:</span>
+<span class="c1">// resource &quot;aws_s3_bucket&quot; &quot;bucket&quot; {</span>
+<span class="c1">//   name = &quot;test-bucket&quot;</span>
+<span class="c1">//   tags = {</span>
+<span class="c1">//     ONE = &quot;TWO&quot;</span>
+<span class="c1">//     THREE = &quot;pre-ON&quot;</span>
+<span class="c1">//   }</span>
+<span class="c1">// }</span>
+
+<span class="c1">// Some resources also contain dynamic blocks. The next example uses a &quot;data&quot; block</span>
+<span class="c1">// to look up 3 buckets (red, green and blue), then creates a policy that contains</span>
+<span class="c1">// read-only access to the red and green buckets and full access to the blue bucket.</span>
+
+<span class="nb">locals</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nb">buckets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="na">red</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;read-only&quot;</span>
+<span class="w">    </span><span class="na">green</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;read-only&quot;</span>
+<span class="w">    </span><span class="na">blue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;full&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="c1">  // we could load buckets from a file:</span>
+<span class="c1">  // bucket = file(&#39;bucket.json&#39;)</span>
+
+<span class="w">  </span><span class="nb">actions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="s2">&quot;read-only&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;s3:GetObject&quot;, &quot;s3:GetObjectVersion&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="s2">&quot;full&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;s3:GetObject&quot;, &quot;s3:GetObjectVersion&quot;, &quot;s3:PutObject&quot;, &quot;s3:PutObjectVersion&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="c1">  // we will look up actions, so that we don&#39;t have to repeat actions</span>
+<span class="p">}</span>
+
+<span class="c1">// use a function to convert map keys into set</span>
+<span class="kr">data</span><span class="w"> </span><span class="nc">&quot;aws_s3_bucket&quot;</span><span class="w"> </span><span class="nv">&quot;bucket&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">for_each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">toset</span><span class="p">(</span><span class="nf">keys</span><span class="p">(</span><span class="nv">local.buckets</span><span class="p">))</span>
+<span class="w">  </span><span class="na">bucket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">each.value</span>
+<span class="p">}</span>
+
+<span class="c1">// create json for our policy</span>
+<span class="kr">data</span><span class="w"> </span><span class="nc">&quot;aws_iam_policy_document&quot;</span><span class="w"> </span><span class="nv">&quot;role_policy&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nb">statement</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="na">effect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Allow&quot;</span>
+<span class="w">    </span><span class="na">actions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;ec2:*&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">    </span><span class="na">resources</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="err">dynamic</span><span class="w"> </span><span class="s2">&quot;statement&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="na">for_each</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">local.buckets</span>
+<span class="w">    </span><span class="nb">content</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="na">effect</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Allow&quot;</span>
+<span class="w">      </span><span class="na">actions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">lookup</span><span class="p">(</span><span class="nv">local.actions</span><span class="p">,</span><span class="w"> </span><span class="nv">statement.value</span><span class="p">,</span><span class="w"> </span><span class="kt">null</span><span class="p">)</span>
+<span class="w">      </span><span class="na">resources</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="nv">data.aws_s3_bucket.bucket[statement.key</span><span class="p">]]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// and this actually creates the AWS policy with permissions to all buckets</span>
+<span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_iam_policy&quot;</span><span class="w"> </span><span class="nv">&quot;policy&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">policy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">data.aws_iam_policy_document.role_policy.json</span>
+<span class="p">}</span>
+</pre></div>
+<h2>Additional Resources</h2>
+
+<ul>
+<li><a href="https://blog.gruntwork.io/terraform-tips-tricks-loops-if-statements-and-gotchas-f739bbae55f9">Terraform tips &amp; tricks</a></li>
+<li><a href="https://www.thegreatcodeadventure.com/building-dynamic-outputs-with-terraform-for_each-for-and-zipmap/">Building Dynamic Outputs with Terraform Expressions and Functions</a></li>
+</ul>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the GitHub Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/hcl.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Romans Malinovskis, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/hcl.html.markdown">0 contributors</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://github.com/romaninsh">Romans Malinovskis</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+    </body>
+</html>
