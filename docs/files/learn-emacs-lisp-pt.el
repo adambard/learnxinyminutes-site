@@ -72,12 +72,12 @@
 ;; `C-j' insere o resultado da interpretação da expressão no buffer.
 
 ;; `C-xC-e' exibe o mesmo resultado na linha inferior do Emacs,
-;; chamada de "mini-buffer".  Nós geralmente utilizaremos `C-xC-e',
+;; chamada de "echo area".  Nós geralmente utilizaremos `C-xC-e',
 ;; já que não queremos poluir o buffer com texto desnecessário.
 
 ;; `setq' armazena um valor em uma variável:
 (setq my-name "Bastien")
-;; `C-xC-e' => "Bastien" (texto exibido no mini-buffer)
+;; `C-xC-e' => "Bastien" (texto exibido no echo area)
 
 ;; `insert' insere "Hello!" na posição em que se encontra seu cursor:
 (insert "Hello!")
