@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en-us" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en-us" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en-us" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en-us" class="no-js"> <!--<![endif]-->
+    <head>
+      <!-- Google tag (gtag.js) -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-WXC8R75DEN');
+      </script>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="en-us">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn Lean 4 in Y Minutes</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/lean4/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+                el.className = theme === "dark" ? "dark" : "light";
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (!theme) {
+                theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+              }
+              set_theme(theme)
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.onload = function(){
+              load_theme();
+            };
+
+            // Listen for system preference change
+            window
+              .matchMedia("(prefers-color-scheme: dark)")
+              .addEventListener("change", ({matches:isDark}) => {
+                set_theme(isDark ? "dark" : "light")
+              })
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Flean4%2F&text=Learn+X+in+Y+minutes%2C+where+X%3DLean+4">
+        Share this page
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Select theme:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">light</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">dark</button>
+  </div>
+  <h1><a href="/">Learn X in Y minutes</a></h1>
+  <h2>Where X=Lean 4</h2>
+    <p class="filelink">
+    Get the code:
+    <a href="/docs/files/learnlean4.lean">learnlean4.lean</a>
+    </p>
+  <div id="doc">
+    <p><a href="https://lean-lang.org/">Lean 4</a> is a dependently typed functional programming
+language and an interactive theorem prover.</p>
+<div class="highlight"><pre><span></span><span class="c">/-</span>
+<span class="cm">An enumerated data type.</span>
+<span class="cm">-/</span>
+<span class="kn">inductive</span><span class="w"> </span><span class="n">Grade</span><span class="w"> </span><span class="kn">where</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Grade</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Grade</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">F</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Grade</span>
+<span class="n">deriving</span><span class="w"> </span><span class="n">Repr</span>
+
+<span class="c">/-</span>
+<span class="cm">Functions.</span>
+<span class="cm">-/</span>
+<span class="kn">def</span><span class="w"> </span><span class="n">grade</span><span class="w"> </span><span class="o">(</span><span class="n">m</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Grade</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="mi">80</span><span class="w"> </span><span class="bp">&lt;=</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="n">Grade</span><span class="bp">.</span><span class="n">A</span>
+<span class="w">  </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="mi">60</span><span class="w"> </span><span class="bp">&lt;=</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="n">Grade</span><span class="bp">.</span><span class="n">B</span>
+<span class="w">  </span><span class="k">else</span><span class="w"> </span><span class="n">Grade</span><span class="bp">.</span><span class="n">F</span>
+
+<span class="kn">def</span><span class="w"> </span><span class="n">highMarks</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">80</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">9</span>
+<span class="kn">def</span><span class="w"> </span><span class="n">lowMarks</span><span class="w">  </span><span class="o">:=</span><span class="w"> </span><span class="mi">25</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">25</span>
+<span class="bp">#</span><span class="n">eval</span><span class="w"> </span><span class="n">grade</span><span class="w"> </span><span class="n">highMarks</span>
+<span class="bp">#</span><span class="n">eval</span><span class="w"> </span><span class="n">grade</span><span class="w"> </span><span class="n">lowMarks</span>
+
+<span class="bp">#</span><span class="n">check</span><span class="w"> </span><span class="o">(</span><span class="mi">0</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">)</span>
+<span class="c">/-</span><span class="cm"> #check (0 : Grade) -/</span><span class="w"> </span><span class="c">/-</span><span class="cm"> This is an error. -/</span>
+
+<span class="c">/-</span>
+<span class="cm">Types themselves are values.</span>
+<span class="cm">-/</span>
+<span class="bp">#</span><span class="n">check</span><span class="w"> </span><span class="o">(</span><span class="n">Nat</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="o">)</span>
+
+<span class="c">/-</span>
+<span class="cm">Mathematical propositions are values in Lean. `Prop` is the type of</span>
+<span class="cm">propositions.</span>
+
+<span class="cm">Here are some simple propositions.</span>
+<span class="cm">-/</span>
+
+<span class="bp">#</span><span class="n">check</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="bp">#</span><span class="n">check</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">1</span>
+<span class="bp">#</span><span class="n">check</span><span class="w"> </span><span class="mi">2</span><span class="bp">^</span><span class="mi">9</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="mi">2</span><span class="bp">^</span><span class="mi">8</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="bp">^</span><span class="mi">8</span>
+
+<span class="c">/-</span>
+<span class="cm">Notice Lean displays `0 = 1 : Prop` to say:</span>
+
+<span class="cm">  The statement &quot;0 = 1&quot; is a proposition.</span>
+
+<span class="cm">We want to distinguish true propositions and false propositions. We do this via</span>
+<span class="cm">proofs.</span>
+
+<span class="cm">Each proposition is a type. `0 = 1` is a type, `1 = 1` is another type.</span>
+
+<span class="cm">A proposition is true iff there is a value of that type.</span>
+
+<span class="cm">How do we construct a value of type `1 = 1`? We use a constructor that is</span>
+<span class="cm">defined for that type.</span>
+
+<span class="cm">  `Eq.refl a` constructs a value of type `a = a`. (reflexivity)</span>
+
+<span class="cm">Using this we can prove `1 = 1` as follows.</span>
+<span class="cm">-/</span>
+
+<span class="kn">theorem</span><span class="w"> </span><span class="n">one_eq_one</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">Eq</span><span class="bp">.</span><span class="n">refl</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="c">/-</span>
+<span class="cm">But there is no way to prove (construct a value of type) `0 = 1`.</span>
+
+<span class="cm">The following will fail. As will `Eq.refl 1`</span>
+<span class="cm">-/</span>
+
+<span class="c">/-</span><span class="cm"> theorem zero_eq_one : 0 = 1 := Eq.refl 0 -/</span>
+
+<span class="c">/-</span>
+<span class="cm">Let us prove an inequality involving variables.</span>
+
+<span class="cm">The `calc` primitive allows us to prove equalities using stepwise</span>
+<span class="cm">calculations. Each step has to be justified by a proof.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">plus_squared</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="bp">+</span><span class="n">b</span><span class="o">)</span><span class="bp">^</span><span class="mi">2</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="bp">^</span><span class="mi">2</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">2</span><span class="bp">*</span><span class="n">a</span><span class="bp">*</span><span class="n">b</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">b</span><span class="bp">^</span><span class="mi">2</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="k">calc</span>
+<span class="w">    </span><span class="o">(</span><span class="n">a</span><span class="bp">+</span><span class="n">b</span><span class="o">)</span><span class="bp">^</span><span class="mi">2</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="bp">+</span><span class="n">b</span><span class="o">)</span><span class="bp">*</span><span class="o">(</span><span class="n">a</span><span class="bp">+</span><span class="n">b</span><span class="o">)</span><span class="w">             </span><span class="o">:=</span><span class="w"> </span><span class="n">Nat</span><span class="bp">.</span><span class="n">pow_two</span><span class="w"> </span><span class="bp">_</span>
+<span class="w">    </span><span class="bp">_</span><span class="w">       </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="bp">+</span><span class="n">b</span><span class="o">)</span><span class="bp">*</span><span class="n">a</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="bp">+</span><span class="n">b</span><span class="o">)</span><span class="bp">*</span><span class="n">b</span><span class="w">       </span><span class="o">:=</span><span class="w"> </span><span class="n">Nat</span><span class="bp">.</span><span class="n">mul_add</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="bp">_</span>
+<span class="w">    </span><span class="bp">_</span><span class="w">       </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="bp">*</span><span class="n">a</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">b</span><span class="bp">*</span><span class="n">a</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="bp">*</span><span class="n">b</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">b</span><span class="bp">*</span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">repeat</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">Nat</span><span class="bp">.</span><span class="n">add_mul</span><span class="o">]</span>
+<span class="w">    </span><span class="bp">_</span><span class="w">       </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="bp">*</span><span class="n">a</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">b</span><span class="bp">*</span><span class="n">a</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">a</span><span class="bp">*</span><span class="n">b</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">b</span><span class="bp">*</span><span class="n">b</span><span class="w">   </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="bp">←</span><span class="w"> </span><span class="n">Nat</span><span class="bp">.</span><span class="n">add_assoc</span><span class="o">]</span>
+<span class="w">    </span><span class="bp">_</span><span class="w">       </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="bp">*</span><span class="n">a</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">a</span><span class="bp">*</span><span class="n">b</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">a</span><span class="bp">*</span><span class="n">b</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">b</span><span class="bp">*</span><span class="n">b</span><span class="w">   </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">Nat</span><span class="bp">.</span><span class="n">mul_comm</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="bp">_</span><span class="o">]</span>
+<span class="w">    </span><span class="bp">_</span><span class="w">       </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="bp">^</span><span class="mi">2</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">a</span><span class="bp">*</span><span class="n">b</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">a</span><span class="bp">*</span><span class="n">b</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">b</span><span class="bp">*</span><span class="n">b</span><span class="w">   </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="bp">←</span><span class="w"> </span><span class="n">Nat</span><span class="bp">.</span><span class="n">pow_two</span><span class="w"> </span><span class="bp">_</span><span class="o">]</span>
+<span class="w">    </span><span class="bp">_</span><span class="w">       </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="bp">^</span><span class="mi">2</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">a</span><span class="bp">*</span><span class="n">b</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">a</span><span class="bp">*</span><span class="n">b</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">b</span><span class="bp">^</span><span class="mi">2</span><span class="w">   </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="bp">←</span><span class="w"> </span><span class="n">Nat</span><span class="bp">.</span><span class="n">pow_two</span><span class="w"> </span><span class="bp">_</span><span class="o">]</span>
+<span class="w">    </span><span class="bp">_</span><span class="w">       </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="bp">^</span><span class="mi">2</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="bp">*</span><span class="n">b</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">a</span><span class="bp">*</span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">b</span><span class="bp">^</span><span class="mi">2</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">Nat</span><span class="bp">.</span><span class="n">add_assoc</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="bp">^_</span><span class="o">)]</span>
+<span class="w">    </span><span class="bp">_</span><span class="w">       </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="bp">^</span><span class="mi">2</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">2</span><span class="bp">*</span><span class="o">(</span><span class="n">a</span><span class="bp">*</span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">b</span><span class="bp">^</span><span class="mi">2</span><span class="w">     </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="bp">←</span><span class="w"> </span><span class="n">Nat</span><span class="bp">.</span><span class="n">two_mul</span><span class="w"> </span><span class="bp">_</span><span class="o">]</span>
+<span class="w">    </span><span class="bp">_</span><span class="w">       </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="bp">^</span><span class="mi">2</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">2</span><span class="bp">*</span><span class="n">a</span><span class="bp">*</span><span class="n">b</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="n">b</span><span class="bp">^</span><span class="mi">2</span><span class="w">       </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">Nat</span><span class="bp">.</span><span class="n">mul_assoc</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="bp">_</span><span class="o">]</span>
+<span class="c">/-</span>
+<span class="cm">Underscores can be used when there is no ambiguity in what is to be matched.</span>
+
+<span class="cm">For example, in the first step, we want to apply `Nat.pow_two (a+b)`. But,</span>
+<span class="cm">`(a+b)` is the only pattern here to apply `Nat.pow_two`. So we can omit it.</span>
+<span class="cm">-/</span>
+
+<span class="c">/-</span>
+<span class="cm">Let us now prove more &quot;realistic&quot; theorems. Those involving logical connectives.</span>
+
+<span class="cm">First, we define even and odd numbers.</span>
+<span class="cm">-/</span>
+<span class="kn">def</span><span class="w"> </span><span class="n">Even</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="bp">*</span><span class="n">k</span>
+<span class="kn">def</span><span class="w"> </span><span class="n">Odd</span><span class="w">  </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="bp">*</span><span class="n">k</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="c">/-</span>
+<span class="cm">To prove an existential, we can provide specific values if we know them.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">zero_even</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Even</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">Eq</span><span class="bp">.</span><span class="n">symm</span><span class="w"> </span><span class="o">(</span><span class="n">Nat</span><span class="bp">.</span><span class="n">mul_zero</span><span class="w"> </span><span class="mi">2</span><span class="o">)</span>
+<span class="w">  </span><span class="n">Exists</span><span class="bp">.</span><span class="n">intro</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">h</span>
+<span class="c">/-</span>
+<span class="cm">`Exists.intro v h` proves `∃ x, p x` by substituting `x` by `v` and using the</span>
+<span class="cm">proof `h` for `p v`.</span>
+<span class="cm">-/</span>
+
+<span class="c">/-</span>
+<span class="cm">Now, we will see how to use hypothesis that are existentials to prove</span>
+<span class="cm">conclusions that are existentials.</span>
+
+<span class="cm">The curly braces around parameters `n` and `m` indicate that they are</span>
+<span class="cm">implicit. Here, Lean will infer them from `hn` and `hm`.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">even_mul_even_is_even&#39;</span><span class="w"> </span><span class="o">{</span><span class="n">n</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">}</span><span class="w"> </span><span class="o">(</span><span class="n">hn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Even</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">hm</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Even</span><span class="w"> </span><span class="n">m</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Even</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="bp">*</span><span class="n">m</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="n">Exists</span><span class="bp">.</span><span class="n">elim</span><span class="w"> </span><span class="n">hn</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">k1</span><span class="w"> </span><span class="n">hk1</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">    </span><span class="n">Exists</span><span class="bp">.</span><span class="n">elim</span><span class="w"> </span><span class="n">hm</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">k2</span><span class="w"> </span><span class="n">hk2</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">      </span><span class="n">Exists</span><span class="bp">.</span><span class="n">intro</span><span class="w"> </span><span class="o">(</span><span class="n">k1</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">k2</span><span class="o">))</span><span class="w"> </span><span class="o">(</span>
+<span class="w">        </span><span class="k">calc</span>
+<span class="w">          </span><span class="n">n</span><span class="bp">*</span><span class="n">m</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">k1</span><span class="o">)</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">k2</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">hk1</span><span class="o">,</span><span class="w"> </span><span class="n">hk2</span><span class="o">]</span>
+<span class="w">          </span><span class="bp">_</span><span class="w">   </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="n">k1</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">k2</span><span class="o">))</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">Nat</span><span class="bp">.</span><span class="n">mul_assoc</span><span class="o">]</span>
+<span class="w">      </span><span class="o">)</span>
+<span class="w">    </span><span class="o">)</span>
+<span class="w">  </span><span class="o">)</span>
+
+<span class="c">/-</span>
+<span class="cm">Most proofs are written using *tactics*. These are commands to Lean that guide</span>
+<span class="cm">it to construct proofs by itself.</span>
+
+<span class="cm">The same theorem, proved using tactics.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">even_mul_even_is_even</span><span class="w"> </span><span class="o">{</span><span class="n">n</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">}</span><span class="w"> </span><span class="o">(</span><span class="n">hn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Even</span><span class="w"> </span><span class="n">n</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">hm</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Even</span><span class="w"> </span><span class="n">m</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Even</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="bp">*</span><span class="n">m</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="bp">⟨</span><span class="n">k1</span><span class="o">,</span><span class="w"> </span><span class="n">hk1</span><span class="bp">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="bp">⟨</span><span class="n">k2</span><span class="o">,</span><span class="w"> </span><span class="n">hk2</span><span class="bp">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">hm</span>
+<span class="w">  </span><span class="n">apply</span><span class="w"> </span><span class="n">Exists</span><span class="bp">.</span><span class="n">intro</span><span class="w"> </span><span class="bp">$</span><span class="w"> </span><span class="n">k1</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">k2</span><span class="o">)</span>
+<span class="w">  </span><span class="k">calc</span>
+<span class="w">    </span><span class="n">n</span><span class="bp">*</span><span class="n">m</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">k1</span><span class="o">)</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">k2</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">hk1</span><span class="o">,</span><span class="w"> </span><span class="n">hk2</span><span class="o">]</span>
+<span class="w">    </span><span class="bp">_</span><span class="w">   </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="n">k1</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">k2</span><span class="o">))</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">Nat</span><span class="bp">.</span><span class="n">mul_assoc</span><span class="o">]</span>
+
+<span class="c">/-</span>
+<span class="cm">Let us work with implications.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">succ_of_even_is_odd&#39;</span><span class="w"> </span><span class="o">{</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">}</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Even</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">Odd</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="bp">+</span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="k">fun</span><span class="w"> </span><span class="n">hn</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="bp">⟨</span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="n">hk</span><span class="bp">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">    </span><span class="n">Exists</span><span class="bp">.</span><span class="n">intro</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">(</span>
+<span class="w">      </span><span class="k">calc</span>
+<span class="w">        </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">hk</span><span class="o">]</span>
+<span class="w">    </span><span class="o">)</span>
+<span class="c">/-</span>
+<span class="cm">To prove an implication `p → q`, you have to write a function that takes a proof</span>
+<span class="cm">of `p` and construct a proof of `q`.</span>
+
+<span class="cm">Here, `pn` is proof of `Even n := ∃ k, n = 2 *k`. Eliminating the existential</span>
+<span class="cm">gets us `k` and a proof `hk` of `n = 2 * k`.</span>
+
+<span class="cm">Now, we have to introduce the existential `∃ k, n + 1 = 2 * k + 1`. This `k` is</span>
+<span class="cm">the same as `k` for `n`. And, the equation is proved by a simple calculation</span>
+<span class="cm">that substitutes `2 * k` for `n`, which is allowed by `hk`.</span>
+<span class="cm">-/</span>
+
+<span class="c">/-</span>
+<span class="cm">Same theorem, now using tactics.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">succ_of_even_is_odd</span><span class="w"> </span><span class="o">{</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">}</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Even</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">Odd</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="bp">+</span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">hn</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="bp">⟨</span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="n">hk</span><span class="bp">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w">  </span><span class="n">hn</span>
+<span class="w">  </span><span class="n">apply</span><span class="w"> </span><span class="n">Exists</span><span class="bp">.</span><span class="n">intro</span><span class="w"> </span><span class="n">k</span>
+<span class="w">  </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">hk</span><span class="o">]</span>
+
+<span class="c">/-</span>
+<span class="cm">The following theorem can be proved similarly.</span>
+
+<span class="cm">We will use this theorem later.</span>
+
+<span class="cm">A `sorry` proves any theorem. It should not be used in real proofs.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">succ_of_odd_is_even</span><span class="w"> </span><span class="o">{</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">}</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Odd</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">Even</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="bp">+</span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="gr">sorry</span>
+
+<span class="c">/-</span>
+<span class="cm">We can use theorems by applying them.</span>
+<span class="cm">-/</span>
+<span class="kn">example</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Odd</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span>
+<span class="w">  </span><span class="n">apply</span><span class="w"> </span><span class="n">succ_of_even_is_odd</span>
+<span class="w">  </span><span class="n">exact</span><span class="w"> </span><span class="n">zero_even</span>
+<span class="c">/-</span>
+<span class="cm">The two new tactics are:</span>
+
+<span class="cm">  - `apply p` where `p` is an implication `q → r` and `r` is the goal rewrites</span>
+<span class="cm">  the goal to `q`. More generally, `apply t` will unify the current goal with</span>
+<span class="cm">  the conclusion of `t` and generate goals for each hypothesis of `t`.</span>
+<span class="cm">  - `exact h` solves the goal by stating that the goal is the same as `h`.</span>
+<span class="cm">-/</span>
+
+<span class="c">/-</span>
+<span class="cm">Let us see examples of disjunctions.</span>
+<span class="cm">-/</span>
+<span class="kn">example</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Even</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="bp">∨</span><span class="w"> </span><span class="n">Odd</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">Or</span><span class="bp">.</span><span class="n">inl</span><span class="w"> </span><span class="n">zero_even</span>
+<span class="kn">example</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Even</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="bp">∨</span><span class="w"> </span><span class="n">Odd</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">Or</span><span class="bp">.</span><span class="n">inl</span><span class="w"> </span><span class="n">zero_even</span>
+<span class="kn">example</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Odd</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">∨</span><span class="w"> </span><span class="n">Even</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">Or</span><span class="bp">.</span><span class="n">inr</span><span class="w"> </span><span class="n">zero_even</span>
+<span class="c">/-</span>
+<span class="cm">Here, we always know from `p ∨ q` which of `p` and/or `q` is correct. So we can</span>
+<span class="cm">introduce a proof of the correct side.</span>
+<span class="cm">-/</span>
+
+<span class="c">/-</span>
+<span class="cm">Let us see a more &quot;standard&quot; disjunction.</span>
+
+<span class="cm">Here, from the hypothesis that `n : Nat`, we cannot determine whether `n` is</span>
+<span class="cm">even or odd. So we cannot construct `Or` directly.</span>
+
+<span class="cm">But, for any specific `n`, we will know which one to construct.</span>
+
+<span class="cm">This is exactly what induction allows us to do. We introduce the `induction`</span>
+<span class="cm">tactic.</span>
+
+<span class="cm">The inductive hypothesis is a disjunction. When disjunctions appear at the</span>
+<span class="cm">hypothesis, we use *proof by exhaustive cases*. This is done using the `cases`</span>
+<span class="cm">tactic.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">even_or_odd</span><span class="w"> </span><span class="o">{</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">}</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Even</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">∨</span><span class="w"> </span><span class="n">Odd</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span>
+<span class="w">  </span><span class="n">induction</span><span class="w"> </span><span class="n">n</span>
+<span class="w">  </span><span class="n">case</span><span class="w"> </span><span class="n">zero</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">left</span><span class="w"> </span><span class="bp">;</span><span class="w"> </span><span class="n">exact</span><span class="w"> </span><span class="n">zero_even</span>
+<span class="w">  </span><span class="n">case</span><span class="w"> </span><span class="n">succ</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">ihn</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">    </span><span class="n">cases</span><span class="w"> </span><span class="n">ihn</span><span class="w"> </span><span class="k">with</span>
+<span class="w">    </span><span class="bp">|</span><span class="w"> </span><span class="n">inl</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">right</span><span class="w"> </span><span class="bp">;</span><span class="w"> </span><span class="n">apply</span><span class="w"> </span><span class="o">(</span><span class="n">succ_of_even_is_odd</span><span class="w"> </span><span class="n">h</span><span class="o">)</span>
+<span class="w">    </span><span class="bp">|</span><span class="w"> </span><span class="n">inr</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">left</span><span class="w">  </span><span class="bp">;</span><span class="w"> </span><span class="n">apply</span><span class="w"> </span><span class="o">(</span><span class="n">succ_of_odd_is_even</span><span class="w"> </span><span class="n">h</span><span class="o">)</span>
+<span class="c">/-</span>
+<span class="cm">`induction` is not just for natural numbers. It is for any type, since all types</span>
+<span class="cm">in Lean are inductive.</span>
+<span class="cm">-/</span>
+
+<span class="c">/-</span>
+<span class="cm">We now state Collatz conjecture. The proof is left as an exercise to the reader.</span>
+<span class="cm">-/</span>
+<span class="kn">def</span><span class="w"> </span><span class="n">collatz_next</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">%</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="kn">def</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="o">(</span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">f</span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">Nat</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="k">match</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="k">with</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">Nat</span><span class="bp">.</span><span class="n">zero</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="k">fun</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">x</span>
+<span class="w">  </span><span class="bp">|</span><span class="w"> </span><span class="n">Nat</span><span class="bp">.</span><span class="n">succ</span><span class="w"> </span><span class="n">k&#39;</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="k">fun</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">(</span><span class="n">iter</span><span class="w"> </span><span class="n">k&#39;</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">x</span><span class="o">)</span>
+
+<span class="kn">theorem</span><span class="w"> </span><span class="n">collatz</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">n</span><span class="o">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="n">iter</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">collatz_next</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="gr">sorry</span>
+
+<span class="c">/-</span>
+<span class="cm">Now, some &quot;corner cases&quot; in logic.</span>
+<span class="cm">-/</span>
+
+<span class="c">/-</span>
+<span class="cm">The proposition `True` is something that can be trivially proved.</span>
+
+<span class="cm">`True.intro` is a constructor for proving `True`. Notice that it needs no</span>
+<span class="cm">inputs.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">obvious</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">True</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">True</span><span class="bp">.</span><span class="n">intro</span>
+
+<span class="c">/-</span>
+<span class="cm">On the other hand, there is no constructor for `False`.</span>
+
+<span class="cm">We have to use `sorry`.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">impossible</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">False</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="gr">sorry</span>
+
+<span class="c">/-</span>
+<span class="cm">Any `False` in the hypothesis allows us to conclude anything.</span>
+
+<span class="cm">Written in term style, we use the eliminator `False.elim`. It takes a proof of</span>
+<span class="cm">`False`, here `h`, and concludes whatever is the goal.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">nonsense</span><span class="w"> </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">False</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">False</span><span class="bp">.</span><span class="n">elim</span><span class="w"> </span><span class="n">h</span>
+
+<span class="c">/-</span>
+<span class="cm">The `contradiction` tactic uses any `False` in the hypothesis to conclude the</span>
+<span class="cm">goal.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">more_nonsense</span><span class="w"> </span><span class="o">(</span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">False</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">contradiction</span>
+
+<span class="c">/-</span>
+<span class="cm">To illustrate constructive vs classical logic, we now prove the contrapositive</span>
+<span class="cm">theorem.</span>
+
+<span class="cm">The forward direction does not require classical logic.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">contrapositive_forward&#39;</span><span class="w"> </span><span class="o">(</span><span class="n">p</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="n">p</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">q</span><span class="o">)</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="o">(</span><span class="bp">¬</span><span class="n">q</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="bp">¬</span><span class="n">p</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="k">fun</span><span class="w"> </span><span class="n">pq</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="k">fun</span><span class="w"> </span><span class="n">hqf</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="k">fun</span><span class="w"> </span><span class="n">hp</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">hqf</span><span class="w"> </span><span class="o">(</span><span class="n">pq</span><span class="w"> </span><span class="n">hp</span><span class="o">)</span>
+<span class="c">/-</span>
+<span class="cm">Use the definition `¬q := q → False`. Notice that we have to construct `p →</span>
+<span class="cm">False` given `p → q` and `q → False`. This is just function composition.</span>
+<span class="cm">-/</span>
+
+<span class="c">/-</span>
+<span class="cm">The above proof, using tactics.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">contrapositive_forward</span><span class="w"> </span><span class="o">(</span><span class="n">p</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="n">p</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">q</span><span class="o">)</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="o">(</span><span class="bp">¬</span><span class="n">q</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="bp">¬</span><span class="n">p</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">hpq</span>
+<span class="w">  </span><span class="n">intro</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">hp</span>
+<span class="w">  </span><span class="n">specialize</span><span class="w"> </span><span class="n">hpq</span><span class="w"> </span><span class="n">hp</span>
+<span class="w">  </span><span class="n">contradiction</span>
+
+<span class="c">/-</span>
+<span class="cm">The reverse requires classical logic.</span>
+
+<span class="cm">Here, we are required to construct a `q` given values of following types:</span>
+
+<span class="cm">  - `(q → False) → (p → False)`.</span>
+<span class="cm">  - `p`.</span>
+
+<span class="cm">This is impossible without using the law of excluded middle.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">contrapositive_reverse&#39;</span><span class="w"> </span><span class="o">(</span><span class="n">p</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="bp">¬</span><span class="n">q</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="bp">¬</span><span class="n">p</span><span class="o">)</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="o">(</span><span class="n">p</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">q</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="k">fun</span><span class="w"> </span><span class="n">hnqnp</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">  </span><span class="n">Classical</span><span class="bp">.</span><span class="n">byCases</span>
+<span class="w">    </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">hq</span><span class="w">  </span><span class="bp">=&gt;</span><span class="w"> </span><span class="k">fun</span><span class="w">  </span><span class="bp">_</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">hq</span><span class="o">)</span>
+<span class="w">    </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">hnq</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="k">fun</span><span class="w"> </span><span class="n">hp</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">absurd</span><span class="w"> </span><span class="n">hp</span><span class="w"> </span><span class="o">(</span><span class="n">hnqnp</span><span class="w"> </span><span class="n">hnq</span><span class="o">))</span>
+<span class="c">/-</span>
+<span class="cm">Law of excluded middle tells us that we will have a `q` or a `q → False`. In the</span>
+<span class="cm">first case, it is trivial to construct a `q`, we already have it. In the second</span>
+<span class="cm">case, we give the `q → False` to obtain a `p → False`.  Then, we use the fact</span>
+<span class="cm">(in constructive logic) that given `p` and `p → False`, we can construct</span>
+<span class="cm">`False`. Once, we have `False`, we can construct anything, and specifically `q`.</span>
+<span class="cm">-/</span>
+
+<span class="c">/-</span>
+<span class="cm">Same proof, using tactics.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">contrapositive_reverse</span><span class="w"> </span><span class="o">(</span><span class="n">p</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="bp">¬</span><span class="n">q</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="bp">¬</span><span class="n">p</span><span class="o">)</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="o">(</span><span class="n">p</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">q</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">hnqnp</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">hp</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">emq</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">Classical</span><span class="bp">.</span><span class="n">em</span><span class="w"> </span><span class="n">q</span>
+<span class="w">  </span><span class="n">cases</span><span class="w"> </span><span class="n">emq</span>
+<span class="w">  </span><span class="n">case</span><span class="w"> </span><span class="n">inl</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">assumption</span>
+<span class="w">  </span><span class="n">case</span><span class="w"> </span><span class="n">inr</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">specialize</span><span class="w"> </span><span class="n">hnqnp</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="bp">;</span><span class="w"> </span><span class="n">contradiction</span>
+
+<span class="c">/-</span>
+<span class="cm">To illustrate how we can define an work with axiomatic systems. Here is a</span>
+<span class="cm">definition of Groups and some proofs directly translated from &quot;Topics in</span>
+<span class="cm">Algebra&quot; by Herstein, Second edition.</span>
+<span class="cm">-/</span>
+
+<span class="c">/-</span>
+<span class="cm">A `section` introduces a namespace.</span>
+<span class="cm">-/</span>
+<span class="kn">section</span><span class="w"> </span><span class="n">GroupTheory</span>
+<span class="c">/-</span>
+<span class="cm">To define abstract objects like groups, we may use `class`.</span>
+<span class="cm">-/</span>
+<span class="kn">class</span><span class="w"> </span><span class="n">Group</span><span class="w"> </span><span class="o">(</span><span class="n">G</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="w"> </span><span class="n">u</span><span class="o">)</span><span class="w"> </span><span class="kn">where</span>
+<span class="w">  </span><span class="n">op</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">G</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">G</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">G</span>
+<span class="w">  </span><span class="n">assoc</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">G</span><span class="o">,</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="o">(</span><span class="n">op</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="o">)</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">(</span><span class="n">op</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">c</span><span class="o">)</span>
+<span class="w">  </span><span class="n">e</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">G</span>
+<span class="w">  </span><span class="n">identity</span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">G</span><span class="o">,</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span>
+<span class="w">  </span><span class="n">inverse</span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">G</span><span class="o">,</span><span class="w"> </span><span class="bp">∃</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">G</span><span class="o">,</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">e</span>
+
+<span class="c">/-</span>
+<span class="cm">Let us introduce some notation to make this convenient.</span>
+<span class="cm">-/</span>
+<span class="kn">open</span><span class="w"> </span><span class="n">Group</span>
+<span class="kn">infixl</span><span class="o">:</span><span class="mi">70</span><span class="w"> </span><span class="s2">&quot; * &quot;</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">op</span>
+
+<span class="c">/-</span>
+<span class="cm">`G` will always stand for a group and variables `a b c` will be elements of that</span>
+<span class="cm">group in this `section`.</span>
+<span class="cm">-/</span>
+<span class="kn">variable</span><span class="w"> </span><span class="o">[</span><span class="n">Group</span><span class="w"> </span><span class="n">G</span><span class="o">]</span><span class="w"> </span><span class="o">{</span><span class="n">a</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">G</span><span class="o">}</span>
+
+<span class="kn">def</span><span class="w"> </span><span class="n">is_identity</span><span class="w"> </span><span class="o">(</span><span class="n">e&#39;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">G</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">G</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">e&#39;</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">e&#39;</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="o">)</span>
+
+<span class="c">/-</span>
+<span class="cm">We prove that the identity element is unique.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">identity_element_unique</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">e&#39;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">G</span><span class="o">,</span><span class="w"> </span><span class="n">is_identity</span><span class="w"> </span><span class="n">e&#39;</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">e&#39;</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">e&#39;</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">h</span>
+<span class="w">  </span><span class="n">specialize</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="n">e</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="bp">⟨</span><span class="n">h1</span><span class="o">,</span><span class="w"> </span><span class="bp">_⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">h</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h&#39;</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">identity</span><span class="w"> </span><span class="n">e&#39;</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="bp">⟨_</span><span class="o">,</span><span class="w"> </span><span class="n">h2</span><span class="bp">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">h&#39;</span>
+<span class="w">  </span><span class="n">exact</span><span class="w"> </span><span class="n">Eq</span><span class="bp">.</span><span class="n">trans</span><span class="w"> </span><span class="o">(</span><span class="n">Eq</span><span class="bp">.</span><span class="n">symm</span><span class="w"> </span><span class="n">h2</span><span class="o">)</span><span class="w"> </span><span class="n">h1</span>
+<span class="c">/-</span>
+<span class="cm">Note that we used the `identity` axiom.</span>
+<span class="cm">-/</span>
+
+<span class="c">/-</span>
+<span class="cm">Left cancellation. We have to use both `identity` and `inverse` axioms from</span>
+<span class="cm">`Group`.</span>
+<span class="cm">-/</span>
+<span class="kn">theorem</span><span class="w"> </span><span class="n">left_cancellation</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="bp">∀</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">G</span><span class="o">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h1</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">inverse</span><span class="w"> </span><span class="n">a</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="bp">⟨</span><span class="n">ai</span><span class="o">,</span><span class="w"> </span><span class="n">a_inv</span><span class="bp">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">h1</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="bp">⟨_</span><span class="o">,</span><span class="w"> </span><span class="n">h2</span><span class="bp">⟩</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">a_inv</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">y</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">h3</span>
+<span class="w">  </span><span class="k">calc</span>
+<span class="w">    </span><span class="n">x</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="n">e</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">G</span><span class="o">)</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">x</span><span class="w">  </span><span class="o">:=</span><span class="w"> </span><span class="n">Eq</span><span class="bp">.</span><span class="n">symm</span><span class="w"> </span><span class="o">(</span><span class="n">identity</span><span class="w"> </span><span class="n">x</span><span class="o">)</span><span class="bp">.</span><span class="n">right</span>
+<span class="w">    </span><span class="bp">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">ai</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">x</span><span class="w">   </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">h2</span><span class="o">]</span>
+<span class="w">    </span><span class="bp">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">ai</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">x</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">assoc</span><span class="o">]</span>
+<span class="w">    </span><span class="bp">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">ai</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">y</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">h3</span><span class="o">]</span>
+<span class="w">    </span><span class="bp">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">ai</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">y</span><span class="w">   </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="bp">←</span><span class="w"> </span><span class="n">assoc</span><span class="o">]</span>
+<span class="w">    </span><span class="bp">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="n">e</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">G</span><span class="o">)</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">y</span><span class="w">  </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">h2</span><span class="o">]</span>
+<span class="w">    </span><span class="bp">_</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">y</span><span class="w">            </span><span class="o">:=</span><span class="w"> </span><span class="o">(</span><span class="n">identity</span><span class="w"> </span><span class="n">y</span><span class="o">)</span><span class="bp">.</span><span class="n">right</span>
+
+<span class="kn">end</span><span class="w"> </span><span class="n">GroupTheory</span><span class="w"> </span><span class="c">/-</span><span class="cm"> Variables `G`, `a`, `b`, `c` are now not in scope. -/</span>
+
+<span class="c">/-</span>
+<span class="cm">Let us see a mutually recursive definition.</span>
+
+<span class="cm">The game of Nim with two heaps.</span>
+<span class="cm">-/</span>
+<span class="kn">abbrev</span><span class="w"> </span><span class="n">between</span><span class="w"> </span><span class="o">(</span><span class="n">lower</span><span class="w"> </span><span class="n">what</span><span class="w"> </span><span class="n">upper</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">lower</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">what</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="n">what</span><span class="w"> </span><span class="bp">≤</span><span class="w"> </span><span class="n">upper</span>
+
+<span class="kn">mutual</span>
+<span class="w">  </span><span class="kn">def</span><span class="w"> </span><span class="n">Alice</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">Nat</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="kt">Prop</span>
+<span class="w">    </span><span class="bp">|</span><span class="w"> </span><span class="n">n1</span><span class="o">,</span><span class="w"> </span><span class="n">n2</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">      </span><span class="bp">∃</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="n">between</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">n1</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="o">(</span><span class="n">between</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">n1</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">Bob</span><span class="w"> </span><span class="o">(</span><span class="n">n1</span><span class="bp">-</span><span class="n">k</span><span class="o">)</span><span class="w"> </span><span class="n">n2</span><span class="o">))</span>
+<span class="w">         </span><span class="bp">∨</span><span class="w"> </span><span class="o">(</span><span class="n">between</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">n2</span><span class="w"> </span><span class="bp">∧</span><span class="w"> </span><span class="o">(</span><span class="n">between</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">n2</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">Bob</span><span class="w"> </span><span class="n">n1</span><span class="w"> </span><span class="o">(</span><span class="n">n2</span><span class="bp">-</span><span class="n">k</span><span class="o">)))</span>
+
+<span class="w">  </span><span class="kn">def</span><span class="w"> </span><span class="n">Bob</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">Nat</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="kt">Prop</span>
+<span class="w">    </span><span class="bp">|</span><span class="w"> </span><span class="n">n1</span><span class="o">,</span><span class="w"> </span><span class="n">n2</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">      </span><span class="bp">∀</span><span class="w"> </span><span class="n">k</span><span class="o">,</span><span class="w"> </span><span class="o">(</span><span class="n">between</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">n1</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">Alice</span><span class="w"> </span><span class="o">(</span><span class="n">n1</span><span class="bp">-</span><span class="n">k</span><span class="o">)</span><span class="w"> </span><span class="n">n2</span><span class="o">)</span>
+<span class="w">         </span><span class="bp">∧</span><span class="w"> </span><span class="o">(</span><span class="n">between</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="n">n2</span><span class="w"> </span><span class="bp">→</span><span class="w"> </span><span class="n">Alice</span><span class="w"> </span><span class="n">n1</span><span class="w"> </span><span class="o">(</span><span class="n">n2</span><span class="bp">-</span><span class="n">k</span><span class="o">))</span>
+<span class="kn">end</span>
+
+<span class="kn">example</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Bob</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">k</span>
+<span class="w">  </span><span class="n">induction</span><span class="w"> </span><span class="n">k</span>
+<span class="w">  </span><span class="n">case</span><span class="w"> </span><span class="n">zero</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">    </span><span class="n">constructor</span>
+<span class="w">    </span><span class="n">intro</span><span class="w"> </span><span class="bp">;</span><span class="w"> </span><span class="n">contradiction</span>
+<span class="w">    </span><span class="n">intro</span><span class="w"> </span><span class="bp">;</span><span class="w"> </span><span class="n">contradiction</span>
+<span class="w">  </span><span class="n">case</span><span class="w"> </span><span class="n">succ</span><span class="w"> </span><span class="bp">=&gt;</span>
+<span class="w">    </span><span class="n">constructor</span>
+<span class="w">    </span><span class="n">intro</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">;</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">a</span><span class="bp">.</span><span class="n">right</span><span class="w"> </span><span class="bp">;</span><span class="w"> </span><span class="n">contradiction</span>
+<span class="w">    </span><span class="n">intro</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="bp">;</span><span class="w"> </span><span class="k">have</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">a</span><span class="bp">.</span><span class="n">right</span><span class="w"> </span><span class="bp">;</span><span class="w"> </span><span class="n">contradiction</span>
+
+<span class="c">/-</span>
+<span class="cm">We have to convince Lean of termination when a function is defined using just a</span>
+<span class="cm">`def`. Here&#39;s a simple primality checking algorithm that tests all candidate</span>
+<span class="cm">divisors.</span>
+<span class="cm">-/</span>
+<span class="kn">def</span><span class="w"> </span><span class="n">prime&#39;</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Bool</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="n">false</span>
+<span class="w">  </span><span class="k">else</span>
+<span class="w">    </span><span class="bp">@</span><span class="n">go</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">(</span><span class="k">by</span><span class="w"> </span><span class="n">omega</span><span class="o">)</span>
+<span class="kn">where</span>
+<span class="w">  </span><span class="n">go</span><span class="w"> </span><span class="o">(</span><span class="n">d</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">)</span><span class="w"> </span><span class="o">{</span><span class="bp">_</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">≥</span><span class="w"> </span><span class="n">d</span><span class="o">}</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Bool</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="c">/-</span><span class="cm"> `h` needed for `omega` below. -/</span>
+<span class="w">      </span><span class="n">true</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">%</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">then</span>
+<span class="w">      </span><span class="n">false</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">      </span><span class="bp">@</span><span class="n">go</span><span class="w"> </span><span class="o">(</span><span class="n">Nat</span><span class="bp">.</span><span class="n">succ</span><span class="w"> </span><span class="n">d</span><span class="o">)</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">(</span><span class="k">by</span><span class="w"> </span><span class="n">omega</span><span class="o">)</span>
+<span class="w">  </span><span class="n">termination_by</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="n">d</span><span class="o">)</span>
+<span class="c">/-</span>
+<span class="cm">We have to specify that the recursive function `go` terminates because `n-k`</span>
+<span class="cm">decreases in each recursive call. This needs the hypothesis `n &gt; k` at the</span>
+<span class="cm">recursive call site. But the function itself can only assume that `n ≥ k`. We</span>
+<span class="cm">label the test `n ≤ k` by `h` so that the falsification of this proposition can</span>
+<span class="cm">be used by `omega` later to conclude that `n &gt; k`.</span>
+
+<span class="cm">The tactic `omega` can solve simple equalities and inequalities.</span>
+<span class="cm">-/</span>
+<span class="c">/-</span>
+<span class="cm">You can also instruct Lean to not check for totality by prefixing `partial` to</span>
+<span class="cm">`def`.</span>
+<span class="cm">-/</span>
+
+<span class="c">/-</span>
+<span class="cm">Or, we can rewrite the function to test the divisors from largest to</span>
+<span class="cm">smallest. In this case, Lean easily verifies that the function is total.</span>
+<span class="cm">-/</span>
+<span class="kn">def</span><span class="w"> </span><span class="n">prime</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Nat</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Bool</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="n">true</span>
+<span class="w">  </span><span class="k">else</span>
+<span class="w">    </span><span class="n">go</span><span class="w"> </span><span class="o">(</span><span class="n">n</span><span class="bp">-</span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="n">n</span>
+<span class="kn">where</span>
+<span class="w">  </span><span class="n">go</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">then</span>
+<span class="w">      </span><span class="n">true</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="bp">%</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">then</span>
+<span class="w">      </span><span class="n">false</span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">      </span><span class="n">go</span><span class="w"> </span><span class="o">(</span><span class="n">d</span><span class="bp">-</span><span class="mi">1</span><span class="o">)</span><span class="w"> </span><span class="n">n</span>
+<span class="c">/-</span>
+<span class="cm">Now, to Lean, it is obvious that `go` will terminate because `d` decreases in</span>
+<span class="cm">each recursive call.</span>
+<span class="cm">-/</span>
+<span class="bp">#</span><span class="n">eval</span><span class="w"> </span><span class="n">prime</span><span class="w"> </span><span class="mi">57</span>
+<span class="bp">#</span><span class="n">eval</span><span class="w"> </span><span class="n">prime</span><span class="w"> </span><span class="mi">97</span>
+</pre></div>
+<p>For further learning, see:</p>
+
+<ul>
+<li><a href="https://lean-lang.org/functional_programming_in_lean/">Functional Programming in Lean</a></li>
+<li><a href="https://lean-lang.org/theorem_proving_in_lean4/">Theorem Proving in Lean 4</a></li>
+<li><a href="https://lean-lang.org/lean4/doc/">Lean 4 Manual</a></li>
+</ul>
+
+    <hr>
+    <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the GitHub Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/lean4.html.markdown">pull request</a> yourself!
+    </p>
+    <p class="contributed">
+    Originally contributed by Balagopal Komarath, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/lean4.html.markdown">1 contributor</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="https://bkomarath.rbgo.in/">Balagopal Komarath</a>,
+        <a href="https://github.com/Ferinko">Ferinko</a>
+    </p>
+
+    <p>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+    </body>
+</html>
