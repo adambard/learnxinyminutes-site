@@ -3,11 +3,11 @@
 /* Multi-
  line comment */
 
- /* A build tag is a line comment starting with // +build
+ /* A build tag is a line comment starting with //go:build
   and can be executed by go build -tags="foo bar" command.
   Build tags are placed before the package clause near or at the top of the file
   followed by a blank line or other line comments. */
-// +build prod, dev, test
+//go:build prod || dev || test
 
 // A package clause starts every source file.
 // main is a special name declaring an executable rather than a library.
@@ -15,12 +15,13 @@ package main
 
 // Import declaration declares library packages referenced in this file.
 import (
-	"fmt"       // A package in the Go standard library.
-	"io/ioutil" // Implements some I/O utility functions.
-	m "math"    // Math library with local alias m.
-	"net/http"  // Yes, a web server!
-	"os"        // OS functions like working with the file system
-	"strconv"   // String conversions.
+	"fmt"              // A package in the Go standard library.
+	"io"               // Implements some I/O utility functions.
+	m "math"           // Math library with local alias m.
+	"net/http"         // Yes, a web server!
+	_ "net/http/pprof" // Profiling library imported only for side effects
+	"os"               // OS functions like working with the file system
+	"strconv"          // String conversions.
 )
 
 // A function definition. Main is special. It is the entry point for the
@@ -77,13 +78,13 @@ can include line breaks.` // Same string type.
 	n := byte('\n') // byte is an alias for uint8.
 
 	// Arrays have size fixed at compile time.
-	var a4 [4]int           // An array of 4 ints, initialized to all 0.
+	var a4 [4]int                    // An array of 4 ints, initialized to all 0.
 	a5 := [...]int{3, 1, 5, 10, 100} // An array initialized with a fixed size of five
 	// elements, with values 3, 1, 5, 10, and 100.
 
 	// Arrays have value semantics.
-	a4_cpy := a4            // a4_cpy is a copy of a4, two separate instances.
-	a4_cpy[0] = 25          // Only a4_cpy is changed, a4 stays the same.
+	a4_cpy := a4                    // a4_cpy is a copy of a4, two separate instances.
+	a4_cpy[0] = 25                  // Only a4_cpy is changed, a4 stays the same.
 	fmt.Println(a4_cpy[0] == a4[0]) // false
 
 	// Slices have dynamic size. Arrays and slices each have advantages
@@ -94,24 +95,24 @@ can include line breaks.` // Same string type.
 	bs := []byte("a slice") // Type conversion syntax.
 
 	// Slices (as well as maps and channels) have reference semantics.
-	s3_cpy := s3            // Both variables point to the same instance.
-	s3_cpy[0] = 0           // Which means both are updated.
-	fmt.Println(s3_cpy[0] == s3[0]) // true	
+	s3_cpy := s3                    // Both variables point to the same instance.
+	s3_cpy[0] = 0                   // Which means both are updated.
+	fmt.Println(s3_cpy[0] == s3[0]) // true
 
 	// Because they are dynamic, slices can be appended to on-demand.
 	// To append elements to a slice, the built-in append() function is used.
 	// First argument is a slice to which we are appending. Commonly,
 	// the slice variable is updated in place, as in example below.
-	s := []int{1, 2, 3}		// Result is a slice of length 3.
-	s = append(s, 4, 5, 6)	// Added 3 elements. Slice now has length of 6.
-	fmt.Println(s) // Updated slice is now [1 2 3 4 5 6]
+	s := []int{1, 2, 3}    // Result is a slice of length 3.
+	s = append(s, 4, 5, 6) // Added 3 elements. Slice now has length of 6.
+	fmt.Println(s)         // Updated slice is now [1 2 3 4 5 6]
 
 	// To append another slice, instead of list of atomic elements we can
 	// pass a reference to a slice or a slice literal like this, with a
 	// trailing ellipsis, meaning take a slice and unpack its elements,
 	// appending them to slice s.
 	s = append(s, []int{7, 8, 9}...) // Second argument is a slice literal.
-	fmt.Println(s)	// Updated slice is now [1 2 3 4 5 6 7 8 9]
+	fmt.Println(s)                   // Updated slice is now [1 2 3 4 5 6 7 8 9]
 
 	p, q := learnMemory() // Declares p, q to be type pointer to int.
 	fmt.Println(*p, *q)   // * follows a pointer. This prints two ints.
@@ -131,7 +132,7 @@ can include line breaks.` // Same string type.
 	file, _ := os.Create("output.txt")
 	fmt.Fprint(file, "This is how you write to a file, by the way")
 	file.Close()
-	
+
 	// Output of course counts as using a variable.
 	fmt.Println(s, c, a4, s3, d2, m)
 
@@ -150,7 +151,7 @@ func learnNamedReturns(x, y int) (z int) {
 
 // Go is fully garbage collected. It has pointers but no pointer arithmetic.
 // You can make a mistake with a nil pointer, but not by incrementing a pointer.
-// Unlike in C/Cpp taking and returning an address of a local variable is also safe. 
+// Unlike in C/Cpp taking and returning an address of a local variable is also safe.
 func learnMemory() (p, q *int) {
 	// Named return values p and q have type pointer to int.
 	p = new(int) // Built-in function new allocates memory.
@@ -161,7 +162,7 @@ func learnMemory() (p, q *int) {
 	return &s[3], &r     // & takes the address of an object.
 }
 
-// Use the aliased math library (see imports, above) 
+// Use the aliased math library (see imports, above)
 func expensiveComputation() float64 {
 	return m.Exp(10)
 }
@@ -185,8 +186,8 @@ func learnFlowControl() {
 	case 42:
 		// Cases don't "fall through".
 		/*
-		There is a `fallthrough` keyword however, see:
-		  https://github.com/golang/go/wiki/Switch#fall-through
+			There is a `fallthrough` keyword however, see:
+			https://github.com/golang/go/wiki/Switch#fall-through
 		*/
 	case 43:
 		// Unreached.
@@ -326,7 +327,7 @@ func learnInterfaces() {
 }
 
 // Functions can have variadic parameters.
-func learnVariadicParams(myStrings ...interface{}) {
+func learnVariadicParams(myStrings ...any) { // any is an alias for interface{}
 	// Iterate each value of the variadic.
 	// The underscore here is ignoring the index argument of the array.
 	for _, param := range myStrings {
@@ -399,7 +400,6 @@ func learnConcurrency() {
 
 // A single function from package http starts a web server.
 func learnWebProgramming() {
-
 	// First parameter of ListenAndServe is TCP address to listen to.
 	// Second parameter is an interface, specifically http.Handler.
 	go func() {
@@ -420,7 +420,7 @@ func requestServer() {
 	resp, err := http.Get("http://localhost:8080")
 	fmt.Println(err)
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	fmt.Printf("\nWebserver said: `%s`", string(body))
 }
 

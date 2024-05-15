@@ -102,11 +102,11 @@ in large codebases (~100 million loc at Google, Inc.).</p>
 <span class="cm">/* Multi-</span>
 <span class="cm"> line comment */</span>
 
-<span class="w"> </span><span class="cm">/* A build tag is a line comment starting with // +build</span>
+<span class="w"> </span><span class="cm">/* A build tag is a line comment starting with //go:build</span>
 <span class="cm">  and can be executed by go build -tags=&quot;foo bar&quot; command.</span>
 <span class="cm">  Build tags are placed before the package clause near or at the top of the file</span>
 <span class="cm">  followed by a blank line or other line comments. */</span>
-<span class="c1">// +build prod, dev, test</span>
+<span class="c1">//go:build prod || dev || test</span>
 
 <span class="c1">// A package clause starts every source file.</span>
 <span class="c1">// main is a special name declaring an executable rather than a library.</span>
@@ -114,12 +114,13 @@ in large codebases (~100 million loc at Google, Inc.).</p>
 
 <span class="c1">// Import declaration declares library packages referenced in this file.</span>
 <span class="kn">import</span><span class="w"> </span><span class="p">(</span>
-<span class="w">    </span><span class="s">&quot;fmt&quot;</span><span class="w">       </span><span class="c1">// A package in the Go standard library.</span>
-<span class="w">    </span><span class="s">&quot;io/ioutil&quot;</span><span class="w"> </span><span class="c1">// Implements some I/O utility functions.</span>
-<span class="w">    </span><span class="nx">m</span><span class="w"> </span><span class="s">&quot;math&quot;</span><span class="w">    </span><span class="c1">// Math library with local alias m.</span>
-<span class="w">    </span><span class="s">&quot;net/http&quot;</span><span class="w">  </span><span class="c1">// Yes, a web server!</span>
-<span class="w">    </span><span class="s">&quot;os&quot;</span><span class="w">        </span><span class="c1">// OS functions like working with the file system</span>
-<span class="w">    </span><span class="s">&quot;strconv&quot;</span><span class="w">   </span><span class="c1">// String conversions.</span>
+<span class="w">    </span><span class="s">&quot;fmt&quot;</span><span class="w">              </span><span class="c1">// A package in the Go standard library.</span>
+<span class="w">    </span><span class="s">&quot;io&quot;</span><span class="w">               </span><span class="c1">// Implements some I/O utility functions.</span>
+<span class="w">    </span><span class="nx">m</span><span class="w"> </span><span class="s">&quot;math&quot;</span><span class="w">           </span><span class="c1">// Math library with local alias m.</span>
+<span class="w">    </span><span class="s">&quot;net/http&quot;</span><span class="w">         </span><span class="c1">// Yes, a web server!</span>
+<span class="w">    </span><span class="nx">_</span><span class="w"> </span><span class="s">&quot;net/http/pprof&quot;</span><span class="w"> </span><span class="c1">// Profiling library imported only for side effects</span>
+<span class="w">    </span><span class="s">&quot;os&quot;</span><span class="w">               </span><span class="c1">// OS functions like working with the file system</span>
+<span class="w">    </span><span class="s">&quot;strconv&quot;</span><span class="w">          </span><span class="c1">// String conversions.</span>
 <span class="p">)</span>
 
 <span class="c1">// A function definition. Main is special. It is the entry point for the</span>
@@ -176,13 +177,13 @@ in large codebases (~100 million loc at Google, Inc.).</p>
 <span class="w">    </span><span class="nx">n</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">byte</span><span class="p">(</span><span class="sc">&#39;\n&#39;</span><span class="p">)</span><span class="w"> </span><span class="c1">// byte is an alias for uint8.</span>
 
 <span class="w">    </span><span class="c1">// Arrays have size fixed at compile time.</span>
-<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">a4</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="kt">int</span><span class="w">           </span><span class="c1">// An array of 4 ints, initialized to all 0.</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nx">a4</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="kt">int</span><span class="w">                    </span><span class="c1">// An array of 4 ints, initialized to all 0.</span>
 <span class="w">    </span><span class="nx">a5</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">[</span><span class="o">...</span><span class="p">]</span><span class="kt">int</span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">}</span><span class="w"> </span><span class="c1">// An array initialized with a fixed size of five</span>
 <span class="w">    </span><span class="c1">// elements, with values 3, 1, 5, 10, and 100.</span>
 
 <span class="w">    </span><span class="c1">// Arrays have value semantics.</span>
-<span class="w">    </span><span class="nx">a4_cpy</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">a4</span><span class="w">            </span><span class="c1">// a4_cpy is a copy of a4, two separate instances.</span>
-<span class="w">    </span><span class="nx">a4_cpy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">25</span><span class="w">          </span><span class="c1">// Only a4_cpy is changed, a4 stays the same.</span>
+<span class="w">    </span><span class="nx">a4_cpy</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">a4</span><span class="w">                    </span><span class="c1">// a4_cpy is a copy of a4, two separate instances.</span>
+<span class="w">    </span><span class="nx">a4_cpy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">25</span><span class="w">                  </span><span class="c1">// Only a4_cpy is changed, a4 stays the same.</span>
 <span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">a4_cpy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">a4</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="w"> </span><span class="c1">// false</span>
 
 <span class="w">    </span><span class="c1">// Slices have dynamic size. Arrays and slices each have advantages</span>
@@ -193,24 +194,24 @@ in large codebases (~100 million loc at Google, Inc.).</p>
 <span class="w">    </span><span class="nx">bs</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">[]</span><span class="nb">byte</span><span class="p">(</span><span class="s">&quot;a slice&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// Type conversion syntax.</span>
 
 <span class="w">    </span><span class="c1">// Slices (as well as maps and channels) have reference semantics.</span>
-<span class="w">    </span><span class="nx">s3_cpy</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">s3</span><span class="w">            </span><span class="c1">// Both variables point to the same instance.</span>
-<span class="w">    </span><span class="nx">s3_cpy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">           </span><span class="c1">// Which means both are updated.</span>
-<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">s3_cpy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">s3</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="w"> </span><span class="c1">// true </span>
+<span class="w">    </span><span class="nx">s3_cpy</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">s3</span><span class="w">                    </span><span class="c1">// Both variables point to the same instance.</span>
+<span class="w">    </span><span class="nx">s3_cpy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">0</span><span class="w">                   </span><span class="c1">// Which means both are updated.</span>
+<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">s3_cpy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nx">s3</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="w"> </span><span class="c1">// true</span>
 
 <span class="w">    </span><span class="c1">// Because they are dynamic, slices can be appended to on-demand.</span>
 <span class="w">    </span><span class="c1">// To append elements to a slice, the built-in append() function is used.</span>
 <span class="w">    </span><span class="c1">// First argument is a slice to which we are appending. Commonly,</span>
 <span class="w">    </span><span class="c1">// the slice variable is updated in place, as in example below.</span>
-<span class="w">    </span><span class="nx">s</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w">     </span><span class="c1">// Result is a slice of length 3.</span>
-<span class="w">    </span><span class="nx">s</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">s</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">)</span><span class="w">  </span><span class="c1">// Added 3 elements. Slice now has length of 6.</span>
-<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span><span class="w"> </span><span class="c1">// Updated slice is now [1 2 3 4 5 6]</span>
+<span class="w">    </span><span class="nx">s</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span><span class="w">    </span><span class="c1">// Result is a slice of length 3.</span>
+<span class="w">    </span><span class="nx">s</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">s</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">)</span><span class="w"> </span><span class="c1">// Added 3 elements. Slice now has length of 6.</span>
+<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span><span class="w">         </span><span class="c1">// Updated slice is now [1 2 3 4 5 6]</span>
 
 <span class="w">    </span><span class="c1">// To append another slice, instead of list of atomic elements we can</span>
 <span class="w">    </span><span class="c1">// pass a reference to a slice or a slice literal like this, with a</span>
 <span class="w">    </span><span class="c1">// trailing ellipsis, meaning take a slice and unpack its elements,</span>
 <span class="w">    </span><span class="c1">// appending them to slice s.</span>
 <span class="w">    </span><span class="nx">s</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">append</span><span class="p">(</span><span class="nx">s</span><span class="p">,</span><span class="w"> </span><span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">}</span><span class="o">...</span><span class="p">)</span><span class="w"> </span><span class="c1">// Second argument is a slice literal.</span>
-<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span><span class="w">  </span><span class="c1">// Updated slice is now [1 2 3 4 5 6 7 8 9]</span>
+<span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span><span class="w">                   </span><span class="c1">// Updated slice is now [1 2 3 4 5 6 7 8 9]</span>
 
 <span class="w">    </span><span class="nx">p</span><span class="p">,</span><span class="w"> </span><span class="nx">q</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">learnMemory</span><span class="p">()</span><span class="w"> </span><span class="c1">// Declares p, q to be type pointer to int.</span>
 <span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="o">*</span><span class="nx">p</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="nx">q</span><span class="p">)</span><span class="w">   </span><span class="c1">// * follows a pointer. This prints two ints.</span>
@@ -249,7 +250,7 @@ in large codebases (~100 million loc at Google, Inc.).</p>
 
 <span class="c1">// Go is fully garbage collected. It has pointers but no pointer arithmetic.</span>
 <span class="c1">// You can make a mistake with a nil pointer, but not by incrementing a pointer.</span>
-<span class="c1">// Unlike in C/Cpp taking and returning an address of a local variable is also safe. </span>
+<span class="c1">// Unlike in C/Cpp taking and returning an address of a local variable is also safe.</span>
 <span class="kd">func</span><span class="w"> </span><span class="nx">learnMemory</span><span class="p">()</span><span class="w"> </span><span class="p">(</span><span class="nx">p</span><span class="p">,</span><span class="w"> </span><span class="nx">q</span><span class="w"> </span><span class="o">*</span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="c1">// Named return values p and q have type pointer to int.</span>
 <span class="w">    </span><span class="nx">p</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">new</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="c1">// Built-in function new allocates memory.</span>
@@ -260,7 +261,7 @@ in large codebases (~100 million loc at Google, Inc.).</p>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">s</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">r</span><span class="w">     </span><span class="c1">// &amp; takes the address of an object.</span>
 <span class="p">}</span>
 
-<span class="c1">// Use the aliased math library (see imports, above) </span>
+<span class="c1">// Use the aliased math library (see imports, above)</span>
 <span class="kd">func</span><span class="w"> </span><span class="nx">expensiveComputation</span><span class="p">()</span><span class="w"> </span><span class="kt">float64</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">m</span><span class="p">.</span><span class="nx">Exp</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="p">}</span>
@@ -284,8 +285,8 @@ in large codebases (~100 million loc at Google, Inc.).</p>
 <span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="mi">42</span><span class="p">:</span>
 <span class="w">        </span><span class="c1">// Cases don&#39;t &quot;fall through&quot;.</span>
 <span class="w">        </span><span class="cm">/*</span>
-<span class="cm">        There is a `fallthrough` keyword however, see:</span>
-<span class="cm">          https://github.com/golang/go/wiki/Switch#fall-through</span>
+<span class="cm">            There is a `fallthrough` keyword however, see:</span>
+<span class="cm">            https://github.com/golang/go/wiki/Switch#fall-through</span>
 <span class="cm">        */</span>
 <span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="mi">43</span><span class="p">:</span>
 <span class="w">        </span><span class="c1">// Unreached.</span>
@@ -425,7 +426,7 @@ in large codebases (~100 million loc at Google, Inc.).</p>
 <span class="p">}</span>
 
 <span class="c1">// Functions can have variadic parameters.</span>
-<span class="kd">func</span><span class="w"> </span><span class="nx">learnVariadicParams</span><span class="p">(</span><span class="nx">myStrings</span><span class="w"> </span><span class="o">...</span><span class="kd">interface</span><span class="p">{})</span><span class="w"> </span><span class="p">{</span>
+<span class="kd">func</span><span class="w"> </span><span class="nx">learnVariadicParams</span><span class="p">(</span><span class="nx">myStrings</span><span class="w"> </span><span class="o">...</span><span class="kt">any</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// any is an alias for interface{}</span>
 <span class="w">    </span><span class="c1">// Iterate each value of the variadic.</span>
 <span class="w">    </span><span class="c1">// The underscore here is ignoring the index argument of the array.</span>
 <span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="nx">_</span><span class="p">,</span><span class="w"> </span><span class="nx">param</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">range</span><span class="w"> </span><span class="nx">myStrings</span><span class="w"> </span><span class="p">{</span>
@@ -498,7 +499,6 @@ in large codebases (~100 million loc at Google, Inc.).</p>
 
 <span class="c1">// A single function from package http starts a web server.</span>
 <span class="kd">func</span><span class="w"> </span><span class="nx">learnWebProgramming</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-
 <span class="w">    </span><span class="c1">// First parameter of ListenAndServe is TCP address to listen to.</span>
 <span class="w">    </span><span class="c1">// Second parameter is an interface, specifically http.Handler.</span>
 <span class="w">    </span><span class="k">go</span><span class="w"> </span><span class="kd">func</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
@@ -519,26 +519,29 @@ in large codebases (~100 million loc at Google, Inc.).</p>
 <span class="w">    </span><span class="nx">resp</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">http</span><span class="p">.</span><span class="nx">Get</span><span class="p">(</span><span class="s">&quot;http://localhost:8080&quot;</span><span class="p">)</span>
 <span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Println</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
 <span class="w">    </span><span class="k">defer</span><span class="w"> </span><span class="nx">resp</span><span class="p">.</span><span class="nx">Body</span><span class="p">.</span><span class="nx">Close</span><span class="p">()</span>
-<span class="w">    </span><span class="nx">body</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">ioutil</span><span class="p">.</span><span class="nx">ReadAll</span><span class="p">(</span><span class="nx">resp</span><span class="p">.</span><span class="nx">Body</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">body</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">io</span><span class="p">.</span><span class="nx">ReadAll</span><span class="p">(</span><span class="nx">resp</span><span class="p">.</span><span class="nx">Body</span><span class="p">)</span>
 <span class="w">    </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Printf</span><span class="p">(</span><span class="s">&quot;\nWebserver said: `%s`&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">string</span><span class="p">(</span><span class="nx">body</span><span class="p">))</span>
 <span class="p">}</span>
 </pre></div>
 <h2>Further Reading</h2>
 
 <p>The root of all things Go is the <a href="https://go.dev/">official Go web site</a>.
-There you can follow the tutorial, play interactively, and read lots.
+There you can follow the <a href="https://go.dev/tour/">tutorial</a>, play interactively, and read lots.
 Aside from a tour, <a href="https://go.dev/doc/">the docs</a> contain information on
 how to write clean and effective Go code, package and command docs, and release history.</p>
 
 <p>The <a href="https://go.dev/ref/spec">Go language specification</a> itself is highly recommended. It&rsquo;s easy to read
 and amazingly short (as language definitions go these days.)</p>
 
-<p>You can play around with the code on <a href="https://go.dev/play/p/tnWMjr16Mm">Go playground</a>. Try to change it and run it from your browser! Note that you can use <a href="https://go.dev/play/">https://go.dev/play/</a> as a <a href="https://en.wikipedia.org/wiki/Read-eval-print_loop">REPL</a> to test things and code in your browser, without even installing Go.</p>
+<p>You can play around with the code on <a href="https://go.dev/play/p/Y96bRpJWzjr">Go playground</a>.
+Try to change it and run it from your browser!
+Note that you can use <a href="https://go.dev/play/">https://go.dev/play/</a>
+as a <a href="https://en.wikipedia.org/wiki/Read-eval-print_loop">REPL</a> to test things and code in your browser, without even installing Go.</p>
 
 <p>On the reading list for students of Go is the <a href="https://go.dev/src/">source code to the standard
 library</a>. Comprehensively documented, it
 demonstrates the best of readable and understandable Go, Go style, and Go
-idioms. Or you can click on a function name in <a href="https://go.dev/pkg/">the
+idioms. Or you can click on a function name in <a href="https://pkg.go.dev/std">the
 documentation</a> and the source code comes up!</p>
 
 <p>Another great resource to learn Go is <a href="https://gobyexample.com/">Go by example</a>.</p>
@@ -551,13 +554,15 @@ documentation</a> and the source code comes up!</p>
 <li><a href="https://www.youtube.com/playlist?list=PLEcwzBXTPUE8KvXRFmmfPEUmKoy9LfmAf">Golang University 301</a> dives into more advanced topics like the Go scheduler, implementation of maps and channels, and optimisation techniques</li>
 </ul>
 
-<p>Go Mobile adds support for mobile platforms (Android and iOS). You can write all-Go native mobile apps or write a library that contains bindings from a Go package, which can be invoked via Java (Android) and Objective-C (iOS). Check out the <a href="https://github.com/golang/go/wiki/Mobile">Go Mobile page</a> for more information.</p>
+<p>Go Mobile adds support for mobile platforms (Android and iOS).
+You can write all-Go native mobile apps or write a library that contains bindings from a Go package,
+which can be invoked via Java (Android) and Objective-C (iOS). Check out the <a href="https://github.com/golang/go/wiki/Mobile">Go Mobile page</a> for more information.</p>
 
     <hr>
     <p>Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the GitHub Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/go.html.markdown">pull request</a> yourself!
     </p>
     <p class="contributed">
-    Originally contributed by Sonia Keys, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/go.html.markdown">52 contributors</a>.
+    Originally contributed by Sonia Keys, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/go.html.markdown">50 contributors</a>.
     </p>
 
     <footer>
