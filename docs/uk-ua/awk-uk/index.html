@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="uk-ua" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="uk-ua" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="uk-ua" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="uk-ua" class="no-js"> <!--<![endif]-->
+    <head>
+      <!-- Google tag (gtag.js) -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-WXC8R75DEN');
+      </script>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta http-equiv="Content-Language" content="uk-ua">
+        <!-- Use title if it's in the page YAML frontmatter -->
+        <title>Learn X in Y Minutes: Scenic Programming Language Tours</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+
+        <link rel="stylesheet" href="/css/index.css">
+
+        <link rel="canonical" href="https://learnxinyminutes.com/docs/uk-ua/awk-uk/">
+        <script>
+            var THEME_KEY = "lxiym_theme";
+            function set_theme(theme) {
+                var el = document.getElementsByTagName("html")[0];
+                if (!el) {
+                  return;
+                }
+                el.className = theme === "dark" ? "dark" : "light";
+                localStorage.setItem(THEME_KEY, theme);
+            }
+
+            function load_theme() {
+              var theme = localStorage.getItem(THEME_KEY);
+              if (!theme) {
+                theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+              }
+              set_theme(theme)
+            }
+
+            // Attempt immediate application of html style
+            load_theme();
+
+            // Backup: do it onload. Will flash, but better than nothing.
+            window.onload = function(){
+              load_theme();
+            };
+
+            // Listen for system preference change
+            window
+              .matchMedia("(prefers-color-scheme: dark)")
+              .addEventListener("change", ({matches:isDark}) => {
+                set_theme(isDark ? "dark" : "light")
+              })
+        </script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <div class="container">
+            <div class="share">
+    <span class="sharemsg">
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fdocs%2Fuk-ua%2Fawk-uk%2F&text=%D0%92%D0%B8%D0%B2%D1%87%D1%96%D1%82%D1%8C+X+%D0%B7%D0%B0+Y+%D1%85%D0%B2%D0%B8%D0%BB%D0%B8%D0%BD%2C+%D0%B4%D0%B5+X%3Dawk">
+        Поділитися сторінкою
+      </a></span>
+
+      <span class='st_facebook_large' displayText='Facebook'></span>
+      <span class='st_twitter_large' displayText='Tweet'></span>
+  </div>
+  <div class="theme-choice">
+    <label id="theme-label">Виберіть тему:</label>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('light');">світла</button>
+    <button type="button" aria-labelledby="theme-label" onclick="set_theme('dark');">темна</button>
+  </div>
+  <h1><a href="/">Вивчіть X за Y хвилин</a></h1>
+  <h2>Де X=awk</h2>
+    <p class="filelink">
+    Отримати вихідний код:
+    <a href="/docs/files/learnawk-ua.awk">learnawk-ua.awk</a>
+    </p>
+  <div id="doc">
+    <p>AWK є стандартним інструментом у кожній POSIX-сумісній системі UNIX.
+Він схожий на flex/lex із командного рядка й чудово підходить для завдань
+обробки тексту та інших скриптових задач. Він має подібний до C синтаксис,
+але без обов’язкових крапок з комою (хоча їх все одно потрібно використовувати,
+якщо ви пишете однорядковий код, для якого AWK відмінно підходить),
+у ньому немає ручного керування пам’яттю та статичної типізації.
+Він відмінно обробляє текст. Ви можете викликати його зі сценарію оболонки або
+використовувати як окрему мову сценаріїв.</p>
+
+<p>Навіщо використовувати AWK замість Perl? Це читабельність коду.
+Адже AWK легше читати, ніж Perl. Для простих сценаріїв обробки тексту,
+особливо тих, які читають файли рядок за рядком і розбивають їх
+за роздільниками, AWK є чи не найкращим інструментом.</p>
+<div class="highlight"><pre><span></span><span class="c1">#!/usr/bin/awk -f</span>
+
+<span class="c1"># Коментарі у AWK схожі на цей коментар.</span>
+
+<span class="c1"># Програми AWK складаються з набору шаблонів і дій.</span>
+<span class="nx">pattern1</span> <span class="p">{</span> <span class="nx">action</span><span class="p">;</span> <span class="p">}</span> <span class="c1"># зовсім як lex</span>
+<span class="nx">pattern2</span> <span class="p">{</span> <span class="nx">action</span><span class="p">;</span> <span class="p">}</span>
+
+<span class="c1"># Скрипт виконує неявний цикл, у якому AWK автоматично читає та аналізує кожен</span>
+<span class="c1"># запис із кожного наданого йому файла. Кожен такий запис розділяється на поля</span>
+<span class="c1"># роздільником FS, який за замовчуванням має значення пробіл (кілька пробілів</span>
+<span class="c1"># або символів табуляції вважаються одним роздільником).</span>
+<span class="c1"># Можна встановити значення FS в командному рядку (-FC) або у шаблоні BEGIN.</span>
+
+<span class="c1"># Одним із спеціальних шаблонів є шаблон BEGIN. Цей шаблон є дійсним</span>
+<span class="c1"># ДО прочитання будь-якого з вхідних файлів.</span>
+<span class="c1"># Ще один спеціальний шаблон END є дійсним після кінця останнього з вказаних</span>
+<span class="c1"># вхідних файлів, або після стандартного введення, якщо вхідні файли не вказано.</span>
+<span class="c1"># Також використовується роздільник між полями виводу (OFS), значення якого</span>
+<span class="c1"># ви також можете призначити, і для якого за замовчуванням встановлено</span>
+<span class="c1"># значення один пробіл.</span>
+
+
+<span class="nb">BEGIN</span> <span class="p">{</span>
+
+    <span class="c1"># BEGIN запускатиметься на початку програми. Тут розміщують весь код</span>
+    <span class="c1"># попереднього налаштування перед обробкою будь-яких текстових файлів.</span>
+    <span class="c1"># Якщо ваш скрипт не читає текстові файли, розглядайте BEGIN як</span>
+    <span class="c1"># головну точку входу.</span>
+
+    <span class="c1"># Змінні є глобальними. Просто встановіть їх і використовуйте.</span>
+    <span class="c1"># Оголошувати змінні не потрібно.</span>
+    <span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="c1"># Оператори є такими ж як у мові C та схожих на неї мовах програмування.</span>
+    <span class="nx">a</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">b</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">c</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">*</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">d</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">/</span> <span class="mi">1</span><span class="p">;</span> <span class="c1"># цілочислене ділення</span>
+    <span class="nx">e</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">%</span> <span class="mi">1</span><span class="p">;</span> <span class="c1"># модуль</span>
+    <span class="nx">f</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">^</span> <span class="mi">1</span><span class="p">;</span> <span class="c1"># піднесення до степеня</span>
+
+    <span class="nx">a</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">b</span> <span class="o">-=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">c</span> <span class="o">*=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">d</span> <span class="o">/=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">e</span> <span class="o">%=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">f</span> <span class="o">^=</span> <span class="mi">1</span><span class="p">;</span>
+
+    <span class="c1"># Постфіксний оператор збільшення та зменшення на одиницю</span>
+    <span class="nx">a</span><span class="o">++</span><span class="p">;</span>
+    <span class="nx">b</span><span class="o">--</span><span class="p">;</span>
+
+    <span class="c1"># Префіксний оператор, який повертає збільшене на одиницю значення</span>
+    <span class="o">++</span><span class="nx">a</span><span class="p">;</span>
+    <span class="o">--</span><span class="nx">b</span><span class="p">;</span>
+
+    <span class="c1"># Зверніть також увагу, що в кінці рядка не обов&#39;язково вказувати</span>
+    <span class="c1"># розділовий знак крапка з комою.</span>
+
+    <span class="c1"># Оператор галудження</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;Starting with count of 0&quot;</span><span class="p">;</span>
+    <span class="k">else</span>
+        <span class="kr">print</span> <span class="s2">&quot;Huh?&quot;</span><span class="p">;</span>
+
+    <span class="c1"># Можна використовувати тернарний оператор</span>
+    <span class="kr">print</span> <span class="p">(</span><span class="nx">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">?</span> <span class="s2">&quot;Starting with count of 0&quot;</span> <span class="o">:</span> <span class="s2">&quot;Huh?&quot;</span><span class="p">;</span>
+
+    <span class="c1"># Для блоків, що складаються з кількох рядків, використовують дужки</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nx">a</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kr">print</span> <span class="s2">&quot;String concatenation is done&quot;</span> <span class="s2">&quot; with a series&quot;</span> <span class="s2">&quot; of&quot;</span>
+            <span class="s2">&quot; space-separated strings&quot;</span><span class="p">;</span>
+        <span class="kr">print</span> <span class="nx">a</span><span class="p">;</span>
+
+        <span class="nx">a</span><span class="o">++</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;Good ol&#39; for loop&quot;</span><span class="p">;</span>
+
+    <span class="c1"># Порівняння є стандартними:</span>
+    <span class="c1"># a &lt; b  # менше ніж</span>
+    <span class="c1"># a &lt;= b # менше або дорівнює</span>
+    <span class="c1"># a != b # не дорівнює</span>
+    <span class="c1"># a == b # дорівнює</span>
+    <span class="c1"># a &gt; b  # більше ніж</span>
+    <span class="c1"># a &gt;= b # більше або дорівнює</span>
+
+    <span class="c1"># Логічні оператори також стандартні:</span>
+    <span class="c1"># a &amp;&amp; b # AND - І</span>
+    <span class="c1"># a || b # OR  - АБО</span>
+
+    <span class="c1"># Крім того, є перевірка на збіг із регулярним виразом:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;foo&quot;</span> <span class="o">~</span> <span class="s2">&quot;^fo+$&quot;</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;Fooey!&quot;</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;boo&quot;</span> <span class="o">!~</span> <span class="s2">&quot;^fo+$&quot;</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;Boo!&quot;</span><span class="p">;</span>
+
+    <span class="c1"># Масиви:</span>
+    <span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;foo&quot;</span><span class="p">;</span>
+    <span class="nx">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span><span class="p">;</span>
+
+    <span class="c1"># Також можна ініціалізувати масив за допомогою вбудованої функції split():</span>
+    <span class="nx">n</span> <span class="o">=</span> <span class="kr">split</span><span class="p">(</span><span class="s2">&quot;foo:bar:baz&quot;</span><span class="p">,</span> <span class="nx">arr</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">);</span>
+
+    <span class="c1"># Підтримуються асоціативні масиви (насправді, всі масиви асоціативні):</span>
+    <span class="nx">assoc</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span><span class="p">;</span>
+    <span class="nx">assoc</span><span class="p">[</span><span class="s2">&quot;bar&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;baz&quot;</span><span class="p">;</span>
+
+    <span class="c1"># Та багатовимірні масиви (з деякими обмеженнями, які описуються далі):</span>
+    <span class="nx">multidim</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;foo&quot;</span><span class="p">;</span>
+    <span class="nx">multidim</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span><span class="p">;</span>
+    <span class="nx">multidim</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;baz&quot;</span><span class="p">;</span>
+    <span class="nx">multidim</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;boo&quot;</span><span class="p">;</span>
+
+    <span class="c1"># Можна перевірити членство в масиві:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;foo&quot;</span> <span class="o">in</span> <span class="nx">assoc</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;Fooey!&quot;</span><span class="p">;</span>
+
+    <span class="c1"># Оператор &#39;in&#39; також можна використовувати для обходу ключів масиву:</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">key</span> <span class="o">in</span> <span class="nx">assoc</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="nx">assoc</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+
+    <span class="c1"># Командний рядок знаходиться у спеціальному масиві з ім&#39;ям ARGV</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">argnum</span> <span class="o">in</span> <span class="nb">ARGV</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="nb">ARGV</span><span class="p">[</span><span class="nx">argnum</span><span class="p">];</span>
+
+    <span class="c1"># Можна видаляти елементи масиву. Це особливо корисно для того, щоб AWK</span>
+    <span class="c1"># не розглядав аргументи як імена файлів для обробки</span>
+    <span class="kr">delete</span> <span class="nb">ARGV</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+
+    <span class="c1"># Кількість аргументів командного рядка міститься у змінній з іменем ARGC</span>
+    <span class="kr">print</span> <span class="nb">ARGC</span><span class="p">;</span>
+
+    <span class="c1"># AWK має багато вбудованих функцій. Вони діляться на три категорії, які</span>
+    <span class="c1"># буде розглянуто далі.</span>
+
+    <span class="nx">return_value</span> <span class="o">=</span> <span class="nx">arithmetic_functions</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">);</span>
+    <span class="nx">string_functions</span><span class="p">();</span>
+    <span class="nx">io_functions</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="c1"># Функції декларуються так:</span>
+<span class="kd">function</span> <span class="nx">arithmetic_functions</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span>     <span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1"># Однією з дратівливих особливостей AWK є те, що в цій мові немає</span>
+    <span class="c1"># локальних змінних. Усе є глобальним.</span>
+    <span class="c1"># Для коротких сценаріїв це добре, навіть корисно, але для довших</span>
+    <span class="c1"># сценаріїв це може бути проблемою.</span>
+
+    <span class="c1"># Проте, є обхідний шлях (huk). Вказані у функції аргументи є локальними</span>
+    <span class="c1"># у функції. Крім того, AWK дозволяє вказувати більше аргументів функції,</span>
+    <span class="c1"># ніж потрібно. Тому, просто вставте локальну змінну в оголошення</span>
+    <span class="c1"># функції, як це зроблено вище. Можна додати також додаткові пробіли,</span>
+    <span class="c1"># щоб відрізнити фактичні параметри функції від створених у такий спосіб</span>
+    <span class="c1"># локальних змінних.</span>
+    <span class="c1"># У наведеному вище прикладі, змінні a, b, c є фактичними параметрами,</span>
+    <span class="c1"># тоді як d є лише локальною змінною.</span>
+
+    <span class="c1"># Тепер, розглянемо математичні функції</span>
+
+    <span class="c1"># Більшість реалізацій AWK підтримують стандартні тригонометричні функції:</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="kr">sin</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="kr">cos</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="kr">atan2</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">);</span> <span class="c1"># арктангенс b / a</span>
+
+    <span class="c1"># та логаритмічні обчислення:</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="kr">exp</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="kr">log</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
+
+    <span class="c1"># квадратний корінь:</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="kr">sqrt</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
+
+    <span class="c1"># округлення до цілого числа:</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="kr">int</span><span class="p">(</span><span class="mf">5.34</span><span class="p">);</span> <span class="c1"># localvar =&gt; 5</span>
+
+    <span class="c1"># випадкові числа:</span>
+    <span class="kr">srand</span><span class="p">();</span> <span class="c1"># встановити т.зв. &quot;сіль&quot; (без аргумента використовується час)</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="kr">rand</span><span class="p">();</span> <span class="c1"># випадкове число від 0 до 1.</span>
+
+    <span class="c1"># Повернути значення можна так:</span>
+    <span class="k">return</span> <span class="nx">localvar</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1"># Функції для обробки рядків тексту</span>
+<span class="kd">function</span> <span class="nx">string_functions</span><span class="p">(</span>    <span class="nx">localvar</span><span class="p">,</span> <span class="nx">arr</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1"># AWK, як мова обробки тексту, підтримує функції для обробки рядків.</span>
+    <span class="c1"># У багатьох з цих функцій використовуються регулярні вирази.</span>
+
+    <span class="c1"># Пошук і заміна, першої (sub) або всіх відповідностей (gsub).</span>
+    <span class="c1"># Обидві вони повертають кількість замінених відповідностей.</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="s2">&quot;fooooobar&quot;</span><span class="p">;</span>
+    <span class="kr">sub</span><span class="p">(</span><span class="s2">&quot;fo+&quot;</span><span class="p">,</span> <span class="s2">&quot;Meet me at the &quot;</span><span class="p">,</span> <span class="nx">localvar</span><span class="p">);</span> <span class="c1"># localvar =&gt; &quot;Meet me at the bar&quot;</span>
+    <span class="kr">gsub</span><span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="nx">localvar</span><span class="p">);</span> <span class="c1"># localvar =&gt; &quot;m..t m. at th. bar&quot;</span>
+
+    <span class="c1"># Пошук підрядка, який збігається з регулярним виразом:</span>
+    <span class="c1"># index() робить те ж саме, але не використовує регулярний вираз.</span>
+    <span class="kr">match</span><span class="p">(</span><span class="nx">localvar</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">);</span> <span class="c1"># =&gt; 4, оскільки &#39;t&#39; є четвертим символом</span>
+
+    <span class="c1"># Розбити рядок за роздільником</span>
+    <span class="nx">n</span> <span class="o">=</span> <span class="kr">split</span><span class="p">(</span><span class="s2">&quot;foo-bar-baz&quot;</span><span class="p">,</span> <span class="nx">arr</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">);</span> <span class="c1"># a[1] = &quot;foo&quot;; a[2] = &quot;bar&quot;; a[3] = &quot;baz&quot;; n = 3</span>
+
+    <span class="c1"># Інші корисні речі</span>
+    <span class="kr">sprintf</span><span class="p">(</span><span class="s2">&quot;%s %d %d %d&quot;</span><span class="p">,</span> <span class="s2">&quot;Testing&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span> <span class="c1"># =&gt; &quot;Testing 1 2 3&quot;</span>
+    <span class="kr">substr</span><span class="p">(</span><span class="s2">&quot;foobar&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span> <span class="c1"># =&gt; &quot;oob&quot;</span>
+    <span class="kr">substr</span><span class="p">(</span><span class="s2">&quot;foobar&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span> <span class="c1"># =&gt; &quot;bar&quot;</span>
+    <span class="kr">length</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">);</span> <span class="c1"># =&gt; 3</span>
+    <span class="kr">tolower</span><span class="p">(</span><span class="s2">&quot;FOO&quot;</span><span class="p">);</span> <span class="c1"># =&gt; &quot;foo&quot;</span>
+    <span class="kr">toupper</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">);</span> <span class="c1"># =&gt; &quot;FOO&quot;</span>
+<span class="p">}</span>
+
+<span class="c1"># Функції введення-виведення</span>
+<span class="kd">function</span> <span class="nx">io_functions</span><span class="p">(</span>    <span class="nx">localvar</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1"># Ви вже бачили print</span>
+    <span class="kr">print</span> <span class="s2">&quot;Hello world&quot;</span><span class="p">;</span>
+
+    <span class="c1"># Є також printf</span>
+    <span class="kr">printf</span><span class="p">(</span><span class="s2">&quot;%s %d %d %d\n&quot;</span><span class="p">,</span> <span class="s2">&quot;Testing&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+
+    <span class="c1"># AWK сам по собі не має дескрипторів файлів. Він автоматично відкриває</span>
+    <span class="c1"># дескриптор файлу, коли виконується дія, яка потребує дискриптора.</span>
+    <span class="c1"># Рядок, який використано для цього, можна розглядати як дескриптор файлу</span>
+    <span class="c1"># для введення-виводу. Це схоже на сценарії оболонки.</span>
+    <span class="c1"># Рядок, при цьому, повинен точно збігатися. Тому використовуйте змінну:</span>
+    <span class="nx">outfile</span> <span class="o">=</span> <span class="s2">&quot;/tmp/foobar.txt&quot;</span><span class="p">;</span>
+    <span class="kr">print</span> <span class="s2">&quot;foobar&quot;</span> <span class="o">&gt;</span> <span class="nx">outfile</span><span class="p">;</span>
+
+    <span class="c1"># Тепер, рядок вихідного файлу є дескриптором файлу.</span>
+    <span class="c1"># Ви можете закрити його:</span>
+    <span class="kr">close</span><span class="p">(</span><span class="nx">outfile</span><span class="p">);</span>
+
+    <span class="c1"># Ось як запустити команду в оболонці</span>
+    <span class="kr">system</span><span class="p">(</span><span class="s2">&quot;echo foobar&quot;</span><span class="p">);</span> <span class="c1"># =&gt; друкує foobar</span>
+
+    <span class="c1"># Читає рядок із потоку стандартного введення та зберігає в localvar</span>
+    <span class="kr">getline</span> <span class="nx">localvar</span><span class="p">;</span>
+
+    <span class="c1"># Читає рядок з каналу (використовуйте рядок, щоб правильно його закрити)</span>
+    <span class="nx">cmd</span> <span class="o">=</span> <span class="s2">&quot;echo foobar&quot;</span><span class="p">;</span>
+    <span class="nx">cmd</span> <span class="o">|</span> <span class="kr">getline</span> <span class="nx">localvar</span><span class="p">;</span> <span class="c1"># localvar =&gt; &quot;foobar&quot;</span>
+    <span class="kr">close</span><span class="p">(</span><span class="nx">cmd</span><span class="p">);</span>
+
+    <span class="c1"># Читає рядок з файлу та зберігає в localvar</span>
+    <span class="nx">infile</span> <span class="o">=</span> <span class="s2">&quot;/tmp/foobar.txt&quot;</span><span class="p">;</span>
+    <span class="kr">getline</span> <span class="nx">localvar</span> <span class="o">&lt;</span> <span class="nx">infile</span><span class="p">;</span>
+    <span class="kr">close</span><span class="p">(</span><span class="nx">infile</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1"># Як вже вказувалося, програми AWK складаються з набору шаблонів та дій.</span>
+<span class="c1"># Було розглянуто шаблони BEGIN та END . Інші шаблони використовуються тоді,</span>
+<span class="c1"># коли скрипт обробляє рядки з файлів або стандартного потоку введення.</span>
+<span class="c1">#</span>
+
+<span class="c1"># Вказані у командному рядку аргументи розглядаються як імена файлів для</span>
+<span class="c1"># обробки. Усі ці файли обробляються послідовно один за одним.</span>
+<span class="c1"># Виконується неявний цикл, в якому обробляються усі рядки з цих файлів.</span>
+<span class="c1"># Шаблони та дії AWK схожі на оператор switch всередині циклу.</span>
+
+<span class="sr">/^fo+bar$/</span> <span class="p">{</span>
+    <span class="c1"># Ця дія буде виконуватися для кожного рядка, який збігається з регулярним</span>
+    <span class="c1"># виразом: /^fo+bar$/, і буде пропущена для усіх рядків,</span>
+    <span class="c1"># які не збігаються з ним. Давайте просто надрукуємо рядок:</span>
+
+    <span class="kr">print</span><span class="p">;</span>
+
+    <span class="c1"># Без аргументів! Це тому, що print має аргумент за замовчуванням: $0.</span>
+    <span class="c1"># $0 - ім&#39;я змінної, яка містить увесь поточний рядок. Ця змінна</span>
+    <span class="c1"># створюється автоматично.</span>
+
+    <span class="c1"># Також існують інші змінні зі знаком $. Кожен рядок неявно розбивається</span>
+    <span class="c1"># перед викликом кожної дії так, як це робить оболонка. І так само, як і</span>
+    <span class="c1"># в оболонці, до кожного поля можна отримати доступ із відповідної змінної</span>
+    <span class="c1"># зі знаком долара.</span>
+
+    <span class="c1"># Тут буде виведене друге та четверте поля з рядка</span>
+    <span class="kr">print</span> <span class="o">$</span><span class="mi">2</span><span class="p">,</span> <span class="o">$</span><span class="mi">4</span><span class="p">;</span>
+
+    <span class="c1"># AWK автоматично визначає багато інших змінних, щоб допомогти перевірити</span>
+    <span class="c1"># та обробити кожен рядок. Однією з них є NF.</span>
+
+    <span class="c1"># Друкує кількість полів у цьому рядку</span>
+    <span class="kr">print</span> <span class="nb">NF</span><span class="p">;</span>
+
+    <span class="c1"># Друк останнього поля у цьому рядку</span>
+    <span class="kr">print</span> <span class="o">$</span><span class="nb">NF</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1"># Кожен шаблон є логічним виразом. Регулярний вираз у наведеному шаблоні</span>
+<span class="c1"># також є перевіркою на істине/хибне, але частина виразу прихована.</span>
+<span class="c1"># Шаблон обробляє кожен вхідний рядок і його повна версія є такою:</span>
+<span class="o">$</span><span class="mi">0</span> <span class="o">~</span> <span class="sr">/^fo+bar$/</span> <span class="p">{</span>
+    <span class="kr">print</span> <span class="s2">&quot;Equivalent to the last pattern&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">a</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="c1"># цей блок виконуватиметься для кожного рядка, допоки змінна a буде</span>
+    <span class="c1"># більшою від 0</span>
+<span class="p">}</span>
+
+<span class="c1"># Ідея AWK зрозуміла. Обробка текстових файлів, порядкове зчитування і</span>
+<span class="c1"># обробка, зокрема розбиття за роздільником, настільки поширені в UNIX,</span>
+<span class="c1"># що AWK — це мова сценаріїв, яка виконує все це сама, без ваших вказівок.</span>
+<span class="c1"># Все, що вам потрібно зробити, це написати шаблони та дії на основі того,</span>
+<span class="c1"># що ви очікуєте від введення, і що ви хочете з ним зробити.</span>
+
+<span class="c1"># Ось короткий приклад простого сценарію, для якого чудово підходить AWK.</span>
+<span class="c1"># Цей сценарій прочитає ім’я зі стандартного потоку введення, а потім надрукує</span>
+<span class="c1"># середній вік для людей з цим іменем.</span>
+<span class="c1"># Нехай, як аргумент скрипта вказано ім’я файла з такими даними:</span>
+<span class="c1">#</span>
+<span class="c1"># Bob Jones 32</span>
+<span class="c1"># Jane Doe 22</span>
+<span class="c1"># Steve Stevens 83</span>
+<span class="c1"># Bob Smith 29</span>
+<span class="c1"># Bob Barker 72</span>
+<span class="c1">#</span>
+
+<span class="c1"># Ось сценарій:</span>
+
+<span class="nb">BEGIN</span> <span class="p">{</span>
+
+    <span class="c1"># Спершу попросимо користувача ввести ім&#39;я</span>
+    <span class="kr">print</span> <span class="s2">&quot;What name would you like the average age for?&quot;</span><span class="p">;</span>
+
+    <span class="c1"># Отримати рядок зі стандартного потоку введення, а не з файлів</span>
+    <span class="c1"># командного рядка</span>
+    <span class="kr">getline</span> <span class="nx">name</span> <span class="o">&lt;</span> <span class="s2">&quot;/dev/stdin&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1"># Тепер обробимо кожен рядок, першим полем якого є вказане ім&#39;я</span>
+<span class="o">$</span><span class="mi">1</span> <span class="o">==</span> <span class="nx">name</span> <span class="p">{</span>
+
+    <span class="c1"># Тут усередині ми маємо доступ до низки корисних змінних, які вже</span>
+    <span class="c1"># встановлені для нас попередньо:</span>
+    <span class="c1"># $0 - це весь рядок</span>
+    <span class="c1"># $3 - це третє поле, вік, який нас тут цікавить</span>
+    <span class="c1"># NF - це кількість полів, яка має бути 3</span>
+    <span class="c1"># NR - це кількість записів (рядків), переглянутих на поточний момент</span>
+    <span class="c1"># FILENAME - ім&#39;я файла, який обробляється</span>
+    <span class="c1"># FS - це роздільник полів, який використовується. Тут це - &quot; &quot;</span>
+    <span class="c1"># ...  є багато інших задокументованих на сторінці керівництва змінних</span>
+
+    <span class="c1"># Обчислимо поточну суму та кількість рядків, які відповідають шаблону</span>
+    <span class="nx">sum</span> <span class="o">+=</span> <span class="o">$</span><span class="mi">3</span><span class="p">;</span>
+    <span class="nx">nlines</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1"># Ще один спеціальний шаблон називається END. Він виконується після обробки</span>
+<span class="c1"># всіх текстових файлів. На відміну від BEGIN, він запуститься, якщо були</span>
+<span class="c1"># дані для обробки. Він виконуватиметься після того, як будуть прочитані та</span>
+<span class="c1"># оброблені, відповідно до вказаних правил та дій, усі файли з вхідними даними.</span>
+<span class="c1"># Його мета зазвичай полягає в тому, щоб вивести якийсь остаточний звіт або</span>
+<span class="c1"># зробити щось із накопиченою протягом сценарію сукупністю даних</span>
+
+<span class="nb">END</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">nlines</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;The average age for &quot;</span> <span class="nx">name</span> <span class="s2">&quot; is &quot;</span> <span class="nx">sum</span> <span class="o">/</span> <span class="nx">nlines</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+<p>Детальніше дивіться:</p>
+
+<ul>
+<li><a href="http://www.grymoire.com/Unix/Awk.html">Awk tutorial</a></li>
+<li><a href="https://linux.die.net/man/1/awk">Awk man page</a></li>
+<li><a href="https://www.gnu.org/software/gawk/manual/gawk.html">The GNU Awk User&rsquo;s Guide</a> GNU Awk is found on most Linux systems.</li>
+<li><a href="http://tuxgraphics.org/~guido/scripts/awk-one-liner.html">AWK one-liner collection</a></li>
+<li><a href="https://wiki.alpinelinux.org/wiki/Awk">Awk alpinelinux wiki</a> a technical summary and list of &ldquo;gotchas&rdquo; (places where different implementations may behave in different or unexpected ways).</li>
+<li><a href="https://github.com/dubiousjim/awkenough">basic libraries for awk</a></li>
+</ul>
+
+    <hr>
+    <p>Маєте пораду? А може, виправлення? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Відкрийте Issue</a> у GitHub-репозиторії або зробіть <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/uk-ua/awk-uk.html.markdown">pull request</a> самостійно!
+    </p>
+    <p class="contributed">
+    Автор початкової версії Marshall Mason, оновлено <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/uk-ua/awk-uk.html.markdown">0 авторами</a>.
+    </p>
+
+    <footer>
+    <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a>
+    <p>
+    &copy; 2024
+        <a href="http://github.com/marshallmason">Marshall Mason</a>
+    </p>
+
+    <p>
+      Translated by:
+        <a href="https://github.com/IhorSokorchuk">Ihor Sokorchuk</a>
+
+    </footer>
+  </div>
+
+        </div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script src="/js/script.js"></script>
+    </body>
+</html>
