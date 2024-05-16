@@ -479,10 +479,14 @@ redirect 'docs/zh-cn/sql/index.html', to: '/docs/zh-cn/sql-cn/'
 
 redirect 'docs/zh-cn/go-zh/index.html', to: '/docs/zh-cn/go-cn/'
 
-# typos
+# typo
 redirect 'docs/pt-br/asymptoticnotation-pt/index.html', to: '/docs/pt-br/asymptotic-notation-pt/'
 # wrong directory
 redirect 'docs/rust-pt/index.html', to: '/docs/pt-br/rust-pt/'
+# improper filenames
+redirect 'docs/es-es/learnsmallbasic-es/index.html', to: '/docs/es-es/smallbasic-es/'
+redirect 'docs/ru-ru/learnvisualbasic-ru/index.html', to: '/docs/ru-ru/visualbasic-ru/'
+redirect 'docs/zh-cn/clojure-macro-cn/index.html', to: '/docs/zh-cn/clojure-macros-cn/'
 
 # perl6 -> raku
 redirect 'docs/perl6/index.html', to: '/docs/raku/'
