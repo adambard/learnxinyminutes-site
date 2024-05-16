@@ -1,82 +1,99 @@
 
--- Einzeilige Kommentare beginnen mit 2 Bindestrichen.
-{- So wird ein mehrzeiliger Kommentar angelegt.
-{- Diese können auch verschachtelt werden. -}
+-- Single line comments start with two dashes.
+{- Multiline comments can be enclosed in a block like this.
+{- They can be nested. -}
 -}
 
-{-- Die Grundlagen --}
+{-- The Basics --}
 
--- Arithmetik
+-- Arithmetic
 1 + 1 -- 2
 8 - 1 -- 7
 10 * 2 -- 20
 
--- Zahlen ohne Punkt sind entweder vom Typ Int oder Float.
-33 / 2 -- 16.5 mit Division von Gleitkommazahlen
-33 // 2 -- 16  mit ganzzahliger Division
+-- Every number literal without a decimal point can be either an Int or a Float.
+33 / 2 -- 16.5 with floating point division
+33 // 2 -- 16 with integer division
 
--- Exponenten
+-- Exponents
 5 ^ 2 -- 25
 
--- Boolsche Werte
+-- Booleans
 not True -- False
 not False -- True
 1 == 1 -- True
 1 /= 1 -- False
 1 < 10 -- True
 
--- Strings (Zeichenketten) und Zeichen
-"Das hier ist ein String."
-'a' -- Zeichen
+-- Strings and characters
+"This is a string because it uses double quotes."
+'a' -- characters in single quotes
 
--- Strings können konkateniert werden.
+-- Strings can be appended.
 "Hello " ++ "world!" -- "Hello world!"
 
-{-- Listen und Tupel --}
+{-- Lists, Tuples, and Records --}
 
--- Jedes Element einer Liste muss vom gleichen Typ sein. Listen sind homogen.
+-- Every element in a list must have the same type.
 ["the", "quick", "brown", "fox"]
 [1, 2, 3, 4, 5]
--- Das zweite Beispiel kann man auch mit Hilfe der "range" Funktion schreiben.
+-- The second example can also be written with two dots.
 List.range 1 5
 
--- Listen werden genauso wie Strings konkateniert.
+-- Append lists just like strings.
 List.range 1 5 ++ List.range 6 10 == List.range 1 10 -- True
 
--- Mit dem "cons" Operator lässt sich ein Element an den Anfang einer Liste anfügen.
+-- To add one item, use "cons".
 0 :: List.range 1 5 -- [0, 1, 2, 3, 4, 5]
 
--- Die Funktionen "head" und "tail" haben als Rückgabewert den "Maybe" Typ.
--- Dadurch wird die Fehlerbehandlung von fehlenden Elementen explizit, weil
--- man immer mit jedem möglichen Fall umgehen muss.
+-- The head and tail of a list are returned as a Maybe. Instead of checking
+-- every value to see if it's null, you deal with missing values explicitly.
 List.head (List.range 1 5) -- Just 1
 List.tail (List.range 1 5) -- Just [2, 3, 4, 5]
 List.head [] -- Nothing
--- List.funktionsName bedeutet, dass diese Funktion aus dem "List"-Modul stammt.
+-- List.functionName means the function lives in the List module.
 
--- Tupel sind heterogen, jedes Element kann von einem anderen Typ sein.
--- Jedoch haben Tupel eine feste Länge.
+-- Every element in a tuple can be a different type, but a tuple has a
+-- fixed length.
 ("elm", 42)
 
--- Das Zugreifen auf Elemente eines Tupels geschieht mittels den Funktionen
--- "first" und "second".
+-- Access the elements of a pair with the first and second functions.
+-- (This is a shortcut; we'll come to the "real way" in a bit.)
 Tuple.first ("elm", 42) -- "elm"
 Tuple.second ("elm", 42) -- 42
 
--- Das leere Tupel, genannt "Unit",  wird manchmal als Platzhalter verwendet.
--- Es ist das einzige Element vom Typ "Unit".
+-- The empty tuple, or "unit", is sometimes used as a placeholder.
+-- It is the only value of its type, also called "Unit".
 ()
 
-{-- Kontrollfluss --}
+-- Records are like tuples but the fields have names. The order of fields
+-- doesn't matter. Notice that record values use equals signs, not colons.
+{ x = 3, y = 7 }
 
--- Eine If-Bedingung hat immer einen Else-Zweig und beide Zweige müssen den
--- gleichen Typ haben.
+-- Access a field with a dot and the field name.
+{ x = 3, y = 7 }.x -- 3
+
+-- Or with an accessor function, which is a dot and the field name on its own.
+.y { x = 3, y = 7 } -- 7
+
+-- Update the fields of a record. (It must have the fields already.)
+{ person |
+  name = "George" }
+
+-- Update multiple fields at once, using the current values.
+{ particle |
+  position = particle.position + particle.velocity,
+  velocity = particle.velocity + particle.acceleration }
+
+{-- Control Flow --}
+
+-- If statements always have an else, and the branches must be the same type.
 if powerLevel > 9000 then
   "WHOA!"
 else
   "meh"
 
--- If-Bedingungen können verkettet werden.
+-- If statements can be chained.
 if n < 0 then
   "n is negative"
 else if n > 0 then
@@ -84,68 +101,57 @@ else if n > 0 then
 else
   "n is zero"
 
--- Mit dem Mustervergleich (pattern matching) kann man bestimmte Fälle direkt
--- behandeln.
+-- Use case statements to pattern match on different possibilities.
 case aList of
   [] -> "matches the empty list"
   [x]-> "matches a list of exactly one item, " ++ toString x
   x::xs -> "matches a list of at least one item whose head is " ++ toString x
--- Mustervergleich geht immer von oben nach unten. Würde man [x] als letztes
--- platzieren, dann würde dieser Fall niemals getroffen werden, weil x:xs diesen
--- Fall schon mit einschließt (xs ist in dem Fall die leere Liste).
+-- Pattern matches go in order. If we put [x] last, it would never match because
+-- x::xs also matches (xs would be the empty list). Matches do not "fall through".
+-- The compiler will alert you to missing or extra cases.
 
--- Mustervergleich an einem Maybe Typ.
+-- Pattern match on a Maybe.
 case List.head aList of
   Just x -> "The head is " ++ toString x
   Nothing -> "The list was empty."
 
-{-- Funktionen --}
+{-- Functions --}
 
--- Die Syntax für Funktionen in Elm ist minimal. Hier werden Leerzeichen anstelle
--- von runden oder geschweiften Klammern verwendet. Außerdem gibt es kein "return"
--- Keyword.
+-- Elm's syntax for functions is very minimal, relying mostly on whitespace
+-- rather than parentheses and curly brackets. There is no "return" keyword.
 
--- Eine Funktion wird durch ihren Namen, einer Liste von Parametern gefolgt von
--- einem Gleichheitszeichen und dem Funktionskörper angegeben.
+-- Define a function with its name, arguments, an equals sign, and the body.
 multiply a b =
   a * b
 
--- Beim Aufruf der Funktion (auch Applikation genannt) werden die Argumente ohne
--- Komma übergeben.
+-- Apply (call) a function by passing it arguments (no commas necessary).
 multiply 7 6 -- 42
 
--- Partielle Applikation einer Funktion (Aufrufen einer Funktion mit fehlenden
--- Argumenten). Hierbei entsteht eine neue Funktion, der wir einen Namen geben.
+-- Partially apply a function by passing only some of its arguments.
+-- Then give that function a new name.
 double =
   multiply 2
 
--- Konstanten sind Funktionen ohne Parameter.
+-- Constants are similar, except there are no arguments.
 answer =
   42
 
--- Funktionen, die Funktionen als Parameter haben, nennt man Funktionen höherer
--- Ordnung. In funktionalen Programmiersprachen werden Funktionen als "first-class"
--- behandelt. Man kann sie als Argument übergeben, als Rückgabewert einer Funktion
--- zurückgeben oder einer Variable zuweisen.
+-- Pass functions as arguments to other functions.
 List.map double (List.range 1 4) -- [2, 4, 6, 8]
 
--- Funktionen können auch als anonyme Funktion (Lambda-Funktionen) übergeben werden.
--- Diese werden mit einem Blackslash eingeleitet, gefolgt von allen Argumenten.
--- Die Funktion "\a -> a * 2" beschreibt die Funktion f(x) = x * 2.
+-- Or write an anonymous function.
 List.map (\a -> a * 2) (List.range 1 4) -- [2, 4, 6, 8]
 
--- Mustervergleich kann auch in der Funktionsdefinition verwendet werden.
--- In diesem Fall hat die Funktion ein Tupel als Parameter. (Beachte: Hier
--- werden die Werte des Tupels direkt ausgepackt. Dadurch kann man auf die
--- Verwendung von "first" und "second" verzichten.)
+-- You can pattern match in function definitions when there's only one case.
+-- This function takes one tuple rather than two arguments.
+-- This is the way you'll usually unpack/extract values from tuples.
 area (width, height) =
   width * height
 
 area (6, 7) -- 42
 
--- Mustervergleich auf Records macht man mit geschweiften Klammern.
--- Bezeichner (lokale Variablen) werden mittels dem "let" Keyword angelegt.
--- (Mehr zu Records weiter unten!)
+-- Use curly brackets to pattern match record field names.
+-- Use let to define intermediate values.
 volume {width, height, depth} =
   let
     area = width * height
@@ -154,7 +160,7 @@ volume {width, height, depth} =
 
 volume { width = 3, height = 2, depth = 7 } -- 42
 
--- Rekursive Funktion
+-- Functions can be recursive.
 fib n =
   if n < 2 then
     1
@@ -163,125 +169,92 @@ fib n =
 
 List.map fib (List.range 0 8) -- [1, 1, 2, 3, 5, 8, 13, 21, 34]
 
--- Noch eine rekursive Funktion (Nur ein Beispiel, verwende stattdessen immer
--- List.length!)
+-- Another recursive function (use List.length in real code).
 listLength aList =
   case aList of
     [] -> 0
     x::xs -> 1 + listLength xs
 
--- Funktionsapplikation hat die höchste Präzedenz, sie binden stärker als Operatoren.
--- Klammern bietet die Möglichkeit der Bevorrangung.
+-- Function calls happen before any infix operator. Parens indicate precedence.
 cos (degrees 30) ^ 2 + sin (degrees 30) ^ 2 -- 1
--- Als erstes wird die Funktion "degrees" mit dem Wert 30 aufgerufen.
--- Danach wird das Ergenis davon den Funktionen "cos", bzw. "sin" übergeben.
--- Dann wird das Ergebnis davon mit 2 quadriert und als letztes werden diese
--- beiden Werte dann addiert.
+-- First degrees is applied to 30, then the result is passed to the trig
+-- functions, which is then squared, and the addition happens last.
 
-{-- Typen und Typ Annotationen --}
+{-- Types and Type Annotations --}
 
--- Durch Typinferenz kann der Compiler jeden Typ genau bestimmen. Man kann diese
--- aber auch manuell selber angeben (guter Stil!).
--- Typen beginnen immer mit eine Großbuchstaben. Dabei liest man "x : Typ" als
--- "x" ist vom Typ "Typ".
--- Hier ein paar übliche Typen:
+-- The compiler will infer the type of every value in your program.
+-- Types are always uppercase. Read x : T as "x has type T".
+-- Some common types, which you might see in Elm's REPL.
 5 : Int
 6.7 : Float
 "hello" : String
 True : Bool
 
--- Funktionen haben ebenfalls einen Typ. Dabei ist der ganz rechte Typ der
--- Rückgabetyp der Funktion und alle anderen sind die Typen der Parameter.
+-- Functions have types too. Read -> as "goes to". Think of the rightmost type
+-- as the type of the return value, and the others as arguments.
 not : Bool -> Bool
 round : Float -> Int
 
--- Es ist guter Stil immer den Typ anzugeben, da diese eine Form von Dokumentation
--- sind. Außerdem kann so der Compiler genauere Fehlermeldungen geben.
+-- When you define a value, it's good practice to write its type above it.
+-- The annotation is a form of documentation, which is verified by the compiler.
 double : Int -> Int
 double x = x * 2
 
--- Funktionen als Parameter werden durch Klammern angegeben. Die folgende Funktion
--- ist nicht auf einen Typ festgelegt, sondern enthält Typvariablen (beginnend
--- mit Kleinbuchstaben). Die konkreten Typen werden erst bei Anwendung der
--- Funktion festgelegt. "List a" bedeutet, dass es sich um eine Liste mit
--- Elementen vom Typ "a" handelt.
+-- Function arguments are passed in parentheses.
+-- Lowercase types are type variables: they can be any type, as long as each
+-- call is consistent.
 List.map : (a -> b) -> List a -> List b
+-- "List dot map has type a-goes-to-b, goes to list of a, goes to list of b."
 
--- Es gibt drei spezielle kleingeschriebene Typen: "number", "comparable" und
--- "appendable".
-add : number -> number -> number
-add x y = x + y -- funktioniert mit Ints und Floats.
+-- There are three special lowercase types: number, comparable, and appendable.
+-- Numbers allow you to use arithmetic on Ints and Floats.
+-- Comparable allows you to order numbers and strings, like a < b.
+-- Appendable things can be combined with a ++ b.
 
-max :: comparable -> comparable -> comparable
-max a b = if a > b then a else b -- funktioniert mit Typen, die vergleichbar sind.
+{-- Type Aliases and Custom Types --}
 
-append :: appendable -> appendable -> appendable
-append xs ys = xs ++ ys -- funktioniert mit Typen, die konkatenierbar sind.
-
-append "hello" "world"  -- "helloworld"
-append [1,1,2] [3,5,8] -- [1,1,2,3,5,8]
-
-{-- Eigene Datentypen erstellen --}
-
--- Ein "Record" ist ähnlich wie ein Tupel, nur das jedes Feld einen Namne hat.
--- Dabei spielt die Reihenfolge keine Rolle.
-{ x = 3, y = 7 }
-
--- Um auf Werte eines Records zuzugreifen, benutzt man einen Punkt gefolgt
--- von dem Namen des Feldes.
-{ x = 3, y = 7 }.x -- 3
-
--- Oder mit einer Zugriffsfunktion, welche aus einem Punkt und dem Feldnamen besteht.
-.y { x = 3, y = 7 } -- 7
-
--- Wert eines Feldes ändern. (Achtung: Das Feld muss aber vorher schon vorhanden sein!)
-{ person |
-  name = "George" }
-
--- Mehrere Felder aufeinmal ändern unter Verwendung des alten Wertes.
-{ particle |
-  position = particle.position + particle.velocity,
-  velocity = particle.velocity + particle.acceleration }
-
--- Du kannst ein Record auch als Typ Annotation verwenden.
--- (Beachte: Ein Record Typ benutzt einen Doppelpunkt und ein Record Wert benutzt
--- ein Gleichheitszeichen!)
+-- When you write a record or tuple, its type already exists.
+-- (Notice that record types use colon and record values use equals.)
 origin : { x : Float, y : Float, z : Float }
 origin =
   { x = 0, y = 0, z = 0 }
 
--- Durch das "type" Keyword kann man einem existierenden Typen einen Namen geben.
+-- You can give existing types a nice name with a type alias.
 type alias Point3D =
   { x : Float, y : Float, z : Float }
 
--- Der Name kann dann als Konstruktor verwendet werden.
+-- If you alias a record, you can use the name as a constructor function.
 otherOrigin : Point3D
 otherOrigin =
   Point3D 0 0 0
 
--- Aber es ist immernoch der selbe Typ, da es nur ein Alias ist!
+-- But it's still the same type, so you can equate them.
 origin == otherOrigin -- True
 
--- Neben den Records gibt es auch noch so genannte Summentypen.
--- Ein Summentyp hat mehrere Konstruktoren.
+-- By contrast, defining a custom type creates a type that didn't exist before.
+-- A custom type is so called because it can be one of many possibilities.
+-- Each of the possibilities is represented as a "type variant".
 type Direction =
   North | South | East | West
 
--- Ein Konstruktor kann außerdem noch andere Typen enthalten. Rekursion ist
--- auch möglich.
+-- Type variants can carry other values of known type. This can work recursively.
 type IntTree =
   Leaf | Node Int IntTree IntTree
+-- "Leaf" and "Node" are the type variants. Everything following a type variant is a type.
 
--- Diese können auch als Typ Annotation verwendet werden.
+-- Type variants can be used as values or functions.
 root : IntTree
 root =
   Node 7 Leaf Leaf
 
--- Außerdem können auch Typvariablen verwendet werden in einem Konstruktor.
+-- Custom types (and type aliases) can use type variables.
 type Tree a =
   Leaf | Node a (Tree a) (Tree a)
+-- "The type tree-of-a is a leaf, or a node of a, tree-of-a, and tree-of-a."
 
--- Beim Mustervergleich kann man auf die verschiedenen Konstruktoren matchen.
+-- Pattern match variants in a custom type. The uppercase variants will be matched exactly. The
+-- lowercase variables will match anything. Underscore also matches anything,
+-- but signifies that you aren't using it.
 leftmostElement : Tree a -> Maybe a
 leftmostElement tree =
   case tree of
@@ -289,51 +262,70 @@ leftmostElement tree =
     Node x Leaf _ -> Just x
     Node _ subtree _ -> leftmostElement subtree
 
-{-- Module und Imports --}
+-- That's pretty much it for the language itself. Now let's see how to organize
+-- and run your code.
 
--- Die Kernbibliotheken und andere Bibliotheken sind in Module aufgeteilt.
--- Für große Projekte können auch eigene Module erstellt werden.
+{-- Modules and Imports --}
 
--- Eine Modul beginnt mit ganz oben. Ohne diese Angabe befindet man sich
--- automatisch im Modul "Main".
+-- The core libraries are organized into modules, as are any third-party
+-- libraries you may use. For large projects, you can define your own modules.
+
+-- Put this at the top of the file. If omitted, you're in Main.
 module Name where
 
--- Ohne genaue Angabe von Exports wird alles exportiert. Es können aber alle
--- Exporte explizit angegeben werden.
+-- By default, everything is exported. You can specify exports explicitly.
 module Name (MyType, myValue) where
 
--- Importiert das Modul "Dict". Jetzt kann man Funktionen mittels "Dict.insert"
--- aufrufen.
+-- One common pattern is to export a custom type but not its type variants. This is known
+-- as an "opaque type", and is frequently used in libraries.
+
+-- Import code from other modules to use it in this one.
+-- Places Dict in scope, so you can call Dict.insert.
 import Dict
 
--- Importiert das "Dict" Modul und den "Dict" Typ. Dadurch muss man nicht "Dict.Dict"
--- verwenden. Man kann trotzdem noch Funktionen des Moduls aufrufen, wie "Dict.insert".
+-- Imports the Dict module and the Dict type, so your annotations don't have to
+-- say Dict.Dict. You can still use Dict.insert.
 import Dict exposing (Dict)
 
--- Abkürzung für den Modulnamen. Aufrufen der Funktionen mittels "C.funktionsName".
+-- Rename an import.
 import Graphics.Collage as C
 
-{-- Kommandozeilen Programme --}
+{-- Ports --}
 
--- Eine Elm-Datei kompilieren.
+-- A port indicates that you will be communicating with the outside world.
+-- Ports are only allowed in the Main module.
+
+-- An incoming port is just a type signature.
+port clientID : Int
+
+-- An outgoing port has a definition.
+port clientOrders : List String
+port clientOrders = ["Books", "Groceries", "Furniture"]
+
+-- We won't go into the details, but you set up callbacks in JavaScript to send
+-- on incoming ports and receive on outgoing ports.
+
+{-- Command Line Tools --}
+
+-- Compile a file.
 $ elm make MyFile.elm
 
--- Beim ersten Aufruf wird Elm die "core" Bibliotheken installieren und eine
--- "elm-package.json"-Datei anlegen, die alle Informationen des Projektes
--- speichert.
+-- The first time you do this, Elm will install the core libraries and create
+-- elm-package.json, where information about your project is kept.
 
--- Der Reactor ist ein Server, welche alle Dateinen kompiliert und ausführt.
+-- The reactor is a server that compiles and runs your files.
+-- Click the wrench next to file names to enter the time-travelling debugger!
 $ elm reactor
 
--- Starte das REPL (read-eval-print-loop).
+-- Experiment with simple expressions in a Read-Eval-Print Loop.
 $ elm repl
 
--- Bibliotheken werden durch den GitHub-Nutzernamen und ein Repository identifiziert.
--- Installieren einer neuen Bibliothek.
+-- Packages are identified by GitHub username and repo name.
+-- Install a new package, and record it in elm-package.json.
 $ elm package install elm-lang/html
--- Diese wird der elm-package.json Datei hinzugefügt.
 
--- Zeigt alle Veränderungen zwischen zwei bestimmten Versionen an.
+-- See what changed between versions of a package.
 $ elm package diff elm-lang/html 1.1.0 2.0.0
--- Der Paketmanager von Elm erzwingt "semantic versioning"!
+-- Elm's package manager enforces semantic versioning, so minor version bumps
+-- will never break your build!
 
