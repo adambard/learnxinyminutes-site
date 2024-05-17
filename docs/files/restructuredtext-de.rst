@@ -1,11 +1,11 @@
 
-$ easy_install docutils
+easy_install docutils
 
-$ pip install docutils
+pip install docutils
 
-.. Zeilen, die mit zwei Punkten starten sind spezielle Befehle. 
+.. Zeilen, die mit zwei Punkten starten sind spezielle Befehle.
 
-.. Wenn kein Befehl gefunden wird, wird die Zeile als Kommentar gewertet. 
+.. Wenn kein Befehl gefunden wird, wird die Zeile als Kommentar gewertet.
 
 ============================================================================
 Haupttitel werden mit Gleichheitszeichen darüber und darunter gekennzeichnet
@@ -38,19 +38,20 @@ oder
 Tabellen sind einfach zu schreiben:
 
 =========== ==========
-Land        Hauptstadt 
+Land        Hauptstadt
 =========== ==========
 Frankreich  Paris
 Japan       Tokyo
 =========== ========
 
-Komplexere Tabellen (zusammengeführte Spalten und Zeilen) können einfach 
-erstellt werden, aber ich empfehle dir dafür die komplette Dokumentation zu lesen :)
+Komplexere Tabellen (zusammengeführte Spalten und Zeilen) können einfach
+erstellt werden, aber ich empfehle dir dafür die komplette Dokumentation zu
+lesen :)
 
 Es gibt mehrere Möglichkeiten um Links zu machen:
 
-- Wenn man einen Unterstrich hinter einem Wort hinzufügt: GitHub_ Zusätzlich 
-muss man die Zielurl nach dem Text hinzufügen. 
+- Wenn man einen Unterstrich hinter einem Wort hinzufügt: GitHub_ Zusätzlich
+muss man die Zielurl nach dem Text hinzufügen.
 (Dies hat den Vorteil, dass man keine unnötigen Urls in lesbaren Text einfügt.
 - Wenn man die vollständige Url eingibt: https://github.com/
 (Dies wird automatisch in ein Link konvertiert.)
@@ -58,5 +59,5 @@ muss man die Zielurl nach dem Text hinzufügen.
 
 .. _GitHub https://github.com/
 
-$ rst2html myfile.rst output.html
+rst2html myfile.rst output.html
 
