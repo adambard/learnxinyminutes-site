@@ -479,8 +479,9 @@ redirect 'docs/zh-cn/sql/index.html', to: '/docs/zh-cn/sql-cn/'
 
 redirect 'docs/zh-cn/go-zh/index.html', to: '/docs/zh-cn/go-cn/'
 
-# typo
+# minor filename mistakes
 redirect 'docs/pt-br/asymptoticnotation-pt/index.html', to: '/docs/pt-br/asymptotic-notation-pt/'
+redirect 'docs/fr-fr/kotlin.html-fr/index.html', to: '/docs/fr-fr/kotlin-fr/'
 # wrong directory
 redirect 'docs/rust-pt/index.html', to: '/docs/pt-br/rust-pt/'
 # improper filenames
