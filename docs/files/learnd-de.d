@@ -20,7 +20,7 @@ void main() {
 
     auto n = 1; // auto um den Typ vom Compiler bestimmen zu lassen
 
-    // Zahlenliterale können _ verwenden für lesbarkeit
+    // Zahlenliterale können _ verwenden für Lesbarkeit
     while(n < 10_000) {
         n += n;
     }
@@ -94,7 +94,7 @@ void swap(T)(ref T a, ref T b) {
     b = temp;
 }
 
-// Templates können ebenso Werte parameterisieren.
+// Templates können ebenso Werte parametrisieren.
 class Matrix(uint m, uint n, T = int) {
     T[m] rows;
     T[n] columns;
