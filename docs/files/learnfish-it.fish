@@ -86,10 +86,10 @@ count $PATH
 # Per fare una lista, basta dare al comando set più argomenti:
 set list argomento1 argomento2 argomento3
 
-# in questo modo puoi anche inserire qualcosa in una variabile pre-esistente::
+# in questo modo puoi anche inserire qualcosa in una variabile pre-esistente:
 set PATH $PATH ~/cowsay/
 
-# Ma, come precedentemente menzionato, abbiamo anche un'altro modo più semplice per farlo specialmente in fish.
+# Ma, come precedentemente menzionato, abbiamo anche un'altro modo più semplice per farlo, specialmente in fish.
 # Come per ogni Array/Lista, puoi anche accedergli con
 $listavar[2]
 
@@ -108,12 +108,12 @@ echo $a$1
 
 # Naturalmente, se li si separa, saranno visti come due argomenti separati e li stamperà uno dopo l'altro. QUESTO è il comportamento che ci si aspetta da @bash.
 
-# Ci sono anche altre cose utili, come la sotituzione di comandi. Per esempio, quando vuoi che ti sia restituito l'output di due comandi in una sola riga. In bash lo faresti in questo modo
+# Ci sono anche altre cose utili, come la sostituzione di comandi. Per esempio, quando vuoi che ti sia restituito l'output di due comandi in una sola riga. In bash lo faresti in questo modo
 echo "`ls` è in $PWD" 
 # oppure
 echo "$(ls) è in $PWD" 
 
-# secondo me, non è necessario. Scrivo sempre l'apostrogo sbagliato. Perchè non usare semplicemente le parentesi, come in fish?
+# secondo me, non è necessario. Scrivo sempre l'apostrofo sbagliato. Perchè non usare semplicemente le parentesi, come in fish?
 echo (ls) è in $PWD
 
 # Yep, è facile. E grazie all'highlighting di fish lo puoi vedere istantaneamente, se lo scrivi correttamente.
@@ -202,6 +202,6 @@ end
 # Bello!
 
 # L'equivalente di bashrc non è fishrc, ma il già citato file config.fish in ~/.config/fish/
-# Per aggiungere una funzione a fish, però, occorre creare un semplice file .fish in quell directory. Non incollare la funzione nel file config.fish. È brutto. 
+# Per aggiungere una funzione a fish, però, occorre creare un semplice file .fish in quella directory. Non incollare la funzione nel file config.fish. È brutto. 
 # Se avete altro da dire, aggiugete pure, ma queste sono le basi più importanti.
 
