@@ -96,10 +96,10 @@ ou exécutés directement dans le terminal.</p>
 
 <p><a href="http://www.gnu.org/software/bash/manual/bashref.html">Plus d’informations ici.</a></p>
 <div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
-<span class="c1"># La première ligne du script s’appelle le « shebang, » qui indique au système</span>
+<span class="c1"># La première ligne du script s’appelle le « shebang », elle indique au système</span>
 <span class="c1"># comment exécuter le script : http://fr.wikipedia.org/wiki/Shebang</span>
-<span class="c1"># Comme vous pouvez le remarquer, les commentaires commencent par #. Le shebang</span>
-<span class="c1"># est aussi un commentaire</span>
+<span class="c1"># Comme vous pouvez le remarquer, les commentaires commencent par un « # ». </span>
+<span class="c1"># Le shebang est donc aussi un commentaire</span>
 
 <span class="c1"># Un exemple simple qui affiche « Hello world! » :</span>
 <span class="nb">echo</span><span class="w"> </span>Hello<span class="w"> </span>world!
@@ -111,32 +111,96 @@ ou exécutés directement dans le terminal.</p>
 <span class="nv">VARIABLE</span><span class="o">=</span><span class="s2">&quot;Du texte&quot;</span>
 
 <span class="c1"># Mais pas comme ça :</span>
-<span class="nv">VARIABLE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Du texte&quot;</span>
+<span class="nv">VARIABLE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Du texte&quot;</span><span class="w"> </span><span class="c1"># =&gt; renvoie une erreur : &quot;Variable: command not found&quot;</span>
 <span class="c1"># Bash va penser que VARIABLE est une commande qu’il doit exécuter et va</span>
 <span class="c1"># afficher une erreur parce qu’elle est introuvable.</span>
 
+<span class="c1"># Ni comme ça :</span>
+<span class="nv">VARIABLE</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;Some string&#39;</span><span class="w"> </span><span class="c1"># =&gt; renvoie une erreur : &quot;Du texte: command not found&quot;</span>
+<span class="c1"># Bash va penser que &#39;Di texte&#39; est une commande qu’il doit exécuter et va</span>
+<span class="c1"># afficher une erreur parce qu’elle est introuvable. (Dans ce cas, la partie </span>
+<span class="c1"># &#39;VARIABLE=&#39; est considérée comme une affectation de variable valable uniquement</span>
+<span class="c1"># pour la portée de la commande &#39;Du texte&#39;).</span>
+
 <span class="c1"># Utiliser une variable :</span>
-<span class="nb">echo</span><span class="w"> </span><span class="nv">$VARIABLE</span>
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$VARIABLE</span><span class="s2">&quot;</span>
-<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;$VARIABLE&#39;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$VARIABLE</span><span class="w"> </span><span class="c1"># =&gt; Du texte</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$VARIABLE</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># =&gt; Du texte</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;$VARIABLE&#39;</span><span class="w"> </span><span class="c1"># =&gt; $VARIABLE</span>
 <span class="c1"># Quand vous utilisez la variable en elle-même – en lui assignant une valeur,</span>
 <span class="c1"># en l’exportant ou autre – vous écrivez son nom sans $. Si vous voulez</span>
 <span class="c1"># utiliser sa valeur, vous devez utiliser $.</span>
 <span class="c1"># Notez qu’entourer une variable de deux guillemets simples (&#39;) empêche</span>
 <span class="c1"># l’expansion des variables !</span>
 
+<span class="c1"># Expansion des paramètres (Parameter expansion) ${ } :</span>
+<span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">VARIABLE</span><span class="si">}</span><span class="w"> </span><span class="c1"># =&gt; Du texte</span>
+<span class="c1"># Ceci est une utilisation simple de l&#39;expansion de paramètre.</span>
+<span class="c1"># L&#39;expansion de paramètre récupère la valeur d&#39;une variable.</span>
+<span class="c1"># Elle « déploie » ou imprime la valeur.</span>
+<span class="c1"># Lors de l&#39;expansion, la valeur ou le paramètre peut être modifié.</span>
+<span class="c1"># Voici d&#39;autres modifications qui s&#39;ajoutent à cette expansion.</span>
+
 <span class="c1"># Substitution de chaîne de caractères dans une variable</span>
 <span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">VARIABLE</span><span class="p">/Some/A</span><span class="si">}</span>
 <span class="c1"># Ceci va remplacer la première occurrence de « Some » par « A »</span>
 
 <span class="c1"># Sous-chaîne d’une variable</span>
-<span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">VARIABLE</span><span class="p">:</span><span class="nv">0</span><span class="p">:</span><span class="nv">7</span><span class="si">}</span>
-<span class="c1"># Ceci va retourner seulement les 7 premiers caractères de la valeur</span>
+<span class="nv">LONGUEUR</span><span class="o">=</span><span class="m">5</span>
+<span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">VARIABLE</span><span class="p">:</span><span class="nv">0</span><span class="p">:</span><span class="nv">LONGUEUR</span><span class="si">}</span><span class="w"> </span><span class="c1"># =&gt; Du te</span>
+<span class="c1"># Ceci va retourner les 5 premiers caractères de la valeur</span>
+<span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">VARIABLE</span><span class="p">:</span><span class="nv">LONGUEUR</span><span class="si">}</span><span class="w"> </span><span class="c1"># =&gt; xte</span>
+<span class="c1"># Ceci va retourner la valeur sans les 5 premiers caractères</span>
+<span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">VARIABLE</span><span class="p">: -4</span><span class="si">}</span><span class="w"> </span><span class="c1"># =&gt; exte</span>
+<span class="c1"># Ceci va retourner les 4 derniers caractères de la valeur</span>
+<span class="c1"># (l&#39;espace avant -4 est nécessaire)</span>
+
+<span class="c1"># Longueur d&#39;une chaîne</span>
+<span class="nb">echo</span><span class="w"> </span><span class="si">${#</span><span class="nv">VARIABLE</span><span class="si">}</span><span class="w"> </span><span class="c1"># =&gt; 8</span>
+
+<span class="c1"># Expansion indirecte</span>
+<span class="nv">AUTRE_VARIABLE</span><span class="o">=</span><span class="s2">&quot;VARIABLE&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="p">!AUTRE_VARIABLE</span><span class="si">}</span><span class="w"> </span><span class="c1"># =&gt; Du texte</span>
+<span class="c1"># Cela va utiliser la valeur comme un nom de variable</span>
 
 <span class="c1"># Valeur par défaut d’une variable</span>
-<span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">FOO</span><span class="k">:-</span><span class="s2">&quot;ValeurParDefautSiFOOestVideOuInexistant&quot;</span><span class="si">}</span>
-<span class="c1"># Ceci marche pour null (FOO=), la chaîne de caractères vide (FOO=&quot;&quot;). Zéro</span>
-<span class="c1"># (FOO=0) retourne 0</span>
+<span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">FOO</span><span class="k">:-</span><span class="s2">&quot;ValeurParDefaut&quot;</span><span class="si">}</span>
+<span class="c1"># Retourne &#39;ValeurParDefaut&#39; si FOO n&#39;a pas été déclarée, si</span>
+<span class="c1"># FOO est null (FOO=) ou si FOO est une chaîne vide (FOO=&quot;&quot;).</span>
+<span class="c1"># En revanche Zéro (FOO=0) retourne 0</span>
+
+<span class="c1"># Les tableaux (array)</span>
+
+<span class="nv">array0</span><span class="o">=(</span>un<span class="w"> </span>deux<span class="w"> </span>trois<span class="w"> </span>quatre<span class="w"> </span>cinq<span class="w"> </span>six<span class="o">)</span>
+<span class="c1"># Déclarer un tableau de 6 éléments  </span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="nv">$array0</span><span class="w"> </span><span class="c1"># =&gt; &quot;un&quot;</span>
+<span class="c1"># Affiche le premier élément</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">array0</span><span class="p">[0]</span><span class="si">}</span><span class="w"> </span><span class="c1"># =&gt; &quot;un&quot;</span>
+<span class="c1"># Affiche le premier élément</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">array0</span><span class="p">[@]</span><span class="si">}</span><span class="w"> </span><span class="c1"># =&gt; &quot;un deux trois quatre cinq six&quot;</span>
+<span class="c1"># Affiche tous les éléments</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="si">${#</span><span class="nv">array0</span><span class="p">[@]</span><span class="si">}</span><span class="w"> </span><span class="c1"># =&gt; &quot;6&quot;</span>
+<span class="c1"># Attiche le nombre d&#39;éléments</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="si">${#</span><span class="nv">array0</span><span class="p">[2]</span><span class="si">}</span><span class="w"> </span><span class="c1"># =&gt; &quot;5&quot;</span>
+<span class="c1"># Affiche le nombre de caractères du troisième élément</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">array0</span><span class="p">[@]:</span><span class="nv">3</span><span class="p">:</span><span class="nv">2</span><span class="si">}</span><span class="w"> </span><span class="c1"># =&gt; &quot;quatre cinq&quot;</span>
+<span class="c1"># Affiche 2 element en à partir du quatrième</span>
+
+<span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">array0</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$i</span><span class="s2">&quot;</span>
+<span class="k">done</span>
+<span class="c1"># Affiche tous éléments, chacun sur un nouvelle ligne</span>
+
+<span class="c1"># Brace Expansion { }</span>
+<span class="c1"># Permet de générer des tableau</span>
+<span class="nb">echo</span><span class="w"> </span><span class="o">{</span><span class="m">1</span>..12<span class="o">}</span><span class="w"> </span><span class="c1"># =&gt; 1 2 3 4 5 6 7 8 9 10 11 12</span>
+<span class="nb">echo</span><span class="w"> </span><span class="o">{</span><span class="m">100</span>..95<span class="o">}</span><span class="w"> </span><span class="c1"># =&gt; 100 99 98 97 96 95</span>
+<span class="nb">echo</span><span class="w"> </span><span class="o">{</span>a..z<span class="o">}</span><span class="w"> </span><span class="c1"># =&gt; a b c d e f g h i j k l m n o p q r s t u v w x y z</span>
 
 <span class="c1"># Variables pré-remplies :</span>
 <span class="c1"># Il y a quelques variables pré-remplies utiles, comme :</span>
@@ -146,6 +210,21 @@ ou exécutés directement dans le terminal.</p>
 <span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Arguments du script : </span><span class="nv">$@</span><span class="s2">&quot;</span>
 <span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Arguments du script séparés en plusieurs variables : </span><span class="nv">$1</span><span class="s2"> </span><span class="nv">$2</span><span class="s2">...&quot;</span>
 
+<span class="c1"># Maintenant que nous savons comment utiliser et afficher des variables,</span>
+<span class="c1"># apprenons d&#39;autres fonctionnalités basiques de bash !</span>
+
+<span class="c1"># Notre répertoire courant est accessible par la commande `pwd`.</span>
+<span class="c1"># `pwd` signifie « imprimer le répertoire de travail ».</span>
+<span class="c1"># On peut aussi utiliser la variable intégrée `$PWD`.</span>
+<span class="c1"># Observez que les commandes suivantes sont équivalentes :</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Je suis dans </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># exécute `pwd` et interpole la sortie</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Je suis dans </span><span class="nv">$PWD</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># interprète la variable</span>
+
+<span class="c1"># Si vous avez trop de données dans votre terminal, la commande</span>
+<span class="c1"># `clear` efface votre écran</span>
+clear
+<span class="c1"># Ctrl-L fonctionne aussi pour effacer la sortie.</span>
+
 <span class="c1"># Lire une valeur depuis l’entrée standard :</span>
 <span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Quel est votre nom ?&quot;</span>
 <span class="nb">read</span><span class="w"> </span>NAME<span class="w"> </span><span class="c1"># Notez que l’on n’a pas eu à déclarer une nouvelle variable</span>
@@ -153,16 +232,27 @@ ou exécutés directement dans le terminal.</p>
 
 <span class="c1"># Nous avons l’habituelle structure « if » :</span>
 <span class="c1"># Utilisez &#39;man test&#39; pour plus d’informations à propos des conditions</span>
-<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$NAME</span><span class="w"> </span>-ne<span class="w"> </span><span class="nv">$USER</span><span class="w"> </span><span class="o">]</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$NAME</span><span class="w"> </span>!<span class="o">=</span><span class="w"> </span><span class="nv">$USER</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="c1"># remarque : $USER est le nom l&#39;utilisateur en cours.</span>
 <span class="k">then</span>
 <span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Votre nom n’est pas votre pseudo&quot;</span>
 <span class="k">else</span>
 <span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Votre nom est votre pseudo&quot;</span>
 <span class="k">fi</span>
 
+<span class="c1"># Remarque : si $NAME est vide, bash verra la condition précédente comme :</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="o">=</span><span class="w"> </span><span class="nv">$USER</span><span class="w"> </span><span class="o">]</span>
+<span class="c1"># ce qui est syntaxiquement invalide</span>
+<span class="c1"># la bonne façon d&#39;utiliser une variable potentiellement vide en bash est :</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$NAME</span><span class="s2">&quot;</span><span class="w"> </span>!<span class="o">=</span><span class="w"> </span><span class="nv">$USER</span><span class="w"> </span><span class="o">]</span>
+<span class="c1"># ce qui sera interprété par bash si $NAME est vide comme :</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span>!<span class="o">=</span><span class="w"> </span><span class="nv">$USER</span><span class="w"> </span><span class="o">]</span>
+
 <span class="c1"># Il y a aussi l’exécution conditionnelle</span>
 <span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Toujours exécuté&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Exécuté si la première commande ne réussit pas&quot;</span>
+<span class="c1"># Toujours exécuté</span>
 <span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Toujours exécuté&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Exécuté si la première commande réussit&quot;</span>
+<span class="c1"># Toujours exécuté</span>
+<span class="c1"># Exécuté si la première commande réussit</span>
 
 <span class="c1"># Pour utiliser &amp;&amp; et || avec des commandes « if, » vous devez utiliser</span>
 <span class="c1"># plusieurs paires de crochets :</span>
@@ -302,7 +392,7 @@ fgrep<span class="w"> </span><span class="s2">&quot;^foo.*bar</span>$<span class
     <p>Vous avez une suggestion ? Peut-être une correction ? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Ouvrez un ticket</a> sur GitHub, ou faites vous-même une <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/fr-fr/bash-fr.html.markdown">pull request</a> !
     </p>
     <p class="contributed">
-    Version originale par Max Yankov, mis à jour par <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/fr-fr/bash-fr.html.markdown">8 contributeur(s)</a>.
+    Version originale par Max Yankov, mis à jour par <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/fr-fr/bash-fr.html.markdown">9 contributeur(s)</a>.
     </p>
 
     <footer>
