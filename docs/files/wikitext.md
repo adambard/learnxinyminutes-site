@@ -4,18 +4,18 @@ Colons allow indentation
       ::and they can be nested.
 
 {| class="wikitable"
-|+ 
-! column title A 
-! column title B 
+|+
+! column title A
+! column title B
 |-
-| cell A1 
-| cell B1 
+| cell A1
+| cell B1
 |-
-| cell A2 
-| cell B2 
+| cell A2
+| cell B2
 |-
-| ... 
-| ... 
+| ...
+| ...
 |}
 
 <blockquote>
@@ -60,7 +60,6 @@ int m2 (int ax, char *p_ax) {
 |proof=Drop a perpendicular from point C to side AB. Now argue by proportionality. <math>\blacksquare</math>
 }}
 
-
 {{Short description|One sentence summary of page}}
 
 {{Infox box at the top
@@ -98,7 +97,7 @@ Something about the relation between X and Y.
 
 == References ==
 <!-- generates list of references from inline reference tags, with columns with a minimum width of 30 em-dashes. -->
-{{Reflist|30em}} 
+{{Reflist|30em}}
 
 <!-- extra, non-inlined references below -->
 {{Refbegin|30em}}
