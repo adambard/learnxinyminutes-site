@@ -1,5 +1,5 @@
 
-// Los comentarios en JavaScript son los mismos como comentarios en C. 
+// Los comentarios en JavaScript son los mismos como comentarios en C.
 
 //Los comentarios de una sola línea comienzan con //,
 /* y los comentarios multilínea comienzan
@@ -54,7 +54,7 @@ false;
 'abc';
 "Hola, mundo";
 
-// La negación se aplica con la expresión ! 
+// La negación se aplica con la expresión !
 !true; // = false
 !false; // = true
 
@@ -123,7 +123,7 @@ var miTerceraVariable; // = undefined
 
 // Existen atajos para realizar operaciones aritméticas:
 miPrimeraVariable += 5; // equivalente a miPrimeraVariable = miPrimeraVariable + 5;
-						// miPrimeraVariable ahora es 10
+                        // miPrimeraVariable ahora es 10
 miPrimeraVariable *= 10; // ahora miPrimeraVariable es 100
 
 // Y atajos aún más cortos para sumar y restar 1
@@ -133,7 +133,7 @@ miPrimeraVariable--; // de vuelta a 100
 // Los arreglos son listas ordenadas de valores, de cualquier tipo.
 var miArreglo = ["Hola", 45, true];
 
-// Los miembros de un arreglo pueden ser accesados con la sintaxis 
+// Los miembros de un arreglo pueden ser accesados con la sintaxis
 // de indices dentro de corchetes [].
 // Los índices empiezan en cero.
 miArreglo[1]; // = 45
@@ -170,7 +170,7 @@ miObjeto.miCuartaLlave; // = undefined
 ///////////////////////////////////
 // 3. Lógica y estructura de control
 
-// La sintaxis de esta sección es casi idéntica a la de Java. 
+// La sintaxis de esta sección es casi idéntica a la de Java.
 
 // La estructura if funciona de la misma forma.
 var contador = 1;
@@ -212,8 +212,8 @@ var nombre = otroNombre || "default";
 
 
 // la estructura switch usa === para sus comparaciones
-// usa 'break' para terminar cada caso 
-// o los casos después del caso correcto serán ejecutados también. 
+// usa 'break' para terminar cada caso
+// o los casos después del caso correcto serán ejecutados también.
 calificacion = 'B';
 switch (calificacion) {
   case 'A':
@@ -242,7 +242,7 @@ function miFuncion(miArgumentoString){
 miFuncion("foo"); // = "FOO"
 
 // Note que el valor a ser regresado debe estar en la misma línea que la
-// palabra clave 'return', de otra forma la función siempre regresará 'undefined' 
+// palabra clave 'return', de otra forma la función siempre regresará 'undefined'
 // debido a la inserción automática de punto y coma.
 function miFuncion()
 {
@@ -275,7 +275,7 @@ if (true){
 }
 i; // = 5 - en un lenguaje que da ámbitos por bloque esto sería undefined, pero no aquí.
 
-// Este conlleva a un patrón de diseño común llamado "ejecutar funciones anónimas 
+// Este conlleva a un patrón de diseño común llamado "ejecutar funciones anónimas
 //inmediatamente", que preveé variables temporales de fugarse al ámbito global
 (function(){
     var temporal = 5;
@@ -289,7 +289,7 @@ permanente; // = 10
 
 // Una de las características más útiles de JavaScript son los closures.
 // Si una función es definida dentro de otra función, la función interna tiene acceso
-// a todas las variables de la función externa, incluso aunque la función 
+// a todas las variables de la función externa, incluso aunque la función
 // externa ya haya terminado.
 function decirHolaCadaCincoSegundos(nombre){
     var texto = "¡Hola, " + nombre + "!";
@@ -299,7 +299,7 @@ function decirHolaCadaCincoSegundos(nombre){
         alert(texto);
     }
     setTimeout(interna, 5000);
-    // setTimeout es asíncrono, así que la función decirHolaCadaCincoSegundos 
+    // setTimeout es asíncrono, así que la función decirHolaCadaCincoSegundos
     // terminará inmediatamente, y setTimeout llamará a interna() a los cinco segundos
     // Como interna está "cerrada dentro de" decirHolaCadaCindoSegundos, interna todavía tiene
     // acceso a la variable 'texto' cuando es llamada.
@@ -317,7 +317,7 @@ var miObjeto = {
 };
 miObjeto.miFuncion(); // = "¡Hola Mundo!"
 
-// Cuando las funciones de un objeto son llamadas, pueden acceder a las variables 
+// Cuando las funciones de un objeto son llamadas, pueden acceder a las variables
 // del objeto con la palabra clave 'this'.
 miObjeto = {
     miString: "¡Hola Mundo!",
@@ -351,7 +351,7 @@ otraFuncion.call(miObjeto, " y hola Luna!"); // = "¡Hola Mundo! y hola Luna!"
 
 otraFuncion.apply(miObjeto, [" y hola Sol!"]); // = "¡Hola Mundo! y hola Sol!"
 
-// Esto es útil cuando estás trabajando con una función que acepta una secuencia de 
+// Esto es útil cuando estás trabajando con una función que acepta una secuencia de
 // argumentos y quieres pasar un arreglo.
 
 Math.min(42, 6, 27); // = 6
@@ -383,7 +383,7 @@ miNuevoObjeto.miNumero; // = 5
 // propiedad en un objeto que no existe en el objeto el intérprete buscará en
 // el prototipo.
 
-// Algunas implementaciones de JavaScript te permiten acceder al prototipo de 
+// Algunas implementaciones de JavaScript te permiten acceder al prototipo de
 // un objeto con la propiedad __proto__. Mientras que esto es útil para explicar
 // prototipos, no es parte del estándar; veremos formas estándar de usar prototipos
 // más adelante.
@@ -404,20 +404,20 @@ miObjeto.sentidoDeLaVida; // = 42
 // Esto funcionan también para funciones.
 miObjeto.miFuncion(); // = "hello world!"
 
-// Por supuesto, si la propiedad que buscas no está en el prototipo, 
+// Por supuesto, si la propiedad que buscas no está en el prototipo,
 // se buscará en el prototipo del prototipo.
 miPrototipo.__proto__ = {
     miBoolean: true
 };
 miObjeto.miBoolean; // = true
 
-// Esto no involucra ningún copiado, cada objeto guarda una referencia a su 
+// Esto no involucra ningún copiado, cada objeto guarda una referencia a su
 // prototipo. Esto significa que podemos alterar el prototipo y nuestros
 // cambios serán reflejados en todos lados.
 miPrototipo.sentidoDeLaVida = 43;
 miObjeto.sentidoDeLaVida; // = 43
 
-// Mencionabamos anteriormente que __proto__ no está estandarizado, y que no 
+// Mencionabamos anteriormente que __proto__ no está estandarizado, y que no
 // existe una forma estándar de acceder al prototipo de un objeto. De todas formas.
 // hay dos formas de crear un nuevo objeto con un prototipo dado.
 
@@ -426,7 +426,7 @@ miObjeto.sentidoDeLaVida; // = 43
 var miObjeto = Object.create(miPrototipo);
 miObjeto.sentidoDeLaVida; // = 43
 
-// El segundo método, el cual trabaja en todos lados, tiene que ver con los 
+// El segundo método, el cual trabaja en todos lados, tiene que ver con los
 // constructores. Los constructores tienen una propiedad llamada prototype.
 // Este NO ES el prototipo de la función constructor; es el prototipo que
 // se le da a los nuevos objetos cuando son creados con la palabra clave
@@ -458,7 +458,7 @@ if (0){
 }
 
 // Aún así, los objetos que envuelven y los prototipos por defecto comparten
-// un prototipo. así que puedes agregar funcionalidades a un string de la 
+// un prototipo. así que puedes agregar funcionalidades a un string de la
 // siguiente forma:
 String.prototype.primerCaracter = function(){
     return this.charAt(0);
@@ -473,7 +473,7 @@ String.prototype.primerCaracter = function(){
 // las implementaciones, pero podemos hacerlo con polyfill:
 if (Object.create === undefined){ // esta validación sirve para no sobreescribir
     Object.create = function(proto){
-    	// hace un constructor temporal con el prototipo correcto
+        // hace un constructor temporal con el prototipo correcto
         var Constructor = function(){};
         Constructor.prototype = proto;
         // y luego lo usamos para hacer un objeto con el prototipo

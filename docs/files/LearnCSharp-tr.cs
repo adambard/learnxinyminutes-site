@@ -1,5 +1,5 @@
 
-// Tek satırlık yorumlar // ile başlar 
+// Tek satırlık yorumlar // ile başlar
 /*
 Birden fazla satırlı yorumlar buna benzer
 */
@@ -26,7 +26,7 @@ namespace Learning
     public class LearnCSharp
     {
         // TEMEL SÖZ DİZİMİ - daha önce Java ya da C++ kullandıysanız İLGİNÇ ÖZELLİKLER'e geçin
-        public static void Syntax() 
+        public static void Syntax()
         {
             // Satırları yazdırmak için Console.WriteLine kullanın
             Console.WriteLine("Merhaba Dünya");
@@ -91,7 +91,7 @@ namespace Learning
             string fooString = "\"escape\" quotes and add \n (new lines) and \t (tabs)";
             Console.WriteLine(fooString);
 
-            // İndeks numarası kullanarak bir string'in bütün karakterlerine erişilebilirsiniz: 
+            // İndeks numarası kullanarak bir string'in bütün karakterlerine erişilebilirsiniz:
             char charFromString = fooString[1]; // => 'e'
             // String'ler değiştirilemez: fooString[1] = 'X' işlemini yapamazsınız;
 
@@ -109,7 +109,7 @@ namespace Learning
             string bazString = @"Here's some stuff
 on a new line! ""Wow!"", the masses cried";
 
-            // Bir değişkeni değiştirilemez yapmak için const ya da read-only kullanın. 
+            // Bir değişkeni değiştirilemez yapmak için const ya da read-only kullanın.
             // const değerleri derleme sırasında hesaplanır
             const int HOURS_I_WORK_PER_WEEK = 9001;
 
@@ -337,7 +337,7 @@ on a new line! ""Wow!"", the masses cried";
         //
         // İLGİNÇ ÖZELLİKLER
         //
-        
+
         // VARSAYILAN METOD TANIMLAMALARI
 
         public // Görünebilir
@@ -349,7 +349,7 @@ on a new line! ""Wow!"", the masses cried";
             int another = 3,
             params string[] otherParams // Metoda gönderilen diğer bütün parametreleri alır
         )
-        { 
+        {
             return -1;
         }
 
@@ -362,8 +362,8 @@ on a new line! ""Wow!"", the masses cried";
         // TKey ve TValue değerleri kullanıcı tarafından bu fonksiyon çağırılırken belirtilir.
         // Bu metod Python'daki SetDefault'a benzer
         public static TValue SetDefault<TKey, TValue>(
-            IDictionary<TKey, TValue> dictionary, 
-            TKey key, 
+            IDictionary<TKey, TValue> dictionary,
+            TKey key,
             TValue defaultItem)
         {
             TValue result;
@@ -408,7 +408,7 @@ on a new line! ""Wow!"", the masses cried";
 
             // GENERIC'LER
             //
-            var phonebook = new Dictionary<string, string>() { 
+            var phonebook = new Dictionary<string, string>() {
                 {"Sarah", "212 555 5555"} // Telefon rehberine bir kaç numara ekleyelim.
             };
 
@@ -429,19 +429,19 @@ on a new line! ""Wow!"", the masses cried";
                 writer.WriteLine("Nothing suspicious here");
                 // Bu bölümün sonunda kaynaklar temilenir.
                 // Hata fırlatılmış olsa bile.
-            } 
+            }
 
             // PARALEL FRAMEWORK
             // http://blogs.msdn.com/b/csharpfaq/archive/2010/06/01/parallel-programming-in-net-framework-4-getting-started.aspx
-            var websites = new string[] { 
-                "http://www.google.com", "http://www.reddit.com", 
+            var websites = new string[] {
+                "http://www.google.com", "http://www.reddit.com",
                 "http://www.shaunmccarthy.com"
             };
             var responses = new Dictionary<string, string>();
-            
-            // Her istek farklı bir thread de işlem görecek 
+
+            // Her istek farklı bir thread de işlem görecek
             // bir sonraki işleme geçmeden birleştirilecek.
-            Parallel.ForEach(websites, 
+            Parallel.ForEach(websites,
                 new ParallelOptions() {MaxDegreeOfParallelism = 3}, // en fazla 3 thread kullanmak için
                 website =>
             {
@@ -486,7 +486,7 @@ on a new line! ""Wow!"", the masses cried";
             // ASPARALLEL
             // Linq ve paralel işlemlerini birleştirme
             var threeWheelers = bikes.AsParallel().Where(b => b.Wheels == 3).Select(b => b.Name);
-            // bu paralel bir şekilde gerçekleşecek! Threadler otomatik ve sihirli bir şekilde işleri paylaşacak! 
+            // bu paralel bir şekilde gerçekleşecek! Threadler otomatik ve sihirli bir şekilde işleri paylaşacak!
             // Birden fazla çekirdeğiniz varsa büyük veri setleri ile kullanmak için oldukça uygun bir yapı.
 
             // LINQ - IQueryable<T> objelerini mapler ve saklar, gecikmeli bir işlemdir
@@ -504,9 +504,9 @@ on a new line! ""Wow!"", the masses cried";
                 .Select(b => b.Name); // hala sorgu çalışmadı
 
             // Şimdi sorgu çalışıyor, reader'ı açar ama sadece sizin sorgunuza uyanlar foreach döngüsüne girer.
-            foreach (string bike in query) 
+            foreach (string bike in query)
                 Console.WriteLine(result);
-            
+
 
 
         }
@@ -589,7 +589,7 @@ on a new line! ""Wow!"", the masses cried";
 
         // Kurucular sınıf oluşturmanın bir yoludur
         // Bu bir varsayılan kurucudur.
-        public Bicycle() 
+        public Bicycle()
         {
             this.Gear = 1; // bu objenin üyelerine this anahtar kelimesi ile ulaşılır
             Cadence = 50;  // ama her zaman buna ihtiyaç duyulmaz
@@ -601,13 +601,13 @@ on a new line! ""Wow!"", the masses cried";
 
         // Bu belirlenmiş bir kurucudur. (argümanlar içerir)
         public Bicycle(int startCadence, int startSpeed, int startGear,
-                       string name, bool hasCardsInSpokes, BikeBrand brand) 
+                       string name, bool hasCardsInSpokes, BikeBrand brand)
             : base() // önce base'i çağırın
         {
-            Gear = startGear; 
+            Gear = startGear;
             Cadence = startCadence;
             _speed = startSpeed;
-            Name = name; 
+            Name = name;
             _hasCardsInSpokes = hasCardsInSpokes;
             Brand = brand;
         }
@@ -646,7 +646,7 @@ on a new line! ""Wow!"", the masses cried";
             set { _hasTassles = value; }
         }
 
-        // Ayrıca tek bir satırda otomatik property tanımlayabilirsiniz. 
+        // Ayrıca tek bir satırda otomatik property tanımlayabilirsiniz.
         // bu söz dizimi otomatik olarak alan oluşturacaktır.
         // Erişimi kısıtlamak için nitelik belirleyiciler getter veya setter'a ya da ikisine birden atanabilir:
         public bool IsBroken { get; private set; }
