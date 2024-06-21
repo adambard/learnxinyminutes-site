@@ -67,7 +67,7 @@ $ docker ps -a
 
 $ docker stop hello-world
 # or
-$ docker start hello-world 
+$ docker start hello-world
 # The stop command simply stops one or more containers, and the start command
 # starts the container(s) up again! `docker start -a ubuntu` will attach our
 # detached container back to the terminal i.e. runs in the foreground
@@ -93,7 +93,7 @@ $ docker images
 # alpine        latest    9c6f07244728   3 months ago    5.54MB
 # hello-world   latest    feb5d9fea6a5   13 months ago   13.3kB
 
-$ docker rmi 
+$ docker rmi
 # Removes one or more images from your system which do not have their instances
 # (or containers as we know them) running. If the image has an attached
 # container, either delete the container first or use the -f (or --force) flag
@@ -139,7 +139,7 @@ ENTRYPOINT ["some-script.sh"]
 # executes an entire script as an entrypoint
 
 CMD [<args>,...]
-# always part of dockerfile, introduces entry point linux command e.g. 
+# always part of dockerfile, introduces entry point linux command e.g.
 # `CMD node server.js`
 # This executes after image creation only when the container from the image
 # is running.

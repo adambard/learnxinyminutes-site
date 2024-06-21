@@ -271,7 +271,7 @@ def clos = { print it }
 clos( "hi" )
 
 /*
-  Groovy pot recordar els resultats dels Closures [1][2][3]
+  Groovy pot recordar els resultats dels Closures
 */
 def cl = {a, b ->
     sleep(3000) // simula un procés llarg

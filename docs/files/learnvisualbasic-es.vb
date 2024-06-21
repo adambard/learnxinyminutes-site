@@ -10,7 +10,7 @@ Module Module1
         ' Dicho sistema se explicará a medida que avancemos en este
         ' tutorial; gradualmente entenderás lo que significa todo.
         Console.Title = ("Aprende X en Y minutos")
-        Console.WriteLine("NAVEGACIÓN") 'Mostrar 
+        Console.WriteLine("NAVEGACIÓN") 'Mostrar
         Console.WriteLine("")
         Console.ForegroundColor = ConsoleColor.Green
         Console.WriteLine("1. Salida «Hola, mundo»")
@@ -32,7 +32,7 @@ Module Module1
             Case "2" 'Entrada «hola, mundo»
                 Console.Clear()
                 EntradaHolaMundo()
-            Case "3" 'Calcular números enteros 
+            Case "3" 'Calcular números enteros
                 Console.Clear()
                 CalcularNumerosEnteros()
             Case "4" 'Calcular números decimales
@@ -67,7 +67,7 @@ Module Module1
     'Uno - He usado números para guiarme por el sistema de navegación anterior
     'cuando regrese posteriormente a implementarlo.
 
-    'Usamos subrutinas privadas para separar distintas secciones del programa. 
+    'Usamos subrutinas privadas para separar distintas secciones del programa.
     Private Sub SalidaHolaMundo()
         'Título de la aplicación de consola
         Console.Title = "Salida «Hola, mundo» | Aprende X en Y minutos"
@@ -202,7 +202,7 @@ Module Module1
         Console.Title = "Uso de bucles «For» | Aprende X en Y minutos"
         'Declarar Variable y desde qué número debe contar en Step -1,
         'Step -2, Step -3, etc.
-        For i As Integer = 10 To 0 Step -1 
+        For i As Integer = 10 To 0 Step -1
             Console.WriteLine(i.ToString) 'Muestra el valor del contador
         Next i 'Calcular el valor nuevo
         Console.WriteLine("Iniciar") '¡¡Comencemos el programa, nene!!

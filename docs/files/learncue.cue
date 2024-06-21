@@ -11,7 +11,7 @@ disposition: "oblivious"
     "disposition": "oblivious"
 }
 
-% cue export --out yaml name.cue disposition.cue 
+% cue export --out yaml name.cue disposition.cue
 name: Daniel
 disposition: oblivious
 
@@ -24,7 +24,7 @@ foo: "baz"
 //integer_value.cue
 foo: 100
 
-% cue export string_value.cue integer_value.cue 
+% cue export string_value.cue integer_value.cue
 foo: conflicting values "baz" and 100 (mismatched types string and int):
     integer_value.cue:1:6
     string_value.cue:1:6
@@ -258,7 +258,7 @@ j: 8 < 10        // and supports boolean ops
 price: number
 // Require a justification if price is too high
 if price > 100 {
-	justification: string
+    justification: string
 }
 price:         200
 justification: "impulse buy"
@@ -270,11 +270,11 @@ comp: [ for x in #items if x rem 2 == 0 {x*x}]
 // and... well you can do this too
 #a: [ "Apple", "Google", "SpaceX"]
 for k, v in #a {
-	"\( strings.ToLower(v) )": {
-		pos:     k + 1
-		name:    v
-		nameLen: len(v)
-	}
+    "\( strings.ToLower(v) )": {
+        pos:     k + 1
+        name:    v
+        nameLen: len(v)
+    }
 }
 
 % cue export getting-out-of-hand-now.cue

@@ -32,10 +32,10 @@ fn main() {
     let f: f64 = 1.3f64;
 
     // Inferência de tipos
-    // Em geral, o compilador Rust consegue inferir qual o tipo de uma 
+    // Em geral, o compilador Rust consegue inferir qual o tipo de uma
     // variável, então você não tem que escrever uma anotação explícita de tipo.
-    // Ao longo desse tutorial, os tipos serão explicitamente anotados em 
-    // muitos lugares, mas apenas com propósito demonstrativo. A inferência de 
+    // Ao longo desse tutorial, os tipos serão explicitamente anotados em
+    // muitos lugares, mas apenas com propósito demonstrativo. A inferência de
     // tipos pode gerenciar isso na maioria das vezes.
     let implicit_x = 1;
     let implicit_f = 1.3;
@@ -61,7 +61,7 @@ fn main() {
 
     // Uma String slice - uma visão imutável em outra string.
     // Basicamente, isso é um par imutável de ponteiros para uma string - ele
-    // não contém o conteúdo de uma strinf, apenas um ponteiro para o começo e 
+    // não contém o conteúdo de uma strinf, apenas um ponteiro para o começo e
     // um ponteiro para o fim da área de memória para a string, estaticamente
     // alocada ou contida em outro objeto (nesse caso, `s`)
     let s_slice: &str = &s;
@@ -246,7 +246,7 @@ fn main() {
     // automaticamente desalocado com segurança.
     let mut mine: Box<i32> = Box::new(3);
     *mine = 5; // dereference
-    // Aqui, `now_its_mine` possui o controle exclusivo de `mine`. Em outras 
+    // Aqui, `now_its_mine` possui o controle exclusivo de `mine`. Em outras
     // palavras, `mine` tem o controle transferido.
     let mut now_its_mine = mine;
     *now_its_mine += 2;

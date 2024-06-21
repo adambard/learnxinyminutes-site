@@ -31,8 +31,8 @@ my %fruit_couleur = ("pomme", "rouge", "banane", "jaune");
 # Vous pouvez utiliser des espaces et l'opérateur "=>" pour les disposer plus joliment :
 
 my %fruit_couleur = (
-	pomme  => "rouge",
-	banane => "jaune"
+  pomme  => "rouge",
+  banane => "jaune"
 );
 
 # Les scalaires, tableaux et hashes sont plus amplement documentés dans le perldata
@@ -88,7 +88,7 @@ for my $element (@elements) {
 # de la plupart des fonctions pour en simplifier l'écriture.
 
 # Dans l'exemple suivant, $_ prends successivement la valeur de
-# chaque élément de la liste.  
+# chaque élément de la liste.
 
 for (@elements) {
   print; # affiche le contenu de $_

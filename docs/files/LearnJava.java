@@ -867,7 +867,7 @@ import java.security.SecureRandom;
 public class Lambdas {
     public static void main(String[] args) {
         // Składnia deklaracji lambdy:
-	    // <zero lub więcej parametrów> -> <ciało wyrażenia lub blok instrukcji>
+        // <zero lub więcej parametrów> -> <ciało wyrażenia lub blok instrukcji>
 
         // Poniżej w przykładzie użyjemy tablicy z hashowaniem.
         Map<String, String> planety = new HashMap<>();

@@ -3,22 +3,22 @@ import sys
 from PyQt4 import QtGui
 
 def window():
-	# Crea un oggetto applicazione
+    # Crea un oggetto applicazione
     app = QtGui.QApplication(sys.argv)
-	# Crea un widget in cui verrà inserita la nostra etichetta
+    # Crea un widget in cui verrà inserita la nostra etichetta
     w = QtGui.QWidget()
-	# Aggiungi un'etichetta al widget
+    # Aggiungi un'etichetta al widget
     b = QtGui.QLabel(w)
-	# Imposta del testo per l'etichetta
+    # Imposta del testo per l'etichetta
     b.setText("Ciao Mondo!")
-	# Fornisce informazioni su dimensioni e posizionamento
+    # Fornisce informazioni su dimensioni e posizionamento
     w.setGeometry(100, 100, 200, 50)
     b.move(50, 20)
-	# Dai alla nostra finestra un bel titolo
+    # Dai alla nostra finestra un bel titolo
     w.setWindowTitle("PyQt")
-	# Visualizza tutto
+    # Visualizza tutto
     w.show()
-	# Esegui ciò che abbiamo chiesto, una volta che tutto è stato configurato
+    # Esegui ciò che abbiamo chiesto, una volta che tutto è stato configurato
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
@@ -37,7 +37,7 @@ def window():
     b.setText("Premimi")
     b.move(50, 50)
     # Indica a b di chiamare questa funzione quando si fa clic
-    # notare la mancanza di "()" sulla chiamata di funzione
+    # notare la mancanza di "()" sulla chiamata di funzione
     b.clicked.connect(showdialog)
     w.setWindowTitle("PyQt Dialog")
     w.show()

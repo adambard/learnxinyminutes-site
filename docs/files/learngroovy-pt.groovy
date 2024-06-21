@@ -275,7 +275,7 @@ def clos = { print it }
 clos( "oi" )
 
 /*
-  Groovy pode memorizar resultados de closures [1][2][3]
+  Groovy pode memorizar resultados de closures
 */
 def cl = {a, b ->
     sleep(3000) //  simula processamento
@@ -303,7 +303,7 @@ chamaClosure(3, 4)
 /*
   Expando
 
-  A classe Expando é um bean dinâmico que permite adicionar propriedades e 
+  A classe Expando é um bean dinâmico que permite adicionar propriedades e
   closures como métodos a uma instância desta classe
 
   http://mrhaki.blogspot.mx/2009/10/groovy-goodness-expando-as-dynamic-bean.html

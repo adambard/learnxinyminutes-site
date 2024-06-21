@@ -256,7 +256,7 @@ def clos = { print it }
 clos( "hi" )
 
 /*
-  Groovy可以记忆闭包结果 [1][2][3]
+  Groovy可以记忆闭包结果
 */
 def cl = {a, b ->
     sleep(3000) // 模拟费时操作

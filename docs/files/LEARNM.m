@@ -22,9 +22,9 @@ fib ; compute the first few Fibonacci terms
 ;
 ;   Truthvalues - String interpreted as 0  is used for false and any string interpreted as non-zero (such as 1) for true.
 
-WRITE !,"hello world" 
+WRITE !,"hello world"
 
-w !,"foo bar"," ","baz" 
+w !,"foo bar"," ","baz"
 
 READ var
 r !,"Wherefore art thou Romeo? ",why
@@ -46,7 +46,7 @@ s ^cars("Tesla",1,"Name")="Model 3"
 s ^cars("Tesla",2,"Name")="Model X"
 s ^cars("Tesla",2,"Doors")=5
 
-w !,^cars 
+w !,^cars
 ; 20
 w !,^cars("Tesla")
 ; null value - there's no value assigned to this node but it has children
@@ -63,18 +63,18 @@ s ^TEMPS("11/12","1700",43)=""
 ; Unary:            +   Convert a string value into a numeric value.
 ; Arthmetic:
 ;                   +   addition
-­;                   -   subtraction
+;                   -   subtraction
 ;                   *   multiplication
 ;                   /   floating-point division
 ;                   \   integer division
 ;                   #   modulo
 ;                   **  exponentiation
-; Logical:  
+; Logical:
 ;                   &   and
 ;                   !   or
 ;                   '   not
 ; Comparison:
-;                   =   equal 
+;                   =   equal
 ;                   '=  not equal
 ;                   >   greater than
 ;                   <   less than
@@ -82,7 +82,7 @@ s ^TEMPS("11/12","1700",43)=""
 ;                   '<  not less / greater than or equal to
 ; String operators:
 ;                   _   concatenate
-;                   [   contains ­          a contains b 
+;                   [   contains ­          a contains b
 ;                   ]]  sorts after  ­      a comes after b
 ;                   '[  does not contain
 ;                   ']] does not sort after
@@ -90,28 +90,28 @@ s ^TEMPS("11/12","1700",43)=""
 w 5+3*20
 ;160
 ;You probably wanted 65
-write 5+(3*20) 
+write 5+(3*20)
 
 ; Execute the 'tag' function, which has two parameters, and write the result.
-w !,$$tag^routine(a,b) 
+w !,$$tag^routine(a,b)
 
-d ^routine    ;run a routine from the beginning. 
+d ^routine    ;run a routine from the beginning.
 ;             ;routines are identified by a caret.
 d tag         ;run a tag in the current routine
 d tag^routine ;run a tag in different routine
 
 set a=1
-if a=1 do  
+if a=1 do
 . write !,a
 . read b
 . if b > 10 d
-. . w !, b 
+. . w !, b
 w "hello"
 
 ; RECTANGLE - a routine to deal with rectangle math
     q ; quit if a specific tag is not called
 
-main 
+main
     n length,width ; New length and width so any previous value doesn't persist
     w !,"Welcome to RECTANGLE. Enter the dimensions of your rectangle."
     r !,"Length? ",length,!,"Width? ",width
@@ -120,7 +120,7 @@ main
     w !,"Perimeter: ",per
     quit
 
-area(length,width)  ; This is a tag that accepts parameters. 
+area(length,width)  ; This is a tag that accepts parameters.
                     ; It's not a function since it quits with no value.
     w !, "Area: ",length*width
     q  ; Quit: return to the previous level of the stack.
@@ -132,11 +132,11 @@ perimeter(length,width)
 ;f var=start:increment:stop
 
 f i=0:5:25 w i," "
-;0 5 10 15 20 25 
+;0 5 10 15 20 25
 
 ; Infinite loop with counter
 ; The counter will keep incrementing forever. Use a conditional with Quit to get out of the loop.
-;f var=start:increment 
+;f var=start:increment
 
 f j=1:1 w j," " i j>1E3 q
 ; Print 1-1000 separated by a space
@@ -144,7 +144,7 @@ f j=1:1 w j," " i j>1E3 q
 ;Argumentless for - infinite loop. Use a conditional with Quit.
 ;   Also read as "forever" - f or for followed by two spaces.
 s var=""
-f  s var=var_"%" w !,var i var="%%%%%%%%%%" q  
+f  s var=var_"%" w !,var i var="%%%%%%%%%%" q
 ; %
 ; %%
 ; %%%
@@ -204,7 +204,7 @@ f  s date=$ORDER(^TEMPS(date)) q:date=""  d
 . f  s time=$O(^TEMPS(date,time)) q:time=""  d
 . . w !,"Time: ",time
 
-; Build an index that sorts first by temperature - 
+; Build an index that sorts first by temperature -
 ; what dates and times had a given temperature?
 n date,time,temp
 f  s date=$ORDER(^TEMPS(date)) q:date=""  d
