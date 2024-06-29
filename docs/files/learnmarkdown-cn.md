@@ -117,6 +117,11 @@ John 甚至不知道 `go_to()` 函数是干嘛的!
 [This][] is a link.
 [This]: http://thisisalink.com/
 
+- [Heading](#heading)
+- [Another heading](#another-heading)
+- [Chapter](#chapter)
+  - [Subchapter <h3 />](#subchapter-h3-)
+
 ![这是alt,请把鼠标放在图片上](http://imgur.com/myimage.jpg "这是title")
 
 ![这是alt][myimage]
