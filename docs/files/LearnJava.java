@@ -1,228 +1,225 @@
 
-// Pojedyncze komentarze oznaczamy //
+// Single-line comments start with //
 
 /*
-Komentarze wieloliniowe wyglądają tak
+Multi-line comments look like this.
 */
 
 /**
- * Komentarze JavaDoc wygladają w ten sposób. Używane są do opisu klas lub
- * różnych właściwości klas.
- * Główne właściwości:
+ * JavaDoc comments look like this. Used to describe the Class or various
+ * attributes of a Class.
+ * Main attributes:
  *
- * @author      Imię i nazwisko (i kontakt np. email) autora.
- * @version     Aktualna wersja programu.
- * @since       Kiedy ta część programu została dodana.
- * @param       Służy do opisu parametrów metody.
- * @return      Służy do opisu zwracanej wartości.
- * @deprecated  Służy do oznaczenia nieaktualnego lub niezalecanego kodu.
- * @see         Linki do innej cześci dokumentacji.
+ * @author         Name (and contact information such as email) of author(s).
+ * @version     Current version of the program.
+ * @since        When this part of the program was first added.
+ * @param         For describing the different parameters for a method.
+ * @return        For describing what the method returns.
+ * @deprecated  For showing the code is outdated or shouldn't be used.
+ * @see         Links to another part of documentation.
 */
 
-// Import klasy ArrayList z paczki java.util
+// Import ArrayList class inside of the java.util package
 import java.util.ArrayList;
-// Import wszystkich klas z paczki java.security
+// Import all classes inside of java.security package
 import java.security.*;
 
 public class LearnJava {
 
-    // Aby móc uruchomić program w języku java musi on mieć główną metodę jako
-    // punkt wejścia.
+    // In order to run a java program, it must have a main method as an entry
+    // point.
     public static void main(String[] args) {
 
     ///////////////////////////////////////
-    // Operacje wejścia/wyjścia (input/output)
+    // Input/Output
     ///////////////////////////////////////
 
         /*
-        * Wyjście
+        * Output
         */
 
-        // System.out.println() służy do wyświetlania linii tekstu.
+        // Use System.out.println() to print lines.
         System.out.println("Hello World!");
         System.out.println(
             "Integer: " + 10 +
             " Double: " + 3.14 +
             " Boolean: " + true);
 
-        // Aby wyświetlić  bez nowej linii użyj System.out.print().
+        // To print without a newline, use System.out.print().
         System.out.print("Hello ");
         System.out.print("World");
 
-        // System.out.printf() służy do łatwego formatowania wyświetlanego elementu.
+        // Use System.out.printf() for easy formatted printing.
         System.out.printf("pi = %.5f", Math.PI); // => pi = 3.14159
 
         /*
-         * Wejście
+         * Input
          */
 
-        // Scanner służy do wczytywania danych
-        // niezbędny jest import java.util.Scanner;
+        // use Scanner to read input
+        // must import java.util.Scanner;
         Scanner scanner = new Scanner(System.in);
 
-        // zczytaj string (tekst)
+        // read string input
         String name = scanner.next();
 
-        // zczytaj zmienną typu bajt
+        // read byte input
         byte numByte = scanner.nextByte();
 
-        // zczytaj zmienną typu integer - liczba całkowita
+        // read int input
         int numInt = scanner.nextInt();
 
-        // zczytaj zmienną typu float - liczba zmiennoprzecinkowa
+        // read long input
+        long numLong = scanner.nextLong();
+
+        // read float input
         float numFloat = scanner.nextFloat();
 
-        // zczytaj zmienna typu double -liczba zmiennoprzecinkowa
+        // read double input
         double numDouble = scanner.nextDouble();
 
-        // zczytaj zmienną typu boolowskiego -
+        // read boolean input
         boolean bool = scanner.nextBoolean();
 
         ///////////////////////////////////////
-        // Zmienne
+        // Variables
         ///////////////////////////////////////
 
         /*
-        *  Deklaracja zmiennych
+        *  Variable Declaration
         */
-        // Zmienną deklaruje się poprzez <rodzaj> <nazwa>
+        // Declare a variable using <type> <name>
         int fooInt;
-        // Dozwolona jest deklaracja wielu zmiennych tego samego typu na raz
-        // rodzaj <nazwa1>, <nazwa2>, <nazwa3>
+        // Declare multiple variables of the same
+        // type <type> <name1>, <name2>, <name3>
         int fooInt1, fooInt2, fooInt3;
 
         /*
-        *  Inicjalizacja zmiennych
+        *  Variable Initialization
         */
 
-        // Zmienną inicjalizuje się poprzez <rodzaj> <nazwa> = <wartość>
+        // Initialize a variable using <type> <name> = <val>
         int barInt = 1;
-        // Możliwe jest zainicjalizowanie wielu zmiennych tego samego typu tą samą wartością
-        // rodzaj <nazwa1>, <nazwa2>, <nazwa3>
-        // <nazwa1> = <nazwa2> = <nazwa3> = <wartość>
+        // Initialize multiple variables of same type with same
+        // value <type> <name1>, <name2>, <name3>
+        // <name1> = <name2> = <name3> = <val>
         int barInt1, barInt2, barInt3;
         barInt1 = barInt2 = barInt3 = 1;
+	// Shorthand for multiple declarations
+	int barInt4 = 1, barInt5 = 2; 
+
 
         /*
-        *  Rodzaje zmiennych
+        *  Variable types
         */
-        // Bajt - 8-bitowa, zawierająca ujemne wartości zmienna w dwójkowym
-        // systemie pozycyjnym
+        // Byte - 8-bit signed two's complement integer
         // (-128 <= byte <= 127)
         byte fooByte = 100;
 
-        // Jeśli chcemy zinterpretować bajt jako zmienną typu unsigned integer
-        // - liczbę całkowitą z wartościami ujemnymi ta operacja może pomóc:
+        // If you would like to interpret a byte as an unsigned integer
+        // then this simple operation can help
         int unsignedIntLessThan256 = 0xff & fooByte;
-        // jako kontrast operacja zmiany typu która może zwrócić wartość ujemną.
+        // this contrasts a cast which can be negative.
         int signedInt = (int) fooByte;
 
-        // Short - 16-bitowa, zawierająca ujemne wartości zmienna w dwójkowym
-        // systemie pozycyjnym (-32,768 <= short <= 32,767)
+        // Short - 16-bit signed two's complement integer
+        // (-32,768 <= short <= 32,767)
         short fooShort = 10000;
 
-        // Integer - 32-bitowa, zawierająca ujemne wartości zmienna w dwójkowym systemie pozycyjnym
+        // Integer - 32-bit signed two's complement integer
         // (-2,147,483,648 <= int <= 2,147,483,647)
         int bazInt = 1;
 
-        // Long - 64-bitowa, zawierająca ujemne wartości zmienna w dwójkowym
-        // systemie pozycyjnym
+        // Long - 64-bit signed two's complement integer
         // (-9,223,372,036,854,775,808 <= long <= 9,223,372,036,854,775,807)
         long fooLong = 100000L;
-        // L jest używane do zaznaczenia, że wartość zmiennej jest typu Long;
-        // bez L wszystko inne będzie traktowane z założenia jako integer.
+        // L is used to denote that this variable value is of type Long;
+        // anything without is treated as integer by default.
 
-        // Uwaga: byte, short, int and long zawierają ujemne wartości.
-        // Nie istnieją odpowiedniki z jedynie pozytywnymi wartościami.
-        // Jedynie char jest 16-bitowym typem zmiennej, który akceptuje tylko
-        // wartości nieujemne.
+        // Note: byte, short, int and long are signed. They can have positive and negative values.
+        // There are no unsigned variants.
+        // char, however, is 16-bit unsigned.
 
-        // Float - 32-bitowy typ zmiennoprzecinkowy zgodnie z IEEE 754
-        // Floating Point 2^-149 <= float <= (2-2^-23) * 2^127
+        // Float - Single-precision 32-bit IEEE 754 Floating Point
+        // 2^-149 <= float <= (2-2^-23) * 2^127
         float fooFloat = 234.5f;
-        // f or F jest używane aby zaznaczyć, że dana zmienna jest typu float;
-        // w przeciwnym razie będzie ona traktowana jako double.
+        // f or F is used to denote that this variable value is of type float;
+        // otherwise it is treated as double.
 
-        // Double -  64-bitowy typ zmiennoprzecinkowy zgodnie z IEEE 754
-        // Floating Point 2^-1074 <= x <= (2-2^-52) * 2^1023
+        // Double - Double-precision 64-bit IEEE 754 Floating Point
+        // 2^-1074 <= x <= (2-2^-52) * 2^1023
         double fooDouble = 123.4;
 
-        // Typ boolowski - true/prawda & false/fałsz
+        // Boolean - true & false
         boolean fooBoolean = true;
         boolean barBoolean = false;
 
-        // Char - pojedynczy 16-bitowy symbol Unicode
+        // Char - A single 16-bit Unicode character
         char fooChar = 'A';
 
-        // zmienne zadeklarowane z użyciem final nie mogą być edytowane,
+        // final variables can't be reassigned,
         final int HOURS_I_WORK_PER_WEEK = 9001;
-        // ale możliwa jest późniejsza inicjalizacja.
+        // but they can be initialized later.
         final double E;
         E = 2.71828;
 
-        // BigInteger - Nieedytowalny typ zmiennej o nieograniczonej długości
-        // dla liczb całkowitych
+        // BigInteger - Immutable arbitrary-precision integers
         //
-        // BigInteger jest typem zmiennej, który pozwala na operacje na liczbach całkowitych dłuższych niż 64 bity.
-        // Liczby są przechowywane jako tablica bajtów
-        // i modyfikowane za pomocą funkcji wbudowanych w BigInteger
+        // BigInteger is a data type that allows programmers to manipulate
+        // integers longer than 64-bits. Integers are stored as an array of
+        // bytes and are manipulated using functions built into BigInteger
         //
-        // BigInteger może być zainicjalizowany za pomocą tablicy bajtów lub jako string.
+        // BigInteger can be initialized using an array of bytes or a string.
         BigInteger fooBigInteger = new BigInteger(fooByteArray);
 
-        // BigDecimal - Nieedytowalny typ zmiennej o nieograniczonej długości dla
-        // liczb zmiennoprzecinkowych
+        // BigDecimal - Immutable, arbitrary-precision signed decimal number
         //
-        // BigDecimal zaiwera 2 części: typ integer o arbitralnej precyzji bez skalowania
-        // oraz 32-bitową skalę
+        // A BigDecimal takes two parts: an arbitrary precision integer
+        // unscaled value and a 32-bit integer scale
         //
-        // BigDecimal pozwala programiście na całkowitą kontrolę zaokrąglenia dziesiętnego.
-        // Zalecane jest używanie BigDecimal z wartościami walut.
-        // oraz tam, gdzie absolutna dokładność jest niezbędna.
+        // BigDecimal allows the programmer complete control over decimal
+        // rounding. It is recommended to use BigDecimal with currency values
+        // and where exact decimal precision is required.
         //
-        // BigDecimal można zainicjalizowac używając int, long, double or String
-        // a także inicjalizując nieprzeskalowaną wartość (BigInteger) i skalę (int).
+        // BigDecimal can be initialized with an int, long, double or String
+        // or by initializing the unscaled value (BigInteger) and scale (int).
         BigDecimal fooBigDecimal = new BigDecimal(fooBigInteger, fooInt);
 
-        // Uwaga na konstruktor, który przyjmuje float lub double jako, że
-        // niedokładność float/double będzie przeniesiona do BigDecimal.
-        // Zalecane jest uzywanie konstruktora typu String gdy konieczne jest
-        // uzyskanie absolutnej precyzji.
+        // Be wary of the constructor that takes a float or double as
+        // the inaccuracy of the float/double will be copied in BigDecimal.
+        // Prefer the String constructor when you need an exact value.
         BigDecimal tenCents = new BigDecimal("0.1");
 
-        // String - zmienna tekstowa
-        String fooString = "Tutaj jest mój string!";
+        // Strings
+        String fooString = "My String Is Here!";
 
-        // \n jest symbolem karetki, która rozpoczyna nową linę
-        String barString = "Wyświetlanie w nowej linii?\nNie ma problemu!";
-        // \t jest symbolem tabulatora, który dodaje odstęp.
-        String bazString = "Chesz dodać tabulator?\tBez problemu!";
+        // \n is an escaped character that starts a new line
+        String barString = "Printing on a new line?\nNo Problem!";
+        // \t is an escaped character that adds a tab character
+        String bazString = "Do you want to add a tab?\tNo Problem!";
         System.out.println(fooString);
         System.out.println(barString);
         System.out.println(bazString);
 
-        // Budowanie Stringów
-        // #1 - za pomocą operatora dodawania
-        // To jest podstawowy sposób (zoptymalizowany)
-        String plusConcatenated = "Stringi mogą " + "być łączone " + "operatorem +.";
+        // String Building
+        // #1 - with plus operator
+        // That's the basic way to do it (optimized under the hood)
+        String plusConcatenated = "Strings can " + "be concatenated " + "via + operator.";
         System.out.println(plusConcatenated);
-        // Wyjście: Stringi będą połączone operatorem +.
+        // Output: Strings can be concatenated via + operator.
 
-        // #2 - za pomocą StringBuilder
-        // Ten sposób nie tworzy żadnych pośrednich stringów, jedynie zachowuje
-        // części i wiąże je po kolei gdy wywołane jest toString().
-        // Wskazówka: Ta klasa nie jest bezpieczna z punktu widzenia wątków.
-        // Bezpieczną alternatywą jest (wiążąca się ze spadkiem wydajności)
-        // StringBuffer.
+        // #2 - with StringBuilder
+        // This way doesn't create any intermediate strings. It just stores the string pieces, and ties them together
+        // when toString() is called.
+        // Hint: This class is not thread safe. A thread-safe alternative (with some impact on performance) is StringBuffer.
         StringBuilder builderConcatenated = new StringBuilder();
-        builderConcatenated.append("Możesz ");
-        builderConcatenated.append("użyć ");
-        builderConcatenated.append("klasy StringBuilder.");
-        System.out.println(builderConcatenated.toString()); // dopiero tutaj
-        //budowany jest string
-        // Wyjście: Używany jest StringBuilder.
+        builderConcatenated.append("You ");
+        builderConcatenated.append("can use ");
+        builderConcatenated.append("the StringBuilder class.");
+        System.out.println(builderConcatenated.toString()); // only now is the string built
+        // Output: You can use the StringBuilder class.
 
-        // StringBuilder jest wydajny, gdy połączony string nie jest używany aż do końcowego przetworzenia.
+        // StringBuilder is efficient when the fully constructed String is not required until the end of some processing.
         StringBuilder stringBuilder = new StringBuilder();
         String inefficientString = "";
         for (int i = 0 ; i < 10; i++) {
@@ -231,81 +228,80 @@ public class LearnJava {
         }
         System.out.println(inefficientString);
         System.out.println(stringBuilder.toString());
-        // inefficientString wymaga dużo więcej pracy przy stworzeniu ponieważ
-        // tworzy string przy każdej iteracji.
-        // Proste łączenie za pomocą + jest kompilowane do StringBuilder i
-        // toString(). Unikaj łączenia stringów w pętlach.
+        // inefficientString requires a lot more work to produce, as it generates a String on every loop iteration.
+        // Simple concatenation with + is compiled to a StringBuilder and toString()
+        // Avoid string concatenation in loops.
 
-        // #3 - za pomocą String formatter
-        // Inna możliwość, szybka i czytelna.
-        String.format("%s wolisz %s.", "A może", "String.format()");
-        // Wyjście: Być może wolisz String.format().
+        // #3 - with String formatter
+        // Another alternative way to create strings. Fast and readable.
+        String.format("%s may prefer %s.", "Or you", "String.format()");
+        // Output: Or you may prefer String.format().
 
-        // Tablice
-        // Rozmiar tablicy musi być określony przy stworzeniu.
-        // Podane poniżej sposoby są dozwolone prz deklaracji tablicy
-        // <rodzaj>[] <nazwa> = new <rodzaj>[<rozmiar>];
-        // <rodzaj> <nazwa>[] = new <rodzaj>[<rozmiar>];
+        // Arrays
+        // The array size must be decided upon instantiation
+        // The following formats work for declaring an array
+        // <datatype>[] <var name> = new <datatype>[<array size>];
+        // <datatype> <var name>[] = new <datatype>[<array size>];
         int[] intArray = new int[10];
         String[] stringArray = new String[1];
         boolean boolArray[] = new boolean[100];
 
-        // Inny sposób deklaracji i inicjalizacji tablicy
+        // Another way to declare & initialize an array
         int[] y = {9000, 1000, 1337};
         String names[] = {"Bob", "John", "Fred", "Juan Pedro"};
         boolean bools[] = {true, false, false};
 
-        // Indeksowanie tablicy - dostęp do elementów
+        // Indexing an array - Accessing an element
         System.out.println("intArray @ 0: " + intArray[0]);
 
-        // Tablice zaczynają się z indeksem 0 i są edytowalne.
+        // Arrays are zero-indexed and mutable.
         intArray[1] = 1;
         System.out.println("intArray @ 1: " + intArray[1]); // => 1
 
-        // Inny typ zmiennej, z którymi warto się zapoznać
-        // ArrayLists - Tablice z większą funkcjonalnością
-        //              i zmiennym rozmiarem.
-        // LinkedLists - Dwustronnie połączone listy. Wszystkie operacje
-        //               na listach zaimpllementowane.
-        // Maps - Mapy zawierające klucz i wartość. Mapa jest interfejsem
-        //        i nie może zostać zainicjalizowana.
-        //        Rodzaj klucza i wartości dla mapy musi zostać określony
-        //        przy inicjalizacji implementującej mapę klasy
-        //        Każdy klucz przypisany jest do tylko jednej wartości,
-        //        każdy klucz może wystąpić tylko raz (brak duplikatów).
-        // HashMaps - Używa tablicy hashów do implementacji interfejsu mapy
-        //            Pozwala to na użycie podstawowych operacji, jak
-        //            get i insert, które pozostają niezmiennie wydajne
-        //            czasowo nawet dla dużych zestawów danych
-        // TreeMap - Mapa posortowana przez klucze. Każda modyfikacja
-        //           utrzymuje sortowanie, zdefiniowane przez komparator
-        //           dodany przy inicjalizacji lub porównanie każdego obiektu
-        //           jeśli zaimplementowany jest interfejs Comparable.
-        //           Niepowodzenie kluczy wimplemntacji Comparable połączone
-        //           z niepowodzeniem dostarczenia komparatora spowoduje
-        //           ClassCastExceptions.
-        //           Dodawanie i usuwanie kosztuje O(log(n)) czasu,
-        //           zalecane jest nieużywanie tego typu jeżeli sortowanie
-        //           nie jest przydatne.
+        // Other data types worth checking out
+        // ArrayLists - Like arrays except more functionality is offered, and
+        //              the size is mutable.
+        // LinkedLists - Implementation of doubly-linked list. All of the
+        //               operations perform as could be expected for a
+        //               doubly-linked list.
+        // Maps - A mapping of key Objects to value Objects. Map is
+        //        an interface and therefore cannot be instantiated.
+        //        The type of keys and values contained in a Map must
+        //        be specified upon instantiation of the implementing
+        //        class. Each key may map to only one corresponding value,
+        //        and each key may appear only once (no duplicates).
+        // HashMaps - This class uses a hashtable to implement the Map
+        //            interface. This allows the execution time of basic
+        //            operations, such as get and insert element, to remain
+        //            constant-amortized even for large sets.
+        // TreeMap - A Map that is sorted by its keys. Each modification
+        //           maintains the sorting defined by either a Comparator
+        //           supplied at instantiation, or comparisons of each Object
+        //           if they implement the Comparable interface.
+        //           Failure of keys to implement Comparable combined with failure to
+        //           supply a Comparator will throw ClassCastExceptions.
+        //           Insertion and removal operations take O(log(n)) time
+        //           so avoid using this data structure unless you are taking
+        //           advantage of the sorting.
 
         ///////////////////////////////////////
-        // Operatory
+        // Operators
         ///////////////////////////////////////
-        System.out.println("\n->Operatory");
+        System.out.println("\n->Operators");
 
-        int i1 = 1, i2 = 2; // Skrót dla wielokrotnych deklaracji
-
-        // Arytmetyka jest prosta
+	int i1 = 1, i2 = 2;
+	
+        // Arithmetic is straightforward
         System.out.println("1+2 = " + (i1 + i2)); // => 3
         System.out.println("2-1 = " + (i2 - i1)); // => 1
         System.out.println("2*1 = " + (i2 * i1)); // => 2
-        System.out.println("1/2 = " + (i1 / i2)); // => 0 (int/int zwraca int)
+        System.out.println("1/2 = " + (i1 / i2)); // => 0 (int/int returns int)
         System.out.println("1/2.0 = " + (i1 / (double)i2)); // => 0.5
 
         // Modulo
-        System.out.println("11%3 = "+(11 % 3)); // => 2
+        System.out.println("11%3 = " + (11 % 3)); // => 2
 
-        // Porównania
+        // Comparison operators
         System.out.println("3 == 2? " + (3 == 2)); // => false
         System.out.println("3 != 2? " + (3 != 2)); // => true
         System.out.println("3 > 2? " + (3 > 2)); // => true
@@ -313,551 +309,593 @@ public class LearnJava {
         System.out.println("2 <= 2? " + (2 <= 2)); // => true
         System.out.println("2 >= 2? " + (2 >= 2)); // => true
 
-        // Operacje boolowskie
+        // Boolean operators
         System.out.println("3 > 2 && 2 > 3? " + ((3 > 2) && (2 > 3))); // => false
         System.out.println("3 > 2 || 2 > 3? " + ((3 > 2) || (2 > 3))); // => true
         System.out.println("!(3 == 2)? " + (!(3 == 2))); // => true
 
-        // Operacje na bitach!
+        // Bitwise operators!
         /*
-        ~      Odwrócenie bitów
-        <<     Przesunięcie w lewo
-        >>     Przesunięcie w prawo, arytmetyczne/dla wartości ujemnych -signed
-        >>>    Przesunięcie w prawo, logiczne/dla wartości dodatnich - unsigned
-        &      Bitowe AND
-        ^      Bitowe XOR
-        |      Bitowe OR
+        ~      Unary bitwise complement
+        <<     Signed left shift
+        >>     Signed/Arithmetic right shift
+        >>>    Unsigned/Logical right shift
+        &      Bitwise AND
+        ^      Bitwise exclusive OR
+        |      Bitwise inclusive OR
         */
 
-        // Operatory inkrementacji
+        // Increment operators
         int i = 0;
-        System.out.println("\n->In/De-krementacja");
-        // Operatory ++ i -- zwiększają lub zmniejszają o 1 daną wartość.
-        // Jeżeli używane są przed zmienną, wykonywane są przed powrotem zmiennej.
-        // Użyte po zmiennej najpierw zwracają zmienną a następnie dokonują
-        // zmiany wartości.
-        System.out.println(i++); // i = 1, wyświetli 0 (post-increment)
-        System.out.println(++i); // i = 2, wyświetli 2 (pre-increment)
-        System.out.println(i--); // i = 1, wyświetli 2 (post-decrement)
-        System.out.println(--i); // i = 0, wyświetli 0 (pre-decrement)
+        System.out.println("\n->Inc/Dec-rementation");
+        // The ++ and -- operators increment and decrement by 1 respectively.
+        // If they are placed before the variable, they increment then return;
+        // after the variable they return then increment.
+        System.out.println(i++); // i = 1, prints 0 (post-increment)
+        System.out.println(++i); // i = 2, prints 2 (pre-increment)
+        System.out.println(i--); // i = 1, prints 2 (post-decrement)
+        System.out.println(--i); // i = 0, prints 0 (pre-decrement)
 
         ///////////////////////////////////////
-        // Przepływ sterowania
+        // Control Structures
         ///////////////////////////////////////
-        System.out.println("\n->Przepływ sterowania");
+        System.out.println("\n->Control Structures");
 
-        // Instrukcja if wygląda jak w c
+        // If statements are c-like
         int j = 10;
         if (j == 10) {
-            System.out.println("Wyświetlam się");
+            System.out.println("I get printed");
         } else if (j > 10) {
-            System.out.println("A ja nie");
+            System.out.println("I don't");
         } else {
-            System.out.println("Ja też nie");
+            System.out.println("I also don't");
         }
 
-        // Pętla while
+        // While loop
         int fooWhile = 0;
-        while(fooWhile < 100) {
+        while (fooWhile < 100) {
             System.out.println(fooWhile);
-            // Licznik jest zwiększany
-            // Iteruje 100 razy, fooWhile 0,1,2...99
+            // Increment the counter
+            // Iterated 100 times, fooWhile 0,1,2...99
             fooWhile++;
         }
-        System.out.println("Wartość fooWhile: " + fooWhile);
+        System.out.println("fooWhile Value: " + fooWhile);
 
-        // Pętla do while
+        // Do While Loop
         int fooDoWhile = 0;
         do {
             System.out.println(fooDoWhile);
-            // Licznik jest zwiększany
-            // Iteruje 99 razy, fooDoWhile 0->99
+            // Increment the counter
+            // Iterated 100 times, fooDoWhile 0->99
             fooDoWhile++;
-        } while(fooDoWhile < 100);
-        System.out.println("Wartość fooDoWhile: " + fooDoWhile);
+        } while (fooDoWhile < 100);
+        System.out.println("fooDoWhile Value: " + fooDoWhile);
 
-        // Pętla for
-        // struktura pętli for => for(<początek>; <warunek>; <krok>)
+        // For Loop
+        // for loop structure => for(<start_statement>; <conditional>; <step>)
         for (int fooFor = 0; fooFor < 10; fooFor++) {
             System.out.println(fooFor);
-            // Iteruje 10 razy, fooFor 0->9
+            // Iterated 10 times, fooFor 0->9
         }
-        System.out.println("Wartość fooFor: " + fooFor);
+        System.out.println("fooFor Value: " + fooFor);
 
-        // Wyjście z zagnieżdżonej, oznaczonej pętli for
+        // Nested For Loop Exit with Label
         outer:
         for (int i = 0; i < 10; i++) {
           for (int j = 0; j < 10; j++) {
             if (i == 5 && j ==5) {
               break outer;
-              // wychodzi z zewnętrznej pętli zamiast jednynie z aktualnej z
-              // powodu oznaczenia
+              // breaks out of outer loop instead of only the inner one
             }
           }
         }
 
-        // Pętla for each
-        // Pętla for each może iterować tablice jak i obiekty
-        // które implementują interfejs Iterable.
+        // For Each Loop
+        // The for loop is also able to iterate over arrays as well as objects
+        // that implement the Iterable interface.
         int[] fooList = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-        // Struktura for each => for (<element> : <obiekt iterowany>)
-        // należy rozumieć jako: dla każdego elementu w obiekcie iterowanym
-        // uwaga: typ zdefiniowango elementu musi się zgadzać z typem w
-        //obiekcie iterowanym.
+        // for each loop structure => for (<object> : <iterable>)
+        // reads as: for each element in the iterable
+        // note: the object type must match the element type of the iterable.
         for (int bar : fooList) {
             System.out.println(bar);
-            //Iteruje 9 razy i wyświetla 1-9 w nowych liniach
+            //Iterates 9 times and prints 1-9 on new lines
         }
 
         // Switch Case
-        // Switch (przełącznik) działa z zmiennymi typu byte, short, char, int.
-        // Działa również z enumeratorami (zobacz typ Enum),
-        // klasą String, i kilkoma specjalnymi klasami które zawierają typy
-        // podstawowe: Character, Byte, Short, and Integer.
-        // Z wersją Java 7 i wyższymi możliwe jest użycie typu String.
-        // Uwagga: Pamiętaj, że nie dodając "break" na końcu danego case
-        // spowoduje przejście do następnego (jeżeli spełniony jest warunek).
+        // A switch works with the byte, short, char, and int data types.
+        // It also works with enumerated types (discussed in Enum Types), the
+        // String class, and a few special classes that wrap primitive types:
+        // Character, Byte, Short, and Integer.
+        // Starting in Java 7 and above, we can also use the String type.
+        // Note: Do remember that, not adding "break" at end any particular case ends up in
+        // executing the very next case(given it satisfies the condition provided) as well.
         int month = 3;
         String monthString;
         switch (month) {
-            case 1: monthString = "Styczeń";
+            case 1: monthString = "January";
                     break;
-            case 2: monthString = "Luty";
+            case 2: monthString = "February";
                     break;
-            case 3: monthString = "Marzec";
+            case 3: monthString = "March";
                     break;
-            default: monthString = "Inny miesiąc";
+            default: monthString = "Some other month";
                      break;
         }
-        System.out.println("Wynik Switch Case : " + monthString);
+        System.out.println("Switch Case Result: " + monthString);
 
 
         // Try-with-resources (Java 7+)
-        // Try-catch-finally działa zgodnie z oczekiwaniami jednakże w Java 7+
-        // dodatkowo jest dostępny try-with-resources statement.
-        // Try-with-resources upraszcza try-catch-finally automatycznie
-        // usuwając zasoby.
+        // Try-catch-finally statements work as expected in Java but in Java 7+
+        // the try-with-resources statement is also available. Try-with-resources
+        // simplifies try-catch-finally statements by closing resources
+        // automatically.
 
-        // Aby użyć try-with-resources, użyj instancji klasy
-        // w części "try". Klasa musi implementować java.lang.AutoCloseable.
+        // In order to use a try-with-resources, include an instance of a class
+        // in the try statement. The class must implement java.lang.AutoCloseable.
         try (BufferedReader br = new BufferedReader(new FileReader("foo.txt"))) {
-            // Tutaj możesz spróbować wywołac wyjątek.
+            // You can attempt to do something that could throw an exception.
             System.out.println(br.readLine());
-            // W Java 7 zasoby będą zawsze usuwane nawet jeśli nastąpi wyjątek.
+            // In Java 7, the resource will always be closed, even if it throws
+            // an Exception.
         } catch (Exception ex) {
-            // Zasób będzie usunięty zanim wykona się catch.
-            System.out.println("readLine() nie powiódł się.");
+            //The resource will be closed before the catch statement executes.
+            System.out.println("readLine() failed.");
         }
-        // Nie ma potrzeby używać sekcji "finally", jako że BufferedReader
-        // został już zamknięty. Ten sposób może zostać użyty aby uniknąć
-        // pewnych wartości brzegowych gdzie "finally" nie zostałoby wywołane
-        // Więcej na ten temat po angielsku:
+        // No need for a finally statement in this case, the BufferedReader is
+        // already closed. This can be used to avoid certain edge cases where
+        // a finally statement might not be called.
+        // To learn more:
         // https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html
 
 
-        // Skrócone instrukcje warunkowe
-        // Dozwolone jest użycie operatora '?' aby szybko sprawdzić warunek
-        // logiczny. Rozumiane jest to jako "Jeśli (warunek) jest spełniony, użyj
-        // <pierwszej wartości>, inaczej, użyj <drugiej wartości>"
+        // Conditional Shorthand
+        // You can use the '?' operator for quick assignments or logic forks.
+        // Reads as "If (statement) is true, use <first value>, otherwise, use
+        // <second value>"
         int foo = 5;
         String bar = (foo < 10) ? "A" : "B";
-        System.out.println("bar : " + bar); // Wyśwletli "bar : A", poineważ
-        // warunke jest spełniony.
-        // Lub prościej
+        System.out.println("bar : " + bar); // Prints "bar : A", because the
+        // statement is true.
+        // Or simply
         System.out.println("bar : " + (foo < 10 ? "A" : "B"));
 
 
         ////////////////////////////////////////
-        // Konwersja typów danych
+        // Converting Data Types
         ////////////////////////////////////////
 
-        // Konwersja danych
+        // Converting data
 
-        // Konwersja String do Integer
-        Integer.parseInt("123");//zwraca zmienna typu Integer o wartości "123"
+        // Convert String To Integer
+        Integer.parseInt("123");//returns an integer version of "123"
 
-        // Konwersja Integer do String
-        Integer.toString(123);//zwraca zmienną typu String o wartości 123
+        // Convert Integer To String
+        Integer.toString(123);//returns a string version of 123
 
-        // Inne konwersje możesz sprawdzić dla klas:
+        // For other conversions check out the following classes:
         // Double
         // Long
         // String
 
         ///////////////////////////////////////
-        // Klasy i funkcje
+        // Classes And Functions
         ///////////////////////////////////////
 
-        System.out.println("\n->Klasy & Funkcje");
+        System.out.println("\n->Classes & Functions");
 
-        // (definicja klasy Rower nieco niżej)
+        // (definition of the Bicycle class follows)
 
-        // Użyj new aby zainstancjonować klasę
-        Rower trek = new Rower();
+        // Use new to instantiate a class
+        Bicycle trek = new Bicycle();
 
-        // Wywoływanie metod klasy
-        trek.predkoscZwieksz(3); // Zawsze używaj settera i gettera jako metod
-        trek.setPedalowanie(100);
+        // Call object methods
+        trek.speedUp(3); // You should always use setter and getter methods
+        trek.setCadence(100);
 
-        // toString zwraca reprezentację typu String tego obiektu.
+        // toString returns this Object's string representation.
         System.out.println("trek info: " + trek.toString());
+    } // End main method
 
-        // Inicjalizacja za pomocą podwójnego nawiasu
-        // Język Java nie zawiera możliwości stworzenia statycznej kolekcji
-        // Dlatego zwykle odbywa się to w ten sposób:
-        private static final Set<String> KRAJE = new HashSet<String>();
+    private static class TestInitialization {
+        // Double Brace Initialization
+        // Before Java 11, the Java Language had no syntax for how to create
+        // static Collections in an easy way. Usually you end up like this:
+        private static final Set<String> COUNTRIES = new HashSet<String>();
         static {
-           KRAJE.add("DANIA");
-           KRAJE.add("SZWECJA");
-           KRAJE.add("FINLANDIA");
+           COUNTRIES.add("DENMARK");
+           COUNTRIES.add("SWEDEN");
+           COUNTRIES.add("FINLAND");
         }
 
-        // Jest jednak sprytny sposób aby łatwiej osiągnąc ten sam efekt
-        // używając czegoś nazywanego Double Brace Initialization -
-        // inicjalizacja za pomocą podwójnego nawiasu.
-        private static final Set<String> KRAJE = new HashSet<String>() {{
-            add("DANIA");
-            add("SZWECJA");
-            add("FINLANDIA");
+        // There's a nifty way to achieve the same thing, 
+        // by using something that is called Double Brace Initialization.
+        private static final Set<String> COUNTRIES_DOUBLE_BRACE = 
+        new HashSet<String>() {{
+            add("DENMARK");
+            add("SWEDEN");
+            add("FINLAND");
         }}
 
-        // Pierwszy nawias tworzy nową klasę AnonymousInnerClass,
-        // drugi deklaruje instancję bloku inicjalizacji. Blok ten
-        // jest wywoływany gdy wewnętrzna, anonimowa klasa jest tworzona.
-        // Dany sposób działa nie tylko dla kolekcji, ale również dla
-        // wszystkich nie-finalnych klas.
+        // The first brace is creating a new AnonymousInnerClass and the
+        // second one declares an instance initializer block. This block
+        // is called when the anonymous inner class is created.
+        // This does not only work for Collections, it works for all
+        // non-final classes.
+        
 
-    } // Koniec metody main
-} // Koniec klasy LearnJava
+        // Another option was to initialize the Collection from an array,
+        // using Arrays.asList() method:
+        private static final List<String> COUNTRIES_AS_LIST = 
+                        Arrays.asList("SWEDEN", "DENMARK", "NORWAY");
+        // This has one catch: the list we get is internally backed by the array,
+        // and since arrays can't change their size, the list backed by the array
+        // is not resizeable, which means we can't add new elements to it: 
+        public static void main(String[] args) {
+            COUNTRIES.add("FINLAND"); // throws UnsupportedOperationException!
+            // However, we can replace elements by index, just like in array: 
+            COUNTRIES.set(1, "FINLAND");
+            System.out.println(COUNTRIES); // prints [SWEDEN, FINLAND, NORWAY]
+        }
+        // The resizing problem can be circumvented 
+        // by creating another Collection from the List:
+         private static final Set<String> COUNTRIES_SET = 
+                new HashSet<>(Arrays.asList("SWEDEN", "DENMARK", "NORWAY"));
+        // It's perfectly fine to add anything to the Set of COUNTRIES now. 
+    } // End TestInitialization class
 
-// Możesz zawrzeć inne, niepubliczne, zewnętrzne klasy w pliku .java,
-// jednak nie jest to zalecane. Zalecane jest dzielenie klas na osobne pliki.
+    private static class TestJava11Initialization {
+        // Since Java 11, there is a convenient option to initialize Collections:
+        // Set.of() and List.of() methods. 
+        private static final Set<String> COUNTRIES = 
+                Set.of("SWEDEN", "DENMARK", "NORWAY");
+        // There is a massive catch, though: Lists and Sets initialized like this 
+        // 1) are immutable 
+        // 2) can't contain null elements (even check for null elements fails)!
+        public static void main(String[] args) {
+            COUNTRIES.add("FINLAND"); // throws UnsupportedOperationException
+            COUNTRIES.remove("NORWAY"); // throws UnsupportedOperationException 
+            COUNTRIES.contains(null); // throws NullPointerException
+        }
+        private static final Set<String> COUNTRIES_WITH_NULL = 
+                    Set.of("SWEDEN", null, "NORWAY"); // throws NullPointerException
 
-// Składnia deklaracji klasy:
-// <public/private/protected> class <nazwa klasy> {
-//    // pola danych, konstruktory, funkcje.
-//    // w jężyku Java funkcje są wywoływane jako metody.
+    } // End TestJava11Initialization class
+} // End LearnJava class
+
+// You can include other, non-public outer-level classes in a .java file,
+// but it is not good practice. Instead split classes into separate files.
+
+// Class Declaration Syntax:
+// <public/private/protected> class <class name> {
+//    // data fields, constructors, functions all inside.
+//    // functions are called as methods in Java.
 // }
 
-class Rower {
+class Bicycle {
 
-    // Zmienne klasy
-    public int pedalowanie; // Public: Dostępne wszędzie
-    private int predkosc;  // Private: Dostępne tylko w klasie
-    protected int przerzutka; // Protected: Dostępne w klasie i podklasach
-    String nazwa; // domyślnie: Dostępne tlyko w danej paczce
-    static String nazwaKlasy; // Zmienna statyczna
+    // Bicycle's Fields/Variables
+    public int cadence; // Public: Can be accessed from anywhere
+    private int speed;  // Private: Only accessible from within the class
+    protected int gear; // Protected: Accessible from the class and subclasses
+    String name; // default: Only accessible from within this package
+    static String className; // Static class variable
 
-    // Blok statyczny
-    // Java nie posiada implemntacji konstruktorów staycznych, ale
-    // posiada blok stayczny, który może  być użyty aby zainicjalizować
-    // statyczne zmienne klasy
-    // Ten blok będzie wywołane gdy klasa jest ładowana.
+    // Static block
+    // Java has no implementation of static constructors, but
+    // has a static block that can be used to initialize class variables
+    // (static variables).
+    // This block will be called when the class is loaded.
     static {
-        nazwaKlasy = "Rower";
+        className = "Bicycle";
     }
 
-    // Konstruktory służą do stworzenia instancji klas
-    // Too jest konstruktor
-    public Rower() {
-        // Możesz wywołać także  inny konstruktor:
+    // Constructors are a way of creating classes
+    // This is a constructor
+    public Bicycle() {
+        // You can also call another constructor:
         // this(1, 50, 5, "Bontrager");
-        przerzutka = 1;
-        pedalowanie = 50;
-        predkosc = 5;
-        nazwa = "Bontrager";
+        gear = 1;
+        cadence = 50;
+        speed = 5;
+        name = "Bontrager";
     }
-    // To jest konstruktor, który przyjmuje argumenty
-        public Rower(int poczatkowePedalowanie, int poczatkowaPredkosc, int początkowaPrzerzutka,
-        String nazwa) {
-        this.przerzutka = początkowaPrzerzutka;
-        this.pedalowanie = poczatkowePedalowanie;
-        this.predkosc = poczatkowaPredkosc;
-        this.nazwa = nazwa;
-    }
-
-    // Składnia metod:
-    // <public/private/protected> <zwracany rodzaj> <nazwa funkcji>(<argumenty>)
-
-    // Klasy często implementują metody getter i setter dla danych wewnątrz
-
-    // Składnia deklaracji metody:
-    // <dostępność> <zwracany rodzaj> <nawa metody>(<argumenty>)
-    public int getPedalowanie() {
-        return pedalowanie;
+    // This is a constructor that takes arguments
+    public Bicycle(int startCadence, int startSpeed, int startGear,
+        String name) {
+        this.gear = startGear;
+        this.cadence = startCadence;
+        this.speed = startSpeed;
+        this.name = name;
     }
 
-    // metody void nie wymagają słowa kluczowego return, nic nie zwracają
-    public void setPedalowanie(int newValue) {
-        pedalowanie = newValue;
-    }
-    public void setPrzerzutka(int newValue) {
-        przerzutka = newValue;
-    }
-    public void predkoscZwieksz(int inkrement) {
-        predkosc += inkrement;
-    }
-    public void predkoscZmniejsz(int dekrement) {
-        predkosc -= dekrement;
-    }
-    public void nadajNazwe(String nowaNazwa) {
-        nazwa = nowaNazwa;
-    }
-    public String zwrocNazwe() {
-        return nazwa;
+    // Method Syntax:
+    // <public/private/protected> <return type> <function name>(<args>)
+
+    // Java classes often implement getters and setters for their fields
+
+    // Method declaration syntax:
+    // <access modifier> <return type> <method name>(<args>)
+    public int getCadence() {
+        return cadence;
     }
 
-    // Metoda do wyświetlenia wartości atrybutów danego obiektu.
-    @Override // Dziedziczy z klasy obiektu.
+    // void methods require no return statement
+    public void setCadence(int newValue) {
+        cadence = newValue;
+    }
+    public void setGear(int newValue) {
+        gear = newValue;
+    }
+    public void speedUp(int increment) {
+        speed += increment;
+    }
+    public void slowDown(int decrement) {
+        speed -= decrement;
+    }
+    public void setName(String newName) {
+        name = newName;
+    }
+    public String getName() {
+        return name;
+    }
+
+    //Method to display the attribute values of this Object.
+    @Override // Inherited from the Object class.
     public String toString() {
-        return "przerzutka: " + przerzutka + " pedalowanie: " + pedalowanie + " predkosc: " + predkosc +
-            " nazwa: " + nazwa;
+        return "gear: " + gear + " cadence: " + cadence + " speed: " + speed +
+            " name: " + name;
     }
-} // koniec klasy Rower
+} // end class Bicycle
 
-// PennyFarthing jest podklasą klasy Rower
-class PennyFarthing extends Rower {
-    // (Penny Farthing to rower z wielkim przednim kołem.
-    // Nie ma przerzutek.)
+// PennyFarthing is a subclass of Bicycle
+class PennyFarthing extends Bicycle {
+    // (Penny Farthings are those bicycles with the big front wheel.
+    // They have no gears.)
 
-    public PennyFarthing(int poczatkowePedalowanie, int poczatkowaPredkosc) {
-        // Wywołanie kostruktora klasy z której dziedziczymy za pomocą super
-        super(poczatkowePedalowanie, poczatkowaPredkosc, 0, "PennyFarthing");
+    public PennyFarthing(int startCadence, int startSpeed) {
+        // Call the parent constructor with super
+        super(startCadence, startSpeed, 0, "PennyFarthing");
     }
 
-    // Używamy annotacji @annotation przy przeciążaniu metod.
-    // Aby dowiedzieć się więcej o annotacjach przydatne jest przejrzenie
-    // (w języku angielskim):
-    // http://docs.oracle.com/javase/tutorial/java/annotations/
+    // You should mark a method you're overriding with an @annotation.
+    // To learn more about what annotations are and their purpose check this
+    // out: http://docs.oracle.com/javase/tutorial/java/annotations/
     @Override
-    public void setPrzerzutka(int przerzutka) {
-        this.przerzutka = 0;
+    public void setGear(int gear) {
+        this.gear = 0;
     }
 }
 
-// Rzutowanie
-// Jako, że  klasa PennyFarthing dziedziczy z klasy Rower, możemy uznać, że
-// instancja PennyFarthing jest typu Rower i napisać :
-// Rower rower = new PennyFarthing();
-// Dana operacja jest rzutowaniem obiektu, gdzie jego domyślna klasa jest inna niż docelowa.
-// Więcej szczegółów i przykładów oraz ciekawych konceptów (po angielsku):
+// Object casting
+// Since the PennyFarthing class is extending the Bicycle class, we can say
+// a PennyFarthing is a Bicycle and write :
+// Bicycle bicycle = new PennyFarthing();
+// This is called object casting where an object is taken for another one. There
+// are lots of details and deals with some more intermediate concepts here:
 // https://docs.oracle.com/javase/tutorial/java/IandI/subclasses.html
 
-// Interfejsy
-// Składnia deklaracji interfejsu
-// <dostępność> interface <nazwa interfejsu> extends <super-interfaces> {
-//     // Zmienne typu constant
-//     // Deklaracje metod
+// Interfaces
+// Interface declaration syntax
+// <access-level> interface <interface-name> extends <super-interfaces> {
+//     // Constants
+//     // Method declarations
 // }
 
-// Przykład - Jedzenie:
-public interface Jadalne {
-    public void jedz(); // Każda klasa która implemetuje ten interfejs musi
-    // implementować tę metodę.
+// Example - Food:
+public interface Edible {
+    public void eat(); // Any class that implements this interface, must
+                       // implement this method.
 }
 
-public interface Przetrawialne {
-    public void przetrawiaj();
-    // Wraz z Java 8, interfejsy mogą mieć metodę domyślną.
+public interface Digestible {
+    public void digest();
+    // Since Java 8, interfaces can have default method.
     public default void defaultMethod() {
-        System.out.println("Hej z metody domyślnej ...");
+        System.out.println("Hi from default method ...");
     }
 }
 
-// Teraz stworzymy klasę, która zaimplementuje oba interfejsy.
-public class Owoc implements Jadalne, Przetrawialne {
+// We can now create a class that implements both of these interfaces.
+public class Fruit implements Edible, Digestible {
     @Override
-    public void jedz() {
+    public void eat() {
         // ...
     }
 
     @Override
-    public void przetrawiaj() {
+    public void digest() {
         // ...
     }
 }
 
-// W Javie możesz dziedziczyć jedynie z jednej klasy, jednak implementować
-// wiele interfejsów. Na przykład:
-public class Przyklad extends Przodek implements Interfejs1,
-    Interfejs2 {
+// In Java, you can extend only one class, but you can implement many
+// interfaces. For example:
+public class ExampleClass extends ExampleClassParent implements InterfaceOne,
+    InterfaceTwo {
     @Override
-    public void Interfejs1Metoda() {
+    public void InterfaceOneMethod() {
     }
 
     @Override
-    public void Interfejs2Metoda() {
+    public void InterfaceTwoMethod() {
     }
 
 }
 
-// Klasy abstrakcyjne
+// Abstract Classes
 
-// Składnia deklaracji klasy abstrakcyjnej
-// <dostępność> abstract class <nawa klasy abstrakcyjnej> extends
-// <superklasy, z których dziedziczy> {
-//     // Zmienne i stałe
-//     // Deklaracje metod
+// Abstract Class declaration syntax
+// <access-level> abstract class <abstract-class-name> extends
+// <super-abstract-classes> {
+//     // Constants and variables
+//     // Method declarations
 // }
 
-// Klasy abstrakcyjne nie mogą posiadać instancji.
-// Klasy abstrakcyjne mogą definiować  metody abstrakcyjne.
-// Metody abstrakcyjne nie mają ciała funkcji i są oznaczone jako abstrakcyjne.
-// Nieabstrakcyjne klasy-dzieci muszą przeciążać wszystkie abstrakcyjne metody
-// superklasy.
-// Klasy abstrakcyjne są użyteczne gdy wymagana jest powtarzalna logika działania,
-// jednak należy zaauważyć, że jako, że wymagają dziedziczenia, łamią
-// zasadę "Composition over inheritance". Rozważ inne podejścia używając
-// kompozycji. https://en.wikipedia.org/wiki/Composition_over_inheritance
+// Abstract Classes cannot be instantiated.
+// Abstract classes may define abstract methods.
+// Abstract methods have no body and are marked abstract
+// Non-abstract child classes must @Override all abstract methods
+// from their super-classes.
+// Abstract classes can be useful when combining repetitive logic
+// with customised behavior, but as Abstract classes require
+// inheritance, they violate "Composition over inheritance"
+// so consider other approaches using composition.
+// https://en.wikipedia.org/wiki/Composition_over_inheritance
 
-public abstract class Zwierze
+public abstract class Animal
 {
-    private int wiek;
+    private int age;
 
-    public abstract void dajGlos();
+    public abstract void makeSound();
 
-    // Metody mogą mieć ciało
-    public void jedz()
+    // Method can have a body
+    public void eat()
     {
-        System.out.println("Jestem zwierzeciem i jem.");
-        // Uwaga: Możliwy jest dostęp do zmiennych prywatnych.
-        wiek = 30;
+        System.out.println("I am an animal and I am Eating.");
+        // Note: We can access private variable here.
+        age = 30;
     }
 
-    public void wyswietlWiek()
+    public void printAge()
     {
-        System.out.println(wiek);
+        System.out.println(age);
     }
 
-    // Klasy abstrakcyjne mogą mieć metodę główną.
+    // Abstract classes can have main method.
     public static void main(String[] args)
     {
-        System.out.println("Jestem abstrakcyjna");
+        System.out.println("I am abstract");
     }
 }
 
-class Pies extends Zwierze
+class Dog extends Animal
 {
-    // Musimy przeciążyć wszystkie abstrakcyjne metody z klasy abstrakcyjnej
+    // Note still have to override the abstract methods in the
+    // abstract class.
     @Override
-    public void dajGlos()
+    public void makeSound()
     {
-        System.out.println("Hau");
-        // wiek = 30;    ==> BLAD!    wiek jest typu private dla Zwierze
+        System.out.println("Bark");
+        // age = 30;    ==> ERROR!    age is private to Animal
     }
 
-    // NOTE: Wystąpi błąd jeżeli użyto annotacji @Override jako, że Java
-    // nie pozwala na przeciążanie metod statycznych.
-    // Występuje tutaj METHOD HIDING - ukrywanie metod.
-    // Więcej w poście na SO: http://stackoverflow.com/questions/16313649/
+    // NOTE: You will get an error if you used the
+    // @Override annotation here, since java doesn't allow
+    // overriding of static methods.
+    // What is happening here is called METHOD HIDING.
+    // Check out this SO post: http://stackoverflow.com/questions/16313649/
     public static void main(String[] args)
     {
-        Pies pluto = new Pies();
-        pluto.dajGLos();
-        pluto.jedz();
-        pluto.wyswietlWiek();
+        Dog pluto = new Dog();
+        pluto.makeSound();
+        pluto.eat();
+        pluto.printAge();
     }
 }
 
-// Klasy finalne
+// Final Classes
 
-// Składnia deklaracji klasy finalnej
-// <dostępność> final <nazwa klasy finalnej> {
-//     // Zmienne i stałe
-//     // Deklaracje Metody
+// Final Class declaration syntax
+// <access-level> final <final-class-name> {
+//     // Constants and variables
+//     // Method declarations
 // }
 
-// Klasy finalne są klasami, które nie mogą być użyte do dziedziczenia, są więc
-// z założenia ostatnim elementem dziedziczenia. W ten sposób są przeciwnością
-// klas abstrakcyjnych, które z założenia muszą być dziedziczone.
-public final class TygrysSzablozebny extends Zwierze
+// Final classes are classes that cannot be inherited from and are therefore a
+// final child. In a way, final classes are the opposite of abstract classes
+// because abstract classes must be extended, but final classes cannot be
+// extended.
+public final class SaberToothedCat extends Animal
 {
-    // Nadal musimy przeciążyć metody abstrakcyjne klasy abstrakcyjnej Zwierze
+    // Note still have to override the abstract methods in the
+    // abstract class.
     @Override
-    public void dajGlos()
+    public void makeSound()
     {
         System.out.println("Roar");
     }
 }
 
-// Metody finalne
-public abstract class Ssak
+// Final Methods
+public abstract class Mammal()
 {
-    // Składnia metody finalnej:
-    // <dostępność> final <zwracany rodzaj> <nazwa funkcji>(<argumenty>)
+    // Final Method Syntax:
+    // <access modifier> final <return type> <function name>(<args>)
 
-    // Metody finalne, jak klasy finalne nie mogą być przeciążane
-    // i są w ten sposób ostatecznymi implementacjami danej metody.
-    public final boolean jestStalocieplny()
+    // Final methods, like, final classes cannot be overridden by a child
+    // class, and are therefore the final implementation of the method.
+    public final boolean isWarmBlooded()
     {
         return true;
     }
 }
 
-// Enumeratory
+// Enum Type
 //
-// Enumerator jest specjalnym tyme danej, która pozwala zmiennej na bycie
-// zestawem wcześniej zdefiniowanych stałych. Zmienna musi być równa jednej z
-// wartości wcześniej zdefiniowanych. Jako, że są to stałe, nazwy pól typu enum
-// są pisane wielkimi literami. W języku Java typ enum definiujemy przez użycie
-// słowa enum. Na przykład aby zdefiniować dni tygodnia:
-public enum Dzien {
-    PONIEDZIALEK, WTOREK, SRODA, CZWARTEK,
-    PIATEK, SOBOTA, NIEDZIELA
+// An enum type is a special data type that enables for a variable to be a set
+// of predefined constants. The variable must be equal to one of the values
+// that have been predefined for it. Because they are constants, the names of
+// an enum type's fields are in uppercase letters. In the Java programming
+// language, you define an enum type by using the enum keyword. For example,
+// you would specify a days-of-the-week enum type as:
+public enum Day {
+    SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
+    THURSDAY, FRIDAY, SATURDAY
 }
 
 // We can use our enum Day like that:
 public class EnumTest {
-    // Zmienna typu enum
-    Dzien dzien;
+    // Variable Enum
+    Day day;
 
-    public EnumTest(Dzien dzien) {
-        this.dzien = dzien;
+    public EnumTest(Day day) {
+        this.day = day;
     }
 
-    public void opiszDzien() {
-        switch (dzien) {
-            case PONIEDZIALEK:
-                System.out.println("Nie lubię poniedziałku!");
+    public void tellItLikeItIs() {
+        switch (day) {
+            case MONDAY:
+                System.out.println("Mondays are bad.");
                 break;
-            case PIATEK:
-                System.out.println("Piątki są dużo lepsze.");
+            case FRIDAY:
+                System.out.println("Fridays are better.");
                 break;
-            case SOBOTA:
-            case NIEDZIELA:
-                System.out.println("Weekendy są najlepsze.");
+            case SATURDAY:
+            case SUNDAY:
+                System.out.println("Weekends are best.");
                 break;
             default:
-                System.out.println("Środek tygodnia jest taki sobie.");
+                System.out.println("Midweek days are so-so.");
                 break;
         }
     }
 
     public static void main(String[] args) {
-        EnumTest pierwszyDzien = new EnumTest(Dzien.PONIEDZIALEK);
-        pierwszyDzien.opiszDzien(); // => Nie lubię poniedziałku!
-        EnumTest trzeciDzien = new EnumTest(Dzien.SRODA);
-        trzeciDzien.opiszDzien(); // => Środek tygodnia jest taki sobie.
+        EnumTest firstDay = new EnumTest(Day.MONDAY);
+        firstDay.tellItLikeItIs(); // => Mondays are bad.
+        EnumTest thirdDay = new EnumTest(Day.WEDNESDAY);
+        thirdDay.tellItLikeItIs(); // => Midweek days are so-so.
     }
 }
 
-// Typ enum jest bardziej wszechstronny niż powyższa demostracja.
-// Ciało typu enum może zawierać metody i inne pola.
-// Rzuć okiem na (angielski) https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html
+// Enum types are much more powerful than we show above.
+// The enum body can include methods and other fields.
+// You can see more at https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html
 
-// Wprowadzenie do wyrażeń lambda
+// Getting Started with Lambda Expressions
 //
-// Nowe w Javie 8 są wyrażenia lambda. Lambdy znajdujemy zwykle w funkcyjnych
-// językach programowania, co oznacza, że są metodami, które potrafią być
-// stowrzone bez klasy i przekazywane jak gdyby były obiektem oraz wykonywane
-// gdy zajdzie potrzeba.
+// New to Java version 8 are lambda expressions. Lambdas are more commonly found
+// in functional programming languages, which means they are methods which can
+// be created without belonging to a class, passed around as if it were itself
+// an object, and executed on demand.
 //
-// Ostatnia uwaga - lambdy muszą implementować funcjonalny interfejs.
-// Interfels funkcjonalny to taki, który ma jedynie jedną zadeklarowaną metodę
-// abstrakcyjną, ale może mieć dowolną ilość domyślnych metod. Wyrażenia lambda
-// mogą być używane jako instancje tego interfejsu. Każdy inteferjs, który
-// spełnia wymagania jest traktowany jako funkcjonalny. Więcej o interfejsach
-// znajdziesz powyżej, w odpowiedniej sekcji.
+// Final note, lambdas must implement a functional interface. A functional
+// interface is one which has only a single abstract method declared. It can
+// have any number of default methods. Lambda expressions can be used as an
+// instance of that functional interface. Any interface meeting the requirements
+// is treated as a functional interface. You can read more about interfaces
+// above.
 //
 import java.util.Map;
 import java.util.HashMap;
@@ -866,84 +904,85 @@ import java.security.SecureRandom;
 
 public class Lambdas {
     public static void main(String[] args) {
-        // Składnia deklaracji lambdy:
-        // <zero lub więcej parametrów> -> <ciało wyrażenia lub blok instrukcji>
+        // Lambda declaration syntax:
+	// <zero or more parameters> -> <expression body or statement block>
 
-        // Poniżej w przykładzie użyjemy tablicy z hashowaniem.
-        Map<String, String> planety = new HashMap<>();
-            planety.put("Merkury", "87.969");
-            planety.put("Wenus", "224.7");
-            planety.put("Ziemia", "365.2564");
-            planety.put("Mars", "687");
-            planety.put("Jowisz", "4,332.59");
-            planety.put("Saturn", "10,759");
-            planety.put("Uran", "30,688.5");
-            planety.put("Neptun", "60,182");
+        // We will use this hashmap in our examples below.
+        Map<String, String> planets = new HashMap<>();
+            planets.put("Mercury", "87.969");
+            planets.put("Venus", "224.7");
+            planets.put("Earth", "365.2564");
+            planets.put("Mars", "687");
+            planets.put("Jupiter", "4,332.59");
+            planets.put("Saturn", "10,759");
+            planets.put("Uranus", "30,688.5");
+            planets.put("Neptune", "60,182");
 
-        // Lambda z zerową liczbą parametrów używając funkcjonalnego interfejsu
-        // Supplier z java.util.function.Supplier. Faktyczną lambdą jest częśc
-        // po numPlanets =.
-        Supplier<String> numPlanety = () -> Integer.toString(planety.size());
-        System.out.format("Liczba planet: %s\n\n", numPlanety.get());
+        // Lambda with zero parameters using the Supplier functional interface
+        // from java.util.function.Supplier. The actual lambda expression is
+        // what comes after numPlanets =.
+        Supplier<String> numPlanets = () -> Integer.toString(planets.size());
+        System.out.format("Number of Planets: %s\n\n", numPlanets.get());
 
-        // Lambda z jednym parametrem używająca funkcjonalnego interfejsu
-        // Consumer z java.util.function.Consumer.planety jest mapą, która
-        // wimplementuje Collection jak i Iterable. Użyty forEach pochodzi z
-        // Iterable i jest użyty w lambdzie na każdym elemencie kolekcji
-        // Domyślna implementacja forEach wygląda tak:
+        // Lambda with one parameter and using the Consumer functional interface
+        // from java.util.function.Consumer. This is because planets is a Map,
+        // which implements both Collection and Iterable. The forEach used here,
+        // found in Iterable, applies the lambda expression to each member of
+        // the Collection. The default implementation of forEach behaves as if:
         /*
             for (T t : this)
                 action.accept(t);
         */
 
-        // Faktyczna lambda jest parametrem przekazywanym do forEach.
-        planety.keySet().forEach((p) -> System.out.format("%s\n", p));
+        // The actual lambda expression is the parameter passed to forEach.
+        planets.keySet().forEach((p) -> System.out.format("%s\n", p));
 
-        // Jeżeli przekazujemy tyklo pojedynczy argumentpowyższy zapis możemy
-        // przekształcić do (zauważ brak nawiasów dookoła p):
-        planety.keySet().forEach(p -> System.out.format("%s\n", p));
+        // If you are only passing a single argument, then the above can also be
+        // written as (note absent parentheses around p):
+        planets.keySet().forEach(p -> System.out.format("%s\n", p));
 
-        // Śledząc powyższe widzimy, że planety jest typu HashMap, a keySet()
-        // zwraca zestaw kluczy, forEach stosuje o każdego elementu lambdę:
-        // (parameter p) -> System.out.format("%s\n", p). Za każdym razem
-        // element jest uznawany jako  "konsumowany" i wyrażenie (wyrażenia)
-        // w lambdzie są wykonywane. Pamiętaj, że ciało lambdy to część po
-        // symbolu ->.
+        // Tracing the above, we see that planets is a HashMap, keySet() returns
+        // a Set of its keys, forEach applies each element as the lambda
+        // expression of: (parameter p) -> System.out.format("%s\n", p). Each
+        // time, the element is said to be "consumed" and the statement(s)
+        // referred to in the lambda body is applied. Remember the lambda body
+        // is what comes after the ->.
 
-        // Powyższy przykład bez użycia lambdy wyglądałby tradycyjnie tak:
-        for (String planeta : planety.keySet()) {
-            System.out.format("%s\n", planeta);
+        // The above without use of lambdas would look more traditionally like:
+        for (String planet : planets.keySet()) {
+            System.out.format("%s\n", planet);
         }
 
-        // Poniższy przykład różni się od powyższego sposobem implementacji
-        // forEach:  forEach użyty w klasie HashMap implementuje intefejs Map.
-        // Poniższy forEach przyjmuje BiConsumer, który ogólnie ujmując jest
-        // wymyślnym sposobem stwierdzenia, że zajmuje się zestawem par
-        // klucz-wartość Key -> Value dla każdego klucza. Ta domyślna
-        // implementacja działa jak:
+        // This example differs from the above in that a different forEach
+        // implementation is used: the forEach found in the HashMap class
+        // implementing the Map interface. This forEach accepts a BiConsumer,
+        // which generically speaking is a fancy way of saying it handles
+        // the Set of each Key -> Value pairs. This default implementation
+        // behaves as if:
         /*
             for (Map.Entry<K, V> entry : map.entrySet())
                 action.accept(entry.getKey(), entry.getValue());
         */
 
-        // Faktyczna lambda jest parametrem przekazywanym do forEach.
-        String orbity = "%s okrąża Słońce w %s dni.\n";
-        planety.forEach((K, V) -> System.out.format(orbity, K, V));
+        // The actual lambda expression is the parameter passed to forEach.
+        String orbits = "%s orbits the Sun in %s Earth days.\n";
+        planets.forEach((K, V) -> System.out.format(orbits, K, V));
 
-        // Powyższe bez użycia lambdy wyglądałoby tradycyjnie tak:
-        for (String planet : planety.keySet()) {
-            System.out.format(orbity, planet, planety.get(planet));
+        // The above without use of lambdas would look more traditionally like:
+        for (String planet : planets.keySet()) {
+            System.out.format(orbits, planet, planets.get(planet));
         }
 
-        // Lub jeżeli postępujemy zgodnie ze specyfikacją domyślnej implementacji:
-        for (Map.Entry<String, String> planeta : planety.entrySet()) {
-            System.out.format(orbity, planeta.getKey(), planeta.getValue());
+        // Or, if following more closely the specification provided by the
+        // default implementation:
+        for (Map.Entry<String, String> planet : planets.entrySet()) {
+            System.out.format(orbits, planet.getKey(), planet.getValue());
         }
 
-        // Podane przykłady pokrywają jedynie podstawowe zastosowanie wyrażeń
-        // lambda. Być może wydają się one niezbyt przydatne, jednak należy
-        // pamiętać, że lambdy można stworzyć jako obiekty, które nastepnie mogą
-        // zostać przekazane jako parametry do innych metod.
+        // These examples cover only the very basic use of lambdas. It might not
+        // seem like much or even very useful, but remember that a lambda can be
+        // created as an object that can later be passed as parameters to other
+        // methods.
     }
 }
 
