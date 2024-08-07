@@ -1,80 +1,137 @@
 
--- 注释以两个连字符开始。命令以分号结束。
+-- Comments start with two hyphens. End each command with a semicolon.
 
--- SQL关键字大小写不敏感。在下文的示例命令中关键字大写，
--- 因为大写更容易区分数据库、表和列名。
+/*
+Multi-line comments
+*/
 
--- 创建和删除一个数据库。数据库名和表名是大小写敏感的。
+-- SQL is not case-sensitive about keywords. The sample commands here
+-- follow the convention of spelling them in upper-case because it makes
+-- it easier to distinguish them from database, table, and column names.
+
+-- Create and delete a database. Database and table names are case-sensitive.
 CREATE DATABASE someDatabase;
 DROP DATABASE someDatabase;
 
--- 列出可用的数据库。
+-- List available databases.
 SHOW DATABASES;
 
--- 使用某个已经存在的数据库
+-- Use a particular existing database.
 USE employees;
 
--- 从当前的departments表，选择所有的行和列
--- 解释器的默认行为是将结果打印在屏幕上。
+-- Select all rows and columns from the current database's departments table.
+-- Default activity is for the interpreter to scroll the results on your screen.
 SELECT * FROM departments;
 
--- 检索departments表中所有的行，但只取dept_no和dept_name列。
--- 一条命令可以跨越多行
+-- Retrieve all rows from the departments table,
+-- but only the dept_no and dept_name columns.
+-- Splitting up commands across lines is OK.
 SELECT dept_no,
        dept_name FROM departments;
 
--- 检索departments表中所有的行，但是只输出5行。
+-- Retrieve all departments columns, but just 5 rows.
 SELECT * FROM departments LIMIT 5;
 
--- 检索departments表中dept_name列包含子串'en'的行。
+-- Retrieve dept_name column values from the departments
+-- table where the dept_name value has the substring 'en'.
 SELECT dept_name FROM departments WHERE dept_name LIKE '%en%';
 
--- 检索departmnets表中所有dept_name列值为'S'开头并且'S'后接4个字符的行。
+-- Retrieve all columns from the departments table where the dept_name
+-- column starts with an 'S' and has exactly 4 characters after it.
 SELECT * FROM departments WHERE dept_name LIKE 'S____';
 
--- 检索title表中所有行，不显示重复的行。
+-- Select title values from the titles table but don't show duplicates.
 SELECT DISTINCT title FROM titles;
 
--- 和上面的查询相同，但是以title的值排序(大小写敏感)。
-SELECT DISTINCT title FROM titles ORDER BY title;
+-- Same as above, but sorted (case-sensitive) by the title values.
+-- The order can be specified by adding ASC (ascending) or DESC (descending).
+-- If omitted, it will sort in ascending order by default.
+SELECT DISTINCT title FROM titles ORDER BY title ASC;
 
--- 计算departments表的总行数。
+-- Use the comparison operators (=, >, <, >=, <=, <>) and
+-- the conditional keywords (AND, OR) to refine your queries.
+SELECT * FROM departments WHERE dept_no = 'd001' OR dept_no = 'd002';
+
+-- Same as above.
+SELECT * FROM departments WHERE dept_no IN ('d001', 'd002');
+
+-- Opposite of the above.
+SELECT * FROM departments WHERE dept_no NOT IN ('d001', 'd002');
+
+-- Select in a given range.
+SELECT * from departments WHERE dept_no BETWEEN 'd001' AND 'd002';
+
+-- Show the number of rows in the departments table.
 SELECT COUNT(*) FROM departments;
 
--- 计算departments表中dept_name列以'en'字段开头的行的数量。
+-- Show the number of rows in the departments table that
+-- have 'en' as a substring of the dept_name value.
 SELECT COUNT(*) FROM departments WHERE dept_name LIKE '%en%';
 
--- 不同表中信息的JOIN: titles表显示谁有什么工作，员工编号，
--- 入职离职时间。检索这些信息，但是使用员工编号作为employees表
--- 的交叉引用，而不是直接使用员工编号，来获得每个员工的名和姓。
--- (同时只取10行)
+-- Aggregate functions can be used, with GROUP BY, to compute a value
+-- from a set of values. Most commonly used functions are:
+-- MIN(), MAX(), COUNT(), SUM(), AVG().
+-- Use HAVING to filter rows by aggregated values.
+
+-- Retrieve the total number of employees, by department number,
+-- with the condition of having more than 100 employees.
+SELECT dept_no, COUNT(dept_no) FROM dept_emp GROUP BY dept_no
+HAVING COUNT(dept_no) > 100;
+
+-- Aliases, using the optional keyword AS, can be used for column/table names.
+SELECT COUNT(A.*) AS total_employees, COUNT(B.*) total_departments
+FROM employees AS A, departments B;
+
+-- Common date format is "yyyy-mm-dd".
+-- However, it can vary according to the implementation, the operating system, and the session's locale.
+SELECT * FROM dept_manager WHERE from_date >= '1990-01-01';
+
+-- A JOIN of information from multiple tables: the titles table shows
+-- who had what job titles, by their employee numbers, from what
+-- date to what date. Retrieve this information, but instead of the
+-- employee number, use the employee number as a cross-reference to
+-- the employees table to get each employee's first and last name
+-- instead. (And only get 10 rows.)
 
 SELECT employees.first_name, employees.last_name,
        titles.title, titles.from_date, titles.to_date
 FROM titles INNER JOIN employees ON
        employees.emp_no = titles.emp_no LIMIT 10;
 
--- 列出所有数据库中所有的表。不同实现通常提供各自的快捷命令
--- 来列出当前使用数据库的所有表。
+-- Combine the result of multiple SELECT.
+-- UNION selects distinct rows, UNION ALL selects all rows.
+SELECT * FROM departments WHERE dept_no = 'd001'
+UNION
+SELECT * FROM departments WHERE dept_no = 'd002';
+
+-- SQL syntax order is:
+-- SELECT _ FROM _ JOIN _ ON _ WHERE _ GROUP BY _ HAVING _ ORDER BY _ UNION
+
+-- List all the tables in all the databases. Implementations typically provide
+-- their own shortcut command to do this with the database currently in use.
 SELECT * FROM INFORMATION_SCHEMA.TABLES
 WHERE TABLE_TYPE='BASE TABLE';
 
--- 在当前使用的数据库中，创建一个名为tablename1的表，包含下
--- 述两列。许多其它选项可用于定制列，比如列的数据类型。
+-- Create a table called tablename1, with the two columns shown, for
+-- the database currently in use. Lots of other options are available
+-- for how you specify the columns, such as their datatypes.
 CREATE TABLE tablename1 (fname VARCHAR(20), lname VARCHAR(20));
 
--- 向tablename1表插入一行数据。假设该表已经定义并且接受这些值。
+-- Insert a row of data into the table tablename1. This assumes that the
+-- table has been defined to accept these values as appropriate for it.
 INSERT INTO tablename1 VALUES('Richard','Mutt');
 
--- 更新tablename1表中lname为'Mutt'的行fname的值改为'John'。
+-- In tablename1, change the fname value to 'John'
+-- for all rows that have an lname value of 'Mutt'.
 UPDATE tablename1 SET fname='John' WHERE lname='Mutt';
 
--- 删除tablename1表lname列以'M'开头的行。
-DELETE FROM tablename1 WHERE lname like 'M%';
+-- Delete rows from the tablename1 table
+-- where the lname value begins with 'M'.
+DELETE FROM tablename1 WHERE lname LIKE 'M%';
 
--- 删除tablename1表的所有行，留下空表。
+-- Delete all rows from the tablename1 table, leaving the empty table.
 DELETE FROM tablename1;
 
--- 删除整个tablename1表。
+-- Remove the entire tablename1 table.
 DROP TABLE tablename1;
 

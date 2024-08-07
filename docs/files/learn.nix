@@ -1,38 +1,38 @@
 
 with builtins; [
 
-  #  Comments
+  #  Commentaires
   #=========================================
 
-  # Inline comments look like this.
+  # Ceci est un commentaire en ligne.
 
-  /* Multi-line comments
-     look like this. */
+  /* Ceci est un commentaire
+     écrit sur plusieurs lignes. */
 
 
-  #  Booleans
+  #  Booléens
   #=========================================
 
-  (true && false)               # And
+  (true && false)               # Et
   #=> false
 
-  (true || false)               # Or
+  (true || false)               # Ou
   #=> true
 
-  (if 3 < 4 then "a" else "b")  # Conditional
+  (if 3 < 4 then "a" else "b")  # Test logique
   #=> "a"
 
 
-  #  Integers and Floats
+  #  Entiers et nombres flottants
   #=========================================
 
-  # There are two numeric types: integers and floats
+  # Il y a deux types de nombres : les entiers et les flottants.
 
-  1 0 42 (-3)       # Some integers
+  1 0 42 (-3)       # Quelques exemples d'entiers
 
-  123.43 .27e13     # A couple of floats
+  123.43 .27e13     # Quelques exemples de nombre flottants
 
-  # Operations will preserve numeric type
+  # Les opérations conservent le type du nombre
 
   (4 + 6 + 12 - 2)  # Addition
   #=> 20
@@ -45,19 +45,21 @@ with builtins; [
   #=> 3.5
 
 
-  #  Strings
+  #  Chaînes de caractères
   #=========================================
 
-  "Strings literals are in double quotes."
+  "Les chaînes de caractères littérales sont écrites entre guillements."
 
   "
-    String literals can span
-    multiple lines.
+    Les chaînes de caractères littérales
+    peuvent s'étendre sur
+    plusieurs lignes
   "
 
   ''
-    This is called an "indented string" literal.
-    It intelligently strips leading whitespace.
+    Ceci est ce qu'on appelle une
+    "chaîne de caractères littérale indentée".
+    Les espaces de début de lignes sont intelligemment supprimées.
   ''
 
   ''
@@ -66,53 +68,56 @@ with builtins; [
   ''
   #=> "a\n  b"
 
-  ("ab" + "cd")   # String concatenation
+  ("ab" + "cd")   # Concaténation de chaînes de caractères
   #=> "abcd"
 
-  # Antiquotation lets you embed values into strings.
-  ("Your home directory is ${getEnv "HOME"}")
-  #=> "Your home directory is /home/alice"
+  # L'antiquotation vous permet d'intégrer des valeurs
+  # dans des chaînes de caracères.
+  ("Votre répertoire personnel est ${getEnv "HOME"}")
+  #=> "Votre répertoire personnel est /home/alice"
 
 
-  #  Paths
+  #  Chemins
   #=========================================
 
-  # Nix has a primitive data type for paths.
+  # Nix a un type de variable primitif pour les chemins.
   /tmp/tutorials/learn.nix
 
-  # A relative path is resolved to an absolute path at parse
-  # time, relative to the file in which it occurs.
+  # Un chemin relatif est résolu en un chemin absolu
+  # au moment de l'évaluation.
   tutorials/learn.nix
   #=> /the-base-path/tutorials/learn.nix
 
-  # A path must contain at least one slash, so a relative
-  # path for a file in the same directory needs a ./ prefix,
+  # Un chemin doit toujours contenir au moins une barre oblique (slash).
+  # Un chemin relatif d'un fichier dans le répertoire courant
+  # a donc besoin du préfixe `./`
   ./learn.nix
   #=> /the-base-path/learn.nix
 
-  # The / operator must be surrounded by whitespace if
-  # you want it to signify division.
+  # L'opérateur `/` doit être entouré d'espaces afin d'être
+  # traité comme une division
+  7/2        # Ceci est un chemin
+  (7 / 2)    # Ceci est une division entière
 
-  7/2        # This is a path literal
-  (7 / 2)    # This is integer division
 
-
-  #  Imports
+  #  Importations
   #=========================================
 
-  # A nix file contains a single top-level expression with no free
-  # variables. An import expression evaluates to the value of the
-  # file that it imports.
+  # Un fichier nix contient une seule expression principale sans
+  # variable libre.
+  # Une expression importée s'évalue à la valeur du fichier importé.
   (import /tmp/foo.nix)
 
-  # Imports can also be specified by strings.
+  # Les importations peuvent également être spécifiées par des chaînes
+  # de caractères.
   (import "/tmp/foo.nix")
 
-  # Import paths must be absolute. Path literals
-  # are automatically resolved, so this is fine.
+  # Les chemins doivent être absolus. Cependant comme les chemins
+  # relatifs sont automatiquement résolus, ils peuvent être utilisés
+  # pour l'importation.
   (import ./foo.nix)
 
-  # But this does not happen with strings.
+  # Attention, cela ne se produit pas avec les chaînes de caractères.
   (import "./foo.nix")
   #=> error: string ‘foo.nix’ doesn't represent an absolute path
 
@@ -120,50 +125,54 @@ with builtins; [
   #  Let
   #=========================================
 
-  # `let` blocks allow us to bind values to variables.
+  # Les blocs `let` permettent d'affecter des valeurs avec des variables.
   (let x = "a"; in
     x + x + x)
   #=> "aaa"
 
-  # Bindings can refer to each other, and their order does not matter.
+  # Les affectations peuvent se référer les unes aux autres, et leur ordre
+  # n'a pas d'importance.
   (let y = x + "b";
        x = "a"; in
     y + "c")
   #=> "abc"
 
-  # Inner bindings shadow outer bindings.
+
+  # Les affectations d'un bloc fille écrasent les affections du bloc mère.
   (let a = 1; in
     let a = 2; in
       a)
   #=> 2
 
 
-  #  Functions
+  #  Fonctions
   #=========================================
 
-  (n: n + 1)      # Function that adds 1
+  (n: n + 1)      # Fonction qui ajoute 1
 
-  ((n: n + 1) 5)  # That same function, applied to 5
+  ((n: n + 1) 5)  # Fonction précédente appliquée à 5
   #=> 6
 
-  # There is no syntax for named functions, but they
-  # can be bound by `let` blocks like any other value.
+  # Il n'y a pas de syntaxe pour nommer les fonctions,
+  # mais elles peuvent affectée à une variable par un bloc `let`
+  # comme toutes les autres valeurs.
   (let succ = (n: n + 1); in succ 5)
   #=> 6
 
-  # A function has exactly one argument.
-  # Multiple arguments can be achieved with currying.
+  # Une fonction a exactement un seul argument.
+  # Des fonctions à plusieurs arguments peuvent être construites
+  # par imbrificication de fonctions.
   ((x: y: x + "-" + y) "a" "b")
   #=> "a-b"
 
-  # We can also have named function arguments,
-  # which we'll get to later after we introduce sets.
+  # Il est également possible d'avoir des arguments de fonction nommés.
+  # Nous verrons comment après avoir introduit les ensembles.
 
 
-  #  Lists
+  #  Listes
   #=========================================
 
-  # Lists are denoted by square brackets.
+  # Les listes sont indiquées par des crochets.
 
   (length [1 2 3 "x"])
   #=> 4
@@ -191,38 +200,39 @@ with builtins; [
   #=> [ 1 2 ]
 
 
-  #  Sets
+  #  Ensembles
   #=========================================
 
-  # A "set" is an unordered mapping with string keys.
+  # Un ensemble, ou "set", est un dictionnaire non ordonné avec des clés
+  # en chaîne de caractères.
   { foo = [1 2]; bar = "x"; }
 
-  # The . operator pulls a value out of a set.
+  # L'opérateur `.` extrait une valeur d'un ensemble.
   { a = 1; b = 2; }.a
   #=> 1
 
-  # The ? operator tests whether a key is present in a set.
+  # L'opérateur `?` teste si la clé est présente dans l'ensemble.
   ({ a = 1; b = 2; } ? a)
   #=> true
   ({ a = 1; b = 2; } ? c)
   #=> false
 
-  # The // operator merges two sets.
+  # L'opérateur `//` fusionne deux ensembles.
   ({ a = 1; } // { b = 2; })
   #=> { a = 1; b = 2; }
 
-  # Values on the right override values on the left.
+  # Les valeurs de droite écrasent les valeurs de gauche.
   ({ a = 1; b = 2; } // { a = 3; c = 4; })
   #=> { a = 3; b = 2; c = 4; }
 
-  # The rec keyword denotes a "recursive set",
-  # in which attributes can refer to each other.
+  # Le mot clé `rec` indique un ensemble récursif, ou "recursive set",
+  # dans lequel les attributs peuvent se référer les uns aux autres.
   (let a = 1; in     { a = 2; b = a; }.b)
   #=> 1
   (let a = 1; in rec { a = 2; b = a; }.b)
   #=> 2
 
-  # Nested sets can be defined in a piecewise fashion.
+  # Les ensembles imbriqués peuvent être définis par morceaux.
   {
     a.b   = 1;
     a.c.d = 2;
@@ -230,15 +240,17 @@ with builtins; [
   }.a.c
   #=> { d = 2; e = 3; }
 
-  # Sets are immutable, so you can't redefine an attribute:
+  # Les ensembles sont immuables, il est donc impossible de rédéfinir
+  # un attribut :
   {
     a = { b = 1; };
     a.b = 2;
   }
   #=> attribute 'a.b' at (string):3:5 already defined at (string):2:11
 
-  # However, an attribute's set members can also be defined piecewise
-  # way even if the attribute itself has been directly assigned.
+  # Cependant un attribut d'un attribut de l'ensemble peut également
+  # être défini par morceaux même si l'attribut père a été directement
+  # défini.
   {
     a = { b = 1; };
     a.c = 2;
@@ -249,68 +261,68 @@ with builtins; [
   #  With
   #=========================================
 
-  # The body of a `with` block is evaluated with
-  # a set's mappings bound to variables.
+  # Le corps d'un bloc `with` est évalué avec
+  # les mappings d'un ensemble liés à des variables.
   (with { a = 1; b = 2; };
     a + b)
   # => 3
 
-  # Inner bindings shadow outer bindings.
+  # Les affectations d'un bloc fille écrasent les affections du bloc mère.
   (with { a = 1; b = 2; };
     (with { a = 5; };
       a + b))
   #=> 7
 
-  # This first line of tutorial starts with "with builtins;"
-  # because builtins is a set that contains all of the built-in
-  # functions (length, head, tail, filter, etc.). This saves
-  # us from having to write, for example, "builtins.length"
-  # instead of just "length".
+  # La première ligne du tutoriel commence par `with builtins;`
+  # car `builtins` est un ensmble qui contient toutes les fonctions
+  # de base (`length`, `head`, `tail`, `filter`, etc.). Cela permet
+  # de ne pas avoir à écrire `builtins.length` au lieu de simplement
+  # `length` par exemple.
 
 
-  #  Set patterns
+  #  Modèles d'ensemble
   #=========================================
 
-  # Sets are useful when we need to pass multiple values
-  # to a function.
+  # Les ensembles sont utiles pour passer plusieurs valeurs
+  # à une fonction.
   (args: args.x + "-" + args.y) { x = "a"; y = "b"; }
   #=> "a-b"
 
-  # This can be written more clearly using set patterns.
+  # On peut l'écrire plus clairement en utilisant des modèles d'ensemble,
+  # ou "set patterns".
   ({x, y}: x + "-" + y) { x = "a"; y = "b"; }
   #=> "a-b"
 
-  # By default, the pattern fails on sets containing extra keys.
+  # Par défaut, le modèle échoue si l'ensemble contient des clés
+  # supplémentaires.
   ({x, y}: x + "-" + y) { x = "a"; y = "b"; z = "c"; }
   #=> error: anonymous function called with unexpected argument ‘z’
 
-  # Adding ", ..." allows ignoring extra keys.
+  # L'ajout de `, ...` permet d'ignorer les clés supplémentaires.
   ({x, y, ...}: x + "-" + y) { x = "a"; y = "b"; z = "c"; }
   #=> "a-b"
 
-  # The entire set can be bound to a variable using `@`
-  (args@{x, y}: args.x + "-" + args.y) { x = "a"; y = "b"; }
-  #=> "a-b"
 
-  #  Errors
+  #  Erreurs
   #=========================================
 
-  # `throw` causes evaluation to abort with an error message.
+  # `throw` provoque l'abandon de l'évaluation avec un message d'erreur.
   (2 + (throw "foo"))
   #=> error: foo
 
-  # `tryEval` catches thrown errors.
+  # `tryEval` permet de capturer les erreurs.
   (tryEval 42)
   #=> { success = true; value = 42; }
   (tryEval (2 + (throw "foo")))
   #=> { success = false; value = false; }
 
-  # `abort` is like throw, but it's fatal; it cannot be caught.
+  # `abort` est comme `throw`, mais l'erreur est alors fatale :
+  # elle ne peut pas être capturée.
   (tryEval (abort "foo"))
   #=> error: evaluation aborted with the following error message: ‘foo’
 
-  # `assert` evaluates to the given value if true;
-  # otherwise it throws a catchable exception.
+  # `assert` s'évalue à la valeur donnée si le test est vrai;
+  # sinon il lève une exception capturable.
   (assert 1 < 2; 42)
   #=> 42
   (assert 1 > 2; 42)
@@ -319,32 +331,36 @@ with builtins; [
   #=> { success = false; value = false; }
 
 
-  #  Impurity
+  #  Impureté
   #=========================================
 
-  # Because repeatability of builds is critical to the Nix package
-  # manager, functional purity is emphasized in the Nix language
-  # used to describe Nix packages. But there are a few impurities.
 
-  # You can refer to environment variables.
+  # La répétabilité des constructions étant critique pour le
+  # gestionnaire de paquets Nix, la pureté fonctionnelle est
+  # mise en avant dans le langage Nix. Cependant, il existe des
+  # impuretés.
+
+  # Vous pouvez vous référer aux variables d'environnement.
   (getEnv "HOME")
   #=> "/home/alice"
 
-  # The trace function is used for debugging. It prints the first
-  # argument to stderr and evaluates to the second argument.
+
+  # La fonction `trace` est utilisée pour le débogage.
+  # Elle affiche le premier argument dans `stderr` et
+  # évalue le second argument.
   (trace 1 2)
   #=> trace: 1
   #=> 2
 
-  # You can write files into the Nix store. Although impure, this is
-  # fairly safe because the file name is derived from the hash of
-  # its contents. You can read files from anywhere. In this example,
-  # we write a file into the store, and then read it back out.
+  # Vous pouvez écrire des fichiers dans le magasin Nix (Nix store).
+  # Bien qu'impur, c'est assez sûr car le nom du fichier est dérivé
+  # du hachage de  son contenu. On peut lire des fichiers depuis n'importe où.
+  # Dans cet exemple, on écrit un fichier dans le magasin, puis on le relit.
   (let filename = toFile "foo.txt" "hello!"; in
-    [filename (readFile filename)])
+    [filename (builtins.readFile filename)])
   #=> [ "/nix/store/ayh05aay2anx135prqp0cy34h891247x-foo.txt" "hello!" ]
 
-  # We can also download files into the Nix store.
+  # Il est également possible de télécharger des fichiers dans le magasin Nix.
   (fetchurl "https://example.com/package-1.2.3.tgz")
   #=> "/nix/store/2drvlh8r57f19s9il42zg89rdr33m2rm-package-1.2.3.tgz"
 
