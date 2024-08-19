@@ -6,21 +6,21 @@ img = cv2.imread('cat.jpg')
 # Displaying the image
 # imshow() function is used to display the image
 cv2.imshow('Image', img)
-# Your first arguement is the title of the window and second parameter is image
-# If you are getting error, Object Type None, your image path may be wrong. Please recheck the pack to the image
+# Your first argument is the title of the window and second parameter is image
+# If you are getting an error, Object Type None, your image path may be wrong. Please recheck the path to the image
 cv2.waitKey(0)
-# waitKey() is a keyboard binding function and takes arguement in milliseconds. For GUI events you MUST use waitKey() function.
+# waitKey() is a keyboard binding function and takes an argument in milliseconds. For GUI events you MUST use waitKey() function.
 
 # Writing an image
 cv2.imwrite('catgray.png', img)
-# first arguement is the file name and second is the image
+# The first argument is the file name and second is the image
 
 # Convert image to grayscale
 gray_image = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 # Capturing Video from Webcam
 cap = cv2.VideoCapture(0)
-# 0 is your camera, if you have multiple camera, you need to enter their id
+# 0 is your camera, if you have multiple cameras, you need to enter their id
 while True:
     # Capturing frame-by-frame
     _, frame = cap.read()
