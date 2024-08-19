@@ -7,7 +7,7 @@
 ; Der Clojure Leser nimmt an, dass das Erste, was aufgerufen wird
 ; eine Funktion oder ein Makro ist, der Rest sind Argumente.
 
-; Der erste Aufruf in einer Datei sollte ns sein, um den Namespacezu setzen.
+; Der erste Aufruf in einer Datei sollte ns sein, um den Namespace zu setzen.
 (ns learnclojure)
 
 ; Weitere einfache Beispiele:
@@ -36,8 +36,8 @@
 
 ; Clojure verwendet Javas Objekt Typen für Booleans, Strings und Zahlen.
 ; Verwende `class` um sie zu inszipieren.
-(class 1) ; Integer Literalte sind standardmäßig java.lang.Long
-(class 1.); Float Literale sind java.lang.Double
+(class 1) ; Integer-Literale sind standardmäßig java.lang.Long
+(class 1.); Float-Literale sind java.lang.Double
 (class ""); Strings sind immer in doppelten Anführungszeichen notiert und sind java.lang.String
 (class false) ; Booleans sind java.lang.Boolean
 (class nil); Der "null" Wert heißt nil
@@ -50,7 +50,7 @@
 ; Du kannst eine zitierte Liste evaluieren
 (eval '(+ 1 2)) ; => 3
 
-; Kollektioenn & Sequenzen
+; Kollektionen & Sequenzen
 ;;;;;;;;;;;;;;;;;;;
 
 ; Listen sind Linked-Lists Datenstrukturen, während Vektoren arraybasierend sind.
@@ -60,7 +60,7 @@
 
 ; Eine Liste würde nur als (1 2 3) geschrieben, aber wir müssen es zitieren
 ; damit der Leser aufhört zu denken, es sei eine Funktion.
-; Außerdem ist (list 1 2 3) das Selbe, wie '(1 2 3)
+; Außerdem ist (list 1 2 3) dasselbe, wie '(1 2 3)
 
 ; "Kollektioen" sind nur Gruppen von Daten
 ; Listen und Vektoren sind Kolllektionen:
@@ -162,12 +162,12 @@ x ; => 1
 (class {:a 1 :b 2 :c 3}) ; => clojure.lang.PersistentArrayMap
 (class (hash-map :a 1 :b 2 :c 3)) ; => clojure.lang.PersistentHashMap
 
-; Arraymaps werden durch die meisten Operatioen automatisch zu Hashmaps,
+; Arraymaps werden durch die meisten Operationen automatisch zu Hashmaps,
 ; sobald sie groß genug werden. Das heißt du musst dich nicht darum sorgen.
 
 ; Maps können einen beliebigen Hash-Typ als Schlüssel verwenden, in der Regel
 ; sind jedoch Keywords am besten. Keywords sind wie Strings, jedoch besitzen sie
-; Performancevorteile
+; Performance-Vorteile
 (class :a) ; => clojure.lang.Keyword
 
 (def stringmap {"a" 1, "b" 2, "c" 3})
