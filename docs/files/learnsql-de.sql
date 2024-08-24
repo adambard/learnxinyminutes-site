@@ -3,7 +3,7 @@
 
 -- SQL unterscheidet nicht zwischen Groß- und Kleinschreibung bei
 -- Schlüsselwörtern. Die Beispielbefehle folgen der Konvention der
--- Schreibweise in Großbuchstaben, damit sie leichter von Datebank-,
+-- Schreibweise in Großbuchstaben, damit sie leichter von Datenbank-,
 -- Tabellen- und Spaltennamen zu unterscheiden sind.
 
 -- Erstellen und Löschen einer Datenbank. Bei Datenbank- und Tabellennamen
@@ -54,11 +54,11 @@ SELECT COUNT(*) FROM departments;
 -- Teilezeichenkette des Wertes dept_name haben.
 SELECT COUNT(*) FROM departments WHERE dept_name LIKE '%en%';
 
--- Eine Vereinigung von Informatione von mehreren Tabellen:
+-- Eine Vereinigung von Informationen von mehreren Tabellen:
 -- Die titles Tabelle zeigt, wer welche Jobtitel hatte, wer welche Mitarbeiter-
 -- nummer hat, von welchen Startdatum und zu welchen Enddatum
 -- Wir rufen diese Information ab, aber anstelle der Mitarbeiternummer,
--- verwenden wir die Mitarbeiternummer als Querverweis auf die empoyees Tabelle
+-- verwenden wir die Mitarbeiternummer als Querverweis auf die employees Tabelle
 -- um die die Vor- und Nachnamen jedes Mitarbeiters zu erhalten.
 -- (und nur 10 Reihen)
 SELECT employees.first_name, employees.last_name,
