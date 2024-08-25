@@ -253,7 +253,7 @@ set amount [lindex $amounts 1]
 # Werte in einer Liste zu formatieren. Eine Liste sieht aus wie ein Skript,
 # allerdings verlieren verlieren Zeilenumbrüche und Doppelüunkte ihre 
 # besondere Bedeutung. Diese Funktionalität macht Tcl homoikonisch. Die
-# folgende Liste enhtält drei Elemente.
+# folgende Liste enthält drei Elemente.
 set values {
 
     one\ two
