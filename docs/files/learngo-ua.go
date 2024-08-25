@@ -166,7 +166,7 @@ func learnFlowControl() {
 	case 1:
 	case 42:
 		// Кейси не "провалюються". Натомість, є ключове слово `fallthrough`:
-		// https://github.com/golang/go/wiki/Switch#fall-through (англ)
+		// https://go.dev/wiki/Switch#fall-through (англ)
 	case 43:
 		// Недоступний.
 	default:
