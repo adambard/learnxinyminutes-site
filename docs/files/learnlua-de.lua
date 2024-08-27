@@ -259,10 +259,10 @@ eatenBy = myFavs.animal  -- Funktioniert dank Metatabelle!
 -- 3.2 Klassen-Artige Tabellen und Vererbung.
 --------------------------------------------------------------------------------
 
--- Klassen sind in Lua nicht eingebaut. Es gibt verschieden Wege sie mithilfe
+-- Klassen sind in Lua nicht eingebaut. Es gibt verschiedene Wege sie mithilfe
 -- von Tabellen und Metatabellen zu erzeugen.
 
--- Die Erklärund des Beispiels erfolgt unterhalb.
+-- Die Erklärung des Beispiels erfolgt unterhalb.
 
 Dog = {}                                   -- 1.
 
