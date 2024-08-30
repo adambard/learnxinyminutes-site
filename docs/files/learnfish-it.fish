@@ -13,7 +13,7 @@
 
 > fish_config
 
-> fish_path_add ~/cowsay
+> fish_add_path ~/cowsay
 
 > man set
 
@@ -61,7 +61,7 @@ La mia home è $HOME
 
 # Cominciamo con le variabili.
 # per l'uso interno a un programma, puoi usare la sintassi
-set nome = 'La mia variabile'
+set nome 'La mia variabile'
 
 # Utilizzo...
 set -x nome valore
