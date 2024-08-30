@@ -36,7 +36,7 @@ int function_2(void);
 // Es muss ein Funktionsprototyp deklariert werden vor der `main()` Funktion,
 // wenn die Funktion nach der `main()` Funktion gebraucht wird.
 int add_two_ints(int x1, int x2); // Funktionsprototyp
-// Auch wenn der Ausdrck `int add_two_ints(int, int)` auch valid wäre, 
+// Auch wenn der Ausdruck `int add_two_ints(int, int)` auch valid wäre, 
 // ist es empfohlen, dass man die Namen der Argumente hinschreibt für eine
 // einfachere Analyse.
 
@@ -404,7 +404,7 @@ int main (int argc, char** argv) {
     printf("%d\n", *px); // => 1
     printf("%d\n", x); // => 1
 
-    // Arrays sind eine gute Möglichekit, einen zusammenhängenden Block von
+    // Arrays sind eine gute Möglichkeit, einen zusammenhängenden Block von
     // Speicher zu allozieren.
     int x_array[20]; // deklariert einen Array der Größe 20 (Größe kann
     // nicht geändert werden.)
@@ -679,7 +679,7 @@ void str_reverse_through_pointer(char *str_in) {
 
 /*
 Solange die Signaturen der Funktionen übereinstimmen, kann man sämtliche Funktionen
-demselben Pointer zuweisen. Funktionspointer sind auf Grund der Einfacheit und
+demselben Pointer zuweisen. Funktionspointer sind auf Grund der Einfachheit und
 Leserlichkeit normalerweise wie folgt `typedef`d 
 */
 typedef void (*my_fnp_type)(char *);
@@ -689,7 +689,7 @@ typedef void (*my_fnp_type)(char *);
 
 // Spezialzeichen
 // Im folgenden sin die englischen Begriffe jeweils in Klammern geschrieben,
-// da diese Begriffe auch im deutschten Sprachgebrauch verwendet werden.
+// da diese Begriffe auch im deutschen Sprachgebrauch verwendet werden.
 '\a'; // Alarmzeichen (alert (bell) character)
 '\n'; // Zeichen für neue Linie (newline character)
 '\t'; // Tab (tab character (left justifies text))
@@ -771,7 +771,7 @@ befindet wie die C-Quelldatei.
 #ifndef EXAMPLE_H /* Wenn EXAMPLE_H noch nicht definiert wurde */
 #define EXAMPLE_H /* definiere das Makro EXAMPLE_H */
 
-// Es könenn weitere Header innerhalb eines Headers eingebunden werden, was dazu
+// Es können weitere Header innerhalb eines Headers eingebunden werden, was dazu
 // führt, dass diese bereits in anderen Dateien eingebunden wurden. So kann eine
 // Header-Datei in mehreren Dateien eingebunden werden. zum Beispiel:
 #include <string.h>
@@ -799,7 +799,7 @@ typedef struct Node {
 // Dies kann auch mit Aufzählungen gemacht werden.
 enum traffic_light_state {GREEN, YELLOW, RED};
 
-// Funktionsprototypen könenn auch in Header-Dateien definiert werden, um die
+// Funktionsprototypen können auch in Header-Dateien definiert werden, um die
 // Funktion in unterschiedlichen Dateien zu verwenden, aber dies wird als schlechte
 // Praxis angesehen. Definitionen sollten in einer C-Datei erstellt werden.
 Node create_linked_list(int *value, int length);
