@@ -1,97 +1,96 @@
 
-# Tek satırlık yorumlar, '#' simgesi kullanılarak yazılır.
+# Single-line comments are written using hash symbol.
 """
-  Çok 
-  satırlı
-  yorumlar
-  üç
-  tırnak
-  kullanılarak
-  yazılır
+  Multi-line
+  comments
+  are
+  written
+  using
+  triple
+  quoted
+  strings
 """
 
-# Belge yorumları (Doc Comments) sınıflara ve alanlara açıklama ekleyebilir.
-# bunlar, motor içi dokümanlarda görüntülenebilir.
+# Doc Comments can add a decription to classes and fields
+# which can be viewed in the in-engine docs.
 
-## Bu sınıf, GDScript'in bir gösterimidir
+## This class is a demonstration of GDScript
 
-# Komut dosyası kendi başına bir sınıftır ve isteğe bağlı olarak bunun için bir ad tanımlayabilirsiniz.
+# Script file is a class in itself and you can optionally define a name for it.
 class_name MyClass
 
-# Kalıtım (Inheritance) komut dosyasının bağlı olduğu Node'a göre 'Node2D' kısmı değişkenlik gösterir.
+# Inheritance
 extends Node2D
 
-# Değişken türleri
+# Member variables
 var x = 8 # int
 var y = 1.2 # float
 var b = true # bool
-var s = "Merhaba Dünya!" # String
-var a = [1, false, "turuncu kedi"] # Array - Python'daki listeye benzer,
-                                # aynı anda farklı tipte 
-                                # değişkenleri tutabilir.
+var s = "Hello World!" # String
+var a = [1, false, "brown fox"] # Array - similar to list in Python,
+                                # it can hold different types
+                                # of variables at once.
 var d = {
   "key" : "value",
   42 : true
-} # Sözlük anahtar-değer (key-value) çiftlerini tutar.
-var p_arr = PackedStringArray(["Hey", "selamlar", "!"]) # Paketlenmiş diziler yalnızca
-                                                    # belirli bir türü tutabilir.
+} # Dictionary holds key-value pairs.
+var p_arr = PackedStringArray(["Hi", "there", "!"]) # Packed Arrays can
+                                                    # only hold a certain type.
 
-# Doküman yorumları, özelliklere uygulanabilir.
+# Doc comments can apply to properties
 
-## Bu değişken nesnenin kaç kez zıpladığını tutar.
+## How many times this object has jumped
 var jump_count = 0
 
-# Motorda bulunan yerleşik vektör türleri:
+# Built-in vector types:
 var v2 = Vector2(1, 2)
 var v3 = Vector3(1, 2, 3)
 
-# Sabitler (Constants)
+# Constants
 const ANSWER_TO_EVERYTHING = 42
-const BREAKFAST = "Sucuklu yumurta!"
+const BREAKFAST = "Spam and eggs!"
 
-# Enumlar
+# Enums
 enum { ZERO, ONE , TWO, THREE }
 enum NamedEnum { ONE = 1, TWO, THREE }
 
-# Dışa aktarılan değişkenler 'inspector' de görünür.
+# Exported variables are visible in the inspector.
 #
-# Editörün hangi seçenekleri vereceğini bilmesi için bir tür ipucu (daha sonra açıklanacaktır) 
-# veya varsayılan bir değere ihtiyaç vardır.
+# Either a type hint (explained later) or a default value are needed in order
+# for the editor to know what options to give
 @export var age: int
 @export var height: float
-@export var person_name = "Ahmet"
-# Ama ikisi de kabul edilebilir.
-@export var favorite_color: String = "Kırmızı"
-@export var favorite_food := "Lahmacun"
+@export var person_name = "Bob"
+# But both is also acceptable
+@export var favorite_color: String = "Green"
+@export var favorite_food := "Pizza"
 
-# Fonksiyonlar
+# Functions
 func foo():
-  pass # pass anahtar sözcüğü gelecekteki yazılacak olan kod için bir yer tutucudur. 
-       # Editörde hata olarak göstermesini engellemek için de kullanılır.
+  pass # pass keyword is a placeholder for future code
 
 func add(first, second):
   return first + second
 
-# Fonksiyonlar üzerinde doküman yorumları yazma
+# Doc Comments on functions
 
-## Zıplama Sayısını Artırma
+## Increases the Jump Count
 func jump():
   jump_count += 1
 
-# Değerleri yazdırma
+# Printing values
 func printing():
-  print("GDScript ", "mükemmel.")
-  prints("Bu", "kelimeler", "boşluklarla", "ayrıldı.")
-  printt("Bu", "kelimeler", "tablarla", "ayrıldı.")
-  printraw("Bu sistem konsoluna yazdırılır.")
-  printerr("Bu konsolda hata olarak gösterilir.")
+  print("GDScript ", "is ", " awesome.")
+  prints("These", "words", "are", "divided", "by", "spaces.")
+  printt("These", "words", "are", "divided", "by", "tabs.")
+  printraw("This gets printed to system console.")
 
-  # İsimsiz fonksiyonlar (Lambdas)
-  var my_lambda = func(): print("lambda'dan merhaba!")
+  # Lambdas
+  var my_lambda = func(): print("hello from lambda!")
 
   my_lambda.call()
 
-# Matematik
+# Math
 func doing_math():
   var first = 8
   var second = 4
@@ -100,39 +99,39 @@ func doing_math():
   print(first * second) # 32
   print(first / second) # 2
   print(first % second) # 0
-  # Ayrıca bunlar var +=, -=, *=, /=, %= vb.,
-  # ++ veya -- operatörleri yok.
+  # There are also +=, -=, *=, /=, %= etc.,
+  # however no ++ or -- operators.
   print(pow(first, 2)) # 64
   print(sqrt(second)) # 2
-  printt(PI, TAU, INF, NAN) # Yerleşik (built-in) sabitler (constants)
+  printt(PI, TAU, INF, NAN) # built-in constants
 
-# Kontrol akışı
+# Control flow
 func control_flow():
   x = 8
-  y = 2 # y orjinalde float'dı,
-        # ancak "dynamic typing" gücünü kullanarak 
-        # tipini int'e değiştirebiliriz!
+  y = 2 # y was originally a float,
+        # but we can change its type to int
+        # using the power of dynamic typing!
 
   if x < y:
-    print("x, y'den küçüktür.")
+    print("x is smaller than y")
   elif x > y:
-    print("x, y'den büyüktür.")
+    print("x is bigger than y")
   else:
-    print("x ve y eşittir.")
+    print("x and y are equal")
 
   var a = true
   var b = false
   var c = false
-  if a and b or not c: # alternatif olarak bunları kullanabilirsiniz: &&, || ve !
-    print("Değer: true")
+  if a and b or not c: # alternatively you can use &&, || and !
+    print("This is true!")
 
-  for i in range(20): # GDScript'de "range" Python'dakine benzerdir.
-    print(i) # bu 0'dan 19'a kadar sayıları yazdıracaktır.
+  for i in range(20): # GDScript's range is similar to Python's
+    print(i) # so this will print numbers from 0 to 19
 
-  for i in 20: # Python'dan farklı olarak, doğrudan bir int üzerinde "range" kullanmadan döngüye girebilirsiniz.
-    print(i) # bu da 0'dan 19'a kadar olan sayıları da yazdıracaktır.
+  for i in 20: # unlike Python, you can loop over an int directly
+    print(i) # so this will also print numbers from 0 to 19
 
-  for i in ["two", 3, 1.0]: # Bir dizi üzerinde yineleme (iterasyon) yapma.
+  for i in ["two", 3, 1.0]: # iterating over an array
     print(i)
 
   while x > y:
@@ -144,183 +143,185 @@ func control_flow():
   while x < y:
     x += 1
     if x == 6:
-      continue # 6, "continue" ifadesi nedeniyle yazdırılmayacak.
-    prints("x eşittir:", x)
+      continue # 6 won't get printed because of continue statement
+    prints("x is equal to:", x)
     if x == 7:
-      break # döngü 7'de duracak, bu yüzden 8, 9 ve 10 yazdırılmayacak.
+      break # loop will break on 7, so 8, 9 and 10 won't get printed
 
   match x:
     1:
-      print("Match, switch'e benzerdir.")
+      print("Match is similar to switch.")
     2:
-      print("Ancak her değerden önce "case" koymanıza gerek yok.")
+      print("However you don't need to put cases before each value.")
     3:
-      print("Ayrıca her "case" varsayılan olarak durdurulur.")
-      break # HATA! "Break" ifadesi gereksiz!
+      print("Furthermore each case breaks on default.")
+      break # ERROR! Break statement is unnecessary!
     4:
-      print("Eğer "fallthrough" kullanmaya ihtiyacınız varsa "continue" kullanın.")
+      print("If you need fallthrough use continue.")
       continue
     _:
-      print("Alt çizgi varsayılan bir "case"dir.")
+      print("Underscore is a default case.")
 
-  # Üç terimli operatör (tek satırda yazılabilen if-else)
-  prints("x", "pozitif" if x >= 0 else "negatif")
+  # ternary operator (one line if-else statement)
+  prints("x is", "positive" if x >= 0 else "negative")
 
-# Bir veri tipini başka bir veri tipine dönüştürme (Casting)
+# Casting
 func casting_examples():
   var i = 42
-  var f = float(42) # Değişkenlerin kurucusunu (constructor) kullanarak
-  var b = i as bool # veya "as" anahtar kelimesini kullanarak tür dönüştürme (casting)
+  var f = float(42) # cast using variables constructor
+  var b = i as bool # or using "as" keyword
 
-# Override fonksiyonlar
-# Built-in kurallı "overridable functions" bir alt çizgi ile başlar
-# ama pratikte hemen hemen her fonksiyonu geçersiz kılabilirsiniz.
+# Override functions
+# By a convention built-in overridable functions start with an underscore,
+# but in practice you can override virtually any function.
 
-# _init nesne başlatıldığında çağrılır.
-# Bu, nesnenin kurucusudur (constructor).
+# _init is called when object gets initialized
+# This is the object's constructor.
 func _init():
-  # Burada nesnenin iç öğelerini başlatın.
+  # Initialize object's internal stuff here.
   pass
 
-# _ready, komut dosyasında
-# node ve children node sahneye girdiğinde çağrılır.
+# _ready gets called when script's node and
+# its children have entered the scene tree.
 func _ready():
   pass
 
-# _process her karede çağrılır.
+# _process gets called on every frame.
 func _process(delta):
-  # Bu fonksiyona iletilen delta argümanı,
-  # son kare ile anlık kare arasında geçen saniye sayısıdır.
-  print("Delta zamanı: ", delta)
+  # The delta argument passed to this function is a number of seconds,
+  # which passed between the last frame and the current one.
+  print("Delta time equals: ", delta)
 
-# _physics_process her fizik karesinde çağrılır.
-# Deltanın sabit olması gerektiği anlamına gelir.
+# _physics_process gets called on every physics frame.
+# That means delta should be constant.
 func _physics_process(delta):
-  # Vektör toplama ve çarpma kullanarak hareket ettirme.
-  var direction = Vector2(1, 0) # ya da Vector2.RIGHT
+  # Simple movement using vector addition and multiplication.
+  var direction = Vector2(1, 0) # or Vector2.RIGHT
   var speed = 100.0
   self.global_position += direction * speed * delta
-  # self geçerli sınıf örneğini belirtir.
+  # self refers to current class instance
 
-# Geçersiz kılma sırasında, buradaki gibi nokta operatörünü kullanarak 
-# parent işlevini çağırabilirsiniz:
+# When overriding you can call parent's function using the dot operator
+# like here:
 func get_children():
-  # Bazı ek şeyler ekleyebilirsiniz.
-  var r = super() # Parent implementasyonunu çağırma 
+  # Do some additional things here.
+  var r = super() # call parent's implementation
   return r
 
-# Dahili sınıflar (Inner class)
+# Inner class
 class InnerClass:
   extends Object
 
   func hello():
-    print("Dahili sınıftan merhabalar!")
+    print("Hello from inner class!")
 
 func use_inner_class():
   var ic = InnerClass.new()
   ic.hello()
-  ic.free() # Ramde yer açmak için "free" kullanın.
+  ic.free() # use free for memory cleanup
 
 extends Node2D
 
-var sprite # Bu değişken referansı tutacak.
+var sprite # This variable will hold the reference.
 
-# _ready'de diğer node'lara referanslar alabilirsiniz.
+# You can get references to other nodes in _ready.
 func _ready() -> void:
-  # "NodePath" node'lara erişmek için kullanışlıdır.
+  # NodePath is useful for accessing nodes.
+  # Create NodePath by passing String to its constructor:
   var path1 = NodePath("path/to/something")
-  # Ya da böyle kullanabilirsiniz:
+  # Or by using NodePath literal:
   var path2 = ^"path/to/something"
-  # NodePath örnekleri:
-  var path3 = ^"Sprite" # geçerli node'un child node'u
-  var path4 = ^"Timers/Firerate" # child node'un child node'u
-  var path5 = ^".." # geçerli node'un parent node'u
-  var path6 = ^"../Enemy" # geçerli node'un kardeşi
-  var path7 = ^"/root" # ana yol, get_tree().get_root() ile eşdeğerdir.
-  var path8 = ^"/root/Main/Player/Sprite" # Player'ın Sprite'ına giden ana yol
-  var path9 = ^"Timers/Firerate:wait_time" # özelliklere erişme
-  var path10 = ^"Player:position:x" # alt özelliklere erişim
+  # NodePath examples:
+  var path3 = ^"Sprite" # relative path, immediate child of the current node
+  var path4 = ^"Timers/Firerate" # relative path, child of the child
+  var path5 = ^".." # current node's parent
+  var path6 = ^"../Enemy" # current node's sibling
+  var path7 = ^"/root" # absolute path, equivalent to get_tree().get_root()
+  var path8 = ^"/root/Main/Player/Sprite" # absolute path to Player's Sprite
+  var path9 = ^"Timers/Firerate:wait_time" # accessing properties
+  var path10 = ^"Player:position:x" # accessing subproperties
 
-  # Son olarak, referans almak için bunlardan birini kullanabilirsiniz:
-  sprite = get_node(^"Sprite") as Sprite # her zaman belirttiğiniz türü yazın
-  sprite = get_node("Sprite") as Sprite # burada String
-                                        # NodePath'e dönüştürülür
+  # Finally, to get a reference use one of these:
+  sprite = get_node(^"Sprite") as Sprite # always cast to the type you expect
+  sprite = get_node("Sprite") as Sprite # here String gets
+                                        # implicitly casted to NodePath
   sprite = get_node(path3) as Sprite
   sprite = get_node_or_null("Sprite") as Sprite
   sprite = $Sprite as Sprite
 
 func _process(delta):
-  # Artık referansı başka yerlerde tekrar kullanabiliriz.
+  # Now we can reuse the reference in other places.
   prints("Sprite has global_position of", sprite.global_position)
 
-# _ready çalıştırılmadan hemen önce 
-# bir değişkene değer atamak için @onready kullanın.
+# Use @onready annotation to assign a value to
+# a variable just before _ready executes.
+# This is a commonly used syntax sugar.
 @onready var other_sprite = $Sprite as Sprite
 
-# NodePath'i dışa aktarabilir, böylece onu "inspector" içinde atama yapabilirsiniz.
+# You can export NodePath, so you can assign it within the inspector.
 @export var nodepath = ^""
 @onready var reference = get_node(nodepath) as Node
 
-# Veya Node'u doğrudan dışa aktarın
+# Or export Node directly
 @export var other_reference: Node
 
 class_name Player extends Node2D
 
 var hp = 10
 
-# Belge yorumları sinyallere de yansıyabilir
+# Doc comments can go on signals too
 
-## Oyuncu öldüğünde sinyal gönderir (emit).
-signal died() # sinyali tanımlama
-signal hurt(hp_old, hp_new) # sinyallere değişken tanımlanabilir.
+## Emitted when the player dies
+signal died() # define signal
+signal hurt(hp_old, hp_new) # signals can take arguments
 
 func apply_damage(dmg):
   var hp_old = hp
   hp -= dmg
-  hurt.emit(hp_old, hp) # sinyal gönderme ve değişkenleri iletme
+  hurt.emit(hp_old, hp) # emit signal and pass arguments
   if hp <= 0:
     died.emit()
 
 func _ready():
-  # "died" sinyali kendi içinde tanımlanan "_on_death" fonksiyonuna bağlama 
+  # connect signal "died" to function "_on_death" defined in self
   died.connect(_on_death)
-  # Hedef nesne kendisi değilse 
-  # alternatif bir yol gerekir.
+  # Alternate way
+  # needed if the target object is not self
   # died.connect(Callable(self, &"_on_death"))
 
 func _on_death():
-  queue_free() # oyuncu öldüğünde sahneden siler
+  queue_free() # destroy Player on death
 
 extends Node
 
-var x: int # değişkenin türünü belirtme
+var x: int # define typed variable
 var y: float = 4.2
-var z := 1.0 # ":=" operatörünü kullanmak üstteki tanımlama ile aynıdır.
+var z := 1.0 # infer type based on default value using := operator
 
-var a: Array[int] = [1, 2, 3] # Dizinin tür içeriğini belirtme
+var a: Array[int] = [1, 2, 3] # Array can also have its type content specified
 
 enum NamedEnum { ONE = 1, TWO, THREE }
-var n: NamedEnum = NamedEnum.ONE # Enum da bir tür olarak kullanılabilir.
+var n: NamedEnum = NamedEnum.ONE # Enums can be used as types as well
 
 @onready var node_ref_typed := $Child as Node
 
 @export var speed := 50.0
 
-const CONSTANT := "Bu bir sabit atamadır (constant)."
+const CONSTANT := "Typed constant."
 
 signal example(arg: int)
 
 func _ready() -> void:
-  # fonksiyon hiçbir şey döndürmez
-  x = "string" # HATA! Tür değiştirilemez!
-  a.append("q") # HATA! Array[int] string tutamaz!
+  # function returns nothing
+  x = "string" # ERROR! Type can't be changed!
+  a.append("q") # ERROR! Array[int] can't hold strings!
   return
 
 func join(arg1: String, arg2: String) -> String:
-  # Fonksiyon iki tane string alır ve bir tane string döndürür.
+  # function takes two Strings and returns a String
   return arg1 + arg2
 
 func get_child_at(index: int) -> Node:
-  # Fonksiyon int alır ve node döndürür.
+  # function takes an int and returns a Node
   return get_children()[index]
 
