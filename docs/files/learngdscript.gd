@@ -11,7 +11,7 @@
   strings
 """
 
-# Doc Comments can add a decription to classes and fields
+# Doc Comments can add a description to classes and fields
 # which can be viewed in the in-engine docs.
 
 ## This class is a demonstration of GDScript
