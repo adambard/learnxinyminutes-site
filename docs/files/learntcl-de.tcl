@@ -101,7 +101,7 @@ set {*}{name Neo}
 set name Neo
 
 
-# Ein Array ist eine spezielle Varible die also Kontainer für andere Variablen
+# Ein Array ist eine spezielle Variable die also Container für andere Variablen
 # dient.
 set person(name) Neo
 set person(gender) male
@@ -279,7 +279,7 @@ set values [list one \{ three four]
 lappend values { } ;# Ein Leerzeichen als Element der Liste hinzufügen
 
 
-# Mit "eval" können Werte als Skripts evaluiert weden.
+# Mit "eval" können Werte als Skripts evaluiert werden.
 eval {
     set name Neo
     set greeting "Hello, $name"
@@ -287,7 +287,7 @@ eval {
 
 
 # Eine Liste kann immer an "eval" übergeben werden, solange die Liste einen
-# einzigen Befehl entält.
+# einzigen Befehl enthält.
 eval {set name Neo}
 eval [list set greeting "Hello, $name"]
 
