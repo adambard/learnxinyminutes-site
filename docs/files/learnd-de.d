@@ -4,7 +4,7 @@ module hello;
 
 import std.stdio;
 
-// argumente sind optional
+// Argumente sind optional
 void main(string[] args) {
     writeln("Hello, World!");
 }
@@ -102,7 +102,7 @@ class Matrix(uint m, uint n, T = int) {
 
 auto mat = new Matrix!(3, 3); // Standardmäßig ist T vom Typ Integer
 
-// Diese Klasse ist parameterisiert mit T, U
+// Diese Klasse ist parametrisiert mit T, U
 
 class MyClass(T, U) {
     T _data;
@@ -175,7 +175,7 @@ import std.math : sqrt;
 
 void main() {
     // Wir wollen die Wurzel von jeder Zahl in unserem Array berechnen
-    // und dabei alle Kerne verwenden, die wir zur verfügung haben
+    // und dabei alle Kerne verwenden, die wir zur Verfügung haben
     auto arr = new double[1_000_000];
 
     // Wir verwenden den Index und das Element als Referenz
