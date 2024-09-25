@@ -1,134 +1,122 @@
 
-# Los comentarios se pueden escribir de esta forma.
+# Comments can be written like this.
 
-# El fichero debe tener el nombre de Makefile y luego puede ser ejecutado
-# como `make <objetivo>`.
-# De lo contrario, se utiliza `make -f "nombre_archivo" <objetivo>`
+# File should be named Makefile and then can be run as `make <target>`.
+# Otherwise we use `make -f "filename" <target>`.
 
-# Advertencia: ¡solo use TABULACIONES para la identación en Makefiles, nunca
-# espacios!
+# Warning - only use TABS to indent in Makefiles, never spaces!
 
 #-----------------------------------------------------------------------
-# Fundamentos
+# Basics
 #-----------------------------------------------------------------------
 
-# Las reglas tienen el formato
-# objetivo: <prerrequisito>
-# donde prerrequisito es opcional.
+# Rules are of the format
+# target: <prerequisite>
+# where prerequisites are optional.
 
-# Una regla - esta regla solamente se ejecutará si file0.txt no existe.
+# A rule - this rule will only run if file0.txt doesn't exist.
 file0.txt:
 	echo "foo" > file0.txt
-	# Incluso los comandos en esta sección de 'receta' se pasan a la shell.
-	# Prueba `make file0.txt` o  simplemente 'make' - La primera regla es la
-	# predeterminada.
+	# Even comments in these 'recipe' sections get passed to the shell.
+	# Try `make file0.txt` or simply `make` - first rule is the default.
 
-# Esta regla se ejecutará solo si file0.txt es más reciente que file1.txt.
+# This rule will only run if file0.txt is newer than file1.txt.
 file1.txt: file0.txt
 	cat file0.txt > file1.txt
-	# Use las mismas reglas de comillas que en la shell.
+	# use the same quoting rules as in the shell.
 	@cat file0.txt >> file1.txt
-	# @ evita que el comando se muestre en stdout.
+	# @ stops the command from being echoed to stdout.
 	-@echo 'hello'
-	# - Quiere decir que make continuará en caso de error.
-	# Pruebe 'make file1.txt` en la línea de comandos.
+	# - means that make will keep going in the case of an error.
+	# Try `make file1.txt` on the commandline.
 
-# Una regla puede tener múltiples objetivos y múltiples prerrequisitos
+# A rule can have multiple targets and multiple prerequisites
 file2.txt file3.txt: file0.txt file1.txt
 	touch file2.txt
 	touch file3.txt
 
-# Make se quejará de múltiples recetas para la misma regla. Sin embargo,
-# las reglas vacías no cuentan y se pueden utilizar para agregar nuevas
-# dependencias
+# Make will complain about multiple recipes for the same rule. Empty
+# recipes don't count though and can be used to add new dependencies.
 
 #-----------------------------------------------------------------------
-# Objetivos ficticios (Phony Targets)
+# Phony Targets
 #-----------------------------------------------------------------------
 
-# Un objetivo ficticio (phony target). Cualquier objetivo que no sea un archivo.
-# Nunca estará actualizado, por lo que make siempre tratará de ejecutarlo.
-all: make process
+# A phony target. Any target that isn't a file.
+# It will never be up to date so make will always try to run it.
+all: maker process
 
-# Podemos declarar cosas sin orden.
+# We can declare things out of order.
 maker:
 	touch ex0.txt ex1.txt
 
-# Se puede evitar que las reglas ficticias (phony) se rompan cuando un archivo
-# real tiene el mismo nombre usando:
+# Can avoid phony rules breaking when a real file has the same name by
 .PHONY: all maker process
-# Esto es un objetivo especial. Hay varios otros.
+# This is a special target. There are several others.
 
-# Una regla con una dependencia en un objetivo ficticio (phony target)
-# se ejecutara siempre:
+# A rule with a dependency on a phony target will always run
 ex0.txt ex1.txt: maker
 
-# Los objetivos ficticios (phony target) más comunes son: 
-# all make clean install...
+# Common phony targets are: all make clean install ...
 
 #-----------------------------------------------------------------------
-# Variables automáticas y Wildcards
+# Automatic Variables & Wildcards
 #-----------------------------------------------------------------------
 
-process: file*.txt	# usa un wildcard para coincidir con los nombres de archivos.
-	@echo $^	# $^ es una variable que contiene una lista de todos los prerrequisitos
-	@echo $@	# imprime el nombre del objetivo
-	#(para reglas con múltiples objetivos, $@ es el que hizo que se ejecutara la regla)
-	@echo $<	#  el primer prerrequisito listado
-	@echo $?	# solo las dependencias que están desactualizadas
-	@echo $+	# todas las dependencias incluyendo las duplicadas (a diferencia de lo normal)
-	#@echo $|	# solo los 'prerrequisitos solicitados'
+process: file*.txt	#using a wildcard to match filenames
+	@echo $^	# $^ is a variable containing the list of prerequisites
+	@echo $@	# prints the target name
+	#(for multiple target rules, $@ is whichever caused the rule to run)
+	@echo $<	# the first prerequisite listed
+	@echo $?	# only the dependencies that are out of date
+	@echo $+	# all dependencies including duplicates (unlike normal)
+	#@echo $|	# all of the 'order only' prerequisites
 
-# Incluso si dividimos las definiciones de las dependencias, de las reglas, $^
-# las encontrará
+# Even if we split up the rule dependency definitions, $^ will find them
 process: ex1.txt file0.txt
-# ext1.xt se encontrará pero file0.txt se duplicará.
+# ex1.txt will be found but file0.txt will be deduplicated.
 
 #-----------------------------------------------------------------------
-# Patrones
+# Patterns
 #-----------------------------------------------------------------------
 
-# Se puede instruir a make sobre como convertir ciertos tipos de archivos en
-# otros archivos.
+# Can teach make how to convert certain files into other files.
 
 %.png: %.svg
 	inkscape --export-png $^
 
-# Las reglas de patrones solo harán algo si make decide crear el objetivo.
+# Pattern rules will only do anything if make decides to create the
+# target.
 
-# Los directorios no suelen tenerse en cuenta al coincidir con reglas de
-# patrones.
-# Pero make intentará usar la regla más apropiada disponible.
-
+# Directory paths are normally ignored when matching pattern rules. But
+# make will try to use the most appropriate rule available.
 small/%.png: %.svg
 	inkscape --export-png --export-dpi 30 $^
 
-# make usará la última versión de una regla de patrón que encuentre.
+# make will use the last version for a pattern rule that it finds.
 %.png: %.svg
-	@echo esta regla es elegida
+	@echo this rule is chosen
 
-# Sin embargo make usará la primera regla de patrón que pueda construir el
-# objetivo.
+# However make will use the first pattern rule that can make the target
 %.png: %.ps
-	@echo esta regla no es elegida si *.svg y *.ps están ambas presentes
+	@echo this rule is not chosen if *.svg and *.ps are both present
 
-# Make ya tiene algunas reglas de patrón integradas.
-# Por ejemplo, sabe cómo convertir archivos *.c en archivos *.o.
+# make already has some pattern rules built-in. For instance, it knows
+# how to turn *.c files into *.o files.
 
-# En makefiles antiguos se solían utilizar las reglas de sufijo en lugar de las
-# reglas de patrón
+# Older makefiles might use suffix rules instead of pattern rules
 .png.ps:
-	@echo esta regla es similar a una regla de patrón.
+	@echo this rule is similar to a pattern rule.
 
-# Instruye a make sobre una regla de sufijo
+# Tell make about the suffix rule
 .SUFFIXES: .png
 
 #-----------------------------------------------------------------------
 # Variables
 #-----------------------------------------------------------------------
-# también conocidas como macros.
+# aka. macros
 
-# Las variables son básicamente de tipo cadena (string)
+# Variables are basically all string types
 
 name = Ted
 name2="Sarah"
@@ -136,31 +124,31 @@ name2="Sarah"
 echo:
 	@echo $(name)
 	@echo ${name2}
-	@echo $name    # Esto no funcionará, se tratará como $(n)name.
-	@echo $(name3) # Variables desconocidas se tratarán como cadenas vacías.
+	@echo $name    # This won't work, treated as $(n)ame.
+	@echo $(name3) # Unknown variables are treated as empty strings.
 
-# Hay 4 lugares donde se pueden definir variables.
-# En orden de prioridad de mayor a menor:
-# 1: argumentos de línea de comando.
-# 2: Makefile.
-# 3: variables de entorno de la shell - make las importa automáticamente.
-# 4: make tiene algunas variables predefinidas.
+# There are 4 places to set variables.
+# In order of priority from highest to lowest:
+# 1: commandline arguments
+# 2: Makefile
+# 3: shell environment variables - make imports these automatically.
+# 4: make has some predefined variables
 
 name4 ?= Jean
-# Solo establece la variable si la variable de entorno no está aún definida.
+# Only set the variable if environment variable is not already defined.
 
 override name5 = David
-# Detiene que los argumentos de línea de comandos modifiquen esta variable.
+# Stops commandline arguments from changing this variable.
 
 name4 +=grey
-# Añade valores a la variable (incluye un espacio).
+# Append values to variable (includes a space).
 
-# Valores de variables específicos de patrones (Extension de GNU).
-echo: name2 = Sara # Verdadero dentro de la regla coincidente
-	# y también dentro de sus dependencias recursivas rehechas
-	# (¡excepto que puede romperse cuando el grafo se complica demasiado!)
+# Pattern-specific variable values (GNU extension).
+echo: name2 = Sara # True within the matching rule
+	# and also within its remade recursive dependencies
+	# (except it can break when your graph gets too complicated!)
 
-# Algunas variables son definidas automáticamente por make.
+# Some variables defined automatically by make.
 echo_inbuilt:
 	echo $(CC)
 	echo ${CXX}
@@ -175,47 +163,47 @@ echo_inbuilt:
 # Variables 2
 #-----------------------------------------------------------------------
 
-# El primer tipo de variables se evalúan cada vez que se usan.
-# Esto puede ser costoso, por lo que existe un segundo tipo de variable que se
-# evalúa solo una vez. (Esta es una extensión de GNU make)
+# The first type of variables are evaluated each time they are used.
+# This can be expensive, so a second type of variable exists which is
+# only evaluated once. (This is a GNU make extension)
 
 var := hello
-var2 ::=  $(var) hello
-#:= y ::= son equivalentes
+var2 ::= $(var) hello
+#:= and ::= are equivalent.
 
-# Estas variables se evalúan de manera procedimental (en el orden en que
-# aparecen), ¡rompiendo así con el resto del lenguaje!
+# These variables are evaluated procedurally (in the order that they
+# appear), thus breaking with the rest of the language !
 
-# Esto no funciona
+# This doesn't work
 var3 ::= $(var4) and good luck
 var4 ::= good night
 
 #-----------------------------------------------------------------------
-# Funciones
+# Functions
 #-----------------------------------------------------------------------
 
-# make tiene muchas funciones disponibles.
+# make has lots of functions available.
 
 sourcefiles = $(wildcard *.c */*.c)
 objectfiles = $(patsubst %.c,%.o,$(sourcefiles))
 
-# El formato es $(func arg0,arg1,arg2...)
+# Format is $(func arg0,arg1,arg2...)
 
-# Algunos ejemplos
+# Some examples
 ls:	* src/*
 	@echo $(filter %.txt, $^)
 	@echo $(notdir $^)
 	@echo $(join $(dir $^),$(notdir $^))
 
 #-----------------------------------------------------------------------
-# Directrices (Directives)
+# Directives
 #-----------------------------------------------------------------------
 
-# Incluye otros makefiles, útil para código de plataformas específicas
+# Include other makefiles, useful for platform specific code
 include foo.mk
 
 sport = tennis
-# Compilación condicional
+# Conditional compilation
 report:
 ifeq ($(sport),tennis)
 	@echo 'game, set, match'
@@ -223,7 +211,7 @@ else
 	@echo "They think it's all over; it is now"
 endif
 
-# También existe ifneq, ifdef, ifndef
+# There are also ifneq, ifdef, ifndef
 
 foo = true
 
