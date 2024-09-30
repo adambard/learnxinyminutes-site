@@ -448,7 +448,7 @@ in vec2 fTexCoords;
 out vec4 outColor;
 
 void main() {
-    // texture() loads the current texure data at the specified texture coords,
+    // texture() loads the current texture data at the specified texture coords,
     // then we can simply multiply them by our color.
     outColor = texture(tex, fTexCoords) * vec4(fColor, 1.0);
 }
@@ -531,7 +531,7 @@ glUniformMatrix4fv(modelLocation, 1, GL_FALSE,
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 color;
-// Create an output interface block passed to the next shadaer stage.
+// Create an output interface block passed to the next shader stage.
 // Interface blocks can be used to structure data passed between shaders.
 out VS_OUT {
     vec3 color;
