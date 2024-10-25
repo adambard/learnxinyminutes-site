@@ -32,14 +32,14 @@ Recuerda alinear los símbolos de lista (como - o \*) al margen izquierdo del an
 - Segundo elemento
 
   - Subelemento
-    
+
 - Tercer elemento
 
 o
 
 * Primer elemento
 * Segundo elemento
-    
+
   * Subelemento
 
 * Tercer elemento
