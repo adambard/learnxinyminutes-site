@@ -343,7 +343,7 @@ i; // = 5 - non è undefined come ci si potrebbe aspettare in un linguaggio con 
 temporary; // solleva ReferenceError
 permanent; // = 10
 
-// Una delle più potenti caratteristiche di javascript sono le closure. Se una funzione è
+// Una delle più potenti caratteristiche di JavaScript sono le closure. Se una funzione è
 // definita dentro un'altra funzione, la funzione interna ha accesso a le variabili
 // della funzione esterna, anche dopo essere uscita dalla funzione esterna.
 function sayHelloInFiveSeconds(name){

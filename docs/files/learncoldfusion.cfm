@@ -11,7 +11,7 @@
 
 <!--- CFML tags have a similar format to HTML tags. --->
 <h1>Simple Variables</h1>
-<!--- Variable Declaration: Variables are loosely typed, similar to javascript --->
+<!--- Variable Declaration: Variables are loosely typed, similar to JavaScript --->
 <p>Set <b>myVariable</b> to "myValue"</p>
 <cfset myVariable = "myValue" />
 <p>Set <b>myNumber</b> to 3.14</p>
