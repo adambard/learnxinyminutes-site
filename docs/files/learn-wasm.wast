@@ -89,7 +89,7 @@
 
   ;; Up until now, we haven't be able to print anything out, nor do we have
   ;; access to higher level math functions (pow, exp, or trig functions).
-  ;; Moreover, we haven't been able to use any of the WASM functions in Javascript!
+  ;; Moreover, we haven't been able to use any of the WASM functions in JavaScript!
   ;; The way we get those functions into WebAssembly
   ;; looks different whether we're in a Node.js or browser environment.
 
@@ -142,7 +142,7 @@
   (export "print_args" (func $print_args))
 
   ;; Loading in data from WebAssembly memory.
-  ;; Say that we want to apply the cosine function to a Javascript array.
+  ;; Say that we want to apply the cosine function to a JavaScript array.
   ;; We need to be able to access the allocated array, and iterate through it.
   ;; This example will modify the input array inplace.
   ;; f64.load and f64.store expect the location of a number in memory *in bytes*.

@@ -437,7 +437,7 @@ mujObjekt = new MujKonstruktor(); // = {mojeCislo: 5}
 mujObjekt.mojeCislo; // = 5
 
 // Na rozdíl od nejznámějších objektově orientovaných jazyků, JavaScript nezná
-// koncept instancí vytvořených z tříd. Místo toho Javascript kombinuje
+// koncept instancí vytvořených z tříd. Místo toho JavaScript kombinuje
 // vytváření instancí a dědění do konceptu zvaného 'prototyp'.
 
 // Každý JavaScriptový objekt má prototyp. Když budete přistupovat k vlastnosti

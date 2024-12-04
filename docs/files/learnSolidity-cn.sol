@@ -343,7 +343,7 @@ event LogSent(address indexed from, address indexed to, uint amount); // 注意 
 LogSent(from, to, amount);
 
 /*
-    // 对于外部方（合约或外部实体），使用 Web3 Javascript 库来监听
+    // 对于外部方（合约或外部实体），使用 Web3 JavaScript 库来监听
     // 以下是javascript代码,不是solidity代码
     Coin.LogSent().watch({}, '', function(error, result) {
         if (!error) {

@@ -439,11 +439,11 @@ var MyConstructor = function(){
 myNewObj = new MyConstructor(); // = {myNumber: 5}
 myNewObj.myNumber; // = 5
 
-// Diversamente dalla molti degli altri linguaggi orientati agli oggetti, Javascript non ha
-// il concetto di 'istanze' create sull'impronta di una 'classe'; invece Javascript
+// Diversamente dalla molti degli altri linguaggi orientati agli oggetti, JavaScript non ha
+// il concetto di 'istanze' create sull'impronta di una 'classe'; invece JavaScript
 // combina l'instanziamento e l'ereditarietà in un singolo concetto: il 'prototipo'.
 
-// Ogni oggetto Javascript ha un 'prototipo'. Quando si cerca di accedere a una proprietà
+// Ogni oggetto JavaScript ha un 'prototipo'. Quando si cerca di accedere a una proprietà
 // su un oggetto che non la contiene, l'interprete
 // guarderà i suoi prototipi.
 

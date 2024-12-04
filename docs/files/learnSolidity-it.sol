@@ -409,9 +409,9 @@ LogSent(from, to, amount);
 /**
 
 Una terza parte esterna (entità o contratto), può osservare usando
-la libreria Javascript Web3:
+la libreria JavaScript Web3:
 
-// Quel che se segue è codice Javascript, non Solidity
+// Quel che se segue è codice JavaScript, non Solidity
 Coin.LogSent().watch({}, '', function(error, result) {
     if (!error) {
         console.log("Trasferimento valuta: " + result.args.amount +

@@ -398,7 +398,7 @@ setTimeout(function(){
 // une fonction anonyme de la forme : `param => returnValue`.
 setTimeout(() => console.log('5 seconds, are up.'), 5000);
 
-// Le Javascript crée uniquement un scope, une portée d'action limitée, pour
+// Le JavaScript crée uniquement un scope, une portée d'action limitée, pour
 // les fonctions, et pas dans les autres blocs.
 if (true){
     var i = 5;
@@ -420,7 +420,7 @@ i; // = 5 - et non undefined comme vous pourriez vous y attendre
 temporary; // raises ReferenceError
 permanent; // = 10
 
-// Une des fonctionnalités les plus puissantes de Javascript est le système de
+// Une des fonctionnalités les plus puissantes de JavaScript est le système de
 // closures. Si une fonction est définie dans une autre fonction, alors la
 // fonction interne aura accès aux variables de la fonction parente, même si
 // celle-ci a déjà finie son exécution.
@@ -559,7 +559,7 @@ var MyConstructor = function(){
 myNewObj = new MyConstructor(); // = {myNumber: 5}
 myNewObj.myNumber; // = 5
 
-// Chaque objet en Javascript a un "prototype". Quand vous essayez d'accéder à
+// Chaque objet en JavaScript a un "prototype". Quand vous essayez d'accéder à
 // une propriété que l'objet n'a pas, l'interpréteur va regarder son prototype.
 
 // Quelques implémentations de JS vous laissent accéder au prototype avec la

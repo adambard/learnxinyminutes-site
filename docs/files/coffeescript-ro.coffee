@@ -4,9 +4,9 @@
 # Comentarii sunt ca in Ruby sau Python.
 
 ###
-Comentariile in bloc sunt create cu `###`, iar acestea sunt transformate in `/*` si `*/` pentru Javascript
+Comentariile in bloc sunt create cu `###`, iar acestea sunt transformate in `/*` si `*/` pentru JavaScript
 
-Ar trebuie sa intelegeti Javascript pentru a continua cu acest ghid.
+Ar trebuie sa intelegeti JavaScript pentru a continua cu acest ghid.
 ###
 
 # Atribuirea valorilor:

@@ -374,9 +374,9 @@ LogSent(from, to, amount);
 /**
 
 For an external party (a contract or external entity), to watch using
-the Web3 Javascript library:
+the Web3 JavaScript library:
 
-// The following is Javascript code, not Solidity code
+// The following is JavaScript code, not Solidity code
 Coin.LogSent().watch({}, '', function(error, result) {
     if (!error) {
         console.log("Coin transfer: " + result.args.amount +

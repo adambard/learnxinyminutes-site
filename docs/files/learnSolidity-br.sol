@@ -424,7 +424,7 @@ modifier chequeValor(uint quantidade) {
 // Todas as lógicas básicas de bloco funcionam - incluindo if/else,
 // while, break, continue, return - mas não há switch
 
-// A sintaxe é semelhante a Javascript, mas sem conversão de tipos
+// A sintaxe é semelhante a JavaScript, mas sem conversão de tipos
 // de não-booleanos para booleanos (operadores de comparação precisam
 // utilizar valores booleanos)
 

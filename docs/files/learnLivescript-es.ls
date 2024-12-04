@@ -4,7 +4,7 @@
 
 /*
  Comentarios multi-línea son escritos con estilo de C. Usa este estilo si quieres
- que los comentarios se preserven en el output de Javascript
+ que los comentarios se preserven en el output de JavaScript
  */
 
 # En lo que a la sintaxis se refiere, LiveScript usa indentación para delimitar
