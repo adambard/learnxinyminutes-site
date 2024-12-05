@@ -16,23 +16,20 @@ jobs:
         with:
           submodules: "true"
           fetch-depth: 0
-      - name: Update submodules
+      - name: Update source/docs/ submodule
         run: |
           git config --global user.name "Github Actions"
           git config --global user.email "noreply@example.com"
           git submodule update --remote --recursive
-      - name: Set up Ruby 3.2
-        uses: ruby/setup-ruby@ec02537da5712d66d4d50a0f33b7eb52773b5ed1
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          ruby-version: "3.2"
+          python-version: '3.13'
       - name: Install dependencies
-        run: bundle install
+        run: pip install -r requirements.txt
 
-      - name: Run middleman
-        run: bundle exec middleman build --verbose || exit 0  # Build probably will have errors
-
-      - name: Make build/docs not a submodule
-        run: rm -rf build/docs/.git || exit 0
+      - name: Build site
+        run: python build.py
 
       - uses: JamesIves/github-pages-deploy-action@v4
         with:
