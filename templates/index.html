@@ -1,0 +1,144 @@
+{% extends "layout.html" %}
+{% block content %}
+      <h1>Learn X in Y minutes</h1>
+
+      <div class="lang-choice">
+        <label for="lang-select">Highlight your language:</label>
+        <select id="lang-select" name="lang-select">
+          <option value="{{ lang }}">{{ lang }}</option>
+          {% for l in langs %}
+          <option value="{{ l }}">{{ l }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <br>
+
+      <p>Take a whirlwind tour of your next favorite language. Community-driven!</p>
+
+      {% for c in categories %}
+      <table>
+        <tr>
+          <th class="name">
+            <h2>{{ get_category_display_name(c) }}</h2>
+          </th>
+          <th class="lang">Translations</th>
+        </tr>
+        {% for a in categories[c] %}
+        <tr>
+          <td class="name">
+            {% if lang in articles[a] %}
+            <a href="{{ path(lang, a) }}">{{ articles[a][lang].metadata.get('name', a) }}</a>
+            {% else %}
+            {{ articles[a][(articles[a] | list)[0]].metadata.get('name', a) }}
+            {% endif %}
+          </td>
+          <td class="lang">
+            {% if articles[a] %}
+              {% for t in (articles[a] | sorted_english_first) %}
+                {% if t != lang %}
+            <a href="{{ path(t, a) }}" title="{{ native_name(t) }}">{{ t }}</a>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% endfor %}
+      <p>
+        Want to add your favorite language to the list? Head on over to
+        <a href="https://github.com/adambard/learnxinyminutes-docs">GitHub</a>
+        and send a pull request!
+      </p>
+
+      <hr>
+      <p>
+        All articles &copy; the original author and contributors, and licensed under a
+        <a href="https://creativecommons.org/licenses/by-sa/3.0/deed.en">CC BY-SA 3.0</a>
+        license.
+      </p>
+      <p style="text-align: right">
+        Made by <a href="http://adambard.com/">Adam Bard, handsome web developer</a>
+      </p>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          var langSelect = document.getElementById('lang-select');
+          if (!langSelect) {
+            return
+          }
+
+          function set_lang(lang) {
+            // backwards compatibility
+            lang = {
+              "en-us": "en",
+              "ar-ar": "ar",
+              "be-by": "be",
+              "bg-bg": "bg",
+              "ca-es": "ca",
+              "cs-cz": "cs",
+              "de-de": "de",
+              "el-gr": "el",
+              "es-es": "es",
+              "fa-ir": "fa",
+              "fi-fi": "fi",
+              "fr-fr": "fr",
+              "he-he": "he",
+              "hi-in": "hi",
+              "hu-hu": "hu",
+              "id-id": "id",
+              "it-it": "it",
+              "ja-jp": "ja",
+              "ko-kr": "ko",
+              "lt-lt": "lt",
+              "ms-my": "ms",
+              "nl-nl": "nl",
+              "no-nb": "no",
+              "pl-pl": "pl",
+              "ro-ro": "ro",
+              "ru-ru": "ru",
+              "sk-sk": "sk",
+              "sl-si": "sl",
+              "sv-se": "sv",
+              "ta-in": "ta",
+              "th-th": "th",
+              "tr-tr": "tr",
+              "uk-ua": "uk",
+              "vi-vn": "vi",
+            }[lang] || lang;
+
+            langSelect.value = lang;
+
+            var links = document.querySelectorAll('td.lang a');
+            links.forEach(function(link) {
+              if (link.textContent === lang) {
+                link.classList.add('selected');
+              } else {
+                link.classList.remove('selected');
+              }
+            });
+
+            localStorage.setItem(LANG_KEY, lang);
+          }
+
+          var LANG_KEY = "lxiym_lang";
+          function load_lang() {
+            var lang = localStorage.getItem(LANG_KEY);
+            if (lang) {
+              set_lang(lang);
+            }
+          }
+
+          load_lang();
+          // Backup: do it onload. Will blink, but better than nothing.
+          window.onload = function(){
+            load_lang();
+          };
+
+          langSelect.addEventListener('change', function() {
+            var lang = this.value;
+            set_lang(lang);
+          });
+        });
+      </script>
+{% endblock %}
