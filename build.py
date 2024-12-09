@@ -182,7 +182,9 @@ for root, dirs, files in os.walk(docs_dir):
                 "tool": "tool",
             }[article.metadata.get("category", "language")]
             if name_key in article.metadata:
-                article.metadata["name"] = article.metadata[name_key]
+                article.metadata["name"] = article.metadata.get(
+                    name_key, article.metadata.get("name")
+                )
             article.metadata["orig_path"] = filename.relative_to(docs_dir)
             article.metadata["contributor_count"] = count_contributors(filename)
 
