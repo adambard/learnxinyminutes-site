@@ -223,7 +223,8 @@ for root, dirs, files in os.walk(docs_dir):
                 "language": "language",
                 "tool": "tool",
             }[article.metadata.get("category", "language")]
-            article.metadata["name"] = article.metadata[name_key]
+            if name_key in article.metadata:
+                article.metadata["name"] = article.metadata[name_key]
             article.metadata["orig_path"] = filename.relative_to(docs_dir)
             article.metadata["contributor_count"] = count_contributors(filename)
 
@@ -277,6 +278,16 @@ def get_category_display_name(c):
         "Algorithms & Data Structures": "Algorithms & Data Structures",
     }[c]
 
+
+# Inherit metadata from English articles
+for language in articles:
+    for lang, article in articles[language].items():
+        metadata = article.metadata
+        if "en" in articles[language]:
+            articles[language][lang].metadata = {
+                **articles[language]["en"].metadata,
+                **metadata,
+            }
 
 # Build HTML pages from articles
 for language in articles:
