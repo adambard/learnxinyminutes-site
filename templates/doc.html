@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block content %}
+      <div class="share">
+        <span class="sharemsg">
+          <a href="{{ twitter_share_url(canonical, i18n['title'] + ", " + i18n['where'][0].lower() + i18n['where'][1:] + name) }}">
+            {{ i18n['share'] }}
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">{{ i18n['title'] }}</a></h1>
+      <h2>{{ i18n['where'] }}{{ name }}</h2>
+      {% if filename %}
+      <p class="filelink">
+        {{ i18n['getCode'] }}
+        <a href="{{ '/' + lang if lang != 'en' else '' }}/files/{{ filename }}">{{ filename }}</a>
+      </p>
+      {% endif %}
+      <div id="doc">
+{{ content | safe }}
+        <hr>
+        <p>
+          {{ i18n['suggestions'] | format(new_issue_url, edit_url) | safe }}
+        </p>
+        <p class="contributed">
+          {{ i18n[pluralize('contributor', (contributor_count))] | format(contributors[0][0], blame_url, contributor_count) | safe }}
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; {{ current_year }}
+            {% for author in contributors %}
+              {% if author[1] %}
+            <a href="{{ author[1] }}">{{ author[0] }}</a>{% if not loop.last %}{{',\n'}}{% else %}{{'\n'}}{% endif %}
+              {% else %}
+            {{ author[0] }}{% if not loop.last %}{{',\n'}}{% else %}{{'\n'}}{% endif %}
+              {% endif %}
+            {% endfor %}
+          </p>
+          {% if translators %}
+          <p>
+            {{ i18n['translatedBy'] | length }}
+            {% for translator in translators %}
+            <a href="{{ translator[1] }}">{{ translator[0] }}</a>
+            {% endfor %}
+          </p>
+          {% endif %}
+        </footer>
+      </div>
+{% endblock %}
