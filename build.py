@@ -31,46 +31,6 @@ IGNORE = {
 }
 
 docs_repo = "https://github.com/adambard/learnxinyminutes-docs"
-lang_map = {
-    "en": "en",
-    "ar-ar": "ar",
-    "be-by": "be",
-    "bg-bg": "bg",
-    "ca-es": "ca",
-    "cs-cz": "cs",
-    "de-de": "de",
-    "el-gr": "el",
-    "es-es": "es",
-    "fa-ir": "fa",
-    "fi-fi": "fi",
-    "fr-fr": "fr",
-    "he-he": "he",
-    "hi-in": "hi",
-    "hu-hu": "hu",
-    "id-id": "id",
-    "it-it": "it",
-    "ja-jp": "ja",
-    "ko-kr": "ko",
-    "lt-lt": "lt",
-    "ms-my": "ms",
-    "nl-nl": "nl",
-    "no-nb": "no",
-    "pl-pl": "pl",
-    "pt-br": "pt-br",
-    "pt-pt": "pt-pt",
-    "ro-ro": "ro",
-    "ru-ru": "ru",
-    "sk-sk": "sk",
-    "sl-si": "sl",
-    "sv-se": "sv",
-    "ta-in": "ta",
-    "th-th": "th",
-    "tr-tr": "tr",
-    "uk-ua": "uk",
-    "vi-vn": "vi",
-    "zh-cn": "zh-cn",
-    "zh-tw": "zh-tw",
-}
 
 
 def native_name(lang):
@@ -207,13 +167,11 @@ for root, dirs, files in os.walk(docs_dir):
         filename = Path(root) / file
 
         if filename.name.endswith(".md") or filename.name.endswith(".markdown"):
-            orig_lang = lang = "en"
-            orig_language = language = filename.stem.split(".")[0]
+            language = filename.stem.split(".")[0]
+
+            lang = "en"
             if len(filename.parts) > 3:
-                orig_lang = lang = filename.parts[2]
-                if re.search(r"-[a-z]{2}$", language) and language != "standard-ml":
-                    language = language.rsplit("-", 1)[0]
-            lang = lang_map.get(lang, lang)
+                lang = filename.parts[2]
 
             article = frontmatter.load(filename)
 
