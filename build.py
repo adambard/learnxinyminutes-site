@@ -273,8 +273,10 @@ for language in articles:
 
         orig_path = metadata["orig_path"]
 
+        name = metadata.get("name", language)
         context = {
-            "name": metadata.get("name", language),
+            "name": name,
+            "learn_x_in_y_name": metadata.get("learn_x_in_y_name", name),
             "filename": filename,
             "content": markdown_to_html(content),
             "lang": lang,
