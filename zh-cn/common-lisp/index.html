@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="zh-CN">
+    <title>Learn Common Lisp in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/zh-cn/common-lisp/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fzh-cn%2Fcommon-lisp%2F&amp;text=Y%E5%88%86%E9%92%9F%E9%80%9F%E6%88%90X%2C+%E5%85%B6%E4%B8%AD+X%3DCommon+Lisp">
+            分享此页
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">Y分钟速成X</a></h1>
+      <h2>其中 X=Common Lisp</h2>
+      <p class="filelink">
+        源代码下载：
+        <a href="/zh-cn/files/commonlisp.lisp">commonlisp.lisp</a>
+      </p>
+      <div id="doc">
+<p>ANSI Common Lisp 是一个广泛通用于各个工业领域的、支持多种范式的编程语言。
+这门语言也经常被引用作“可编程的编程语言”（可以写代码的代码）。</p>
+<p>免费的经典的入门书籍<a href="http://www.gigamonkeys.com/book/">《实用 Common Lisp 编程》</a></p>
+<p>许多人都抱怨上面这本书的翻译。<a href="http://acl.readthedocs.org/en/latest/">《ANSI Common Lisp》</a>也许对中文读者更友好一些。</p>
+<p>另外还有一本热门的近期出版的
+<a href="http://landoflisp.com/">Land of Lisp</a>.</p>
+<div class="highlight"><pre lang="common-lisp"><span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+<span class="c1">;;; 0. 语法</span>
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">;;; 一般形式</span>
+
+<span class="c1">;; Lisp有两个基本的语法单元：原子（atom），以及S-表达式。</span>
+<span class="c1">;; 一般的，一组S-表达式被称为“组合式”。</span>
+
+<span class="mi">10</span><span class="w">  </span><span class="c1">; 一个原子; 它对自身进行求值</span>
+
+<span class="ss">:THING</span><span class="w"> </span><span class="c1">;同样是一个原子；它被求值为一个符号 :thing</span>
+
+<span class="no">t</span><span class="w">  </span><span class="c1">;还是一个原子，代表逻辑真值。</span>
+
+<span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c1">; 一个S-表达式。</span>
+
+<span class="o">&#39;</span><span class="p">(</span><span class="mi">4</span><span class="w"> </span><span class="ss">:foo</span><span class="w">  </span><span class="no">t</span><span class="p">)</span><span class="w">  </span><span class="c1">;同样是一个S-表达式。</span>
+
+
+<span class="c1">;;; 注释</span>
+
+<span class="c1">;; 一个分号开头的注释表示仅用于此行（单行）；两个分号开头的则表示一个所谓标准注释；</span>
+<span class="c1">;; 三个分号开头的意味着段落注释；</span>
+<span class="c1">;; 而四个分号开头的注释用于文件头注释（译者注：即对该文件的说明）。</span>
+
+<span class="cm">#| 块注释</span>
+<span class="cm">   可以涵盖多行，而且...</span>
+<span class="cm">    #|</span>
+<span class="cm">       他们可以被嵌套！</span>
+<span class="cm">    |#</span>
+<span class="cm">|#</span>
+
+<span class="c1">;;; 运行环境</span>
+
+<span class="c1">;; 有很多不同的Common Lisp的实现；并且大部分的实现是一致（可移植）的。</span>
+<span class="c1">;; 对于入门学习来说，CLISP是个不错的选择。</span>
+
+<span class="c1">;; 可以通过QuickLisp.org的Quicklisp系统管理你的库。</span>
+
+<span class="c1">;; 通常，使用文本编辑器和“REPL”来开发Common Lisp；</span>
+<span class="c1">;; （译者注：“REPL”指读取-求值-打印循环）。</span>
+<span class="c1">;; “REPL”允许对程序进行交互式的运行、调试，就好像在系统“现场”操作。</span>
+
+
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+<span class="c1">;;; 1. 基本数据类型以及运算符</span>
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">;;; 符号</span>
+
+<span class="ss">&#39;foo</span><span class="w"> </span><span class="c1">; =&gt; FOO  注意到这个符号被自动转换成大写了。</span>
+
+<span class="c1">;; `intern`由一个给定的字符串而创建相应的符号</span>
+
+<span class="p">(</span><span class="nb">intern</span><span class="w"> </span><span class="s">&quot;AAAA&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; AAAA</span>
+
+<span class="p">(</span><span class="nb">intern</span><span class="w"> </span><span class="s">&quot;aaa&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; |aaa|</span>
+
+<span class="c1">;;; 数字</span>
+<span class="mi">9999999999999999999999</span><span class="w"> </span><span class="c1">; 整型数</span>
+<span class="mb">#b111</span><span class="w">                  </span><span class="c1">; 二进制 =&gt; 7</span>
+<span class="mo">#o111</span><span class="w">                  </span><span class="c1">; 八进制 =&gt; 73</span>
+<span class="mh">#x111</span><span class="w">                  </span><span class="c1">; 十六进制 =&gt; 273</span>
+<span class="mf">3.14159s0</span><span class="w">              </span><span class="c1">; 单精度</span>
+<span class="mf">3.14159d0</span><span class="w">              </span><span class="c1">; 双精度</span>
+<span class="m">1/2</span><span class="w">                    </span><span class="c1">; 分数</span>
+<span class="m">#C</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">                </span><span class="c1">; 复数</span>
+
+
+<span class="c1">;; 使用函数时，应当写成这样的形式：(f x y z ...)；</span>
+<span class="c1">;; 其中，f是一个函数（名），x, y, z为参数；</span>
+<span class="c1">;; 如果你想创建一个“字面”意义上（即不求值）的列表， 只需使用单引号 &#39; ，</span>
+<span class="c1">;; 从而避免接下来的表达式被求值。即，只“引用”这个数据（而不求值）。</span>
+<span class="o">&#39;</span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; (+ 1 2)</span>
+<span class="c1">;; 你同样也可以手动地调用一个函数（译者注：即使用函数对象来调用函数）：</span>
+<span class="p">(</span><span class="nb">funcall</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 6</span>
+<span class="c1">;; 一些算术运算符</span>
+<span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w">              </span><span class="c1">; =&gt; 2</span>
+<span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w">              </span><span class="c1">; =&gt; 7</span>
+<span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">             </span><span class="c1">; =&gt; 20</span>
+<span class="p">(</span><span class="nb">expt</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w">           </span><span class="c1">; =&gt; 8</span>
+<span class="p">(</span><span class="nb">mod</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">            </span><span class="c1">; =&gt; 1</span>
+<span class="p">(</span><span class="nb">/</span><span class="w"> </span><span class="mi">35</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w">             </span><span class="c1">; =&gt; 7</span>
+<span class="p">(</span><span class="nb">/</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w">              </span><span class="c1">; =&gt; 1/3</span>
+<span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="m">#C</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="m">#C</span><span class="p">(</span><span class="mi">6</span><span class="w"> </span><span class="mi">-4</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; #C(7 -2)</span>
+
+<span class="w">                     </span><span class="c1">;;; 布尔运算</span>
+<span class="no">t</span><span class="w">                    </span><span class="c1">; 逻辑真（任何不是nil的值都被视为真值）</span>
+<span class="no">nil</span><span class="w">                  </span><span class="c1">; 逻辑假，或者空列表</span>
+<span class="p">(</span><span class="nb">not</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span><span class="w">            </span><span class="c1">; =&gt; t</span>
+<span class="p">(</span><span class="nb">and</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="no">t</span><span class="p">)</span><span class="w">            </span><span class="c1">; =&gt; t</span>
+<span class="p">(</span><span class="nb">or</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span><span class="w">           </span><span class="c1">; =&gt; 0</span>
+
+<span class="w">                     </span><span class="c1">;;; 字符</span>
+<span class="sc">#\A</span><span class="w">                  </span><span class="c1">; =&gt; #\A</span>
+<span class="sc">#\λ</span><span class="w">                  </span><span class="c1">; =&gt; #\GREEK_SMALL_LETTER_LAMDA（希腊字母Lambda的小写）</span>
+<span class="sc">#\u03BB</span><span class="w">              </span><span class="c1">; =&gt; #\GREEK_SMALL_LETTER_LAMDA（Unicode形式的小写希腊字母Lambda）</span>
+
+<span class="c1">;;; 字符串被视为一个定长字符数组</span>
+<span class="s">&quot;Hello, world!&quot;</span>
+<span class="s">&quot;Benjamin \&quot;Bugsy\&quot; Siegel&quot;</span><span class="w">   </span><span class="c1">;反斜杠用作转义字符</span>
+
+<span class="c1">;; 可以拼接字符串</span>
+<span class="p">(</span><span class="nb">concatenate</span><span class="w"> </span><span class="ss">&#39;string</span><span class="w"> </span><span class="s">&quot;Hello &quot;</span><span class="w"> </span><span class="s">&quot;world!&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Hello world!&quot;</span>
+
+<span class="c1">;; 一个字符串也可被视作一个字符序列</span>
+<span class="p">(</span><span class="nb">elt</span><span class="w"> </span><span class="s">&quot;Apple&quot;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; #\A</span>
+
+<span class="c1">;; `format`被用于格式化字符串</span>
+<span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="no">nil</span><span class="w"> </span><span class="s">&quot;~a can be ~a&quot;</span><span class="w"> </span><span class="s">&quot;strings&quot;</span><span class="w"> </span><span class="s">&quot;formatted&quot;</span><span class="p">)</span>
+
+<span class="c1">;; 利用`format`打印到屏幕上是非常简单的</span>
+<span class="c1">;;（译者注：注意到第二个参数是t，不同于刚刚的nil）；~% 代表换行符</span>
+<span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="s">&quot;Common Lisp is groovy. Dude.~%&quot;</span><span class="p">)</span>
+
+
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+<span class="c1">;; 2. 变量</span>
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+<span class="c1">;; 你可以通过`defparameter`创建一个全局（动态）变量</span>
+<span class="c1">;; 变量名可以是除了：()[]{}&quot;,&#39;`;#|\ 这些字符之外的其他任何字符</span>
+
+<span class="c1">;; 动态变量名应该由*号开头与结尾！</span>
+<span class="c1">;; (译者注：这个只是一个习惯)</span>
+
+<span class="p">(</span><span class="nb">defparameter</span><span class="w"> </span><span class="vg">*some-var*</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+<span class="vg">*some-var*</span><span class="w"> </span><span class="c1">; =&gt; 5</span>
+
+<span class="c1">;; 你也可以使用Unicode字符：</span>
+<span class="p">(</span><span class="nb">defparameter</span><span class="w"> </span><span class="vg">*AΛB*</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span>
+
+
+<span class="c1">;; 访问一个在之前从未被绑定的变量是一种不规范的行为（即使依然是可能发生的）；</span>
+<span class="c1">;; 不要尝试那样做。</span>
+
+
+<span class="c1">;; 局部绑定：在(let ...)语句内，&#39;me&#39;被绑定到&quot;dance with you&quot;上。</span>
+<span class="c1">;; `let`总是返回在其作用域内最后一个表达式的值</span>
+
+<span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nv">me</span><span class="w"> </span><span class="s">&quot;dance with you&quot;</span><span class="p">))</span>
+<span class="w">  </span><span class="nv">me</span><span class="p">)</span>
+<span class="c1">;; =&gt; &quot;dance with you&quot;</span>
+
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+<span class="c1">;; 3. 结构体和集合</span>
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">;; 结构体</span>
+<span class="p">(</span><span class="nb">defstruct</span><span class="w"> </span><span class="nv">dog</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="nv">breed</span><span class="w"> </span><span class="nv">age</span><span class="p">)</span>
+<span class="p">(</span><span class="nb">defparameter</span><span class="w"> </span><span class="vg">*rover*</span>
+<span class="w">    </span><span class="p">(</span><span class="nv">make-dog</span><span class="w"> </span><span class="ss">:name</span><span class="w"> </span><span class="s">&quot;rover&quot;</span>
+<span class="w">              </span><span class="ss">:breed</span><span class="w"> </span><span class="s">&quot;collie&quot;</span>
+<span class="w">              </span><span class="ss">:age</span><span class="w"> </span><span class="mi">5</span><span class="p">))</span>
+<span class="vg">*rover*</span><span class="w"> </span><span class="c1">; =&gt; #S(DOG :NAME &quot;rover&quot; :BREED &quot;collie&quot; :AGE 5)</span>
+
+<span class="p">(</span><span class="nv">dog-p</span><span class="w"> </span><span class="vg">*rover*</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; t  ;; ewww)</span>
+<span class="p">(</span><span class="nv">dog-name</span><span class="w"> </span><span class="vg">*rover*</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;rover&quot;</span>
+
+<span class="c1">;; Dog-p，make-dog，以及 dog-name都是由defstruct创建的！</span>
+
+<span class="c1">;;; 点对单元(Pairs)</span>
+<span class="c1">;; `cons`可用于生成一个点对单元， 利用`car`以及`cdr`将分别得到第一个和第二个元素</span>
+<span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="ss">&#39;SUBJECT</span><span class="w"> </span><span class="ss">&#39;VERB</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &#39;(SUBJECT . VERB)</span>
+<span class="p">(</span><span class="nb">car</span><span class="w"> </span><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="ss">&#39;SUBJECT</span><span class="w"> </span><span class="ss">&#39;VERB</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; SUBJECT</span>
+<span class="p">(</span><span class="nb">cdr</span><span class="w"> </span><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="ss">&#39;SUBJECT</span><span class="w"> </span><span class="ss">&#39;VERB</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; VERB</span>
+
+<span class="c1">;;; 列表</span>
+
+<span class="c1">;; 所有列表都是由点对单元构成的“链表”。它以&#39;nil&#39;（或者&#39;()）作为列表的最后一个元素。</span>
+<span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="no">nil</span><span class="p">)))</span><span class="w"> </span><span class="c1">; =&gt; &#39;(1 2 3)</span>
+<span class="c1">;; `list`是一个生成列表的便利途径</span>
+<span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &#39;(1 2 3)</span>
+<span class="c1">;; 并且，一个引用也可被用做字面意义上的列表值</span>
+<span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &#39;(1 2 3)</span>
+
+<span class="c1">;; 同样的，依然可以用`cons`来添加一项到列表的起始位置</span>
+<span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; &#39;(4 1 2 3)</span>
+
+<span class="c1">;; 而`append`也可用于连接两个列表</span>
+<span class="p">(</span><span class="nb">append</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; &#39;(1 2 3 4)</span>
+
+<span class="c1">;; 或者使用`concatenate`</span>
+
+<span class="p">(</span><span class="nb">concatenate</span><span class="w"> </span><span class="ss">&#39;list</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span>
+
+<span class="c1">;; 列表是一种非常核心的数据类型，所以有非常多的处理列表的函数</span>
+<span class="c1">;; 例如：</span>
+<span class="p">(</span><span class="nb">mapcar</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nb">1+</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w">             </span><span class="c1">; =&gt; &#39;(2 3 4)</span>
+<span class="p">(</span><span class="nb">mapcar</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nb">+</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">10</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="mi">30</span><span class="p">))</span><span class="w">  </span><span class="c1">; =&gt; &#39;(11 22 33)</span>
+<span class="p">(</span><span class="nb">remove-if-not</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nb">evenp</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; &#39;(2 4)</span>
+<span class="p">(</span><span class="nb">every</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nb">evenp</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span><span class="w">         </span><span class="c1">; =&gt; nil</span>
+<span class="p">(</span><span class="nb">some</span><span class="w"> </span><span class="nf">#&#39;</span><span class="nb">oddp</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span><span class="w">           </span><span class="c1">; =&gt; T</span>
+<span class="p">(</span><span class="nb">butlast</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">subject</span><span class="w"> </span><span class="nv">verb</span><span class="w"> </span><span class="nv">object</span><span class="p">))</span><span class="w">   </span><span class="c1">; =&gt; (SUBJECT VERB)</span>
+
+
+<span class="c1">;;; 向量</span>
+
+<span class="c1">;; 向量的字面意义是一个定长数组</span>
+<span class="c1">;;（译者注：此处所谓“字面意义”，即指#(......)的形式，下文还会出现）</span>
+<span class="o">#(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; #(1 2 3)</span>
+
+<span class="c1">;; 使用`concatenate`来将两个向量首尾连接在一起</span>
+<span class="p">(</span><span class="nb">concatenate</span><span class="w"> </span><span class="ss">&#39;vector</span><span class="w"> </span><span class="o">#(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">#(</span><span class="mi">4</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">6</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; #(1 2 3 4 5 6)</span>
+
+<span class="c1">;;; 数组</span>
+
+<span class="c1">;; 向量和字符串只不过是数组的特例</span>
+
+<span class="c1">;; 二维数组</span>
+
+<span class="p">(</span><span class="nb">make-array</span><span class="w"> </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span>
+
+<span class="c1">;; (make-array &#39;(2 2)) 也是可以的</span>
+
+<span class="c1">; =&gt; #2A((0 0) (0 0))</span>
+
+<span class="p">(</span><span class="nb">make-array</span><span class="w"> </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span>
+
+<span class="c1">; =&gt; #3A(((0 0) (0 0)) ((0 0) (0 0)))</span>
+
+<span class="c1">;; 注意：数组的默认初始值是可以指定的</span>
+<span class="c1">;; 下面是如何指定的示例：</span>
+
+<span class="p">(</span><span class="nb">make-array</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="ss">:initial-element</span><span class="w"> </span><span class="ss">&#39;unset</span><span class="p">)</span>
+
+<span class="c1">; =&gt; #(UNSET UNSET)</span>
+
+<span class="c1">;; 若想获取数组[1][1][1]上的元素：</span>
+<span class="p">(</span><span class="nb">aref</span><span class="w"> </span><span class="p">(</span><span class="nb">make-array</span><span class="w"> </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1">; =&gt; 0</span>
+
+<span class="c1">;;; 变长向量</span>
+
+<span class="c1">;; 若将变长向量打印出来，那么它的字面意义上的值和定长向量的是一样的</span>
+
+<span class="p">(</span><span class="nb">defparameter</span><span class="w"> </span><span class="vg">*adjvec*</span><span class="w"> </span><span class="p">(</span><span class="nb">make-array</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="ss">:initial-contents</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span>
+<span class="w">      </span><span class="ss">:adjustable</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="ss">:fill-pointer</span><span class="w"> </span><span class="no">t</span><span class="p">))</span>
+<span class="w">      </span>
+<span class="vg">*adjvec*</span><span class="w"> </span><span class="c1">; =&gt; #(1 2 3)</span>
+
+<span class="c1">;; 添加新的元素:</span>
+<span class="p">(</span><span class="nb">vector-push-extend</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="vg">*adjvec*</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 3</span>
+
+<span class="vg">*adjvec*</span><span class="w"> </span><span class="c1">; =&gt; #(1 2 3 4)</span>
+
+
+
+<span class="c1">;;; 不怎么严谨地说，集合也可被视为列表</span>
+
+<span class="p">(</span><span class="nb">set-difference</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">4</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="mi">7</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; (3 2 1)</span>
+<span class="p">(</span><span class="nb">intersection</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">4</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="mi">7</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; 4</span>
+<span class="p">(</span><span class="nb">union</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">4</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="mi">7</span><span class="p">))</span><span class="w">        </span><span class="c1">; =&gt; (3 2 1 4 5 6 7)</span>
+<span class="p">(</span><span class="nb">adjoin</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span><span class="w">     </span><span class="c1">; =&gt; (1 2 3 4)</span>
+
+<span class="c1">;; 然而，你可能想使用一个更好的数据结构，而并非一个链表</span>
+
+<span class="c1">;;; 在Common Lisp中，“字典”和哈希表的实现是一样的。</span>
+
+<span class="c1">;; 创建一个哈希表</span>
+<span class="p">(</span><span class="nb">defparameter</span><span class="w"> </span><span class="vg">*m*</span><span class="w"> </span><span class="p">(</span><span class="nb">make-hash-table</span><span class="p">))</span>
+
+<span class="c1">;; 给定键，设置对应的值</span>
+<span class="p">(</span><span class="nb">setf</span><span class="w"> </span><span class="p">(</span><span class="nb">gethash</span><span class="w"> </span><span class="ss">&#39;a</span><span class="w"> </span><span class="vg">*m*</span><span class="p">)</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1">;; （通过键）检索对应的值</span>
+<span class="p">(</span><span class="nb">gethash</span><span class="w"> </span><span class="ss">&#39;a</span><span class="w"> </span><span class="vg">*m*</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; 1, t</span>
+
+<span class="c1">;; 注意此处有一细节：Common Lisp往往返回多个值。`gethash`返回的第二个值是t，代表找到了这个元素；返回nil表示没有找到这个元素。</span>
+<span class="c1">;;（译者注：返回的第一个值表示给定的键所对应的值或者nil；）</span>
+<span class="c1">;;（第二个是一个布尔值，表示在哈希表中是否存在这个给定的键）</span>
+<span class="c1">;; 例如，如果可以找到给定的键所对应的值，则返回一个t，否则返回nil</span>
+
+<span class="c1">;; 由给定的键检索一个不存在的值，则返回nil</span>
+<span class="c1">;;（译者注：这个nil是第一个nil，第二个nil其实是指该键在哈希表中也不存在）</span>
+<span class="w"> </span><span class="p">(</span><span class="nb">gethash</span><span class="w"> </span><span class="ss">&#39;d</span><span class="w"> </span><span class="vg">*m*</span><span class="p">)</span><span class="w"> </span><span class="c1">;=&gt; nil, nil</span>
+
+<span class="c1">;; 给定一个键，你可以指定其对应的默认值：</span>
+<span class="p">(</span><span class="nb">gethash</span><span class="w"> </span><span class="ss">&#39;d</span><span class="w"> </span><span class="vg">*m*</span><span class="w"> </span><span class="ss">:not-found</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; :NOT-FOUND</span>
+
+<span class="c1">;; 在此，让我们看一看怎样处理`gethash`的多个返回值。</span>
+
+<span class="p">(</span><span class="nb">multiple-value-bind</span>
+<span class="w">      </span><span class="p">(</span><span class="nv">a</span><span class="w"> </span><span class="nv">b</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">gethash</span><span class="w"> </span><span class="ss">&#39;d</span><span class="w"> </span><span class="vg">*m*</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="nv">b</span><span class="p">))</span>
+<span class="c1">; =&gt; (NIL NIL)</span>
+
+<span class="p">(</span><span class="nb">multiple-value-bind</span>
+<span class="w">      </span><span class="p">(</span><span class="nv">a</span><span class="w"> </span><span class="nv">b</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">gethash</span><span class="w"> </span><span class="ss">&#39;a</span><span class="w"> </span><span class="vg">*m*</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="nv">b</span><span class="p">))</span>
+<span class="c1">; =&gt; (1 T)</span>
+
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+<span class="c1">;; 3. 函数</span>
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">;; 使用`lambda`来创建一个匿名函数。</span>
+<span class="c1">;; 一个函数总是返回其形式体内最后一个表达式的值。</span>
+<span class="c1">;; 将一个函数对象打印出来后的形式是多种多样的...</span>
+
+<span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="s">&quot;Hello World&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; #&lt;FUNCTION (LAMBDA ()) {1004E7818B}&gt;</span>
+
+<span class="c1">;; 使用`funcall`来调用lambda函数</span>
+<span class="p">(</span><span class="nb">funcall</span><span class="w"> </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="s">&quot;Hello World&quot;</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; &quot;Hello World&quot;</span>
+
+<span class="c1">;; 或者使用`apply`</span>
+<span class="p">(</span><span class="nb">apply</span><span class="w"> </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="s">&quot;Hello World&quot;</span><span class="p">)</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Hello World&quot;</span>
+
+<span class="c1">;; 显式地定义一个函数（译者注：即非匿名的）</span>
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">hello-world</span><span class="w"> </span><span class="p">()</span>
+<span class="w">   </span><span class="s">&quot;Hello World&quot;</span><span class="p">)</span>
+<span class="p">(</span><span class="nv">hello-world</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Hello World&quot;</span>
+
+<span class="c1">;; 刚刚上面函数名&quot;hello-world&quot;后的()其实是函数的参数列表</span>
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">hello</span><span class="w"> </span><span class="p">(</span><span class="nv">name</span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="no">nil</span><span class="w"> </span><span class="s">&quot;Hello, ~a &quot;</span><span class="w"> </span><span class="nv">name</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nv">hello</span><span class="w"> </span><span class="s">&quot;Steve&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; &quot;Hello, Steve&quot;</span>
+
+<span class="c1">;; 函数可以有可选形参并且其默认值都为nil</span>
+
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">hello</span><span class="w"> </span><span class="p">(</span><span class="nv">name</span><span class="w"> </span><span class="k">&amp;optional</span><span class="w"> </span><span class="nv">from</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="nv">from</span>
+<span class="w">        </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="s">&quot;Hello, ~a, from ~a&quot;</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="nv">from</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="s">&quot;Hello, ~a&quot;</span><span class="w"> </span><span class="nv">name</span><span class="p">)))</span>
+
+<span class="w"> </span><span class="p">(</span><span class="nv">hello</span><span class="w"> </span><span class="s">&quot;Jim&quot;</span><span class="w"> </span><span class="s">&quot;Alpacas&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">;; =&gt; Hello, Jim, from Alpacas</span>
+
+<span class="c1">;; 你也可以指定那些可选形参的默认值</span>
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">hello</span><span class="w"> </span><span class="p">(</span><span class="nv">name</span><span class="w"> </span><span class="k">&amp;optional</span><span class="w"> </span><span class="p">(</span><span class="nv">from</span><span class="w"> </span><span class="s">&quot;The world&quot;</span><span class="p">))</span>
+<span class="w">   </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="s">&quot;Hello, ~a, from ~a&quot;</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="nv">from</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nv">hello</span><span class="w"> </span><span class="s">&quot;Steve&quot;</span><span class="p">)</span>
+<span class="c1">; =&gt; Hello, Steve, from The world</span>
+
+<span class="p">(</span><span class="nv">hello</span><span class="w"> </span><span class="s">&quot;Steve&quot;</span><span class="w"> </span><span class="s">&quot;the alpacas&quot;</span><span class="p">)</span>
+<span class="c1">; =&gt; Hello, Steve, from the alpacas</span>
+
+
+<span class="c1">;; 当然，你也可以设置所谓关键字形参；</span>
+<span class="c1">;; 关键字形参往往比可选形参更具灵活性。</span>
+
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">generalized-greeter</span><span class="w"> </span><span class="p">(</span><span class="nv">name</span><span class="w"> </span><span class="k">&amp;key</span><span class="w"> </span><span class="p">(</span><span class="nv">from</span><span class="w"> </span><span class="s">&quot;the world&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nv">honorific</span><span class="w"> </span><span class="s">&quot;Mx&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="s">&quot;Hello, ~a ~a, from ~a&quot;</span><span class="w"> </span><span class="nv">honorific</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="nv">from</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nv">generalized-greeter</span><span class="w"> </span><span class="s">&quot;Jim&quot;</span><span class="p">)</span><span class="w">   </span><span class="c1">; =&gt; Hello, Mx Jim, from the world</span>
+
+<span class="p">(</span><span class="nv">generalized-greeter</span><span class="w"> </span><span class="s">&quot;Jim&quot;</span><span class="w"> </span><span class="ss">:from</span><span class="w"> </span><span class="s">&quot;the alpacas you met last summer&quot;</span><span class="w"> </span><span class="ss">:honorific</span><span class="w"> </span><span class="s">&quot;Mr&quot;</span><span class="p">)</span>
+<span class="c1">; =&gt; Hello, Mr Jim, from the alpacas you met last summer</span>
+
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+<span class="c1">;; 4. 等式</span>
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">;; Common Lisp具有一个十分复杂的用于判断等价的系统，下面只是其中一部分的例子</span>
+
+<span class="c1">;; 若要比较数值是否等价，使用`=`</span>
+<span class="p">(</span><span class="nb">=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mf">3.0</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; t</span>
+<span class="p">(</span><span class="nb">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; nil</span>
+
+<span class="c1">;; 若要比较对象的类型，则使用`eql`</span>
+<span class="c1">;;（译者注：抱歉，翻译水平实在有限，下面是我个人的补充说明）</span>
+<span class="c1">;;（`eq` 返回真，如果对象的内存地址相等）</span>
+<span class="c1">;;（`eql` 返回真，如果两个对象内存地址相等，或者对象的类型相同，并且值相等）</span>
+<span class="c1">;;（例如同为整形数或浮点数，并且他们的值相等时，二者`eql`等价）</span>
+<span class="c1">;;（想要弄清`eql`，其实有必要先了解`eq`)</span>
+<span class="c1">;;（[可以参考](http://stackoverflow.com/questions/547436/whats-the-difference-between-eq-eql-equal-and-equalp-in-common-lisp)）</span>
+<span class="c1">;;（可以去CLHS上分别查看两者的文档）</span>
+<span class="c1">;;（另外，《实用Common Lisp编程》的4.8节也提到了两者的区别）</span>
+<span class="p">(</span><span class="nb">eql</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; t</span>
+<span class="p">(</span><span class="nb">eql</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mf">3.0</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; nil</span>
+<span class="p">(</span><span class="nb">eql</span><span class="w"> </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; nil</span>
+
+<span class="c1">;; 对于列表、字符串、以及位向量，使用`equal`</span>
+<span class="p">(</span><span class="nb">equal</span><span class="w"> </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="ss">&#39;a</span><span class="w"> </span><span class="ss">&#39;b</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="ss">&#39;a</span><span class="w"> </span><span class="ss">&#39;b</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; t</span>
+<span class="p">(</span><span class="nb">equal</span><span class="w"> </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="ss">&#39;a</span><span class="w"> </span><span class="ss">&#39;b</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="ss">&#39;b</span><span class="w"> </span><span class="ss">&#39;a</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; nil</span>
+
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+<span class="c1">;; 5. 控制流</span>
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">;;; 条件判断语句</span>
+
+<span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="no">t</span><span class="w">                </span><span class="c1">; “test”，即判断语句</span>
+<span class="w">    </span><span class="s">&quot;this is true&quot;</span><span class="w">   </span><span class="c1">; “then”，即判断条件为真时求值的表达式</span>
+<span class="w">    </span><span class="s">&quot;this is false&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; “else”，即判断条件为假时求值的表达式</span>
+<span class="c1">; =&gt; &quot;this is true&quot;</span>
+
+<span class="c1">;; 在“test”（判断）语句中，所有非nil或者非()的值都被视为真值</span>
+<span class="p">(</span><span class="nb">member</span><span class="w"> </span><span class="ss">&#39;Groucho</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">Harpo</span><span class="w"> </span><span class="nv">Groucho</span><span class="w"> </span><span class="nv">Zeppo</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; &#39;(GROUCHO ZEPPO)</span>
+<span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">member</span><span class="w"> </span><span class="ss">&#39;Groucho</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">Harpo</span><span class="w"> </span><span class="nv">Groucho</span><span class="w"> </span><span class="nv">Zeppo</span><span class="p">))</span>
+<span class="w">    </span><span class="ss">&#39;yep</span>
+<span class="w">    </span><span class="ss">&#39;nope</span><span class="p">)</span>
+<span class="c1">; =&gt; &#39;YEP</span>
+
+<span class="c1">;; `cond`将一系列测试语句串联起来，并对相应的表达式求值</span>
+<span class="p">(</span><span class="nb">cond</span><span class="w"> </span><span class="p">((</span><span class="nb">&gt;</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">error</span><span class="w"> </span><span class="s">&quot;wrong!&quot;</span><span class="p">))</span>
+<span class="w">      </span><span class="p">((</span><span class="nb">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">error</span><span class="w"> </span><span class="s">&quot;wrong again!&quot;</span><span class="p">))</span>
+<span class="w">      </span><span class="p">(</span><span class="no">t</span><span class="w"> </span><span class="ss">&#39;ok</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; &#39;OK</span>
+
+<span class="c1">;; 对于给定值的数据类型，`typecase`会做出相应地判断</span>
+<span class="p">(</span><span class="nb">typecase</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">string</span><span class="w"> </span><span class="ss">:string</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nc">integer</span><span class="w"> </span><span class="ss">:int</span><span class="p">))</span>
+
+<span class="c1">; =&gt; :int</span>
+
+<span class="c1">;;; 迭代</span>
+
+<span class="c1">;; 当然，递归是肯定被支持的：</span>
+
+<span class="p">(</span><span class="nb">defun</span><span class="w"> </span><span class="nv">walker</span><span class="w"> </span><span class="p">(</span><span class="nv">n</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">zerop</span><span class="w"> </span><span class="nv">n</span><span class="p">)</span>
+<span class="w">      </span><span class="ss">:walked</span>
+<span class="w">      </span><span class="p">(</span><span class="nv">walker</span><span class="w"> </span><span class="p">(</span><span class="nb">1-</span><span class="w"> </span><span class="nv">n</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="nv">walker</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; :walked</span>
+
+<span class="c1">;; 而大部分场合下，我们使用`DOLIST`或者`LOOP`来进行迭代</span>
+
+
+<span class="p">(</span><span class="nb">dolist</span><span class="w"> </span><span class="p">(</span><span class="nv">i</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="no">t</span><span class="w"> </span><span class="s">&quot;~a&quot;</span><span class="w"> </span><span class="nv">i</span><span class="p">))</span>
+
+<span class="c1">; =&gt; 1234</span>
+
+<span class="p">(</span><span class="nb">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">from</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="nv">below</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">      </span><span class="nv">collect</span><span class="w"> </span><span class="nv">i</span><span class="p">)</span>
+
+<span class="c1">; =&gt; (0 1 2 3 4 5 6 7 8 9)</span>
+
+
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+<span class="c1">;; 6. 可变性</span>
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">;; 使用`setf`可以对一个已经存在的变量进行赋值；</span>
+<span class="c1">;; 事实上，刚刚在哈希表的例子中我们已经示范过了。</span>
+
+<span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nv">variable</span><span class="w"> </span><span class="mi">10</span><span class="p">))</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">setf</span><span class="w"> </span><span class="nv">variable</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span>
+<span class="w"> </span><span class="c1">; =&gt; 2</span>
+
+
+<span class="c1">;; 所谓好的Lisp编码风格就是为了减少使用破坏性函数，防止发生副作用。</span>
+
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+<span class="c1">;; 7. 类与对象</span>
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">;; 我们就不写什么有关动物的类了，下面给出的人力车的类</span>
+
+<span class="p">(</span><span class="nb">defclass</span><span class="w"> </span><span class="nv">human-powered-conveyance</span><span class="w"> </span><span class="p">()</span>
+<span class="w">  </span><span class="p">((</span><span class="nv">velocity</span>
+<span class="w">    </span><span class="ss">:accessor</span><span class="w"> </span><span class="nv">velocity</span>
+<span class="w">    </span><span class="ss">:initarg</span><span class="w"> </span><span class="ss">:velocity</span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="nv">average-efficiency</span>
+<span class="w">    </span><span class="ss">:accessor</span><span class="w"> </span><span class="nv">average-efficiency</span>
+<span class="w">   </span><span class="ss">:initarg</span><span class="w"> </span><span class="ss">:average-efficiency</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="ss">:documentation</span><span class="w"> </span><span class="s">&quot;A human powered conveyance&quot;</span><span class="p">))</span>
+
+<span class="c1">;; `defclass`，后面接类名，以及超类列表</span>
+<span class="c1">;; 再接着是槽的列表（槽有点像Java里的成员变量），最后是一些可选的特性</span>
+<span class="c1">;; 例如文档说明“:documentation”</span>
+
+<span class="c1">;; 如果超类列表为空，则默认该类继承于“standard-object”类（standard-object又是T的子类）</span>
+<span class="c1">;; 这种默认行为是可以改变的，但你最好有一定的基础并且知道自己到底在干什么；</span>
+<span class="c1">;; 参阅《The Art of the Metaobject Protocol》来了解更多信息。</span>
+
+<span class="p">(</span><span class="nb">defclass</span><span class="w"> </span><span class="nv">bicycle</span><span class="w"> </span><span class="p">(</span><span class="nv">human-powered-conveyance</span><span class="p">)</span>
+<span class="w">  </span><span class="p">((</span><span class="nv">wheel-size</span>
+<span class="w">    </span><span class="ss">:accessor</span><span class="w"> </span><span class="nv">wheel-size</span>
+<span class="w">    </span><span class="ss">:initarg</span><span class="w"> </span><span class="ss">:wheel-size</span>
+<span class="w">    </span><span class="ss">:documentation</span><span class="w"> </span><span class="s">&quot;Diameter of the wheel.&quot;</span><span class="p">)</span>
+<span class="w">   </span><span class="p">(</span><span class="nv">height</span>
+<span class="w">    </span><span class="ss">:accessor</span><span class="w"> </span><span class="nv">height</span>
+<span class="w">    </span><span class="ss">:initarg</span><span class="w"> </span><span class="ss">:height</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="nb">defclass</span><span class="w"> </span><span class="nv">recumbent</span><span class="w"> </span><span class="p">(</span><span class="nv">bicycle</span><span class="p">)</span>
+<span class="w">  </span><span class="p">((</span><span class="nv">chain-type</span>
+<span class="w">    </span><span class="ss">:accessor</span><span class="w"> </span><span class="nv">chain-type</span>
+<span class="w">    </span><span class="ss">:initarg</span><span class="w">  </span><span class="ss">:chain-type</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="nb">defclass</span><span class="w"> </span><span class="nv">unicycle</span><span class="w"> </span><span class="p">(</span><span class="nv">human-powered-conveyance</span><span class="p">)</span><span class="w"> </span><span class="no">nil</span><span class="p">)</span>
+
+<span class="p">(</span><span class="nb">defclass</span><span class="w"> </span><span class="nv">canoe</span><span class="w"> </span><span class="p">(</span><span class="nv">human-powered-conveyance</span><span class="p">)</span>
+<span class="w">  </span><span class="p">((</span><span class="nv">number-of-rowers</span>
+<span class="w">    </span><span class="ss">:accessor</span><span class="w"> </span><span class="nv">number-of-rowers</span>
+<span class="w">    </span><span class="ss">:initarg</span><span class="w"> </span><span class="ss">:number-of-rowers</span><span class="p">)))</span>
+
+
+<span class="c1">;; 在REPL中对human-powered-conveyance类调用`DESCRIBE`后结果如下：</span>
+
+<span class="p">(</span><span class="nb">describe</span><span class="w"> </span><span class="ss">&#39;human-powered-conveyance</span><span class="p">)</span>
+
+<span class="c1">; COMMON-LISP-USER::HUMAN-POWERED-CONVEYANCE</span>
+<span class="c1">;  [symbol]</span>
+<span class="c1">;</span>
+<span class="c1">; HUMAN-POWERED-CONVEYANCE names the standard-class #&lt;STANDARD-CLASS</span>
+<span class="c1">;                                                    HUMAN-POWERED-CONVEYANCE&gt;:</span>
+<span class="c1">;  Documentation:</span>
+<span class="c1">;    A human powered conveyance</span>
+<span class="c1">;  Direct superclasses: STANDARD-OBJECT</span>
+<span class="c1">;  Direct subclasses: UNICYCLE, BICYCLE, CANOE</span>
+<span class="c1">;  Not yet finalized.</span>
+<span class="c1">;  Direct slots:</span>
+<span class="c1">;    VELOCITY</span>
+<span class="c1">;      Readers: VELOCITY</span>
+<span class="c1">;      Writers: (SETF VELOCITY)</span>
+<span class="c1">;    AVERAGE-EFFICIENCY</span>
+<span class="c1">;      Readers: AVERAGE-EFFICIENCY</span>
+<span class="c1">;      Writers: (SETF AVERAGE-EFFICIENCY)</span>
+
+<span class="c1">;; 注意到这些有用的返回信息——Common Lisp一直是一个交互式的系统。</span>
+
+<span class="c1">;; 若要定义一个方法；</span>
+<span class="c1">;; 注意，我们计算自行车轮子周长时使用了这样一个公式：C = d * pi</span>
+
+<span class="p">(</span><span class="nb">defmethod</span><span class="w"> </span><span class="nv">circumference</span><span class="w"> </span><span class="p">((</span><span class="nv">object</span><span class="w"> </span><span class="nv">bicycle</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="nv">pi</span><span class="w"> </span><span class="p">(</span><span class="nv">wheel-size</span><span class="w"> </span><span class="nv">object</span><span class="p">)))</span>
+
+<span class="c1">;; pi在Common Lisp中已经是一个内置的常量。</span>
+
+<span class="c1">;; 假设我们已经知道了效率值（“efficiency value”）和船桨数大概呈对数关系；</span>
+<span class="c1">;; 那么效率值的定义应当在构造器/初始化过程中就被完成。</span>
+
+<span class="c1">;; 下面是一个Common Lisp构造实例时初始化实例的例子：</span>
+
+<span class="p">(</span><span class="nb">defmethod</span><span class="w"> </span><span class="nb">initialize-instance</span><span class="w"> </span><span class="ss">:after</span><span class="w"> </span><span class="p">((</span><span class="nv">object</span><span class="w"> </span><span class="nv">canoe</span><span class="p">)</span><span class="w"> </span><span class="k">&amp;rest</span><span class="w"> </span><span class="nv">args</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">setf</span><span class="w"> </span><span class="p">(</span><span class="nv">average-efficiency</span><span class="w"> </span><span class="nv">object</span><span class="p">)</span><span class="w">  </span><span class="p">(</span><span class="nb">log</span><span class="w"> </span><span class="p">(</span><span class="nb">1+</span><span class="w"> </span><span class="p">(</span><span class="nv">number-of-rowers</span><span class="w"> </span><span class="nv">object</span><span class="p">)))))</span>
+
+<span class="c1">;; 接着初构造一个实例并检查平均效率...</span>
+
+<span class="p">(</span><span class="nv">average-efficiency</span><span class="w"> </span><span class="p">(</span><span class="nb">make-instance</span><span class="w"> </span><span class="ss">&#39;canoe</span><span class="w"> </span><span class="ss">:number-of-rowers</span><span class="w"> </span><span class="mi">15</span><span class="p">))</span>
+<span class="c1">; =&gt; 2.7725887</span>
+
+
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+<span class="c1">;; 8. 宏</span>
+<span class="c1">;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+
+<span class="c1">;; 宏可以让你扩展语法</span>
+
+<span class="c1">;; 例如，Common Lisp并没有自带WHILE循环——所以让我们自己来为他添加一个；</span>
+<span class="c1">;; 如果按照汇编程序的直觉来看，我们会这样写：</span>
+
+<span class="p">(</span><span class="nb">defmacro</span><span class="w"> </span><span class="nv">while</span><span class="w"> </span><span class="p">(</span><span class="kt">condition</span><span class="w"> </span><span class="k">&amp;body</span><span class="w"> </span><span class="nv">body</span><span class="p">)</span>
+<span class="w">    </span><span class="s">&quot;While `condition` is true, `body` is executed.</span>
+
+<span class="s">`condition` is tested prior to each execution of `body`&quot;</span>
+<span class="w">    </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nv">block-name</span><span class="w"> </span><span class="p">(</span><span class="nb">gensym</span><span class="p">)))</span>
+<span class="w">        </span><span class="o">`</span><span class="p">(</span><span class="k">tagbody</span>
+<span class="w">           </span><span class="p">(</span><span class="nb">unless</span><span class="w"> </span><span class="o">,</span><span class="kt">condition</span>
+<span class="w">               </span><span class="p">(</span><span class="k">go</span><span class="w"> </span><span class="o">,</span><span class="nv">block-name</span><span class="p">))</span>
+<span class="w">           </span><span class="p">(</span><span class="k">progn</span>
+<span class="w">           </span><span class="o">,@</span><span class="nv">body</span><span class="p">)</span>
+<span class="w">           </span><span class="o">,</span><span class="nv">block-name</span><span class="p">)))</span>
+
+<span class="c1">;; 让我们来看看它的高级版本：</span>
+
+<span class="p">(</span><span class="nb">defmacro</span><span class="w"> </span><span class="nv">while</span><span class="w"> </span><span class="p">(</span><span class="kt">condition</span><span class="w"> </span><span class="k">&amp;body</span><span class="w"> </span><span class="nv">body</span><span class="p">)</span>
+<span class="w">    </span><span class="s">&quot;While `condition` is true, `body` is executed.</span>
+
+<span class="s">`condition` is tested prior to each execution of `body`&quot;</span>
+<span class="w">  </span><span class="o">`</span><span class="p">(</span><span class="nb">loop</span><span class="w"> </span><span class="nv">while</span><span class="w"> </span><span class="o">,</span><span class="kt">condition</span>
+<span class="w">         </span><span class="nb">do</span>
+<span class="w">         </span><span class="p">(</span><span class="k">progn</span>
+<span class="w">            </span><span class="o">,@</span><span class="nv">body</span><span class="p">)))</span>
+
+<span class="c1">;; 然而，在一个比较现代化的编译环境下，这样的WHILE是没有必要的；</span>
+<span class="c1">;; LOOP形式的循环和这个WHILE同样的好，并且更易于阅读。</span>
+
+<span class="c1">;; 注意反引号&#39;`&#39;，逗号&#39;,&#39;以及&#39;@&#39;这三个符号； </span>
+<span class="c1">;; 反引号&#39;`&#39;是一种所谓“quasiquote”的引用类型的运算符，有了它，之后的逗号“,”才有意义。</span>
+<span class="c1">;; 逗号“,”意味着解除引用（unquote，即开始求值）；</span>
+<span class="c1">;; “@”符号则表示将当前的参数插入到当前整个列表中。</span>
+<span class="c1">;;（译者注：要想真正用好、用对这三个符号，需要下一番功夫）</span>
+<span class="c1">;;（甚至光看《实用 Common Lisp 编程》中关于宏的介绍都是不够的）</span>
+<span class="c1">;;（建议再去读一读Paul Graham的两本著作《ANSI Common Lisp》和《On Lisp》）</span>
+
+<span class="c1">;; 函数`gensym`创建一个唯一的符号——这个符号确保不会出现在其他任何地方。</span>
+<span class="c1">;; 这样做是因为，宏是在编译期展开的</span>
+<span class="c1">;; 而在宏中声明的变量名极有可能和常规代码中使用的变量名发生冲突。</span>
+
+<span class="c1">;; 可以去《实用 Common Lisp 编程》中阅读更多有关宏的内容。</span>
+</pre></div>
+<h2>拓展阅读</h2>
+<p><a href="http://www.gigamonkeys.com/book/">继续阅读《实用 Common Lisp 编程》一书</a></p>
+<h2>致谢</h2>
+<p>非常感谢Scheme社区的人们，我基于他们的成果得以迅速的写出这篇有关Common Lisp的快速入门
+同时也感谢</p>
+<ul>
+<li><a href="https://github.com/pkhuong">Paul Khuong</a> ，他提出了很多有用的点评。</li>
+</ul>
+<p>##译者寄语
+“祝福那些将思想镶嵌在重重括号之内的人们。”</p>
+
+        <hr>
+        <p>
+          有建议？或者发现什么错误？在GitHub上<a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">开一个issue</a>，或者发起<a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/zh-cn/common-lisp-cn.html.markdown">pull request</a>！
+        </p>
+        <p class="contributed">
+          原著Paul Nathan，并由<a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/zh-cn/common-lisp-cn.html.markdown">6个好心人</a>修改。
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2024
+            <a href="https://github.com/pnathan">Paul Nathan</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

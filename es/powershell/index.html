@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="es">
+    <title>Learn PowerShell in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/es/powershell/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fes%2Fpowershell%2F&amp;text=Aprende+X+en+Y+minutos%2C+donde+X%3DPowerShell">
+            Comparte esta página
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">Aprende X en Y minutos</a></h1>
+      <h2>Donde X=PowerShell</h2>
+      <p class="filelink">
+        Descarga el código:
+        <a href="/es/files/LearnPowershell.ps1">LearnPowershell.ps1</a>
+      </p>
+      <div id="doc">
+<p>PowerShell es el lenguaje de automatización y gestión de configuraciones de Windows hecho por Microsoft basado en .NET Framework. Desde Windows 7 en adelante, esos sistemas operativos incluyen un intérprete de PowerShell.
+Casi todos los ejemplos a continuación pueden ser parte de un script o ejecutados directamente en la consola de PowerShell.</p>
+<p>Una diferencia clave con respecto a Bash es que en PowerShell casi todo son manipulaciones de objetos en vez de análisis sobre flujos de texto plano.</p>
+<p><a href="https://technet.microsoft.com/en-us/library/bb978526.aspx">Leer más acá.</a> (EN)</p>
+<p>Si no está seguro sobre el ambiente de ejecución en su sistema:</p>
+<div class="highlight"><pre lang="powershell"><span class="nb">Get-ExecutionPolicy</span> <span class="n">-List</span>
+<span class="nb">Set-ExecutionPolicy</span> <span class="n">AllSigned</span>
+<span class="c"># Otras opciones de políticas de ejecución son:</span>
+<span class="c"># - Restricted: Los scripts no correrán.</span>
+<span class="c"># - RemoteSigned: Los scripts que se hayan descargado sólo correrán si han sido firmados por un editor de confianza. </span>
+<span class="c"># - AllSigned: Los scripts requieren ser firmados por un editor de confianza.</span>
+<span class="c"># - Unrestricted: Ejecuta cualquier script.</span>
+<span class="n">help</span> <span class="n">about_Execution_Policies</span> <span class="c"># para obtener más ayuda sobre políticas de ejecución.</span>
+
+<span class="c"># Versión instalada de PowerShell:</span>
+<span class="nv">$PSVersionTable</span>
+</pre></div>
+<p>Para obtener ayuda:</p>
+<div class="highlight"><pre lang="powershell"><span class="c"># Si necesita encontrar algún comando</span>
+<span class="nb">Get-Command</span> <span class="n">about_</span><span class="p">*</span> <span class="c"># tiene por abreviación (o alias): gcm</span>
+<span class="nb">Get-Command</span> <span class="n">-Verb</span> <span class="n">Add</span> <span class="c"># lista todos los comandos que tienen por verbo &#39;Add&#39;</span>
+<span class="nb">Get-Alias</span> <span class="nb">ps</span>
+<span class="nb">Get-Alias</span> <span class="n">-Definition</span> <span class="nb">Get-Process</span>
+
+<span class="nb">Get-Help</span> <span class="nb">ps </span><span class="p">|</span> <span class="n">less</span> <span class="c"># alias: help</span>
+<span class="nb">ps </span><span class="p">|</span> <span class="nb">Get-Member</span> <span class="c"># alias: gm</span>
+
+<span class="nb">Show-Command</span> <span class="nb">Get-EventLog</span> <span class="c"># Muestra un formulario para llenar los parámetros del comando Get-EventLog</span>
+
+<span class="nb">Update-Help</span> <span class="c"># Actualiza la ayuda (debe ser ejecutado en una consola elevada como admin)</span>
+</pre></div>
+<p>Acá inicia el tutorial:</p>
+<div class="highlight"><pre lang="powershell"><span class="c"># Como ya lo notó, los comentarios empiezan con #</span>
+
+<span class="c"># Ejemplo de un simple hola mundo:</span>
+<span class="nb">echo </span><span class="n">Hola</span> <span class="n">mundo</span><span class="p">!</span>
+<span class="c"># echo es el alias del comando Write-Output (a los comandos también se les dice cmdlets)</span>
+<span class="c"># La mayoría de los cmdlets y funciones siguen la convención de llamarse de la forma: Verbo-Sustantivo</span>
+
+<span class="c"># Cada comando inicia en una nueva línea, o después de un punto y coma:</span>
+<span class="nb">echo </span><span class="s1">&#39;Esta es la primer línea&#39;</span><span class="p">;</span> <span class="nb">echo </span><span class="s1">&#39;Esta es la segunda&#39;</span>
+
+<span class="c"># La declaración de una variable se ve así:</span>
+<span class="nv">$unaCadena</span> <span class="p">=</span><span class="s2">&quot;Algún texto&quot;</span>
+<span class="c"># O así:</span>
+<span class="nv">$unNumero</span> <span class="p">=</span> <span class="n">5</span> <span class="o">-as</span> <span class="no">[double]</span> 
+<span class="nv">$unaLista</span> <span class="p">=</span> <span class="n">1</span><span class="p">,</span><span class="n">2</span><span class="p">,</span><span class="n">3</span><span class="p">,</span><span class="n">4</span><span class="p">,</span><span class="n">5</span>
+<span class="nv">$unaCadena</span> <span class="p">=</span> <span class="nv">$unaLista</span> <span class="n">-join</span> <span class="s1">&#39;--&#39;</span> <span class="c"># también existe el parámetro -split </span>
+<span class="nv">$unaTablaHash</span> <span class="p">=</span> <span class="p">@{</span><span class="n">nom1</span><span class="p">=</span><span class="s1">&#39;val1&#39;</span><span class="p">;</span> <span class="n">nom2</span><span class="p">=</span><span class="s1">&#39;val2&#39;</span><span class="p">}</span>
+
+<span class="c"># Uso de variables:</span>
+<span class="nb">echo </span><span class="nv">$unaCadena</span>
+<span class="nb">echo </span><span class="s2">&quot;Interpolación: $unaCadena&quot;</span>
+<span class="nb">echo </span><span class="s2">&quot;</span><span class="se">`$</span><span class="s2">unaCadena tiene longitud de </span><span class="p">$(</span><span class="nv">$unaCadena</span><span class="p">.</span><span class="n">Length</span><span class="p">)</span><span class="s2">&quot;</span>  
+<span class="nb">echo </span><span class="s1">&#39;$unaCadena&#39;</span>
+<span class="nb">echo </span><span class="sh">@&quot;</span>
+<span class="sh">Esta es una Here-String</span>
+<span class="sh">$otraVariable</span>
+<span class="sh">&quot;@</span>
+<span class="c"># Note que una &#39; (comilla simple) no expande las variables!</span>
+<span class="c"># Las Here-Strings también funcionan con comilla simple</span>
+
+<span class="c"># Variables Automáticas:</span>
+<span class="c"># Hay algunas variables previamente definidas en el ambiente que le pueden servir, tales como</span>
+<span class="nb">echo </span><span class="s2">&quot;Booleanos: $TRUE y $FALSE&quot;</span>
+<span class="nb">echo </span><span class="s2">&quot;Valor vacío: $NULL&quot;</span>
+<span class="nb">echo </span><span class="s2">&quot;Valor de retorno del último programa: $?&quot;</span>
+<span class="nb">echo </span><span class="s2">&quot;Código de salida del último programa en Windows: $LastExitCode&quot;</span>
+<span class="nb">echo </span><span class="s2">&quot;El último token en la última línea de la sesión activa: $$&quot;</span>
+<span class="nb">echo </span><span class="s2">&quot;El primer token: $^&quot;</span>
+<span class="nb">echo </span><span class="s2">&quot;PID del script: $PID&quot;</span>
+<span class="nb">echo </span><span class="s2">&quot;Ruta completa del directorio dónde está el script actual: $PSScriptRoot&quot;</span>
+<span class="nb">echo </span><span class="s1">&#39;Ruta completa de script actual: &#39;</span> <span class="p">+</span> <span class="nv">$MyInvocation</span><span class="p">.</span><span class="n">MyCommand</span><span class="p">.</span><span class="n">Path</span>
+<span class="nb">echo </span><span class="s2">&quot;Ruta completa de directorio actual: $Pwd&quot;</span>
+<span class="nb">echo </span><span class="s2">&quot;Argumentos pasados a la invocación de una función, script o bloque de código: $PSBoundParameters&quot;</span>
+<span class="nb">echo </span><span class="s2">&quot;Argumentos no predefinidos: </span><span class="p">$(</span><span class="nv">$Args</span> <span class="n">-join</span> <span class="s1">&#39;, &#39;</span><span class="p">)</span><span class="s2">.&quot;</span>
+<span class="c"># Para saber más sobre variables automáticas: `help about_Automatic_Variables`</span>
+
+<span class="c"># Para enlazar otro archivo (operador punto)</span>
+<span class="p">.</span> <span class="p">.\</span><span class="n">otroNombreDeScript</span><span class="p">.</span><span class="n">ps1</span>
+
+
+<span class="c">### Control de Flujo</span>
+<span class="c"># Tenemos la estructura de if como es usual:</span>
+<span class="k">if</span> <span class="p">(</span><span class="nv">$Edad</span> <span class="o">-is</span> <span class="no">[string]</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nb">echo </span><span class="s1">&#39;Pero... si $Edad no puede ser una cadena de texto!&#39;</span>
+<span class="p">}</span> <span class="k">elseif</span> <span class="p">(</span><span class="nv">$Edad</span> <span class="o">-lt</span> <span class="n">12</span> <span class="o">-and</span> <span class="nv">$Edad</span> <span class="o">-gt</span> <span class="n">0</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nb">echo </span><span class="s1">&#39;Niño (Menor de 12. Mayor que 0)&#39;</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+	<span class="nb">echo </span><span class="s1">&#39;Adulto&#39;</span>
+<span class="p">}</span>
+
+<span class="c"># Sentencias switch de PS son más poderosas comparadas con otros lenguajes</span>
+<span class="nv">$val</span> <span class="p">=</span> <span class="s2">&quot;20&quot;</span>
+<span class="k">switch</span><span class="p">(</span><span class="nv">$val</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">{</span> <span class="nv">$_</span> <span class="o">-eq</span> <span class="n">42</span> <span class="p">}</span>           <span class="p">{</span> <span class="s2">&quot;La respuesta es 42&quot;</span><span class="p">;</span> <span class="k">break</span> <span class="p">}</span>
+  <span class="s1">&#39;20&#39;</span>                    <span class="p">{</span> <span class="s2">&quot;Exactamente 20&quot;</span><span class="p">;</span> <span class="k">break</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">$_</span> <span class="o">-like</span> <span class="s1">&#39;s*&#39;</span> <span class="p">}</span>       <span class="p">{</span> <span class="s2">&quot;No distingue entre mayúsculas/minúsculas&quot;</span><span class="p">;</span> <span class="k">break</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">$_</span> <span class="o">-clike</span> <span class="s1">&#39;s*&#39;</span><span class="p">}</span>       <span class="p">{</span> <span class="s2">&quot;clike, ceq, cne para ser diferenciar el caso entre mayúsculas/minúsculas&quot;</span><span class="p">;</span> <span class="k">break</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="nv">$_</span> <span class="o">-notmatch</span> <span class="s1">&#39;^.*$&#39;</span><span class="p">}</span>  <span class="p">{</span> <span class="s2">&quot;Emparejamiento de expresiones regulares. cnotmatch, cnotlike, ...&quot;</span><span class="p">;</span> <span class="k">break</span> <span class="p">}</span>
+  <span class="p">{</span> <span class="s1">&#39;x&#39;</span> <span class="o">-contains</span> <span class="s1">&#39;x&#39;</span><span class="p">}</span>    <span class="p">{</span> <span class="s2">&quot;FALSO! -contains es para listas!&quot;</span><span class="p">;</span> <span class="k">break</span> <span class="p">}</span>
+  <span class="k">default</span>                 <span class="p">{</span> <span class="s2">&quot;Otros&quot;</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c"># El for clásico</span>
+<span class="k">for</span><span class="p">(</span><span class="nv">$i</span> <span class="p">=</span> <span class="n">1</span><span class="p">;</span> <span class="nv">$i</span> <span class="o">-le</span> <span class="n">10</span><span class="p">;</span> <span class="nv">$i</span><span class="p">++)</span> <span class="p">{</span>
+  <span class="s2">&quot;Número de ciclo $i&quot;</span>
+<span class="p">}</span>
+<span class="c"># O más corto</span>
+<span class="n">1</span><span class="p">..</span><span class="n">10</span> <span class="p">|</span> <span class="p">%</span> <span class="p">{</span> <span class="s2">&quot;Número de ciclo $_&quot;</span> <span class="p">}</span>
+
+<span class="c"># PowerShell también incluye</span>
+<span class="k">foreach</span> <span class="p">(</span><span class="nv">$var</span> <span class="k">in</span> <span class="s1">&#39;valor1&#39;</span><span class="p">,</span><span class="s1">&#39;valor2&#39;</span><span class="p">,</span><span class="s1">&#39;valor3&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="nb">echo </span><span class="nv">$var</span> <span class="p">}</span>
+<span class="c"># while () {}</span>
+<span class="c"># do {} while ()</span>
+<span class="c"># do {} until ()</span>
+
+<span class="c"># Manejo de excepciones</span>
+<span class="k">try</span> <span class="p">{}</span> <span class="k">catch</span> <span class="p">{}</span> <span class="k">finally</span> <span class="p">{}</span>
+<span class="k">try</span> <span class="p">{}</span> <span class="k">catch</span> <span class="no">[System.NullReferenceException]</span> <span class="p">{</span>
+	<span class="nb">echo </span><span class="nv">$_</span><span class="p">.</span><span class="n">Exception</span> <span class="p">|</span> <span class="nb">Format-List</span> <span class="n">-Force</span>
+<span class="p">}</span>
+
+
+<span class="c">### Proveedores</span>
+<span class="c"># Lista de archivos y directorios en la ubicación actual</span>
+<span class="nb">ls </span><span class="c"># o el alias `dir`</span>
+<span class="nb">cd </span><span class="p">~</span> <span class="c"># ir al directorio principal del usuario</span>
+
+<span class="nb">Get-Alias</span> <span class="nb">ls </span><span class="c"># -&gt; Get-ChildItem</span>
+<span class="c"># ¿¡Eh!? Estos cmdlets tienen nombres genéricos porque a diferencia de otros lenguajes de scripting,</span>
+<span class="c"># PowerShell no opera únicamente en el directorio actual.</span>
+<span class="nb">cd </span><span class="n">HKCU</span><span class="p">:</span> <span class="c"># se dirige a la rama HKEY_CURRENT_USER del registro de Windows</span>
+
+<span class="c"># Para hacer un listado de todos los proveedores disponibles</span>
+<span class="nb">Get-PSProvider</span>
+
+
+<span class="c">### Tuberías</span>
+<span class="c"># Los Cmdlets tienen parámetros que controlan su ejecución:</span>
+<span class="nb">Get-ChildItem</span> <span class="n">-Filter</span> <span class="p">*.</span><span class="n">txt</span> <span class="n">-Name</span> <span class="c"># Se obtiene sólo el nombre de todos los archivos txt</span>
+<span class="c"># Sólo se necesita escribir caracteres de un parámetro hasta que deja de ser ambiguo</span>
+<span class="nb">ls </span><span class="n">-fi</span> <span class="p">*.</span><span class="n">txt</span> <span class="n">-n</span> <span class="c"># -f no se puede porque también existe -Force </span>
+<span class="c"># Use `Get-Help Get-ChildItem -Full` para un tratado más completo</span>
+
+<span class="c"># Los results del cmdlet anterior se le pueden pasar como entrada al siguiente.</span>
+<span class="c"># `$_` representa el objeto actual en el objeto de tubería.</span>
+<span class="nb">ls </span><span class="p">|</span> <span class="nb">Where-Object</span> <span class="p">{</span> <span class="nv">$_</span><span class="p">.</span><span class="n">Name</span> <span class="o">-match</span> <span class="s1">&#39;c&#39;</span> <span class="p">}</span> <span class="p">|</span> <span class="nb">Export-CSV</span> <span class="n">exportado</span><span class="p">.</span><span class="n">txt</span>
+<span class="nb">ls </span><span class="p">|</span> <span class="p">?</span> <span class="p">{</span> <span class="nv">$_</span><span class="p">.</span><span class="n">Name</span> <span class="o">-match</span> <span class="s1">&#39;c&#39;</span> <span class="p">}</span> <span class="p">|</span> <span class="nb">ConvertTo-HTML</span> <span class="p">|</span> <span class="nb">Out-File</span> <span class="n">exportado</span><span class="p">.</span><span class="n">html</span>
+
+<span class="c"># Si se confunde con la tubería use `Get-Member` para revisar</span>
+<span class="c"># los métodos y propiedades de los objetos de la tubería:</span>
+<span class="nb">ls </span><span class="p">|</span> <span class="nb">Get-Member</span>
+<span class="nb">Get-Date</span> <span class="p">|</span> <span class="nb">gm</span>
+
+<span class="c"># ` es el caracter de continuación de línea. O termine la línea con un |</span>
+<span class="nb">Get-Process</span> <span class="p">|</span> <span class="nb">Sort-Object</span> <span class="n">ID</span> <span class="n">-Descending</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">-First</span> <span class="n">10</span> <span class="n">Name</span><span class="p">,</span><span class="n">ID</span><span class="p">,</span><span class="n">VM</span> <span class="p">`</span>
+	<span class="p">|</span> <span class="nb">Stop-Process</span> <span class="n">-WhatIf</span>
+
+<span class="nb">Get-EventLog</span> <span class="n">Application</span> <span class="n">-After</span> <span class="p">(</span><span class="nb">Get-Date</span><span class="p">).</span><span class="n">AddHours</span><span class="p">(-</span><span class="n">2</span><span class="p">)</span> <span class="p">|</span> <span class="nb">Format-List</span>
+
+<span class="c"># Use % como una abreviación de ForEach-Object</span>
+<span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">)</span> <span class="p">|</span> <span class="k">ForEach</span><span class="n">-Object</span> <span class="p">`</span>
+	<span class="n">-Begin</span> <span class="p">{</span> <span class="s2">&quot;Iniciando&quot;</span><span class="p">;</span> <span class="nv">$counter</span> <span class="p">=</span> <span class="n">0</span> <span class="p">}</span> <span class="p">`</span>
+	<span class="n">-Process</span> <span class="p">{</span> <span class="s2">&quot;Procesando $_&quot;</span><span class="p">;</span> <span class="nv">$counter</span><span class="p">++</span> <span class="p">}</span> <span class="p">`</span>
+	<span class="n">-End</span> <span class="p">{</span> <span class="s2">&quot;Terminando: $counter&quot;</span> <span class="p">}</span>
+
+<span class="c"># El siguiente comando ps (alias de Get-Process) devuelve una tabla con 3 columnas</span>
+<span class="c"># La tercera columan es el valor de memoria virtual en MB y usando 2 dígitos decimales</span>
+<span class="c"># Las columnas calculadas pueden escribirse más extensamente como:</span>
+<span class="c"># `@{name=&#39;lbl&#39;;expression={$_}`</span>
+<span class="nb">ps </span><span class="p">|</span> <span class="nb">Format-Table</span> <span class="n">ID</span><span class="p">,</span><span class="n">Name</span><span class="p">,@{</span><span class="n">n</span><span class="p">=</span><span class="s1">&#39;VM(MB)&#39;</span><span class="p">;</span><span class="n">e</span><span class="p">={</span><span class="s1">&#39;{0:n2}&#39;</span> <span class="o">-f</span> <span class="p">(</span><span class="nv">$_</span><span class="p">.</span><span class="n">VM</span> <span class="p">/</span> <span class="n">1MB</span><span class="p">)}}</span> <span class="n">-autoSize</span>
+
+
+<span class="c">### Funciones</span>
+<span class="c"># El atributo [string] es opcional.</span>
+<span class="k">function</span> <span class="n">foo</span><span class="p">(</span><span class="no">[string]</span><span class="nv">$nombre</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nb">echo </span><span class="s2">&quot;Hey $nombre, aquí tiene una función&quot;</span>
+<span class="p">}</span>
+
+<span class="c"># Llamando una función</span>
+<span class="n">foo</span> <span class="s2">&quot;Diga mi nombre&quot;</span>
+
+<span class="c"># Funciones con parámetros nombrados, atributos de parámetros y documentación analizable</span>
+<span class="cm">&lt;#</span>
+<span class="sd">.SYNOPSIS</span>
+<span class="cm">Establecer un nuevo sitio web</span>
+<span class="sd">.DESCRIPTION</span>
+<span class="cm">Crea todo lo que su sitio necesite</span>
+<span class="sd">.PARAMETER</span><span class="cm"> siteName</span>
+<span class="cm">El nombre para el nuevo sitio web</span>
+<span class="sd">.EXAMPLE</span>
+<span class="cm">Crear-SitioWeb -Nombre SitioBonito -Po 5000</span>
+<span class="cm">Crear-SitioWeb SiteWithDefaultPort</span>
+<span class="cm">Crear-SitioWeb nombreSitio 2000 # ERROR! No se pudo validar arguemento de puerto</span>
+<span class="cm">(&#39;nombre1&#39;,&#39;nombre2&#39;) | Crear-SitioWeb -Verbose</span>
+<span class="cm">#&gt;</span>
+<span class="k">function</span> <span class="n">Crear-SitioWeb</span><span class="p">()</span> <span class="p">{</span>
+	<span class="p">[</span><span class="k">CmdletBinding</span><span class="p">()]</span>
+	<span class="k">param</span> <span class="p">(</span>
+		<span class="p">[</span><span class="k">Parameter</span><span class="p">(</span><span class="k">ValueFromPipeline</span><span class="p">=</span><span class="nv">$true</span><span class="p">,</span> <span class="k">Mandatory</span><span class="p">=</span><span class="nv">$true</span><span class="p">)]</span>
+		<span class="p">[</span><span class="k">Alias</span><span class="p">(</span><span class="s1">&#39;nombre&#39;</span><span class="p">)]</span>
+		<span class="no">[string]</span><span class="nv">$nombreSitio</span><span class="p">,</span>
+		<span class="p">[</span><span class="k">ValidateSet</span><span class="p">(</span><span class="n">3000</span><span class="p">,</span><span class="n">5000</span><span class="p">,</span><span class="n">8000</span><span class="p">)]</span>
+		<span class="no">[int]</span><span class="nv">$puerto</span> <span class="p">=</span> <span class="n">3000</span>
+	<span class="p">)</span>
+	<span class="k">BEGIN</span> <span class="p">{</span> <span class="nb">Write-Verbose</span> <span class="s1">&#39;Creando nuevo(s) sitio(s) web&#39;</span> <span class="p">}</span>
+	<span class="k">PROCESS</span> <span class="p">{</span> <span class="nb">echo </span><span class="s2">&quot;nombre: $nombreSitio, puerto: $puerto&quot;</span> <span class="p">}</span>
+	<span class="k">END</span> <span class="p">{</span> <span class="nb">Write-Verbose</span> <span class="s1">&#39;Sitio(s) web creado(s)&#39;</span> <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="c">### Todo es .NET</span>
+<span class="c"># Una cadena PS es, de hecho, una cadena tipo System.String de .NET </span>
+<span class="c"># Todos los métodos y propiedades de .NET están disponibles</span>
+<span class="s1">&#39;cadena&#39;</span><span class="p">.</span><span class="n">ToUpper</span><span class="p">().</span><span class="n">Replace</span><span class="p">(</span><span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;eee&#39;</span><span class="p">)</span>
+<span class="c"># O más powershellezco</span>
+<span class="s1">&#39;cadena&#39;</span><span class="p">.</span><span class="n">ToUpper</span><span class="p">()</span> <span class="o">-replace</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;eee&#39;</span>
+
+<span class="c"># ¿No recuerda cómo es que se llama cierto método .NET?</span>
+<span class="s1">&#39;cadena&#39;</span> <span class="p">|</span> <span class="nb">gm</span>
+
+<span class="c"># Sintaxis para ejecutar métodos .NET estáticos</span>
+<span class="no">[System.Reflection.Assembly]</span><span class="p">::</span><span class="n">LoadWithPartialName</span><span class="p">(</span><span class="s1">&#39;Microsoft.VisualBasic&#39;</span><span class="p">)</span>
+
+<span class="c"># Nótese que cualquier función que proviene de .NET Framework REQUIERE paréntesis para ser invocada</span>
+<span class="c"># al contrario de las funciones definidas desde PS, las cuales NO PUEDEN ser invocadas con paréntesis.</span>
+<span class="c"># Si se invoca una función/cmdlet de PS usando paréntesis,</span>
+<span class="c"># es equivalente a que le estuviera pasando un parámetro de tipo lista</span>
+<span class="nv">$writer</span> <span class="p">=</span> <span class="nb">New-Object</span> <span class="n">System</span><span class="p">.</span><span class="n">IO</span><span class="p">.</span><span class="n">StreamWriter</span><span class="p">(</span><span class="nv">$ruta</span><span class="p">,</span> <span class="nv">$true</span><span class="p">)</span>
+<span class="nv">$writer</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="no">[Environment]</span><span class="p">::</span><span class="n">NewLine</span><span class="p">)</span>
+<span class="nv">$writer</span><span class="p">.</span><span class="n">Dispose</span><span class="p">()</span>
+
+<span class="c">### Entrada/Salida</span>
+<span class="c"># Leyendo una variable </span>
+<span class="nv">$Nombre</span> <span class="p">=</span> <span class="nb">Read-Host</span> <span class="s2">&quot;¿Cómo se llama?&quot;</span>
+<span class="nb">echo </span><span class="s2">&quot;¡Hola $Nombre!&quot;</span>
+<span class="no">[int]</span><span class="nv">$Edad</span> <span class="p">=</span> <span class="nb">Read-Host</span> <span class="s2">&quot;¿Cuál es su edad?&quot;</span>
+
+<span class="c"># Test-Path, Split-Path, Join-Path, Resolve-Path</span>
+<span class="c"># Get-Content filename # devuelve un string[]</span>
+<span class="c"># Set-Content, Add-Content, Clear-Content</span>
+<span class="nb">Get-Command</span> <span class="n">ConvertTo</span><span class="p">-*,</span><span class="n">ConvertFrom</span><span class="p">-*</span>
+
+
+<span class="c">### Material útil</span>
+<span class="c"># Actualizar la ruta de ejecuciones (PATH)</span>
+<span class="nv">$env:PATH</span> <span class="p">=</span> <span class="no">[System.Environment]</span><span class="p">::</span><span class="n">GetEnvironmentVariable</span><span class="p">(</span><span class="s2">&quot;Path&quot;</span><span class="p">,</span> <span class="s2">&quot;Machine&quot;</span><span class="p">)</span> <span class="p">+</span> 
+	<span class="s2">&quot;;&quot;</span> <span class="p">+</span> <span class="no">[System.Environment]</span><span class="p">::</span><span class="n">GetEnvironmentVariable</span><span class="p">(</span><span class="s2">&quot;Path&quot;</span><span class="p">,</span> <span class="s2">&quot;User&quot;</span><span class="p">)</span>
+
+<span class="c"># Encontrar Python en el path</span>
+<span class="nv">$env:PATH</span><span class="p">.</span><span class="n">Split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span> <span class="p">|</span> <span class="nb">Where-Object</span> <span class="p">{</span> <span class="nv">$_</span> <span class="o">-like</span> <span class="s2">&quot;*python*&quot;</span><span class="p">}</span>
+
+<span class="c"># Cambiar el directorio de trabajo sin tener que memorizar la ruta anterior</span>
+<span class="nb">Push-Location</span> <span class="n">c</span><span class="p">:\</span><span class="n">temp</span> <span class="c"># se cambia el directorio de trabajo a c:\temp</span>
+<span class="nb">Pop-Location</span> <span class="c"># revierte el cambio y se devuelve a donde estaba al principio</span>
+<span class="c"># Los aliases son : pushd y popd</span>
+
+<span class="c"># Desbloquear un archivo después de descargarlo de Internet</span>
+<span class="nb">Get-ChildItem</span> <span class="n">-Recurse</span> <span class="p">|</span> <span class="nb">Unblock-File</span>
+
+<span class="c"># Abre Windows Explorer en la ruta actual (usando el alias ii de Invoke-Item)</span>
+<span class="nb">ii </span><span class="p">.</span>
+
+<span class="c"># Pulse cualquier tecla para salir</span>
+<span class="nv">$host</span><span class="p">.</span><span class="n">UI</span><span class="p">.</span><span class="n">RawUI</span><span class="p">.</span><span class="n">ReadKey</span><span class="p">()</span>
+<span class="k">return</span>
+
+<span class="c"># Para crear un acceso directo</span>
+<span class="nv">$WshShell</span> <span class="p">=</span> <span class="nb">New-Object</span> <span class="n">-comObject</span> <span class="n">WScript</span><span class="p">.</span><span class="n">Shell</span>
+<span class="nv">$Shortcut</span> <span class="p">=</span> <span class="nv">$WshShell</span><span class="p">.</span><span class="n">CreateShortcut</span><span class="p">(</span><span class="nv">$link</span><span class="p">)</span>
+<span class="nv">$Shortcut</span><span class="p">.</span><span class="n">TargetPath</span> <span class="p">=</span> <span class="nv">$file</span>
+<span class="nv">$Shortcut</span><span class="p">.</span><span class="n">WorkingDirectory</span> <span class="p">=</span> <span class="nb">Split-Path</span> <span class="nv">$file</span>
+<span class="nv">$Shortcut</span><span class="p">.</span><span class="n">Save</span><span class="p">()</span>
+</pre></div>
+<p>Configurando el shell</p>
+<div class="highlight"><pre lang="powershell"><span class="c"># $Profile es la ruta completa para su `Microsoft.PowerShell_profile.ps1`</span>
+<span class="c"># Todo el código alojado allí será ejecutado cuando se ejecuta una nueva sesión de PS </span>
+<span class="k">if</span> <span class="p">(</span><span class="o">-not</span> <span class="p">(</span><span class="nb">Test-Path</span> <span class="nv">$Profile</span><span class="p">))</span> <span class="p">{</span>
+	<span class="nb">New-Item</span> <span class="n">-Type</span> <span class="n">file</span> <span class="n">-Path</span> <span class="nv">$Profile</span> <span class="n">-Force</span>
+	<span class="n">notepad</span> <span class="nv">$Profile</span>
+<span class="p">}</span>
+<span class="c"># Más información en: `help about_profiles`</span>
+<span class="c"># Para un shell más productivo, asegúrese de verifivar el proyecto PSReadLine descrito abajo</span>
+</pre></div>
+<p>Proyectos interesantes (EN)</p>
+<ul>
+<li><a href="https://channel9.msdn.com/Search?term=powershell%20pipeline#ch9Search&amp;lang-en=en">Channel9</a> Tutoriales de PowerShell</li>
+<li><a href="https://github.com/psget/psget">PSGet</a> NuGet para PowerShell</li>
+<li><a href="https://github.com/lzybkr/PSReadLine/">PSReadLine</a> Una implementación inspirada en bash para PowerShell (¡Es tan buena que ahora viene con Windows10 por defecto!)</li>
+<li><a href="https://github.com/dahlbyk/posh-git/">Posh-Git</a> Un intérprete bonito de Git (¡Recomendado!)</li>
+<li><a href="https://github.com/psake/psake">PSake</a> Herramienta de automatización de compilaciones</li>
+<li><a href="https://github.com/pester/Pester">Pester</a> Framework de pruebas BDD</li>
+<li><a href="https://github.com/tkellogg/Jump-Location">Jump-Location</a> Powershell <code>cd</code> que lee su mente</li>
+</ul>
+<p>Material no cubierto en esta guía</p>
+<ul>
+<li>WMI: Windows Management Intrumentation (Get-CimInstance)</li>
+<li>Multitarea: Start-Job -scriptBlock {...},</li>
+<li>Firmas de código</li>
+<li>Remoting (Enter-PSSession/Exit-PSSession; Invoke-Command)</li>
+</ul>
+
+        <hr>
+        <p>
+          ¿Tienes una sugerencia o rectificación? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Abre un issue</a> en el repositorio de GitHub, o haz un <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/es-es/powershell-es.html.markdown">pull request</a> tu mismo
+        </p>
+        <p class="contributed">
+          Originalmente contribuido por Wouter Van Schandevijl, y actualizado por <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/es-es/powershell-es.html.markdown">3 colaboradores</a>.
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2024
+            <a href="https://github.com/laoujin">Wouter Van Schandevijl</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="zh-CN">
+    <title>Learn AWK in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/zh-cn/awk/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fzh-cn%2Fawk%2F&amp;text=Y%E5%88%86%E9%92%9F%E9%80%9F%E6%88%90X%2C+%E5%85%B6%E4%B8%AD+X%3DAWK">
+            分享此页
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">Y分钟速成X</a></h1>
+      <h2>其中 X=AWK</h2>
+      <p class="filelink">
+        源代码下载：
+        <a href="/zh-cn/files/learnawk.awk">learnawk.awk</a>
+      </p>
+      <div id="doc">
+<p>AWK是POSIX兼容的UNIX系统中的标准工具. 它像简化版的Perl, 非常适用于文本处理任务和其他脚本类需求.
+它有着C风格的语法, 但是没有分号, 没有手动内存管理, 没有静态类型.
+他擅长于文本处理, 你可以通过shell脚本调用AWK, 也可以用作独立的脚本语言.</p>
+<p>为什么使用AWK而不是Perl, 大概是因为AWK是UNIX的一部分, 你总能依靠它, 而Perl已经前途未卜了.
+AWK比Perl更易读. 对于简单的文本处理脚本, 特别是按行读取文件, 按分隔符分隔处理, AWK极可能是正确的工具.</p>
+<div class="highlight"><pre lang="awk"><span class="c1">#!/usr/bin/awk -f</span>
+
+<span class="c1"># 注释使用井号</span>
+
+<span class="c1"># AWK程序由一系列 模式(patterns) 和 动作(actions) 组成. </span>
+<span class="c1"># 最重要的模式叫做 BEGIN. 动作由大括号包围.</span>
+<span class="nb">BEGIN</span> <span class="p">{</span>
+
+    <span class="c1"># BEGIN在程序最开始运行. 在这里放一些在真正处理文件之前的准备和setup的代码.</span>
+    <span class="c1"># 如果没有文本文件要处理, 那就把BEGIN作为程序的主入口吧.</span>
+
+    <span class="c1"># 变量是全局的. 直接赋值使用即可, 无需声明.</span>
+    <span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># 运算符和C语言系一样</span>
+    <span class="nx">a</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="nx">b</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="nx">c</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">*</span> <span class="mi">1</span>
+    <span class="nx">d</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">/</span> <span class="mi">1</span> <span class="c1"># 整数除法</span>
+    <span class="nx">e</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">%</span> <span class="mi">1</span> <span class="c1"># 取余</span>
+    <span class="nx">f</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">^</span> <span class="mi">1</span> <span class="c1"># 取幂</span>
+
+    <span class="nx">a</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="nx">b</span> <span class="o">-=</span> <span class="mi">1</span>
+    <span class="nx">c</span> <span class="o">*=</span> <span class="mi">1</span>
+    <span class="nx">d</span> <span class="o">/=</span> <span class="mi">1</span>
+    <span class="nx">e</span> <span class="o">%=</span> <span class="mi">1</span>
+    <span class="nx">f</span> <span class="o">^=</span> <span class="mi">1</span>
+
+    <span class="c1"># 自增1, 自减1</span>
+    <span class="nx">a</span><span class="o">++</span>
+    <span class="nx">b</span><span class="o">--</span>
+
+    <span class="c1"># 前置运算, 返回增加之后的值</span>
+    <span class="o">++</span><span class="nx">a</span>
+    <span class="o">--</span><span class="nx">b</span>
+
+    <span class="c1"># 注意, 不需要分号之类的标点来分隔语句</span>
+
+    <span class="c1"># 控制语句</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;Starting with count of 0&quot;</span>
+    <span class="k">else</span>
+        <span class="kr">print</span> <span class="s2">&quot;Huh?&quot;</span>
+
+    <span class="c1"># 或者三目运算符</span>
+    <span class="kr">print</span> <span class="p">(</span><span class="nx">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">?</span> <span class="s2">&quot;Starting with count of 0&quot;</span> <span class="o">:</span> <span class="s2">&quot;Huh?&quot;</span>
+
+    <span class="c1"># 多行的代码块用大括号包围</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nx">a</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kr">print</span> <span class="s2">&quot;String concatenation is done&quot;</span> <span class="s2">&quot; with a series&quot;</span> <span class="s2">&quot; of&quot;</span>
+            <span class="s2">&quot; space-separated strings&quot;</span>
+        <span class="kr">print</span> <span class="nx">a</span>
+
+        <span class="nx">a</span><span class="o">++</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;Good ol&#39; for loop&quot;</span>
+
+    <span class="c1"># 标准的比较运算符</span>
+    <span class="nx">a</span> <span class="o">&lt;</span> <span class="nx">b</span>   <span class="c1"># 小于</span>
+    <span class="nx">a</span> <span class="o">&lt;=</span> <span class="nx">b</span>  <span class="c1"># 小于或等于</span>
+    <span class="nx">a</span> <span class="o">!=</span> <span class="nx">b</span>  <span class="c1"># 不等于</span>
+    <span class="nx">a</span> <span class="o">==</span> <span class="nx">b</span>  <span class="c1"># 等于</span>
+    <span class="nx">a</span> <span class="o">&gt;</span> <span class="nx">b</span>   <span class="c1"># 大于</span>
+    <span class="nx">a</span> <span class="o">&gt;=</span> <span class="nx">b</span>  <span class="c1"># 大于或等于</span>
+
+    <span class="c1"># 也有逻辑运算符</span>
+    <span class="nx">a</span> <span class="o">&amp;&amp;</span> <span class="nx">b</span>  <span class="c1"># 且</span>
+    <span class="nx">a</span> <span class="o">||</span> <span class="nx">b</span>  <span class="c1"># 或</span>
+
+    <span class="c1"># 并且有超实用的正则表达式匹配</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;foo&quot;</span> <span class="o">~</span> <span class="s2">&quot;^fo+$&quot;</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;Fooey!&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;boo&quot;</span> <span class="o">!~</span> <span class="s2">&quot;^fo+$&quot;</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;Boo!&quot;</span>
+
+    <span class="c1"># 数组</span>
+    <span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;foo&quot;</span>
+    <span class="nx">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
+    <span class="c1"># 不幸的是, 没有其他方式初始化数组. 必须像这样一行一行的赋值.</span>
+
+    <span class="c1"># 关联数组, 类似map或dict的用法.</span>
+    <span class="nx">assoc</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
+    <span class="nx">assoc</span><span class="p">[</span><span class="s2">&quot;bar&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;baz&quot;</span>
+
+    <span class="c1"># 多维数组. 但是有一些局限性这里不提了.</span>
+    <span class="nx">multidim</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;foo&quot;</span>
+    <span class="nx">multidim</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
+    <span class="nx">multidim</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;baz&quot;</span>
+    <span class="nx">multidim</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;boo&quot;</span>
+
+    <span class="c1"># 可以检测数组包含关系</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;foo&quot;</span> <span class="o">in</span> <span class="nx">assoc</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;Fooey!&quot;</span>
+
+    <span class="c1"># 可以使用in遍历数组</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">key</span> <span class="o">in</span> <span class="nx">assoc</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="nx">assoc</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span>
+
+    <span class="c1"># 命令行参数是一个叫ARGV的数组</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">argnum</span> <span class="o">in</span> <span class="nb">ARGV</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="nb">ARGV</span><span class="p">[</span><span class="nx">argnum</span><span class="p">]</span>
+
+    <span class="c1"># 可以从数组中移除元素</span>
+    <span class="c1"># 在 防止awk把文件参数当做数据来处理 时delete功能很有用.</span>
+    <span class="kr">delete</span> <span class="nb">ARGV</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># 命令行参数的个数是一个叫ARGC的变量</span>
+    <span class="kr">print</span> <span class="nb">ARGC</span>
+
+    <span class="c1"># AWK有很多内置函数, 分为三类, 会在接下来定义的各个函数中介绍.</span>
+
+    <span class="nx">return_value</span> <span class="o">=</span> <span class="nx">arithmetic_functions</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">)</span>
+    <span class="nx">string_functions</span><span class="p">()</span>
+    <span class="nx">io_functions</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="c1"># 定义函数</span>
+<span class="kd">function</span> <span class="nx">arithmetic_functions</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span>     <span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1"># 或许AWK最让人恼火的地方是没有局部变量, 所有东西都是全局的, </span>
+    <span class="c1"># 对于短的脚本还好, 对于长一些的就会成问题.</span>
+
+    <span class="c1"># 这里有一个技巧, 函数参数是对函数局部可见的, 并且AWK允许定义多余的参数, </span>
+    <span class="c1"># 因此可以像上面那样把局部变量插入到函数声明中. </span>
+    <span class="c1"># 为了方便区分普通参数(a,b,c)和局部变量(d), 可以多键入一些空格.</span>
+
+    <span class="c1"># 现在介绍数学类函数</span>
+
+    <span class="c1"># 多数AWK实现中包含标准的三角函数</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="kr">sin</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="kr">cos</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="kr">atan2</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="c1"># arc tangent of b / a</span>
+
+    <span class="c1"># 对数</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="kr">exp</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="kr">log</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+
+    <span class="c1"># 平方根</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="kr">sqrt</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span>
+
+    <span class="c1"># 浮点型转为整型</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="kr">int</span><span class="p">(</span><span class="mf">5.34</span><span class="p">)</span> <span class="c1"># localvar =&gt; 5</span>
+
+    <span class="c1"># 随机数</span>
+    <span class="kr">srand</span><span class="p">()</span> <span class="c1"># 接受随机种子作为参数, 默认使用当天的时间</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="kr">rand</span><span class="p">()</span> <span class="c1"># 0到1之间随机</span>
+
+    <span class="c1"># 函数返回</span>
+    <span class="k">return</span> <span class="nx">localvar</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">string_functions</span><span class="p">(</span>    <span class="nx">localvar</span><span class="p">,</span> <span class="nx">arr</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1"># AWK, 作为字符处理语言, 有很多字符串相关函数, 其中大多数都严重依赖正则表达式.</span>
+
+    <span class="c1"># 搜索并替换, 第一个出现的 (sub) or 所有的 (gsub)</span>
+    <span class="c1"># 都是返回替换的个数</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="s2">&quot;fooooobar&quot;</span>
+    <span class="kr">sub</span><span class="p">(</span><span class="s2">&quot;fo+&quot;</span><span class="p">,</span> <span class="s2">&quot;Meet me at the &quot;</span><span class="p">,</span> <span class="nx">localvar</span><span class="p">)</span> <span class="c1"># localvar =&gt; &quot;Meet me at the bar&quot;</span>
+    <span class="kr">gsub</span><span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="nx">localvar</span><span class="p">)</span> <span class="c1"># localvar =&gt; &quot;M..t m. at th. bar&quot;</span>
+
+    <span class="c1"># 搜索匹配正则的字符串</span>
+    <span class="c1"># index() 也是搜索, 不支持正则</span>
+    <span class="kr">match</span><span class="p">(</span><span class="nx">localvar</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">)</span> <span class="c1"># =&gt; 4, &#39;t&#39;在4号位置. </span>
+    <span class="c1"># (译者注: awk是1开始计数的,不是常见的0-base)</span>
+
+    <span class="c1"># 按分隔符分隔</span>
+    <span class="kr">split</span><span class="p">(</span><span class="s2">&quot;foo-bar-baz&quot;</span><span class="p">,</span> <span class="nx">arr</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span> <span class="c1"># a =&gt; [&quot;foo&quot;, &quot;bar&quot;, &quot;baz&quot;]</span>
+
+    <span class="c1"># 其他有用的函数</span>
+    <span class="kr">sprintf</span><span class="p">(</span><span class="s2">&quot;%s %d %d %d&quot;</span><span class="p">,</span> <span class="s2">&quot;Testing&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="c1"># =&gt; &quot;Testing 1 2 3&quot;</span>
+    <span class="kr">substr</span><span class="p">(</span><span class="s2">&quot;foobar&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="c1"># =&gt; &quot;oob&quot;</span>
+    <span class="kr">substr</span><span class="p">(</span><span class="s2">&quot;foobar&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="c1"># =&gt; &quot;bar&quot;</span>
+    <span class="kr">length</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span> <span class="c1"># =&gt; 3</span>
+    <span class="kr">tolower</span><span class="p">(</span><span class="s2">&quot;FOO&quot;</span><span class="p">)</span> <span class="c1"># =&gt; &quot;foo&quot;</span>
+    <span class="kr">toupper</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span> <span class="c1"># =&gt; &quot;FOO&quot;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">io_functions</span><span class="p">(</span>    <span class="nx">localvar</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1"># 你已经见过的print函数</span>
+    <span class="kr">print</span> <span class="s2">&quot;Hello world&quot;</span>
+
+    <span class="c1"># 也有printf</span>
+    <span class="kr">printf</span><span class="p">(</span><span class="s2">&quot;%s %d %d %d\n&quot;</span><span class="p">,</span> <span class="s2">&quot;Testing&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+    <span class="c1"># AWK本身没有文件句柄, 当你使用需要文件的东西时会自动打开文件, </span>
+    <span class="c1"># 做文件I/O时, 字符串就是打开的文件句柄. 这看起来像Shell</span>
+    <span class="kr">print</span> <span class="s2">&quot;foobar&quot;</span> <span class="o">&gt;</span><span class="s2">&quot;/tmp/foobar.txt&quot;</span>
+
+    <span class="c1"># 现在&quot;/tmp/foobar.txt&quot;字符串是一个文件句柄, 你可以关闭它</span>
+    <span class="kr">close</span><span class="p">(</span><span class="s2">&quot;/tmp/foobar.txt&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 在shell里运行一些东西</span>
+    <span class="kr">system</span><span class="p">(</span><span class="s2">&quot;echo foobar&quot;</span><span class="p">)</span> <span class="c1"># =&gt; prints foobar</span>
+
+    <span class="c1"># 从标准输入中读一行, 并存储在localvar中</span>
+    <span class="kr">getline</span> <span class="nx">localvar</span>
+
+    <span class="c1"># 从管道中读一行, 并存储在localvar中</span>
+    <span class="s2">&quot;echo foobar&quot;</span> <span class="o">|</span> <span class="kr">getline</span> <span class="nx">localvar</span> <span class="c1"># localvar =&gt; &quot;foobar&quot;</span>
+    <span class="kr">close</span><span class="p">(</span><span class="s2">&quot;echo foobar&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 从文件中读一行, 并存储在localvar中</span>
+    <span class="kr">getline</span> <span class="nx">localvar</span> <span class="o">&lt;</span><span class="s2">&quot;/tmp/foobar.txt&quot;</span>
+    <span class="kr">close</span><span class="p">(</span><span class="s2">&quot;/tmp/foobar.txt&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1"># 正如开头所说, AWK程序由一系列模式和动作组成. 你已经看见了重要的BEGIN pattern, </span>
+<span class="c1"># 其他的pattern在你需要处理来自文件或标准输入的的数据行时才用到.</span>
+<span class="c1"># </span>
+<span class="c1"># 当你给AWK程序传参数时, 他们会被视为要处理文件的文件名, 按顺序全部会处理. </span>
+<span class="c1"># 可以把这个过程看做一个隐式的循环, 遍历这些文件中的所有行.</span>
+<span class="c1"># 然后这些模式和动作就是这个循环里的switch语句一样</span>
+
+<span class="sr">/^fo+bar$/</span> <span class="p">{</span>
+    
+    <span class="c1"># 这个动作会在匹配这个正则(/^fo+bar$/)的每一行上执行. 不匹配的则会跳过.</span>
+    <span class="c1"># 先让我们打印它:</span>
+    <span class="kr">print</span>
+
+    <span class="c1"># 哦, 没有参数, 那是因为print有一个默认参数 $0.</span>
+    <span class="c1"># $0 是当前正在处理的行, 自动被创建好了.</span>
+
+    <span class="c1"># 你可能猜到有其他的$变量了. </span>
+    <span class="c1"># 每一行在动作执行前会被分隔符分隔. 像shell中一样, 每个字段都可以用$符访问</span>
+
+    <span class="c1"># 这个会打印这行的第2和第4个字段</span>
+    <span class="kr">print</span> <span class="o">$</span><span class="mi">2</span><span class="p">,</span> <span class="o">$</span><span class="mi">4</span>
+
+    <span class="c1"># AWK自动定义了许多其他的变量帮助你处理行. 最常用的是NF变量</span>
+    <span class="c1"># 打印这一行的字段数</span>
+    <span class="kr">print</span> <span class="nb">NF</span>
+
+    <span class="c1"># 打印这一行的最后一个字段</span>
+    <span class="kr">print</span> <span class="o">$</span><span class="nb">NF</span>
+<span class="p">}</span>
+
+<span class="c1"># 每一个模式其实是一个true/false判断, 上面那个正则其实也是一个true/false判断, 只不过被部分省略了.</span>
+<span class="c1"># 没有指定时默认使用当前处理的整行($0)进行匹配. 因此, 完全版本是这样:</span>
+
+<span class="o">$</span><span class="mi">0</span> <span class="o">~</span> <span class="sr">/^fo+bar$/</span> <span class="p">{</span>
+    <span class="kr">print</span> <span class="s2">&quot;Equivalent to the last pattern&quot;</span>
+<span class="p">}</span>
+
+<span class="nx">a</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="c1"># 只要a是整数, 这块会在每一行上执行.</span>
+<span class="p">}</span>
+
+<span class="c1"># 就是这样, 处理文本文件, 一次读一行, 对行做一些操作. </span>
+<span class="c1"># 按分隔符分隔, 这在UNIX中很常见, awk都帮你做好了.</span>
+<span class="c1"># 你所需要做的是基于自己的需求写一些模式和动作.</span>
+
+<span class="c1"># 这里有一个快速的例子, 展示了AWK所擅长做的事.</span>
+<span class="c1"># 它从标准输入读一个名字, 打印这个first name下所有人的平均年龄.</span>
+<span class="c1"># 示例数据:</span>
+<span class="c1">#</span>
+<span class="c1"># Bob Jones 32</span>
+<span class="c1"># Jane Doe 22</span>
+<span class="c1"># Steve Stevens 83</span>
+<span class="c1"># Bob Smith 29</span>
+<span class="c1"># Bob Barker 72</span>
+<span class="c1">#</span>
+<span class="c1"># 示例脚本:</span>
+
+<span class="nb">BEGIN</span> <span class="p">{</span>
+
+    <span class="c1"># 首先, 问用户要一个名字</span>
+    <span class="kr">print</span> <span class="s2">&quot;What name would you like the average age for?&quot;</span>
+
+    <span class="c1"># 从标准输入获取名字</span>
+    <span class="kr">getline</span> <span class="nx">name</span> <span class="o">&lt;</span><span class="s2">&quot;/dev/stdin&quot;</span>
+<span class="p">}</span>
+
+<span class="c1"># 然后, 用给定的名字匹配每一行的第一个字段.</span>
+<span class="o">$</span><span class="mi">1</span> <span class="o">==</span> <span class="nx">name</span> <span class="p">{</span>
+
+    <span class="c1"># 这里我们要使用几个有用的变量, 已经提前为我们加载好的:</span>
+    <span class="c1"># $0 是整行</span>
+    <span class="c1"># $3 是第三个字段, 就是我们所感兴趣的年龄</span>
+    <span class="c1"># NF 字段数, 这里是3</span>
+    <span class="c1"># NR 至此为止的行数</span>
+    <span class="c1"># FILENAME 在处理的文件名</span>
+    <span class="c1"># FS 在使用的字段分隔符, 这里是空格&quot; &quot;</span>
+    <span class="c1"># ...等等, 还有很多, 在帮助文档中列出.</span>
+
+    <span class="c1"># 跟踪 总和以及行数</span>
+    <span class="nx">sum</span> <span class="o">+=</span> <span class="o">$</span><span class="mi">3</span>
+    <span class="nx">nlines</span><span class="o">++</span>
+<span class="p">}</span>
+
+<span class="c1"># 另一个特殊的模式叫END. 它会在处理完所有行之后运行. 不像BEGIN, 它只会在有输入的时候运行.</span>
+<span class="c1"># 它在所有文件依据给定的模式和动作处理完后运行, 目的通常是输出一些最终报告, 做一些数据聚合操作.</span>
+
+<span class="nb">END</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">nlines</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;The average age for &quot;</span> <span class="nx">name</span> <span class="s2">&quot; is &quot;</span> <span class="nx">sum</span> <span class="o">/</span> <span class="nx">nlines</span>
+<span class="p">}</span>
+</pre></div>
+<p>更多:</p>
+<ul>
+<li><a href="http://www.grymoire.com/Unix/Awk.html">Awk 教程</a></li>
+<li><a href="https://linux.die.net/man/1/awk">Awk 手册</a></li>
+<li><a href="https://www.gnu.org/software/gawk/manual/gawk.html">The GNU Awk 用户指南</a> GNU Awk在大多数Linux中预装</li>
+</ul>
+
+        <hr>
+        <p>
+          有建议？或者发现什么错误？在GitHub上<a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">开一个issue</a>，或者发起<a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/zh-cn/awk-cn.html.markdown">pull request</a>！
+        </p>
+        <p class="contributed">
+          原著Marshall Mason，并由<a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/zh-cn/awk-cn.html.markdown">4个好心人</a>修改。
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2024
+            <a href="http://github.com/marshallmason">Marshall Mason</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

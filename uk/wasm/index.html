@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="uk">
+    <title>Learn WebAssembly in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/uk/wasm/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fuk%2Fwasm%2F&amp;text=%D0%92%D0%B8%D0%B2%D1%87%D1%96%D1%82%D1%8C+X+%D0%B7%D0%B0+Y+%D1%85%D0%B2%D0%B8%D0%BB%D0%B8%D0%BD%2C+%D0%B4%D0%B5+X%3DWebAssembly">
+            Поділитися сторінкою
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">Вивчіть X за Y хвилин</a></h1>
+      <h2>Де X=WebAssembly</h2>
+      <p class="filelink">
+        Отримати вихідний код:
+        <a href="/uk/files/learnwasm.wast">learnwasm.wast</a>
+      </p>
+      <div id="doc">
+<div class="highlight"><pre lang="wast"><span class="c1">;; learnwasm-ua.wast</span>
+
+<span class="p">(</span><span class="k">module</span>
+  <span class="c1">;; У WebAssembly весь код знаходиться в модулях. Будь-яка операція</span>
+  <span class="c1">;; може бути записана за допомогою s-виразу. Також існує синтаксис &quot;стек машини&quot;,</span>
+  <span class="c1">;; втім, він не сумісний з проміжним бінарним представленням коду.</span>
+
+  <span class="c1">;; Формат бінарного проміжного представлення майже повністю сумісний </span>
+  <span class="c1">;; з текстовим форматом WebAssembly.</span>
+  <span class="c1">;; Деякі відмінності:</span>
+  <span class="c1">;; local_set -&gt; local.set</span>
+  <span class="c1">;; local_get -&gt; local.get</span>
+
+  <span class="c1">;; Код розміщується у функціях</span>
+
+  <span class="c1">;; Типи даних</span>
+  <span class="p">(</span><span class="k">func</span> <span class="nv">$data_types</span>
+    <span class="c1">;; WebAssembly має чотири типи даних:</span>
+    <span class="c1">;; i32 - ціле число, 32 біти</span>
+    <span class="c1">;; i64 - ціле число, 64 біти (не підтримується у JavaScript)</span>
+    <span class="c1">;; f32 - число з плаваючою комою, 32 біти</span>
+    <span class="c1">;; f64 - число з плаваючою комою, 64 біти</span>
+
+    <span class="c1">;; Створити локальну змінну можна за допомогою ключового слова &quot;local&quot;.</span>
+    <span class="c1">;; Змінні потрібно оголошувати на початку функції.</span>
+
+    <span class="p">(</span><span class="k">local</span> <span class="nv">$int_32</span> <span class="kt">i32</span><span class="p">)</span>
+    <span class="p">(</span><span class="k">local</span> <span class="nv">$int_64</span> <span class="kt">i64</span><span class="p">)</span>
+    <span class="p">(</span><span class="k">local</span> <span class="nv">$float_32</span> <span class="kt">f32</span><span class="p">)</span>
+    <span class="p">(</span><span class="k">local</span> <span class="nv">$float_64</span> <span class="kt">f64</span><span class="p">)</span>
+
+    <span class="c1">;; Змінні, оголошені вище, ще не ініціалізовані, себто, не мають значення.</span>
+    <span class="c1">;; Давайте присвоїмо їм значення за допомогою &lt;тип даних&gt;.const:</span>
+
+    <span class="p">(</span><span class="nb">local.set</span> <span class="nv">$int_32</span> <span class="p">(</span><span class="nb">i32.const</span> <span class="mi">16</span><span class="p">))</span>
+    <span class="p">(</span><span class="nb">local.set</span> <span class="nv">$int_32</span> <span class="p">(</span><span class="nb">i64.const</span> <span class="mf">128</span><span class="p">))</span>
+    <span class="p">(</span><span class="nb">local.set</span> <span class="nv">$float_32</span> <span class="p">(</span><span class="nb">f32.const</span> <span class="mf">3.14</span><span class="p">))</span>
+    <span class="p">(</span><span class="nb">local.set</span> <span class="nv">$float_64</span> <span class="p">(</span><span class="nb">f64.const</span> <span class="mf">1.28</span><span class="p">))</span>
+  <span class="p">)</span>
+
+  <span class="c1">;; Базові операції</span>
+  <span class="p">(</span><span class="k">func</span> <span class="nv">$basic_operations</span>
+
+    <span class="c1">;; Нагадаємо, у WebAssembly будь-що є s-виразом, включно</span>
+    <span class="c1">;; з математичними виразами або зчитуванням значень змінних</span>
+
+    <span class="p">(</span><span class="k">local</span> <span class="nv">$add_result</span> <span class="kt">i32</span><span class="p">)</span>
+    <span class="p">(</span><span class="k">local</span> <span class="nv">$mult_result</span> <span class="kt">f64</span><span class="p">)</span>
+
+    <span class="p">(</span><span class="nb">local.set</span> <span class="nv">$add_result</span> <span class="p">(</span><span class="nb">i32.add</span> <span class="p">(</span><span class="nb">i32.const</span> <span class="mi">2</span><span class="p">)</span> <span class="p">(</span><span class="nb">i32.const</span> <span class="mi">4</span><span class="p">)))</span>
+    <span class="c1">;; тепер add_result дорівнює 6!</span>
+
+    <span class="c1">;; Для кожної операції потрібно використовувати правильний тип:</span>
+    <span class="c1">;; (local.set $mult_result (f32.mul (f32.const 2.0) (f32.const 4.0))) ;; Ніт! mult_result має тип f64!</span>
+    <span class="p">(</span><span class="nb">local.set</span> <span class="nv">$mult_result</span> <span class="p">(</span><span class="nb">f64.mul</span> <span class="p">(</span><span class="nb">f64.const</span> <span class="mf">2.0</span><span class="p">)</span> <span class="p">(</span><span class="nb">f64.const</span> <span class="mf">4.0</span><span class="p">)))</span> <span class="c1">;; Ніт! mult_result має тип f64!</span>
+
+    <span class="c1">;; У WebAssembly є вбудовані функції накшталт математики та побітових операцій.</span>
+    <span class="c1">;; Варто зазначити, що тут відсутні вбудовані тригонометричні функції.</span>
+    <span class="c1">;; Тож нам потрібно:</span>
+    <span class="c1">;; - написати їх самостійно (не найкраща ідея)</span>
+    <span class="c1">;; - звідкись їх імпортувати (як саме - побачимо згодом)</span>
+  <span class="p">)</span>
+
+  <span class="c1">;; Функції</span>
+  <span class="c1">;; Параметри вказуються ключовим словом `param`, значення, що повертається - `result`</span>
+  <span class="c1">;; Поточне значення стеку і є значенням функції, що повертається</span>
+
+  <span class="c1">;; Ми можемо викликати інші функції за допомогою `call`</span>
+
+  <span class="p">(</span><span class="k">func</span> <span class="nv">$get_16</span> <span class="p">(</span><span class="k">result</span> <span class="kt">i32</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">i32.const</span> <span class="mi">16</span><span class="p">)</span>
+  <span class="p">)</span>
+
+  <span class="p">(</span><span class="k">func</span> <span class="nv">$add</span> <span class="p">(</span><span class="k">param</span> <span class="nv">$param0</span> <span class="kt">i32</span><span class="p">)</span> <span class="p">(</span><span class="k">param</span> <span class="nv">$param1</span> <span class="kt">i32</span><span class="p">)</span> <span class="p">(</span><span class="k">result</span> <span class="kt">i32</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">i32.add</span>
+      <span class="p">(</span><span class="nb">local.get</span> <span class="nv">$param0</span><span class="p">)</span>
+      <span class="p">(</span><span class="nb">local.get</span> <span class="nv">$param1</span><span class="p">)</span>
+    <span class="p">)</span>
+  <span class="p">)</span>
+
+  <span class="p">(</span><span class="k">func</span> <span class="nv">$double_16</span> <span class="p">(</span><span class="k">result</span> <span class="kt">i32</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">i32.mul</span>
+      <span class="p">(</span><span class="nb">i32.const</span> <span class="mi">2</span><span class="p">)</span>
+      <span class="p">(</span><span class="nb">call</span> <span class="nv">$get_16</span><span class="p">))</span>
+  <span class="p">)</span>
+
+  <span class="c1">;; Досі ми не могли що-небудь вивести на консоль і не мали доступу</span>
+  <span class="c1">;; до високорівневої математики (степеневі функції, обрахунок експоненти або тригонометрія).</span>
+  <span class="c1">;; Більше того, ми навіть не могли викликати WASM функції у JavaScript!</span>
+  <span class="c1">;; Виклик цих функцій у WebAssembly залежить від того,</span>
+  <span class="c1">;; де ми знаходимось - чи це Node.js, чи середовище браузера.</span>
+
+  <span class="c1">;; Якщо ми у Node.js, то потрібно виконати два кроки. По-перше, ми маємо сконвертувати</span>
+  <span class="c1">;; текстове представлення WASM у справжній код webassembly.</span>
+  <span class="c1">;; Наприклад, ось так (Binaryen):</span>
+
+  <span class="c1">;; wasm-as learn-wasm.wast -o learn-wasm.wasm</span>
+
+  <span class="c1">;; Давай також застосуємо оптимізації:</span>
+
+  <span class="c1">;; wasm-opt learn-wasm.wasm -o learn-wasm.opt.wasm -O3 --rse</span>
+
+  <span class="c1">;; Тепер наш скомпільований WebAssembly можна завантажити у Node.js:</span>
+  <span class="c1">;; const fs = require(&#39;fs&#39;)</span>
+  <span class="c1">;; const instantiate = async function (inFilePath, _importObject) {</span>
+  <span class="c1">;;  var importObject = {</span>
+  <span class="c1">;;     console: {</span>
+  <span class="c1">;;       log: (x) =&gt; console.log(x),</span>
+  <span class="c1">;;     },</span>
+  <span class="c1">;;     math: {</span>
+  <span class="c1">;;       cos: (x) =&gt; Math.cos(x),</span>
+  <span class="c1">;;     }</span>
+  <span class="c1">;;   }</span>
+  <span class="c1">;;  importObject = Object.assign(importObject, _importObject)</span>
+  <span class="c1">;;</span>
+  <span class="c1">;;  var buffer = fs.readFileSync(inFilePath)</span>
+  <span class="c1">;;  var module = await WebAssembly.compile(buffer)</span>
+  <span class="c1">;;  var instance = await WebAssembly.instantiate(module, importObject)</span>
+  <span class="c1">;;  return instance.exports</span>
+  <span class="c1">;; }</span>
+  <span class="c1">;;</span>
+  <span class="c1">;; const main = function () {</span>
+  <span class="c1">;;   var wasmExports = await instantiate(&#39;learn-wasm.wasm&#39;)</span>
+  <span class="c1">;;   wasmExports.print_args(1, 0)</span>
+  <span class="c1">;; }</span>
+
+  <span class="c1">;; Цей код зчитує функції з importObject</span>
+  <span class="c1">;; (вказано у асинхронній JavaScript функції instantiate), а потім експортує функцію</span>
+  <span class="c1">;; &quot;print_args&quot;, яку ми викликаємо у Node.js</span>
+
+  <span class="p">(</span><span class="k">import</span> <span class="s2">&quot;console&quot;</span> <span class="s2">&quot;log&quot;</span> <span class="p">(</span><span class="k">func</span> <span class="nv">$print_i32</span> <span class="p">(</span><span class="k">param</span> <span class="kt">i32</span><span class="p">)))</span>
+  <span class="p">(</span><span class="k">import</span> <span class="s2">&quot;math&quot;</span> <span class="s2">&quot;cos&quot;</span> <span class="p">(</span><span class="k">func</span> <span class="nv">$cos</span> <span class="p">(</span><span class="k">param</span> <span class="kt">f64</span><span class="p">)</span> <span class="p">(</span><span class="k">result</span> <span class="kt">f64</span><span class="p">)))</span>
+
+  <span class="p">(</span><span class="k">func</span> <span class="nv">$print_args</span> <span class="p">(</span><span class="k">param</span> <span class="nv">$arg0</span> <span class="kt">i32</span><span class="p">)</span> <span class="p">(</span><span class="k">param</span> <span class="nv">$arg1</span> <span class="kt">i32</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">call</span> <span class="nv">$print_i32</span> <span class="p">(</span><span class="nb">local.get</span> <span class="nv">$arg0</span><span class="p">))</span>
+    <span class="p">(</span><span class="nb">call</span> <span class="nv">$print_i32</span> <span class="p">(</span><span class="nb">local.get</span> <span class="nv">$arg1</span><span class="p">))</span>
+  <span class="p">)</span>
+  <span class="p">(</span><span class="k">export</span> <span class="s2">&quot;print_args&quot;</span> <span class="p">(</span><span class="k">func</span> <span class="nv">$print_args</span><span class="p">))</span>
+
+  <span class="c1">;; Завантаження даних з пам&#39;яті WebAssembly.</span>
+  <span class="c1">;; Наприклад, ми хочемо порахувати cos для елементів JavaScript масиву.</span>
+  <span class="c1">;; Нам потрібно отримати доступ до масиву і можливість ітерувати по ньому.</span>
+  <span class="c1">;; У прикладі нижче ми змінимо існуючий масив.</span>
+  <span class="c1">;; f64.load і f64.store приймають адресу числа у пам&#39;яті *у байтах*.</span>
+  <span class="c1">;; Для того, щоб отримати доступ до 3-го елементу масиву, ми маємо передати щось</span>
+  <span class="c1">;; накшталт (i32.mul (i32.const 8) (i32.const 2)) у функцію f64.store.</span>
+
+  <span class="c1">;; У JavaScript ми викличемо `apply_cos64` таким чином</span>
+  <span class="c1">;; (використаємо функцію instantiate з попереднього прикладу):</span>
+  <span class="c1">;;</span>
+  <span class="c1">;; const main = function () {</span>
+  <span class="c1">;;   var wasm = await instantiate(&#39;learn-wasm.wasm&#39;)</span>
+  <span class="c1">;;   var n = 100</span>
+  <span class="c1">;;   const memory = new Float64Array(wasm.memory.buffer, 0, n)</span>
+  <span class="c1">;;   for (var i=0; i&lt;n; i++) {</span>
+  <span class="c1">;;     memory[i] = i;</span>
+  <span class="c1">;;   }</span>
+  <span class="c1">;;   wasm.apply_cos64(n)</span>
+  <span class="c1">;; }</span>
+  <span class="c1">;;</span>
+  <span class="c1">;; Ця функція не буде працювати, якщо ми виділимо пам&#39;ять для (створимо) Float32Array у JavaScript.</span>
+
+  <span class="p">(</span><span class="k">memory</span> <span class="p">(</span><span class="k">export</span> <span class="s2">&quot;memory&quot;</span><span class="p">)</span> <span class="mf">100</span><span class="p">)</span>
+
+  <span class="p">(</span><span class="k">func</span> <span class="nv">$apply_cos64</span> <span class="p">(</span><span class="k">param</span> <span class="nv">$array_length</span> <span class="kt">i32</span><span class="p">)</span>
+    <span class="c1">;; визначаємо змінну циклу або лічильник</span>
+    <span class="p">(</span><span class="k">local</span> <span class="nv">$idx</span> <span class="kt">i32</span><span class="p">)</span>
+    <span class="c1">;; визначаємо змінну для доступу до пам&#39;яті</span>
+    <span class="p">(</span><span class="k">local</span> <span class="nv">$idx_bytes</span> <span class="kt">i32</span><span class="p">)</span>
+    <span class="c1">;; константа - кількість байтів у числі типу f64.</span>
+    <span class="p">(</span><span class="k">local</span> <span class="nv">$bytes_per_double</span> <span class="kt">i32</span><span class="p">)</span>
+
+    <span class="c1">;; визначаємо змінну, яка зберігатиме значення з пам&#39;яті</span>
+    <span class="p">(</span><span class="k">local</span> <span class="nv">$temp_f64</span> <span class="kt">f64</span><span class="p">)</span>
+
+    <span class="p">(</span><span class="nb">local.set</span> <span class="nv">$idx</span> <span class="p">(</span><span class="nb">i32.const</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="p">(</span><span class="nb">local.set</span> <span class="nv">$idx_bytes</span> <span class="p">(</span><span class="nb">i32.const</span> <span class="mi">0</span><span class="p">))</span> <span class="c1">;; не обов&#39;язково</span>
+    <span class="p">(</span><span class="nb">local.set</span> <span class="nv">$bytes_per_double</span> <span class="p">(</span><span class="nb">i32.const</span> <span class="mi">8</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="k">block</span>
+      <span class="p">(</span><span class="k">loop</span>
+        <span class="c1">;; записуємо у idx_bytes необхідне зміщення в пам&#39;яті - для поточного числа.</span>
+        <span class="p">(</span><span class="nb">local.set</span> <span class="nv">$idx_bytes</span> <span class="p">(</span><span class="nb">i32.mul</span> <span class="p">(</span><span class="nb">local.get</span> <span class="nv">$idx</span><span class="p">)</span> <span class="p">(</span><span class="nb">local.get</span> <span class="nv">$bytes_per_double</span><span class="p">)))</span>
+
+        <span class="c1">;; отримуємо число з пам&#39;яті (за зміщенням):</span>
+        <span class="p">(</span><span class="nb">local.set</span> <span class="nv">$temp_f64</span> <span class="p">(</span><span class="nb">f64.load</span> <span class="p">(</span><span class="nb">local.get</span> <span class="nv">$idx_bytes</span><span class="p">)))</span>
+
+        <span class="c1">;; рахуємо cos:</span>
+        <span class="p">(</span><span class="nb">local.set</span> <span class="nv">$temp_64</span> <span class="p">(</span><span class="nb">call</span> <span class="nv">$cos</span> <span class="p">(</span><span class="nb">local.get</span> <span class="nv">$temp_64</span><span class="p">)))</span>
+
+        <span class="c1">;; тепер зберігаємо результат обчислень у пам&#39;ять:</span>
+        <span class="p">(</span><span class="nb">f64.store</span>
+          <span class="p">(</span><span class="nb">local.get</span> <span class="nv">$idx_bytes</span><span class="p">)</span>
+          <span class="p">(</span><span class="nb">local.get</span> <span class="nv">$temp_64</span><span class="p">))</span>
+
+        <span class="c1">;; або робимо все за один крок (альтернативний код)</span>
+        <span class="p">(</span><span class="nb">f64.store</span>
+          <span class="p">(</span><span class="nb">local.get</span> <span class="nv">$idx_bytes</span><span class="p">)</span>
+          <span class="p">(</span><span class="nb">call</span> <span class="nv">$cos</span>
+            <span class="p">(</span><span class="nb">f64.load</span>
+              <span class="p">(</span><span class="nb">local.get</span> <span class="nv">$idx_bytes</span><span class="p">))))</span>
+
+        <span class="c1">;; збільшуємо лічильник на одиницю (інкремент)</span>
+        <span class="p">(</span><span class="nb">local.set</span> <span class="nv">$idx</span> <span class="p">(</span><span class="nb">i32.add</span> <span class="p">(</span><span class="nb">local.get</span> <span class="nv">$idx</span><span class="p">)</span> <span class="p">(</span><span class="nb">i32.const</span> <span class="mi">1</span><span class="p">)))</span>
+
+        <span class="c1">;; якщо лічильник дорівнює довжині масиву, то завершуємо цикл</span>
+        <span class="p">(</span><span class="nb">br_if</span> <span class="mi">1</span> <span class="p">(</span><span class="nb">i32.eq</span> <span class="p">(</span><span class="nb">local.get</span> <span class="nv">$idx</span><span class="p">)</span> <span class="p">(</span><span class="nb">local.get</span> <span class="nv">$array_length</span><span class="p">)))</span>
+        <span class="p">(</span><span class="nb">br</span> <span class="mi">0</span><span class="p">)</span>
+      <span class="p">)</span>
+    <span class="p">)</span>
+  <span class="p">)</span>
+  <span class="p">(</span><span class="k">export</span> <span class="s2">&quot;apply_cos64&quot;</span> <span class="p">(</span><span class="k">func</span> <span class="nv">$apply_cos64</span><span class="p">))</span>
+<span class="p">)</span>
+</pre></div>
+
+        <hr>
+        <p>
+          Маєте пораду? А може, виправлення? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Відкрийте Issue</a> у GitHub-репозиторії або зробіть <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/uk-ua/wasm-ua.html.markdown">pull request</a> самостійно!
+        </p>
+        <p class="contributed">
+          Автор початкової версії Dean Shaff, оновлено <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/uk-ua/wasm-ua.html.markdown">2 авторами</a>.
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2024
+            <a href="http://dean-shaff.github.io">Dean Shaff</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

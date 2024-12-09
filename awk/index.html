@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="en">
+    <title>Learn AWK in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/awk/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fawk%2F&amp;text=Learn+X+in+Y+minutes%2C+where+X%3DAWK">
+            Share this page
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">Learn X in Y minutes</a></h1>
+      <h2>Where X=AWK</h2>
+      <p class="filelink">
+        Get the code:
+        <a href="/files/learnawk.awk">learnawk.awk</a>
+      </p>
+      <div id="doc">
+<p>AWK is a standard tool on every POSIX-compliant UNIX system. It's like
+flex/lex, from the command-line, perfect for text-processing tasks and
+other scripting needs. It has a C-like syntax, but without mandatory
+semicolons (although, you should use them anyway, because they are required
+when you're writing one-liners, something AWK excels at), manual memory
+management, or static typing. It excels at text processing. You can call to
+it from a shell script, or you can use it as a stand-alone scripting language.</p>
+<p>Why use AWK instead of Perl? Readability. AWK is easier to read
+than Perl. For simple text-processing scripts, particularly ones that read
+files line by line and split on delimiters, AWK is probably the right tool for
+the job.</p>
+<div class="highlight"><pre lang="awk"><span class="c1">#!/usr/bin/awk -f</span>
+
+<span class="c1"># Comments are like this</span>
+
+
+<span class="c1"># AWK programs consist of a collection of patterns and actions.</span>
+<span class="nx">pattern1</span> <span class="p">{</span> <span class="nx">action</span><span class="p">;</span> <span class="p">}</span> <span class="c1"># just like lex</span>
+<span class="nx">pattern2</span> <span class="p">{</span> <span class="nx">action</span><span class="p">;</span> <span class="p">}</span>
+
+<span class="c1"># There is an implied loop and AWK automatically reads and parses each</span>
+<span class="c1"># record of each file supplied. Each record is split by the FS delimiter,</span>
+<span class="c1"># which defaults to white-space (multiple spaces,tabs count as one)</span>
+<span class="c1"># You can assign FS either on the command line (-F C) or in your BEGIN</span>
+<span class="c1"># pattern</span>
+
+<span class="c1"># One of the special patterns is BEGIN. The BEGIN pattern is true</span>
+<span class="c1"># BEFORE any of the files are read. The END pattern is true after</span>
+<span class="c1"># an End-of-file from the last file (or standard-in if no files specified)</span>
+<span class="c1"># There is also an output field separator (OFS) that you can assign, which</span>
+<span class="c1"># defaults to a single space</span>
+
+<span class="nb">BEGIN</span> <span class="p">{</span>
+
+    <span class="c1"># BEGIN will run at the beginning of the program. It&#39;s where you put all</span>
+    <span class="c1"># the preliminary set-up code, before you process any text files. If you</span>
+    <span class="c1"># have no text files, then think of BEGIN as the main entry point.</span>
+
+    <span class="c1"># Variables are global. Just set them or use them, no need to declare.</span>
+    <span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="c1"># Operators just like in C and friends</span>
+    <span class="nx">a</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">b</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">c</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">*</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">d</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">/</span> <span class="mi">1</span><span class="p">;</span> <span class="c1"># integer division</span>
+    <span class="nx">e</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">%</span> <span class="mi">1</span><span class="p">;</span> <span class="c1"># modulus</span>
+    <span class="nx">f</span> <span class="o">=</span> <span class="nx">count</span> <span class="o">^</span> <span class="mi">1</span><span class="p">;</span> <span class="c1"># exponentiation</span>
+
+    <span class="nx">a</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">b</span> <span class="o">-=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">c</span> <span class="o">*=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">d</span> <span class="o">/=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">e</span> <span class="o">%=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">f</span> <span class="o">^=</span> <span class="mi">1</span><span class="p">;</span>
+
+    <span class="c1"># Incrementing and decrementing by one</span>
+    <span class="nx">a</span><span class="o">++</span><span class="p">;</span>
+    <span class="nx">b</span><span class="o">--</span><span class="p">;</span>
+
+    <span class="c1"># As a prefix operator, it returns the incremented value</span>
+    <span class="o">++</span><span class="nx">a</span><span class="p">;</span>
+    <span class="o">--</span><span class="nx">b</span><span class="p">;</span>
+
+    <span class="c1"># Notice, also, no punctuation such as semicolons to terminate statements</span>
+
+    <span class="c1"># Control statements</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;Starting with count of 0&quot;</span><span class="p">;</span>
+    <span class="k">else</span>
+        <span class="kr">print</span> <span class="s2">&quot;Huh?&quot;</span><span class="p">;</span>
+
+    <span class="c1"># Or you could use the ternary operator</span>
+    <span class="kr">print</span> <span class="p">(</span><span class="nx">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">?</span> <span class="s2">&quot;Starting with count of 0&quot;</span> <span class="o">:</span> <span class="s2">&quot;Huh?&quot;</span><span class="p">;</span>
+
+    <span class="c1"># Blocks consisting of multiple lines use braces</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nx">a</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kr">print</span> <span class="s2">&quot;String concatenation is done&quot;</span> <span class="s2">&quot; with a series&quot;</span> <span class="s2">&quot; of&quot;</span>
+            <span class="s2">&quot; space-separated strings&quot;</span><span class="p">;</span>
+        <span class="kr">print</span> <span class="nx">a</span><span class="p">;</span>
+
+        <span class="nx">a</span><span class="o">++</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;Good ol&#39; for loop&quot;</span><span class="p">;</span>
+
+    <span class="c1"># As for comparisons, they&#39;re the standards:</span>
+    <span class="c1"># a &lt; b   # Less than</span>
+    <span class="c1"># a &lt;= b  # Less than or equal</span>
+    <span class="c1"># a != b  # Not equal</span>
+    <span class="c1"># a == b  # Equal</span>
+    <span class="c1"># a &gt; b   # Greater than</span>
+    <span class="c1"># a &gt;= b  # Greater than or equal</span>
+
+    <span class="c1"># Logical operators as well</span>
+    <span class="c1"># a &amp;&amp; b  # AND</span>
+    <span class="c1"># a || b  # OR</span>
+
+    <span class="c1"># In addition, there&#39;s the super useful regular expression match</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;foo&quot;</span> <span class="o">~</span> <span class="s2">&quot;^fo+$&quot;</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;Fooey!&quot;</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;boo&quot;</span> <span class="o">!~</span> <span class="s2">&quot;^fo+$&quot;</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;Boo!&quot;</span><span class="p">;</span>
+
+    <span class="c1"># Arrays</span>
+    <span class="nx">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;foo&quot;</span><span class="p">;</span>
+    <span class="nx">arr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span><span class="p">;</span>
+
+    <span class="c1"># You can also initialize an array with the built-in function split()</span>
+
+    <span class="nx">n</span> <span class="o">=</span> <span class="kr">split</span><span class="p">(</span><span class="s2">&quot;foo:bar:baz&quot;</span><span class="p">,</span> <span class="nx">arr</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">);</span>
+
+    <span class="c1"># You also have associative arrays (indeed, they&#39;re all associative arrays)</span>
+    <span class="nx">assoc</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span><span class="p">;</span>
+    <span class="nx">assoc</span><span class="p">[</span><span class="s2">&quot;bar&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;baz&quot;</span><span class="p">;</span>
+
+    <span class="c1"># And multi-dimensional arrays, with some limitations I won&#39;t mention here</span>
+    <span class="nx">multidim</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;foo&quot;</span><span class="p">;</span>
+    <span class="nx">multidim</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span><span class="p">;</span>
+    <span class="nx">multidim</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;baz&quot;</span><span class="p">;</span>
+    <span class="nx">multidim</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;boo&quot;</span><span class="p">;</span>
+
+    <span class="c1"># You can test for array membership</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;foo&quot;</span> <span class="o">in</span> <span class="nx">assoc</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;Fooey!&quot;</span><span class="p">;</span>
+
+    <span class="c1"># You can also use the &#39;in&#39; operator to traverse the keys of an array</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">key</span> <span class="o">in</span> <span class="nx">assoc</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="nx">assoc</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+
+    <span class="c1"># The command line is in a special array called ARGV</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">argnum</span> <span class="o">in</span> <span class="nb">ARGV</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="nb">ARGV</span><span class="p">[</span><span class="nx">argnum</span><span class="p">];</span>
+
+    <span class="c1"># You can remove elements of an array</span>
+    <span class="c1"># This is particularly useful to prevent AWK from assuming the arguments</span>
+    <span class="c1"># are files for it to process</span>
+    <span class="kr">delete</span> <span class="nb">ARGV</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+
+    <span class="c1"># The number of command line arguments is in a variable called ARGC</span>
+    <span class="kr">print</span> <span class="nb">ARGC</span><span class="p">;</span>
+
+    <span class="c1"># AWK has several built-in functions. They fall into three categories. I&#39;ll</span>
+    <span class="c1"># demonstrate each of them in their own functions, defined later.</span>
+
+    <span class="nx">return_value</span> <span class="o">=</span> <span class="nx">arithmetic_functions</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">);</span>
+    <span class="nx">string_functions</span><span class="p">();</span>
+    <span class="nx">io_functions</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="c1"># Here&#39;s how you define a function</span>
+<span class="kd">function</span> <span class="nx">arithmetic_functions</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span>     <span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1"># Probably the most annoying part of AWK is that there are no local</span>
+    <span class="c1"># variables. Everything is global. For short scripts, this is fine, even</span>
+    <span class="c1"># useful, but for longer scripts, this can be a problem.</span>
+
+    <span class="c1"># There is a work-around (ahem, hack). Function arguments are local to the</span>
+    <span class="c1"># function, and AWK allows you to define more function arguments than it</span>
+    <span class="c1"># needs. So just stick local variable in the function declaration, like I</span>
+    <span class="c1"># did above. As a convention, stick in some extra whitespace to distinguish</span>
+    <span class="c1"># between actual function parameters and local variables. In this example,</span>
+    <span class="c1"># a, b, and c are actual parameters, while d is merely a local variable.</span>
+
+    <span class="c1"># Now, to demonstrate the arithmetic functions</span>
+
+    <span class="c1"># Most AWK implementations have some standard trig functions</span>
+    <span class="nx">d</span> <span class="o">=</span> <span class="kr">sin</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
+    <span class="nx">d</span> <span class="o">=</span> <span class="kr">cos</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
+    <span class="nx">d</span> <span class="o">=</span> <span class="kr">atan2</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="nx">a</span><span class="p">);</span> <span class="c1"># arc tangent of b / a</span>
+
+    <span class="c1"># And logarithmic stuff</span>
+    <span class="nx">d</span> <span class="o">=</span> <span class="kr">exp</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
+    <span class="nx">d</span> <span class="o">=</span> <span class="kr">log</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
+
+    <span class="c1"># Square root</span>
+    <span class="nx">d</span> <span class="o">=</span> <span class="kr">sqrt</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span>
+
+    <span class="c1"># Truncate floating point to integer</span>
+    <span class="nx">d</span> <span class="o">=</span> <span class="kr">int</span><span class="p">(</span><span class="mf">5.34</span><span class="p">);</span> <span class="c1"># d =&gt; 5</span>
+
+    <span class="c1"># Random numbers</span>
+    <span class="kr">srand</span><span class="p">();</span> <span class="c1"># Supply a seed as an argument. By default, it uses the time of day</span>
+    <span class="nx">d</span> <span class="o">=</span> <span class="kr">rand</span><span class="p">();</span> <span class="c1"># Random number between 0 and 1.</span>
+
+    <span class="c1"># Here&#39;s how to return a value</span>
+    <span class="k">return</span> <span class="nx">d</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">string_functions</span><span class="p">(</span>    <span class="nx">localvar</span><span class="p">,</span> <span class="nx">arr</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1"># AWK, being a string-processing language, has several string-related</span>
+    <span class="c1"># functions, many of which rely heavily on regular expressions.</span>
+
+    <span class="c1"># Search and replace, first instance (sub) or all instances (gsub)</span>
+    <span class="c1"># Both return number of matches replaced</span>
+    <span class="nx">localvar</span> <span class="o">=</span> <span class="s2">&quot;fooooobar&quot;</span><span class="p">;</span>
+    <span class="kr">sub</span><span class="p">(</span><span class="s2">&quot;fo+&quot;</span><span class="p">,</span> <span class="s2">&quot;Meet me at the &quot;</span><span class="p">,</span> <span class="nx">localvar</span><span class="p">);</span> <span class="c1"># localvar =&gt; &quot;Meet me at the bar&quot;</span>
+    <span class="kr">gsub</span><span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="nx">localvar</span><span class="p">);</span> <span class="c1"># localvar =&gt; &quot;M..t m. at th. bar&quot;</span>
+
+    <span class="c1"># Search for a string that matches a regular expression</span>
+    <span class="c1"># index() does the same thing, but doesn&#39;t allow a regular expression</span>
+    <span class="kr">match</span><span class="p">(</span><span class="nx">localvar</span><span class="p">,</span> <span class="s2">&quot;t&quot;</span><span class="p">);</span> <span class="c1"># =&gt; 4, since the &#39;t&#39; is the fourth character</span>
+
+    <span class="c1"># Split on a delimiter</span>
+    <span class="nx">n</span> <span class="o">=</span> <span class="kr">split</span><span class="p">(</span><span class="s2">&quot;foo-bar-baz&quot;</span><span class="p">,</span> <span class="nx">arr</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">);</span>
+    <span class="c1"># result: a[1] = &quot;foo&quot;; a[2] = &quot;bar&quot;; a[3] = &quot;baz&quot;; n = 3</span>
+
+    <span class="c1"># Other useful stuff</span>
+    <span class="kr">sprintf</span><span class="p">(</span><span class="s2">&quot;%s %d %d %d&quot;</span><span class="p">,</span> <span class="s2">&quot;Testing&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span> <span class="c1"># =&gt; &quot;Testing 1 2 3&quot;</span>
+    <span class="kr">substr</span><span class="p">(</span><span class="s2">&quot;foobar&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span> <span class="c1"># =&gt; &quot;oob&quot;</span>
+    <span class="kr">substr</span><span class="p">(</span><span class="s2">&quot;foobar&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span> <span class="c1"># =&gt; &quot;bar&quot;</span>
+    <span class="kr">length</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">);</span> <span class="c1"># =&gt; 3</span>
+    <span class="kr">tolower</span><span class="p">(</span><span class="s2">&quot;FOO&quot;</span><span class="p">);</span> <span class="c1"># =&gt; &quot;foo&quot;</span>
+    <span class="kr">toupper</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">);</span> <span class="c1"># =&gt; &quot;FOO&quot;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">io_functions</span><span class="p">(</span>    <span class="nx">localvar</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1"># You&#39;ve already seen print</span>
+    <span class="kr">print</span> <span class="s2">&quot;Hello world&quot;</span><span class="p">;</span>
+
+    <span class="c1"># There&#39;s also printf</span>
+    <span class="kr">printf</span><span class="p">(</span><span class="s2">&quot;%s %d %d %d\n&quot;</span><span class="p">,</span> <span class="s2">&quot;Testing&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+
+    <span class="c1"># AWK doesn&#39;t have file handles, per se. It will automatically open a file</span>
+    <span class="c1"># handle for you when you use something that needs one. The string you used</span>
+    <span class="c1"># for this can be treated as a file handle, for purposes of I/O. This makes</span>
+    <span class="c1"># it feel sort of like shell scripting, but to get the same output, the</span>
+    <span class="c1"># string must match exactly, so use a variable:</span>
+
+    <span class="nx">outfile</span> <span class="o">=</span> <span class="s2">&quot;/tmp/foobar.txt&quot;</span><span class="p">;</span>
+
+    <span class="kr">print</span> <span class="s2">&quot;foobar&quot;</span> <span class="o">&gt;</span> <span class="nx">outfile</span><span class="p">;</span>
+
+    <span class="c1"># Now the string outfile is a file handle. You can close it:</span>
+    <span class="kr">close</span><span class="p">(</span><span class="nx">outfile</span><span class="p">);</span>
+
+    <span class="c1"># Here&#39;s how you run something in the shell</span>
+    <span class="kr">system</span><span class="p">(</span><span class="s2">&quot;echo foobar&quot;</span><span class="p">);</span> <span class="c1"># =&gt; prints foobar</span>
+
+    <span class="c1"># Reads a line from standard input and stores in localvar</span>
+    <span class="kr">getline</span> <span class="nx">localvar</span><span class="p">;</span>
+
+    <span class="c1"># Reads a line from a pipe (again, use a string so you close it properly)</span>
+    <span class="nx">cmd</span> <span class="o">=</span> <span class="s2">&quot;echo foobar&quot;</span><span class="p">;</span>
+    <span class="nx">cmd</span> <span class="o">|</span> <span class="kr">getline</span> <span class="nx">localvar</span><span class="p">;</span> <span class="c1"># localvar =&gt; &quot;foobar&quot;</span>
+    <span class="kr">close</span><span class="p">(</span><span class="nx">cmd</span><span class="p">);</span>
+
+    <span class="c1"># Reads a line from a file and stores in localvar</span>
+    <span class="nx">infile</span> <span class="o">=</span> <span class="s2">&quot;/tmp/foobar.txt&quot;</span><span class="p">;</span>
+    <span class="kr">getline</span> <span class="nx">localvar</span> <span class="o">&lt;</span> <span class="nx">infile</span><span class="p">;</span>
+    <span class="kr">close</span><span class="p">(</span><span class="nx">infile</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1"># As I said at the beginning, AWK programs consist of a collection of patterns</span>
+<span class="c1"># and actions. You&#39;ve already seen the BEGIN pattern. Other</span>
+<span class="c1"># patterns are used only if you&#39;re processing lines from files or standard</span>
+<span class="c1"># input.</span>
+<span class="c1">#</span>
+<span class="c1"># When you pass arguments to AWK, they are treated as file names to process.</span>
+<span class="c1"># It will process them all, in order. Think of it like an implicit for loop,</span>
+<span class="c1"># iterating over the lines in these files. these patterns and actions are like</span>
+<span class="c1"># switch statements inside the loop.</span>
+
+<span class="sr">/^fo+bar$/</span> <span class="p">{</span>
+
+    <span class="c1"># This action will execute for every line that matches the regular</span>
+    <span class="c1"># expression, /^fo+bar$/, and will be skipped for any line that fails to</span>
+    <span class="c1"># match it. Let&#39;s just print the line:</span>
+
+    <span class="kr">print</span><span class="p">;</span>
+
+    <span class="c1"># Whoa, no argument! That&#39;s because print has a default argument: $0.</span>
+    <span class="c1"># $0 is the name of the current line being processed. It is created</span>
+    <span class="c1"># automatically for you.</span>
+
+    <span class="c1"># You can probably guess there are other $ variables. Every line is</span>
+    <span class="c1"># implicitly split before every action is called, much like the shell</span>
+    <span class="c1"># does. And, like the shell, each field can be access with a dollar sign</span>
+
+    <span class="c1"># This will print the second and fourth fields in the line</span>
+    <span class="kr">print</span> <span class="o">$</span><span class="mi">2</span><span class="p">,</span> <span class="o">$</span><span class="mi">4</span><span class="p">;</span>
+
+    <span class="c1"># AWK automatically defines many other variables to help you inspect and</span>
+    <span class="c1"># process each line. The most important one is NF</span>
+
+    <span class="c1"># Prints the number of fields on this line</span>
+    <span class="kr">print</span> <span class="nb">NF</span><span class="p">;</span>
+
+    <span class="c1"># Print the last field on this line</span>
+    <span class="kr">print</span> <span class="o">$</span><span class="nb">NF</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1"># Every pattern is actually a true/false test. The regular expression in the</span>
+<span class="c1"># last pattern is also a true/false test, but part of it was hidden. If you</span>
+<span class="c1"># don&#39;t give it a string to test, it will assume $0, the line that it&#39;s</span>
+<span class="c1"># currently processing. Thus, the complete version of it is this:</span>
+
+<span class="o">$</span><span class="mi">0</span> <span class="o">~</span> <span class="sr">/^fo+bar$/</span> <span class="p">{</span>
+    <span class="kr">print</span> <span class="s2">&quot;Equivalent to the last pattern&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">a</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="c1"># This will execute once for each line, as long as a is positive</span>
+<span class="p">}</span>
+
+<span class="c1"># You get the idea. Processing text files, reading in a line at a time, and</span>
+<span class="c1"># doing something with it, particularly splitting on a delimiter, is so common</span>
+<span class="c1"># in UNIX that AWK is a scripting language that does all of it for you, without</span>
+<span class="c1"># you needing to ask. All you have to do is write the patterns and actions</span>
+<span class="c1"># based on what you expect of the input, and what you want to do with it.</span>
+
+<span class="c1"># Here&#39;s a quick example of a simple script, the sort of thing AWK is perfect</span>
+<span class="c1"># for. It will read a name from standard input and then will print the average</span>
+<span class="c1"># age of everyone with that first name. Let&#39;s say you supply as an argument the</span>
+<span class="c1"># name of a this data file:</span>
+<span class="c1">#</span>
+<span class="c1"># Bob Jones 32</span>
+<span class="c1"># Jane Doe 22</span>
+<span class="c1"># Steve Stevens 83</span>
+<span class="c1"># Bob Smith 29</span>
+<span class="c1"># Bob Barker 72</span>
+<span class="c1">#</span>
+<span class="c1"># Here&#39;s the script:</span>
+
+<span class="nb">BEGIN</span> <span class="p">{</span>
+
+    <span class="c1"># First, ask the user for the name</span>
+    <span class="kr">print</span> <span class="s2">&quot;What name would you like the average age for?&quot;</span><span class="p">;</span>
+
+    <span class="c1"># Get a line from standard input, not from files on the command line</span>
+    <span class="kr">getline</span> <span class="nx">name</span> <span class="o">&lt;</span> <span class="s2">&quot;/dev/stdin&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1"># Now, match every line whose first field is the given name</span>
+<span class="o">$</span><span class="mi">1</span> <span class="o">==</span> <span class="nx">name</span> <span class="p">{</span>
+
+    <span class="c1"># Inside here, we have access to a number of useful variables, already</span>
+    <span class="c1"># pre-loaded for us:</span>
+    <span class="c1"># $0 is the entire line</span>
+    <span class="c1"># $3 is the third field, the age, which is what we&#39;re interested in here</span>
+    <span class="c1"># NF is the number of fields, which should be 3</span>
+    <span class="c1"># NR is the number of records (lines) seen so far</span>
+    <span class="c1"># FILENAME is the name of the file being processed</span>
+    <span class="c1"># FS is the field separator being used, which is &quot; &quot; here</span>
+    <span class="c1"># ...etc. There are plenty more, documented in the man page.</span>
+
+    <span class="c1"># Keep track of a running total and how many lines matched</span>
+    <span class="nx">sum</span> <span class="o">+=</span> <span class="o">$</span><span class="mi">3</span><span class="p">;</span>
+    <span class="nx">nlines</span><span class="o">++</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1"># Another special pattern is called END. It will run after processing all the</span>
+<span class="c1"># text files. Unlike BEGIN, it will only run if you&#39;ve given it input to</span>
+<span class="c1"># process. It will run after all the files have been read and processed</span>
+<span class="c1"># according to the rules and actions you&#39;ve provided. The purpose of it is</span>
+<span class="c1"># usually to output some kind of final report, or do something with the</span>
+<span class="c1"># aggregate of the data you&#39;ve accumulated over the course of the script.</span>
+
+<span class="nb">END</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">nlines</span><span class="p">)</span>
+        <span class="kr">print</span> <span class="s2">&quot;The average age for &quot;</span> <span class="nx">name</span> <span class="s2">&quot; is &quot;</span> <span class="nx">sum</span> <span class="o">/</span> <span class="nx">nlines</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+<p>Further Reading:</p>
+<ul>
+<li><a href="http://www.grymoire.com/Unix/Awk.html">Awk tutorial</a></li>
+<li><a href="https://linux.die.net/man/1/awk">Awk man page</a></li>
+<li><a href="https://www.gnu.org/software/gawk/manual/gawk.html">The GNU Awk User's Guide</a>
+GNU Awk is found on most Linux systems.</li>
+<li><a href="http://tuxgraphics.org/~guido/scripts/awk-one-liner.html">AWK one-liner collection</a></li>
+<li><a href="https://wiki.alpinelinux.org/wiki/Awk">Awk alpinelinux wiki</a> a technical
+summary and list of &quot;gotchas&quot; (places where different implementations may
+behave in different or unexpected ways).</li>
+<li><a href="https://github.com/dubiousjim/awkenough">basic libraries for awk</a></li>
+</ul>
+
+        <hr>
+        <p>
+          Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the GitHub Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/awk.html.markdown">pull request</a> yourself!
+        </p>
+        <p class="contributed">
+          Originally contributed by Marshall Mason, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/awk.html.markdown">12 contributors</a>.
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2024
+            <a href="http://github.com/marshallmason">Marshall Mason</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="en">
+    <title>Learn Forth in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/forth/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fforth%2F&amp;text=Learn+X+in+Y+minutes%2C+where+X%3DForth">
+            Share this page
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">Learn X in Y minutes</a></h1>
+      <h2>Where X=Forth</h2>
+      <p class="filelink">
+        Get the code:
+        <a href="/files/learnforth.fs">learnforth.fs</a>
+      </p>
+      <div id="doc">
+<p>Forth was created by Charles H. Moore in the 70s. It is an imperative,
+stack-based language and programming environment, being used in projects
+such as Open Firmware. It's also used by NASA.</p>
+<p>Note: This article focuses predominantly on the Gforth implementation of
+Forth, but most of what is written here should work elsewhere.</p>
+<div class="highlight"><pre lang="forth"><span class="c1">\ This is a comment</span>
+<span class="c1">( This is also a comment but it&#39;s only used when defining words )</span>
+
+<span class="c1">\ --------------------------------- Precursor ----------------------------------</span>
+
+<span class="c1">\ All programming in Forth is done by manipulating the parameter stack (more</span>
+<span class="c1">\ commonly just referred to as &quot;the stack&quot;).</span>
+<span class="mi">5</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">56</span><span class="w"> </span><span class="mi">76</span><span class="w"> </span><span class="mi">23</span><span class="w"> </span><span class="mi">65</span><span class="w">    </span><span class="c1">\ ok</span>
+
+<span class="c1">\ Those numbers get added to the stack, from left to right.</span>
+<span class="k">.s</span><span class="w">    </span><span class="c1">\ &lt;7&gt; 5 2 3 56 76 23 65 ok</span>
+
+<span class="c1">\ In Forth, everything is either a word or a number.</span>
+
+<span class="c1">\ ------------------------------ Basic Arithmetic ------------------------------</span>
+
+<span class="c1">\ Arithmetic (in fact most words requiring data) works by manipulating data on</span>
+<span class="c1">\ the stack.</span>
+<span class="mi">5</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="k">+</span><span class="w">    </span><span class="c1">\ ok</span>
+
+<span class="c1">\ `.` pops the top result from the stack:</span>
+<span class="k">.</span><span class="w">    </span><span class="c1">\ 9 ok</span>
+
+<span class="c1">\ More examples of arithmetic:</span>
+<span class="mi">6</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="k">*</span><span class="w"> </span><span class="k">.</span><span class="w">        </span><span class="c1">\ 42 ok</span>
+<span class="mi">1360</span><span class="w"> </span><span class="mi">23</span><span class="w"> </span><span class="k">-</span><span class="w"> </span><span class="k">.</span><span class="w">    </span><span class="c1">\ 1337 ok</span>
+<span class="mi">12</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="k">/</span><span class="w"> </span><span class="k">.</span><span class="w">      </span><span class="c1">\ 1 ok</span>
+<span class="mi">13</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">mod</span><span class="w"> </span><span class="k">.</span><span class="w">     </span><span class="c1">\ 1 ok</span>
+
+<span class="mi">99</span><span class="w"> </span><span class="k">negate</span><span class="w"> </span><span class="k">.</span><span class="w">    </span><span class="c1">\ -99 ok</span>
+<span class="mi">-99</span><span class="w"> </span><span class="k">abs</span><span class="w"> </span><span class="k">.</span><span class="w">      </span><span class="c1">\ 99 ok</span>
+<span class="mi">52</span><span class="w"> </span><span class="mi">23</span><span class="w"> </span><span class="k">max</span><span class="w"> </span><span class="k">.</span><span class="w">    </span><span class="c1">\ 52 ok</span>
+<span class="mi">52</span><span class="w"> </span><span class="mi">23</span><span class="w"> </span><span class="k">min</span><span class="w"> </span><span class="k">.</span><span class="w">    </span><span class="c1">\ 23 ok</span>
+
+<span class="c1">\ ----------------------------- Stack Manipulation -----------------------------</span>
+
+<span class="c1">\ Naturally, as we work with the stack, we&#39;ll want some useful methods:</span>
+
+<span class="mi">3</span><span class="w"> </span><span class="k">dup</span><span class="w"> </span><span class="k">-</span><span class="w">          </span><span class="c1">\ duplicate the top item (1st now equals 2nd): 3 - 3</span>
+<span class="mi">2</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="k">swap</span><span class="w"> </span><span class="k">/</span><span class="w">       </span><span class="c1">\ swap the top with the second element:        5 / 2</span>
+<span class="mi">6</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="k">rot</span><span class="w"> </span><span class="k">.s</span><span class="w">     </span><span class="c1">\ rotate the top 3 elements:                   4 5 6</span>
+<span class="mi">4</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">drop</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">/</span><span class="w">     </span><span class="c1">\ remove the top item (don&#39;t print to screen):  4 / 2</span>
+<span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k">nip</span><span class="w"> </span><span class="k">.s</span><span class="w">     </span><span class="c1">\ remove the second item (similar to drop):    1 3</span>
+
+<span class="c1">\ ---------------------- More Advanced Stack Manipulation ----------------------</span>
+
+<span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="k">tuck</span><span class="w">   </span><span class="c1">\ duplicate the top item below the second slot:      1 2 4 3 4 ok</span>
+<span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="k">over</span><span class="w">   </span><span class="c1">\ duplicate the second item to the top:             1 2 3 4 3 ok</span>
+<span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">roll</span><span class="w"> </span><span class="c1">\ *move* the item at that position to the top:      1 3 4 2 ok</span>
+<span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">pick</span><span class="w"> </span><span class="c1">\ *duplicate* the item at that position to the top: 1 2 3 4 2 ok</span>
+
+<span class="c1">\ When referring to stack indexes, they are zero-based.</span>
+
+<span class="c1">\ ------------------------------ Creating Words --------------------------------</span>
+
+<span class="c1">\ The `:` word sets Forth into compile mode until it sees the `;` word.</span>
+<span class="kn">:</span><span class="w"> </span><span class="nc">square</span><span class="w"> </span><span class="c1">( n -- n )</span><span class="w"> </span><span class="k">dup</span><span class="w"> </span><span class="k">*</span><span class="w"> </span><span class="k">;</span><span class="w">    </span><span class="c1">\ ok</span>
+<span class="mi">5</span><span class="w"> </span><span class="nf">square</span><span class="w"> </span><span class="k">.</span><span class="w">                     </span><span class="c1">\ 25 ok</span>
+
+<span class="c1">\ We can view what a word does too:</span>
+<span class="k">see</span><span class="w"> </span><span class="nf">square</span><span class="w">     </span><span class="c1">\ : square dup * ; ok</span>
+
+<span class="c1">\ -------------------------------- Conditionals --------------------------------</span>
+
+<span class="c1">\ -1 == true, 0 == false. However, any non-zero value is usually treated as</span>
+<span class="c1">\ being true:</span>
+<span class="mi">42</span><span class="w"> </span><span class="mi">42</span><span class="w"> </span><span class="nf">=</span><span class="w">    </span><span class="c1">\ -1 ok</span>
+<span class="mi">12</span><span class="w"> </span><span class="mi">53</span><span class="w"> </span><span class="nf">=</span><span class="w">    </span><span class="c1">\ 0 ok</span>
+
+<span class="c1">\ `if` is a compile-only word. `if` &lt;stuff to do&gt; `then` &lt;rest of program&gt;.</span>
+<span class="kn">:</span><span class="w"> </span><span class="nc">?&gt;64</span><span class="w"> </span><span class="c1">( n -- n )</span><span class="w"> </span><span class="k">dup</span><span class="w"> </span><span class="mi">64</span><span class="w"> </span><span class="k">&gt;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="s">.&quot;</span><span class="w"> </span><span class="s">Greater than 64!</span><span class="nf">&quot;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="k">;</span><span class="w"> </span><span class="c1">\ ok</span>
+<span class="mi">100</span><span class="w"> </span><span class="nf">?&gt;64</span><span class="w">                                                  </span><span class="c1">\ Greater than 64! ok</span>
+
+<span class="c1">\ Else:</span>
+<span class="kn">:</span><span class="w"> </span><span class="nc">?&gt;64</span><span class="w"> </span><span class="c1">( n -- n )</span><span class="w"> </span><span class="k">dup</span><span class="w"> </span><span class="mi">64</span><span class="w"> </span><span class="k">&gt;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="s">.&quot;</span><span class="w"> </span><span class="s">Greater than 64!</span><span class="nf">&quot;</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s">.&quot;</span><span class="w"> </span><span class="s">Less than 64!</span><span class="nf">&quot;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="k">;</span>
+<span class="mi">100</span><span class="w"> </span><span class="nf">?&gt;64</span><span class="w">    </span><span class="c1">\ Greater than 64! ok</span>
+<span class="mi">20</span><span class="w"> </span><span class="nf">?&gt;64</span><span class="w">     </span><span class="c1">\ Less than 64! ok</span>
+
+<span class="c1">\ ------------------------------------ Loops -----------------------------------</span>
+
+<span class="c1">\ `?do` is also a compile-only word.</span>
+<span class="kn">:</span><span class="w"> </span><span class="nc">myloop</span><span class="w"> </span><span class="c1">( -- )</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">?do</span><span class="w"> </span><span class="k">cr</span><span class="w"> </span><span class="s">.&quot;</span><span class="w"> </span><span class="s">Hello!</span><span class="nf">&quot;</span><span class="w"> </span><span class="k">loop</span><span class="w"> </span><span class="k">;</span><span class="w"> </span><span class="c1">\ ok</span>
+<span class="nf">myloop</span>
+<span class="c1">\ Hello!</span>
+<span class="c1">\ Hello!</span>
+<span class="c1">\ Hello!</span>
+<span class="c1">\ Hello!</span>
+<span class="c1">\ Hello! ok</span>
+
+<span class="c1">\ `?do` expects two numbers on the stack: the end number (exclusive) and the</span>
+<span class="c1">\ start number (inclusive).</span>
+
+<span class="c1">\ We can get the value of the index as we loop with `i`:</span>
+<span class="kn">:</span><span class="w"> </span><span class="nc">one-to-12</span><span class="w"> </span><span class="c1">( -- )</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="k">i</span><span class="w"> </span><span class="k">.</span><span class="w"> </span><span class="k">loop</span><span class="w"> </span><span class="k">;</span><span class="w">     </span><span class="c1">\ ok</span>
+<span class="nf">one-to-12</span><span class="w">                                 </span><span class="c1">\ 0 1 2 3 4 5 6 7 8 9 10 11 ok</span>
+
+<span class="c1">\ `do` works similarly, except if start and end are exactly the same it will</span>
+<span class="c1">\ loop forever (until arithmetic underflow).</span>
+<span class="kn">:</span><span class="w"> </span><span class="nc">loop-forever</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="k">i</span><span class="w"> </span><span class="nf">square</span><span class="w"> </span><span class="k">.</span><span class="w"> </span><span class="k">loop</span><span class="w"> </span><span class="k">;</span><span class="w">     </span><span class="c1">\ ok</span>
+<span class="nf">loop-forever</span><span class="w">                                </span><span class="c1">\ 1 4 9 16 25 36 49 64 81 100 ...</span>
+
+<span class="c1">\ Change the &quot;step&quot; with `+loop`:</span>
+<span class="kn">:</span><span class="w"> </span><span class="nc">threes</span><span class="w"> </span><span class="c1">( n n -- )</span><span class="w"> </span><span class="k">?do</span><span class="w"> </span><span class="k">i</span><span class="w"> </span><span class="k">.</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k">+loop</span><span class="w"> </span><span class="k">;</span><span class="w">    </span><span class="c1">\ ok</span>
+<span class="mi">15</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="nf">threes</span><span class="w">                             </span><span class="c1">\ 0 3 6 9 12 ok</span>
+
+<span class="c1">\ Indefinite loops with `begin` &lt;stuff to do&gt; &lt;flag&gt; `until`:</span>
+<span class="kn">:</span><span class="w"> </span><span class="nc">death</span><span class="w"> </span><span class="c1">( -- )</span><span class="w"> </span><span class="k">begin</span><span class="w"> </span><span class="s">.&quot;</span><span class="w"> </span><span class="s">Are we there yet?</span><span class="nf">&quot;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">until</span><span class="w"> </span><span class="k">;</span><span class="w">    </span><span class="c1">\ ok</span>
+
+<span class="c1">\ ---------------------------- Variables and Memory ----------------------------</span>
+
+<span class="c1">\ Use `variable` to declare `age` to be a variable.</span>
+<span class="kn">variable</span><span class="w"> </span><span class="nc">age</span><span class="w">    </span><span class="c1">\ ok</span>
+
+<span class="c1">\ Then we write 21 to age with the word `!`.</span>
+<span class="mi">21</span><span class="w"> </span><span class="nf">age</span><span class="w"> </span><span class="k">!</span><span class="w">    </span><span class="c1">\ ok</span>
+
+<span class="c1">\ Finally we can print our variable using the &quot;read&quot; word `@`, which adds the</span>
+<span class="c1">\ value to the stack, or use `?` that reads and prints it in one go.</span>
+<span class="nf">age</span><span class="w"> </span><span class="k">@</span><span class="w"> </span><span class="k">.</span><span class="w">    </span><span class="c1">\ 21 ok</span>
+<span class="nf">age</span><span class="w"> </span><span class="nf">?</span><span class="w">      </span><span class="c1">\ 21 ok</span>
+
+<span class="c1">\ Constants are quite similar, except we don&#39;t bother with memory addresses:</span>
+<span class="mi">100</span><span class="w"> </span><span class="kn">constant</span><span class="w"> </span><span class="nc">WATER-BOILING-POINT</span><span class="w">    </span><span class="c1">\ ok</span>
+<span class="nf">WATER-BOILING-POINT</span><span class="w"> </span><span class="k">.</span><span class="w">               </span><span class="c1">\ 100 ok</span>
+
+<span class="c1">\ ----------------------------------- Arrays -----------------------------------</span>
+
+<span class="c1">\ Creating arrays is similar to variables, except we need to allocate more</span>
+<span class="c1">\ memory to them.</span>
+
+<span class="c1">\ You can use `2 cells allot` to create an array that&#39;s 3 cells long:</span>
+<span class="kn">variable</span><span class="w"> </span><span class="nc">mynumbers</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">cells</span><span class="w"> </span><span class="k">allot</span><span class="w">    </span><span class="c1">\ ok</span>
+
+<span class="c1">\ Initialize all the values to 0</span>
+<span class="nf">mynumbers</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k">cells</span><span class="w"> </span><span class="k">erase</span><span class="w">    </span><span class="c1">\ ok</span>
+
+<span class="c1">\ Alternatively we could use `fill`:</span>
+<span class="nf">mynumbers</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="k">cells</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">fill</span>
+
+<span class="c1">\ or we can just skip all the above and initialize with specific values:</span>
+<span class="k">create</span><span class="w"> </span><span class="nf">mynumbers</span><span class="w"> </span><span class="mi">64</span><span class="w"> </span><span class="k">,</span><span class="w"> </span><span class="mi">9001</span><span class="w"> </span><span class="k">,</span><span class="w"> </span><span class="mi">1337</span><span class="w"> </span><span class="k">,</span><span class="w"> </span><span class="c1">\ ok (the last `,` is important!)</span>
+
+<span class="c1">\ ...which is equivalent to:</span>
+
+<span class="c1">\ Manually writing values to each index:</span>
+<span class="mi">64</span><span class="w"> </span><span class="nf">mynumbers</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">cells</span><span class="w"> </span><span class="k">+</span><span class="w"> </span><span class="k">!</span><span class="w">      </span><span class="c1">\ ok</span>
+<span class="mi">9001</span><span class="w"> </span><span class="nf">mynumbers</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">cells</span><span class="w"> </span><span class="k">+</span><span class="w"> </span><span class="k">!</span><span class="w">    </span><span class="c1">\ ok</span>
+<span class="mi">1337</span><span class="w"> </span><span class="nf">mynumbers</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">cells</span><span class="w"> </span><span class="k">+</span><span class="w"> </span><span class="k">!</span><span class="w">    </span><span class="c1">\ ok</span>
+
+<span class="c1">\ Reading values at certain array indexes:</span>
+<span class="mi">0</span><span class="w"> </span><span class="k">cells</span><span class="w"> </span><span class="nf">mynumbers</span><span class="w"> </span><span class="k">+</span><span class="w"> </span><span class="nf">?</span><span class="w">    </span><span class="c1">\ 64 ok</span>
+<span class="mi">1</span><span class="w"> </span><span class="k">cells</span><span class="w"> </span><span class="nf">mynumbers</span><span class="w"> </span><span class="k">+</span><span class="w"> </span><span class="nf">?</span><span class="w">    </span><span class="c1">\ 9001 ok</span>
+
+<span class="c1">\ We can simplify it a little by making a helper word for manipulating arrays:</span>
+<span class="kn">:</span><span class="w"> </span><span class="nc">of-arr</span><span class="w"> </span><span class="c1">( n n -- n )</span><span class="w"> </span><span class="k">cells</span><span class="w"> </span><span class="k">+</span><span class="w"> </span><span class="k">;</span><span class="w">    </span><span class="c1">\ ok</span>
+<span class="nf">mynumbers</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="nf">of-arr</span><span class="w"> </span><span class="nf">?</span><span class="w">               </span><span class="c1">\ 1337 ok</span>
+
+<span class="c1">\ Which we can use for writing too:</span>
+<span class="mi">20</span><span class="w"> </span><span class="nf">mynumbers</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nf">of-arr</span><span class="w"> </span><span class="k">!</span><span class="w">    </span><span class="c1">\ ok</span>
+<span class="nf">mynumbers</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nf">of-arr</span><span class="w"> </span><span class="nf">?</span><span class="w">       </span><span class="c1">\ 20 ok</span>
+
+<span class="c1">\ ------------------------------ The Return Stack ------------------------------</span>
+
+<span class="c1">\ The return stack is used to the hold pointers to things when words are</span>
+<span class="c1">\ executing other words, e.g. loops.</span>
+
+<span class="c1">\ We&#39;ve already seen one use of it: `i`, which duplicates the top of the return</span>
+<span class="c1">\ stack. `i` is equivalent to `r@`.</span>
+<span class="kn">:</span><span class="w"> </span><span class="nc">myloop</span><span class="w"> </span><span class="c1">( -- )</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="k">r@</span><span class="w"> </span><span class="k">.</span><span class="w"> </span><span class="k">loop</span><span class="w"> </span><span class="k">;</span><span class="w">    </span><span class="c1">\ ok</span>
+
+<span class="c1">\ As well as reading, we can add to the return stack and remove from it:</span>
+<span class="mi">5</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="k">&gt;r</span><span class="w"> </span><span class="k">swap</span><span class="w"> </span><span class="k">r&gt;</span><span class="w"> </span><span class="k">.s</span><span class="w">    </span><span class="c1">\ 6 5 4 ok</span>
+
+<span class="c1">\ NOTE: Because Forth uses the return stack for word pointers,  `&gt;r` should</span>
+<span class="c1">\ always be followed by `r&gt;`.</span>
+
+<span class="c1">\ ------------------------- Floating Point Operations --------------------------</span>
+
+<span class="c1">\ Most Forths tend to eschew the use of floating point operations.</span>
+<span class="mi">8</span><span class="kt">.3</span><span class="nf">e</span><span class="w"> </span><span class="mi">0</span><span class="kt">.8</span><span class="nf">e</span><span class="w"> </span><span class="k">f+</span><span class="w"> </span><span class="k">f.</span><span class="w">    </span><span class="c1">\ 9.1 ok</span>
+
+<span class="c1">\ Usually we simply prepend words with &#39;f&#39; when dealing with floats:</span>
+<span class="kn">variable</span><span class="w"> </span><span class="nc">myfloatingvar</span><span class="w">    </span><span class="c1">\ ok</span>
+<span class="mi">4</span><span class="kt">.4</span><span class="nf">e</span><span class="w"> </span><span class="nf">myfloatingvar</span><span class="w"> </span><span class="k">f!</span><span class="w">     </span><span class="c1">\ ok</span>
+<span class="nf">myfloatingvar</span><span class="w"> </span><span class="k">f@</span><span class="w"> </span><span class="k">f.</span><span class="w">       </span><span class="c1">\ 4.4 ok</span>
+
+<span class="c1">\ --------------------------------- Final Notes --------------------------------</span>
+
+<span class="c1">\ Typing a non-existent word will empty the stack. However, there&#39;s also a word</span>
+<span class="c1">\ specifically for that:</span>
+<span class="nf">clearstack</span>
+
+<span class="c1">\ Clear the screen:</span>
+<span class="k">page</span>
+
+<span class="c1">\ Loading Forth files:</span>
+<span class="c1">\ s&quot; forthfile.fs&quot; included</span>
+
+<span class="c1">\ You can list every word that&#39;s in Forth&#39;s dictionary (but it&#39;s a huge list!):</span>
+<span class="c1">\ words</span>
+
+<span class="c1">\ Exiting Gforth:</span>
+<span class="c1">\ bye</span>
+</pre></div>
+<p>##Ready For More?</p>
+<ul>
+<li><a href="http://www.forth.com/starting-forth/">Starting Forth</a></li>
+<li><a href="http://www.murphywong.net/hello/simple.htm">Simple Forth</a></li>
+<li><a href="http://thinking-forth.sourceforge.net/">Thinking Forth</a></li>
+</ul>
+
+        <hr>
+        <p>
+          Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the GitHub Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/forth.html.markdown">pull request</a> yourself!
+        </p>
+        <p class="contributed">
+          Originally contributed by Horse M.D., and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/forth.html.markdown">8 contributors</a>.
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2024
+            <a href="http://github.com/HorseMD/">Horse M.D.</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="pt-BR">
+    <title>Learn Julia in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/pt-br/julia/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fpt-br%2Fjulia%2F&amp;text=Aprenda+X+em+Y+Minutos%2C+onde+X%3DJulia">
+            Compartilhe esta página
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">Aprenda X em Y Minutos</a></h1>
+      <h2>Onde X=Julia</h2>
+      <p class="filelink">
+        Baixar o código:
+        <a href="/pt-br/files/learnjulia.jl">learnjulia.jl</a>
+      </p>
+      <div id="doc">
+<p>Julia é uma linguagem homoicônica funcional focada na computação técnica. Ao mesmo tempo que ela tem todo o poder dos macros homoicônicos, funções de primeira classe, e controle de baixo nível, Julia é tão fácil para aprender e usar quanto Python.</p>
+<p>Este tutorial é baseado no Julia 0.3.</p>
+<div class="highlight"><pre lang="julia"><span class="c"># Linhas únicas de comentários começam com o simbolo hash(jogo da velha).</span>
+<span class="cm">#= Comentários de multiplas linhas podem ser escritos</span>
+<span class="cm">   colocando &#39;#=&#39; antes do texto e &#39;=#&#39;</span>
+<span class="cm">   após o texto. Eles também podem ser agrupados</span>
+<span class="cm">=#</span>
+
+<span class="c">####################################################</span>
+<span class="c">## 1. Tipos primitivos e operadores</span>
+<span class="c">####################################################</span>
+
+<span class="c"># Tudo em Julia é uma expressão.</span>
+
+<span class="c"># Há muitos tipos básicos de numeros.</span>
+<span class="mi">3</span><span class="w"> </span><span class="c"># =&gt; 3 (Int64)</span>
+<span class="mf">3.2</span><span class="w"> </span><span class="c"># =&gt; 3.2 (Float64)</span>
+<span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="nb">im</span><span class="w"> </span><span class="c"># =&gt; 2 + 1im (Complex{Int64})</span>
+<span class="mi">2</span><span class="o">//</span><span class="mi">3</span><span class="w"> </span><span class="c"># =&gt; 2//3 (Rational{Int64})</span>
+
+<span class="c"># Todos os operadores inseguros normais estão disponiveis.</span>
+<span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="c"># =&gt; 2</span>
+<span class="mi">8</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="c"># =&gt; 7</span>
+<span class="mi">10</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="c"># =&gt; 20</span>
+<span class="mi">35</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="c"># =&gt; 7.0</span>
+<span class="mi">5</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="c"># =&gt; 2.5 # dividir um Int por um Int resulta em um float</span>
+<span class="n">div</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; 2 # para um restultado truncado, use div</span>
+<span class="mi">5</span><span class="w"> </span><span class="o">\</span><span class="w"> </span><span class="mi">35</span><span class="w"> </span><span class="c"># =&gt; 7.0</span>
+<span class="mi">2</span><span class="w"> </span><span class="o">^</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="c"># =&gt; 4 # elevado,não o opeardor binário xor</span>
+<span class="mi">12</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="c"># =&gt; 2</span>
+
+<span class="c"># Impõe a priodidade nos parenteses</span>
+<span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="c"># =&gt; 8</span>
+
+<span class="c"># Operadores binarios</span>
+<span class="o">~</span><span class="mi">2</span><span class="w"> </span><span class="c"># =&gt; -3   # not</span>
+<span class="mi">3</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="c"># =&gt; 1 # and</span>
+<span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="c"># =&gt; 6 # or</span>
+<span class="mi">2</span><span class="w"> </span><span class="o">$</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="c"># =&gt; 6 # xor</span>
+<span class="mi">2</span><span class="w"> </span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="c"># =&gt; 1 # deslocamento lógico de bits a direita</span>
+<span class="mi">2</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="c"># =&gt; 1 # deslocamento aritmético de bits a direita</span>
+<span class="mi">2</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="c"># =&gt; 4 # deslocamento lógico/aritmético de bits a esquerda</span>
+
+<span class="c"># Você pode usar a função bits para ver a representação binária de um numero.</span>
+<span class="n">bits</span><span class="p">(</span><span class="mi">12345</span><span class="p">)</span>
+<span class="c"># =&gt; &quot;0000000000000000000000000000000000000000000000000011000000111001&quot;</span>
+<span class="n">bits</span><span class="p">(</span><span class="mf">12345.0</span><span class="p">)</span>
+<span class="c"># =&gt; &quot;0100000011001000000111001000000000000000000000000000000000000000&quot;</span>
+
+<span class="c"># Valores booleanos são primitivos.</span>
+<span class="nb">true</span>
+<span class="nb">false</span>
+
+<span class="c"># Operadores booleanos</span>
+<span class="o">!</span><span class="nb">true</span><span class="w"> </span><span class="c"># =&gt; false</span>
+<span class="o">!</span><span class="nb">false</span><span class="w"> </span><span class="c"># =&gt; true</span>
+<span class="mi">1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="c"># =&gt; true</span>
+<span class="mi">2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="c"># =&gt; false</span>
+<span class="mi">1</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="c"># =&gt; false</span>
+<span class="mi">2</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="c"># =&gt; true</span>
+<span class="mi">1</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="c"># =&gt; true</span>
+<span class="mi">1</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="c"># =&gt; false</span>
+<span class="mi">2</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="c"># =&gt; true</span>
+<span class="mi">2</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="c"># =&gt; true</span>
+<span class="c"># Comparações podem ser encadeadas</span>
+<span class="mi">1</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="c"># =&gt; true</span>
+<span class="mi">2</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="c"># =&gt; false</span>
+
+<span class="c"># Strings são criadas com  &quot;</span>
+<span class="s">&quot;Isso é uma String.&quot;</span>
+
+<span class="c"># Caracteres literais são escritos com &#39;</span>
+<span class="sc">&#39;a&#39;</span>
+
+<span class="c"># Uma string pode ser indexada como um vetor de caracteres</span>
+<span class="s">&quot;Isso é uma string&quot;</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="c"># =&gt; &#39;I&#39; # Julia começa a indexar a partir do 1</span>
+<span class="c"># Porém isso não funcionará direito com strings em UTF8,</span>
+<span class="c"># portanto é recomendado usar iterações sobre uma string (map, loops com for, etc).</span>
+
+<span class="c"># $ pode ser usado para interpolação de string:</span>
+<span class="s">&quot;2 + 2 = </span><span class="si">$</span><span class="p">(</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="s">&quot;</span><span class="w"> </span><span class="c"># =&gt; &quot;2 + 2 = 4&quot;</span>
+<span class="c"># Você pode usar qualquer expressão Julia dentro dos parenteses.</span>
+
+<span class="c"># Outro jeito de formatar strings é com um macro no printf.</span>
+<span class="nd">@printf</span><span class="w"> </span><span class="s">&quot;</span><span class="si">%d</span><span class="s"> é menor que </span><span class="si">%f</span><span class="s">&quot;</span><span class="w"> </span><span class="mf">4.5</span><span class="w"> </span><span class="mf">5.3</span><span class="w"> </span><span class="c"># 5 é menor que 5.300000</span>
+
+<span class="c"># Escrever na tela é fácil</span>
+<span class="n">println</span><span class="p">(</span><span class="s">&quot;Eu sou Julia. Prazer em conhece-lo!&quot;</span><span class="p">)</span>
+
+<span class="c">####################################################</span>
+<span class="c">## 2. Variáveis e coleções</span>
+<span class="c">####################################################</span>
+
+<span class="c">#Você não declara variáveis antes de atribui-las.</span>
+<span class="n">some_var</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="c"># =&gt; 5</span>
+<span class="n">some_var</span><span class="w"> </span><span class="c"># =&gt; 5</span>
+
+<span class="c"># Acessando a variável anterior não iniciada é um erro</span>
+<span class="k">try</span>
+<span class="w">    </span><span class="n">some_other_var</span><span class="w"> </span><span class="c"># =&gt; ERROR: some_other_var não definida</span>
+<span class="k">catch</span><span class="w"> </span><span class="n">e</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c"># Nomes de variáveis começam com uma letra.</span>
+<span class="c"># Depois disso, você pode usar letras, digitos, underscores e pontos de exclamação.</span>
+<span class="n">SomeOtherVar123!</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="c"># =&gt; 6</span>
+
+<span class="c"># Você também pode usar caractéres unicode</span>
+<span class="n">☃</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="c"># =&gt; 8</span>
+<span class="c"># Estes são especialmente reservados para notações matemáticas.</span>
+<span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">π</span><span class="w"> </span><span class="c"># =&gt; 6.283185307179586</span>
+
+<span class="c"># Uma nota na convenção de nomes em Julia:</span>
+<span class="c">#</span>
+<span class="c"># * A separação de palavras pode ser feita por underscores (&#39;_&#39;), mas o uso</span>
+<span class="c">#   de underscore é desencorajado a menos que o nome da variável seja dificil</span>
+<span class="c">#   de ler.</span>
+<span class="c">#</span>
+<span class="c"># * Os nomes de tipos começam com letra maiúscula e a separação de letras é</span>
+<span class="c">#   feita a partir de CamelCase no lugar de underscores.</span>
+<span class="c">#</span>
+<span class="c"># * Nomes de funções e macros são em minúsculo, sem underscore.</span>
+<span class="c">#</span>
+<span class="c"># * Funções que modificam a própria entrada tem nomes que terminam em !. Estas</span>
+<span class="c">#   funções são chamadas as vezes de funções de mutação ou função in-place.</span>
+
+<span class="c"># Vetores armazenam uma sequencia de valores indexados por integer de 1 a n:</span>
+<span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Int64</span><span class="p">[]</span><span class="w"> </span><span class="c"># =&gt; 0-element Int64 Array</span>
+
+<span class="c"># 1-Vetores dimensionais literais podem ter seus valores separados por virgula.</span>
+<span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">]</span><span class="w"> </span><span class="c"># =&gt; 3-element Int64 Array: [4, 5, 6]</span>
+<span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="c"># =&gt; 4</span>
+<span class="n">b</span><span class="p">[</span><span class="k">end</span><span class="p">]</span><span class="w"> </span><span class="c"># =&gt; 6</span>
+
+<span class="c"># 2-Vetores dimensionais usam espaço para separar valores e ponto e virgula para linhas.</span>
+<span class="n">matrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="c"># =&gt; 2x2 Int64 Array: [1 2; 3 4]</span>
+
+<span class="c"># Adiciona-se coisas ao final de uma lista com push! e append!</span>
+<span class="n">push!</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w">     </span><span class="c"># =&gt; [1]</span>
+<span class="n">push!</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w">     </span><span class="c"># =&gt; [1,2]</span>
+<span class="n">push!</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="w">     </span><span class="c"># =&gt; [1,2,4]</span>
+<span class="n">push!</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="w">     </span><span class="c"># =&gt; [1,2,4,3]</span>
+<span class="n">append!</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; [1,2,4,3,4,5,6]</span>
+
+<span class="c"># Remove-se do final com pop!</span>
+<span class="n">pop!</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="w">        </span><span class="c"># =&gt; 6 e &#39;b&#39; agora é [4,5]</span>
+
+<span class="c"># Vamos coloca-lo de novo</span>
+<span class="n">push!</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span><span class="w">   </span><span class="c"># &#39;b&#39; agora é [4,5,6] de novo.</span>
+
+<span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="c"># =&gt; 1 # lembre-se que Julia indexa a partir de 1, não 0.</span>
+
+<span class="c"># end é um atalho para a ultima posição. Pode ser usada em qualquer</span>
+<span class="c"># expressão indexada.</span>
+<span class="n">a</span><span class="p">[</span><span class="k">end</span><span class="p">]</span><span class="w"> </span><span class="c"># =&gt; 6</span>
+
+<span class="c"># nós também temos shift e unshift</span>
+<span class="n">shift!</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; 1 e &#39;a&#39; agora é [2,4,3,4,5,6]</span>
+<span class="n">unshift!</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; [7,2,4,3,4,5,6]</span>
+
+<span class="c"># Funções que terminam com ponto de exclamação indicam que elas modificam</span>
+<span class="c"># seus argumentos.</span>
+<span class="n">arr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span><span class="w"> </span><span class="c"># =&gt; 3-element Int64 Array: [5,4,6]</span>
+<span class="n">sort</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; [4,5,6]; &#39;arr&#39; continua [5,4,6]</span>
+<span class="n">sort!</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; [4,5,6]; &#39;arr&#39; agora é [4,5,6]</span>
+
+<span class="c"># Olhar além dos limites é um BoundsError</span>
+<span class="k">try</span>
+<span class="w">    </span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="c"># =&gt; ERROR: BoundsError() in getindex at array.jl:270</span>
+<span class="w">    </span><span class="n">a</span><span class="p">[</span><span class="k">end</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="c"># =&gt; ERROR: BoundsError() in getindex at array.jl:270</span>
+<span class="k">catch</span><span class="w"> </span><span class="n">e</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c"># Erros listam a linha e o nome do arquivo que ele está, mesmo se for uma</span>
+<span class="c"># biblioteca padrão. Se você construiu Julia pelo source, você pode olhar na</span>
+<span class="c"># pasta base dentro da pasta do Julia para encontrar esses arquivos.</span>
+
+<span class="c"># Você pode inicializar vetores com limites</span>
+<span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">5</span><span class="p">;]</span><span class="w"> </span><span class="c"># =&gt; 5-element Int64 Array: [1,2,3,4,5]</span>
+
+<span class="c"># Você pode ver até um limite com a sintaxe separada</span>
+<span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="c"># =&gt; [1, 2, 3]</span>
+<span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="o">:</span><span class="k">end</span><span class="p">]</span><span class="w"> </span><span class="c"># =&gt; [2, 3, 4, 5]</span>
+
+<span class="c"># Remova elementos de um array pelo index com splice!</span>
+<span class="n">arr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
+<span class="n">splice!</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; 4 ; arr is now [3,5]</span>
+
+<span class="c"># Concatene listas com append!</span>
+<span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">append!</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="c"># &#39;a&#39; agora é [1, 2, 3, 4, 5, 1, 2, 3]</span>
+
+<span class="c"># Cheque se um valor existe me uma lista com in</span>
+<span class="k">in</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; true</span>
+
+<span class="c"># Veja o tamanho com lenght</span>
+<span class="n">length</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; 8</span>
+
+<span class="c"># Tuples não podem ser mudados.</span>
+<span class="n">tup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; (1,2,3) # um tuple (Int64,Int64,Int64).</span>
+<span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="c"># =&gt; 1</span>
+<span class="k">try</span><span class="o">:</span>
+<span class="w">    </span><span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="c"># =&gt; ERROR: não há metodo setindex!((Int64,Int64,Int64),Int64,Int64)</span>
+<span class="k">catch</span><span class="w"> </span><span class="n">e</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c"># Muitas litas de funções também trabalham com tuples</span>
+<span class="n">length</span><span class="p">(</span><span class="n">tup</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; 3</span>
+<span class="n">tup</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="c"># =&gt; (1,2)</span>
+<span class="k">in</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">tup</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; true</span>
+
+<span class="c">#Você pode desempacotar tuples para variáveis.</span>
+<span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; (1,2,3)  # &#39;a&#39; agora é 1, &#39;b&#39; agora é 2 e &#39;c&#39; agora é 3</span>
+
+<span class="c"># Tuplas são criados mesmo se você deixar fora dos parenteses</span>
+<span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="c"># =&gt; (4,5,6)</span>
+
+<span class="c"># Uma tupla de um elemento é diferente do valor que ele contém</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">,)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="c"># =&gt; false</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="c"># =&gt; true</span>
+
+<span class="c"># Olhe como é facil pra trocar dois valores</span>
+<span class="n">e</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="w">  </span><span class="c"># =&gt; (5,4) # &#39;d&#39; agora é 5 e &#39;e&#39; agora é 4</span>
+
+<span class="c"># Dicionários armazenam mapeamentos</span>
+<span class="n">empty_dict</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Dict</span><span class="p">()</span><span class="w"> </span><span class="c"># =&gt; Dict{Any,Any}()</span>
+
+<span class="c"># Você pode criar um dicionário usando um literal</span>
+<span class="n">filled_dict</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;one&quot;</span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;two&quot;</span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;three&quot;</span><span class="o">=&gt;</span><span class="w"> </span><span class="mi">3</span><span class="p">]</span>
+<span class="c"># =&gt; Dict{ASCIIString,Int64}</span>
+
+<span class="c"># Veja os valores com []</span>
+<span class="n">filled_dict</span><span class="p">[</span><span class="s">&quot;one&quot;</span><span class="p">]</span><span class="w"> </span><span class="c"># =&gt; 1</span>
+
+<span class="c"># Pegue todas as chaves</span>
+<span class="n">keys</span><span class="p">(</span><span class="n">filled_dict</span><span class="p">)</span>
+<span class="c"># =&gt; KeyIterator{Dict{ASCIIString,Int64}}([&quot;three&quot;=&gt;3,&quot;one&quot;=&gt;1,&quot;two&quot;=&gt;2])</span>
+<span class="c"># Nota - as chaves dos dicionários não são ordenadas nem estão na ordem que você as inseriu.</span>
+
+<span class="c"># Pegue todos os valores</span>
+<span class="n">values</span><span class="p">(</span><span class="n">filled_dict</span><span class="p">)</span>
+<span class="c"># =&gt; ValueIterator{Dict{ASCIIString,Int64}}([&quot;three&quot;=&gt;3,&quot;one&quot;=&gt;1,&quot;two&quot;=&gt;2])</span>
+<span class="c"># Nota - A mesma coisa que na nota acima sobre a ordenação das chaves.</span>
+
+<span class="c"># Cheque pela existencia de chaves em um dicionário com in e haskey</span>
+<span class="k">in</span><span class="p">((</span><span class="s">&quot;one&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="n">filled_dict</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; true</span>
+<span class="k">in</span><span class="p">((</span><span class="s">&quot;two&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="n">filled_dict</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; false</span>
+<span class="n">haskey</span><span class="p">(</span><span class="n">filled_dict</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;one&quot;</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; true</span>
+<span class="n">haskey</span><span class="p">(</span><span class="n">filled_dict</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; false</span>
+
+<span class="c"># Procurar por uma chave não existente irá gerar um erro</span>
+<span class="k">try</span>
+<span class="w">    </span><span class="n">filled_dict</span><span class="p">[</span><span class="s">&quot;four&quot;</span><span class="p">]</span><span class="w"> </span><span class="c"># =&gt; ERROR: key not found: four in getindex at dict.jl:489</span>
+<span class="k">catch</span><span class="w"> </span><span class="n">e</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c"># Use o método get para escapar desse erro passando um valor padrão</span>
+<span class="c"># get(dictionary,key,default_value)</span>
+<span class="n">get</span><span class="p">(</span><span class="n">filled_dict</span><span class="p">,</span><span class="s">&quot;one&quot;</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; 1</span>
+<span class="n">get</span><span class="p">(</span><span class="n">filled_dict</span><span class="p">,</span><span class="s">&quot;four&quot;</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; 4</span>
+
+<span class="c"># Use sets para representar coleções de valores unicos e não ordenados</span>
+<span class="n">empty_set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Set</span><span class="p">()</span><span class="w"> </span><span class="c"># =&gt; Set{Any}()</span>
+<span class="c"># Inicialize um set com valores</span>
+<span class="n">filled_set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; Set{Int64}(1,2,3,4)</span>
+
+<span class="c"># Adicione mais valores para um set</span>
+<span class="n">push!</span><span class="p">(</span><span class="n">filled_set</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; Set{Int64}(5,4,2,3,1)</span>
+
+<span class="c"># Cheque se um valor está no set</span>
+<span class="k">in</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">filled_set</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; true</span>
+<span class="k">in</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="n">filled_set</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; false</span>
+
+<span class="c"># Não há funções para interseção de set, união e diferença.</span>
+<span class="n">other_set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kt">Set</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; Set{Int64}(6,4,5,3)</span>
+<span class="n">intersect</span><span class="p">(</span><span class="n">filled_set</span><span class="p">,</span><span class="w"> </span><span class="n">other_set</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; Set{Int64}(3,4,5)</span>
+<span class="n">union</span><span class="p">(</span><span class="n">filled_set</span><span class="p">,</span><span class="w"> </span><span class="n">other_set</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; Set{Int64}(1,2,3,4,5,6)</span>
+<span class="n">setdiff</span><span class="p">(</span><span class="kt">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="kt">Set</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span><span class="w"> </span><span class="c"># =&gt; Set{Int64}(1,4)</span>
+
+<span class="c">####################################################</span>
+<span class="c">## 3. Controle de fluxo</span>
+<span class="c">####################################################</span>
+
+<span class="c"># Vamos fazer uma variável</span>
+<span class="n">some_var</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span>
+
+<span class="c"># Aqui está um if. Identação nao é importante em Julia.</span>
+<span class="k">if</span><span class="w"> </span><span class="n">some_var</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;some_var é totalmente maior que 10.&quot;</span><span class="p">)</span>
+<span class="k">elseif</span><span class="w"> </span><span class="n">some_var</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="w">    </span><span class="c"># Essa clausula elseif é opcional.</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;some_var é menor que 10.&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="w">                    </span><span class="c"># A clausula else é opcional também.</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;some_var é literalmente 10.&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="c"># =&gt; exibe &quot;some_var é menor que 10&quot;</span>
+
+<span class="c"># Loops for repetem sobre variaveis iteráveis.</span>
+<span class="c"># Tipos iterativos incluem Range, Array, set Dict e String.</span>
+<span class="k">for</span><span class="w"> </span><span class="n">animal</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;dog&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;cat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;mouse&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$animal</span><span class="s"> is a mammal&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="c"># Você pode interpolar variáveis usando $ ou expressões em strings</span>
+<span class="k">end</span>
+<span class="c"># exibe:</span>
+<span class="c">#    dog is a mammal</span>
+<span class="c">#    cat is a mammal</span>
+<span class="c">#    mouse is a mammal</span>
+
+<span class="c"># Você pode usar &#39;in&#39; no lugar de &#39;=&#39;.</span>
+<span class="k">for</span><span class="w"> </span><span class="n">animal</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;dog&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;cat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;mouse&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$animal</span><span class="s"> is a mammal&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="c"># exibe:</span>
+<span class="c">#    dog is a mammal</span>
+<span class="c">#    cat is a mammal</span>
+<span class="c">#    mouse is a mammal</span>
+
+<span class="k">for</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;dog&quot;</span><span class="o">=&gt;</span><span class="s">&quot;mammal&quot;</span><span class="p">,</span><span class="s">&quot;cat&quot;</span><span class="o">=&gt;</span><span class="s">&quot;mammal&quot;</span><span class="p">,</span><span class="s">&quot;mouse&quot;</span><span class="o">=&gt;</span><span class="s">&quot;mammal&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="s"> is a </span><span class="si">$</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="c"># exibe:</span>
+<span class="c">#    dog is a mammal</span>
+<span class="c">#    cat is a mammal</span>
+<span class="c">#    mouse is a mammal</span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;dog&quot;</span><span class="o">=&gt;</span><span class="s">&quot;mammal&quot;</span><span class="p">,</span><span class="s">&quot;cat&quot;</span><span class="o">=&gt;</span><span class="s">&quot;mammal&quot;</span><span class="p">,</span><span class="s">&quot;mouse&quot;</span><span class="o">=&gt;</span><span class="s">&quot;mammal&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;</span><span class="si">$k</span><span class="s"> is a </span><span class="si">$v</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="c"># exibe:</span>
+<span class="c">#    dog is a mammal</span>
+<span class="c">#    cat is a mammal</span>
+<span class="c">#    mouse is a mammal</span>
+
+<span class="c"># Loops while circulam enquanto a condição é true</span>
+<span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="k">while</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="w">    </span><span class="n">x</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="c"># Abreveação para x = x + 1</span>
+<span class="k">end</span>
+<span class="c"># exibe:</span>
+<span class="c">#   0</span>
+<span class="c">#   1</span>
+<span class="c">#   2</span>
+<span class="c">#   3</span>
+
+<span class="c"># Trate exceções com um bloco try/catch</span>
+<span class="k">try</span>
+<span class="w">   </span><span class="n">error</span><span class="p">(</span><span class="s">&quot;help&quot;</span><span class="p">)</span>
+<span class="k">catch</span><span class="w"> </span><span class="n">e</span>
+<span class="w">   </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;caught it </span><span class="si">$e</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="c"># =&gt; caught it ErrorException(&quot;help&quot;)</span>
+
+
+<span class="c">####################################################</span>
+<span class="c">## 4. Funções</span>
+<span class="c">####################################################</span>
+
+<span class="c"># A palavra chave &#39;function&#39; cria novas funções</span>
+<span class="c">#function name(arglist)</span>
+<span class="c">#  corpo...</span>
+<span class="c">#end</span>
+<span class="k">function</span><span class="w"> </span><span class="n">add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">)</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;x is </span><span class="si">$x</span><span class="s"> and y is </span><span class="si">$y</span><span class="s">&quot;</span><span class="p">)</span>
+
+<span class="w">    </span><span class="c"># Funções retornam o valor da sua ultima declaração</span>
+<span class="n">t</span><span class="w">    </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span>
+<span class="k">end</span>
+
+<span class="n">add</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; 11 after printing out &quot;x is 5 and y is 6&quot;</span>
+
+<span class="c"># Você pode definir funções que tomam um numero incerto de</span>
+<span class="c"># argumentos</span>
+<span class="k">function</span><span class="w"> </span><span class="n">varargs</span><span class="p">(</span><span class="n">args</span><span class="o">...</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">args</span>
+<span class="w">    </span><span class="c"># use a palavra chave return para retornar um valor em qualquer parte da função</span>
+<span class="k">end</span>
+<span class="c"># =&gt; varargs (generic function with 1 method)</span>
+
+<span class="n">varargs</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; (1,2,3)</span>
+
+<span class="c"># O ... é chamado de splat.</span>
+<span class="c"># Nós apenas o usamos na definição de uma função.</span>
+<span class="c"># Também pode ser usado na chamada de uma função,</span>
+<span class="c"># onde ela vai abrir um Array ou o conteúdo de um Tuple na lista de argumentos.</span>
+<span class="kt">Set</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span><span class="w">    </span><span class="c"># =&gt; Set{Array{Int64,1}}([1,2,3]) # produz um Set de Arrays</span>
+<span class="kt">Set</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span><span class="o">...</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; Set{Int64}(1,2,3) # isso é equivalente a Set(1,2,3)</span>
+
+<span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="w">     </span><span class="c"># =&gt; (1,2,3)</span>
+<span class="kt">Set</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w">          </span><span class="c"># =&gt; Set{(Int64,Int64,Int64)}((1,2,3)) # um Set de Tuples</span>
+<span class="kt">Set</span><span class="p">(</span><span class="n">x</span><span class="o">...</span><span class="p">)</span><span class="w">       </span><span class="c"># =&gt; Set{Int64}(2,3,1)</span>
+
+<span class="c"># Você pode definir funções com argumentos posicionais opcionais.</span>
+<span class="k">function</span><span class="w"> </span><span class="n">defaults</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">x</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;</span><span class="si">$a</span><span class="s"> </span><span class="si">$b</span><span class="s"> and </span><span class="si">$x</span><span class="s"> </span><span class="si">$y</span><span class="s">&quot;</span>
+<span class="k">end</span>
+
+<span class="n">defaults</span><span class="p">(</span><span class="sc">&#39;h&#39;</span><span class="p">,</span><span class="sc">&#39;g&#39;</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; &quot;h g and 5 6&quot;</span>
+<span class="n">defaults</span><span class="p">(</span><span class="sc">&#39;h&#39;</span><span class="p">,</span><span class="sc">&#39;g&#39;</span><span class="p">,</span><span class="sc">&#39;j&#39;</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; &quot;h g and j 6&quot;</span>
+<span class="n">defaults</span><span class="p">(</span><span class="sc">&#39;h&#39;</span><span class="p">,</span><span class="sc">&#39;g&#39;</span><span class="p">,</span><span class="sc">&#39;j&#39;</span><span class="p">,</span><span class="sc">&#39;k&#39;</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; &quot;h g and j k&quot;</span>
+<span class="k">try</span>
+<span class="w">    </span><span class="n">defaults</span><span class="p">(</span><span class="sc">&#39;h&#39;</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; ERROR: no method defaults(Char,)</span>
+<span class="w">    </span><span class="n">defaults</span><span class="p">()</span><span class="w"> </span><span class="c"># =&gt; ERROR: no methods defaults()</span>
+<span class="k">catch</span><span class="w"> </span><span class="n">e</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c"># Você pode definir funções que tomam argumentos como palavras chaves</span>
+<span class="k">function</span><span class="w"> </span><span class="n">keyword_args</span><span class="p">(;</span><span class="n">k1</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span><span class="n">name2</span><span class="o">=</span><span class="s">&quot;hello&quot;</span><span class="p">)</span><span class="w"> </span><span class="c"># note the ;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;k1&quot;</span><span class="o">=&gt;</span><span class="n">k1</span><span class="p">,</span><span class="s">&quot;name2&quot;</span><span class="o">=&gt;</span><span class="n">name2</span><span class="p">]</span>
+<span class="k">end</span>
+
+<span class="n">keyword_args</span><span class="p">(</span><span class="n">name2</span><span class="o">=</span><span class="s">&quot;ness&quot;</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; [&quot;name2&quot;=&gt;&quot;ness&quot;,&quot;k1&quot;=&gt;4]</span>
+<span class="n">keyword_args</span><span class="p">(</span><span class="n">k1</span><span class="o">=</span><span class="s">&quot;mine&quot;</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; [&quot;k1&quot;=&gt;&quot;mine&quot;,&quot;name2&quot;=&gt;&quot;hello&quot;]</span>
+<span class="n">keyword_args</span><span class="p">()</span><span class="w"> </span><span class="c"># =&gt; [&quot;name2&quot;=&gt;&quot;hello&quot;,&quot;k1&quot;=&gt;4]</span>
+
+<span class="c"># Você pode combinar todos os tipos de argumentos em uma só função</span>
+<span class="k">function</span><span class="w"> </span><span class="n">all_the_args</span><span class="p">(</span><span class="n">normal_arg</span><span class="p">,</span><span class="w"> </span><span class="n">optional_positional_arg</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="n">keyword_arg</span><span class="o">=</span><span class="s">&quot;foo&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;normal arg: </span><span class="si">$normal_arg</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;optional arg: </span><span class="si">$optional_positional_arg</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;keyword arg: </span><span class="si">$keyword_arg</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">all_the_args</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">keyword_arg</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="c"># exibe:</span>
+<span class="c">#   normal arg: 1</span>
+<span class="c">#   optional arg: 3</span>
+<span class="c">#   keyword arg: 4</span>
+
+<span class="c"># Julia tem funções de primeira classe</span>
+<span class="k">function</span><span class="w"> </span><span class="n">create_adder</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="w">    </span><span class="n">adder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">function</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span>
+<span class="w">    </span><span class="k">end</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">adder</span>
+<span class="k">end</span>
+
+<span class="c"># Isso é &quot;sintexe furiosa de lambda&quot; pra criar funções anônimas.</span>
+<span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">2</span><span class="p">)(</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; true</span>
+
+<span class="c">#Esta função é identica a implementação da create_adder acima.</span>
+<span class="k">function</span><span class="w"> </span><span class="n">create_adder</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="w">    </span><span class="n">y</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span>
+<span class="k">end</span>
+
+<span class="c"># Você também pode nomear funções internas, se você quiser</span>
+<span class="k">function</span><span class="w"> </span><span class="n">create_adder</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="w">    </span><span class="k">function</span><span class="w"> </span><span class="n">adder</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span>
+<span class="w">    </span><span class="k">end</span>
+<span class="w">    </span><span class="n">adder</span>
+<span class="k">end</span>
+
+<span class="n">add_10</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_adder</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">add_10</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; 13</span>
+
+
+<span class="c"># Há</span>
+<span class="c"># There are built-in higher order functions</span>
+<span class="n">map</span><span class="p">(</span><span class="n">add_10</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c"># =&gt; [11, 12, 13]</span>
+<span class="n">filter</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">])</span><span class="w"> </span><span class="c"># =&gt; [6, 7]</span>
+
+<span class="c"># Nós podemos usar listas de compreensão para melhores mapeamentos</span>
+<span class="p">[</span><span class="n">add_10</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">]]</span><span class="w"> </span><span class="c"># =&gt; [11, 12, 13]</span>
+<span class="p">[</span><span class="n">add_10</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">]]</span><span class="w"> </span><span class="c"># =&gt; [11, 12, 13]</span>
+
+<span class="c">####################################################</span>
+<span class="c">## 5. Tipos</span>
+<span class="c">####################################################</span>
+
+<span class="c">#Julia tem um sistema de tipos.</span>
+<span class="c"># Todo valor tem um tipo. Variaveis não tem tipos próprios.</span>
+<span class="c"># Você pode usar a função &#39;typeof&#39; para pegar o valor.</span>
+<span class="n">typeof</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; Int64</span>
+
+<span class="c"># Tipos são valores de primeira classe.</span>
+<span class="n">typeof</span><span class="p">(</span><span class="kt">Int64</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; DataType</span>
+<span class="n">typeof</span><span class="p">(</span><span class="kt">DataType</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; DataType</span>
+<span class="c"># DataType é o tipo que representa tipos, incluindo ele mesmo.</span>
+
+<span class="c"># Tipos são usados para documentação, optimização e envio</span>
+<span class="c"># Eles não são estaticamente checados.</span>
+
+<span class="c"># Usuários podem definir tipos</span>
+<span class="c"># Eles são como records ou structs em outras linguagens.</span>
+<span class="c"># Novos tipos são definidos usando a palavra chave &#39;type&#39;</span>
+
+<span class="c"># type Name</span>
+<span class="c">#   field::OptionalType</span>
+<span class="c">#   ...</span>
+<span class="c"># end</span>
+<span class="n">type</span><span class="w"> </span><span class="n">Tiger</span>
+<span class="w">  </span><span class="n">taillength</span><span class="o">::</span><span class="kt">Float64</span>
+<span class="w">  </span><span class="n">coatcolor</span><span class="w"> </span><span class="c"># não incluindo uma notação type é o mesmo que &#39;::Any&#39;</span>
+<span class="k">end</span>
+
+<span class="c"># Os argumentos padrões de um construtor são as propriedades</span>
+<span class="c"># do tipo na ordem que eles são listados na definição.</span>
+<span class="n">tigger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Tiger</span><span class="p">(</span><span class="mf">3.5</span><span class="p">,</span><span class="s">&quot;orange&quot;</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; Tiger(3.5,&quot;orange&quot;)</span>
+
+<span class="c"># O tipo double como construtor de função para valores desse tipo</span>
+<span class="c"># The type doubles as the constructor function for values of that type</span>
+<span class="n">sherekhan</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">typeof</span><span class="p">(</span><span class="n">tigger</span><span class="p">)(</span><span class="mf">5.6</span><span class="p">,</span><span class="s">&quot;fire&quot;</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; Tiger(5.6,&quot;fire&quot;)</span>
+
+<span class="c"># Esses tipos no estilo struct são chamados tipos concretos</span>
+<span class="c"># Eles podem ser instanciados, mas não podem ter subtipos.</span>
+<span class="c"># O outro tipo de tipos são os tipos abstratos.</span>
+
+<span class="c"># abstract Name</span>
+<span class="n">abstract</span><span class="w"> </span><span class="n">Cat</span><span class="w"> </span><span class="c"># apenas um nome e um ponto na hierarquia de tipo</span>
+
+<span class="c"># Tipos abstratos podem ser instanciados, mas não podem ter subtipos.</span>
+<span class="c"># Por exemplo, Number é um tipo abstrato</span>
+<span class="n">subtypes</span><span class="p">(</span><span class="kt">Number</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; 6-element Array{Any,1}:</span>
+<span class="w">                 </span><span class="c">#     Complex{Float16}</span>
+<span class="w">                 </span><span class="c">#     Complex{Float32}</span>
+<span class="w">                 </span><span class="c">#     Complex{Float64}</span>
+<span class="w">                 </span><span class="c">#     Complex{T&lt;:Real}</span>
+<span class="w">                 </span><span class="c">#     ImaginaryUnit</span>
+<span class="w">                 </span><span class="c">#     Real</span>
+<span class="n">subtypes</span><span class="p">(</span><span class="n">Cat</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; 0-element Array{Any,1}</span>
+
+<span class="c"># Todo tipo tem um super tipo; use a função &#39;super&#39; para pegá-lo.</span>
+<span class="n">typeof</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; Int64</span>
+<span class="n">super</span><span class="p">(</span><span class="kt">Int64</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; Signed</span>
+<span class="n">super</span><span class="p">(</span><span class="kt">Signed</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; Real</span>
+<span class="n">super</span><span class="p">(</span><span class="kt">Real</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; Number</span>
+<span class="n">super</span><span class="p">(</span><span class="kt">Number</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; Any</span>
+<span class="n">super</span><span class="p">(</span><span class="n">super</span><span class="p">(</span><span class="kt">Signed</span><span class="p">))</span><span class="w"> </span><span class="c"># =&gt; Number</span>
+<span class="n">super</span><span class="p">(</span><span class="kt">Any</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; Any</span>
+<span class="c"># Todos esss tipos, exceto o Int64, são abstratos.</span>
+
+<span class="c"># &lt;: é o operador de subtipagem</span>
+<span class="n">type</span><span class="w"> </span><span class="kt">Lion</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Cat</span><span class="w"> </span><span class="c"># Lion é um subtipo de Cat</span>
+<span class="w">  </span><span class="n">mane_color</span>
+<span class="w">  </span><span class="n">roar</span><span class="o">::</span><span class="kt">String</span>
+<span class="k">end</span>
+
+<span class="c"># Você pode definir mais construtores para seu tipo</span>
+<span class="c"># É só definir uma função com o mesmo nome do tipo</span>
+<span class="c"># e chamar um construtor existente para pegar o valor do tipo correto</span>
+<span class="n">Lion</span><span class="p">(</span><span class="n">roar</span><span class="o">::</span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Lion</span><span class="p">(</span><span class="s">&quot;green&quot;</span><span class="p">,</span><span class="n">roar</span><span class="p">)</span>
+<span class="c"># Isso é um construtor externo porque ele está fora da definição do tipo</span>
+
+<span class="n">type</span><span class="w"> </span><span class="kt">Panther</span><span class="w"> </span><span class="o">&lt;:</span><span class="w"> </span><span class="kt">Cat</span><span class="w"> </span><span class="c"># Panther também é um subtipo de Cat</span>
+<span class="w">  </span><span class="n">eye_color</span>
+<span class="w">  </span><span class="n">Panther</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new</span><span class="p">(</span><span class="s">&quot;green&quot;</span><span class="p">)</span>
+<span class="c"># Panthers terão apenas esse construtor, e não construtor padrão.</span>
+<span class="k">end</span>
+<span class="c"># Usando construtores internos, como Panther faz, lhe da o controle</span>
+<span class="c"># sobre como os valores dos tipos são criados.</span>
+<span class="c"># Quando possivel, você deve usar construtores externos mais do que internos.</span>
+
+<span class="c">####################################################</span>
+<span class="c">## 6. Multiple-Dispatch</span>
+<span class="c">####################################################</span>
+
+
+<span class="c"># Em Julia todas as funções nomeadas são funções genericas</span>
+<span class="c"># Isso significa que elas são construidas de muitos métodos pequenos</span>
+<span class="c"># Cada construtor para Lion é um metodo da função genérica Lion.Lion.</span>
+
+<span class="c"># Para um exemplo sem construtor, vamos fazer a função meow</span>
+
+<span class="c"># Definição para Lion, Panther e Tiger</span>
+<span class="k">function</span><span class="w"> </span><span class="n">meow</span><span class="p">(</span><span class="n">animal</span><span class="o">::</span><span class="kt">Lion</span><span class="p">)</span>
+<span class="w">  </span><span class="n">animal</span><span class="o">.</span><span class="n">roar</span><span class="w"> </span><span class="c">#propriedades do tipo de acesso usando a notação ponto &#39;.&#39;</span>
+<span class="k">end</span>
+
+<span class="k">function</span><span class="w"> </span><span class="n">meow</span><span class="p">(</span><span class="n">animal</span><span class="o">::</span><span class="kt">Panther</span><span class="p">)</span>
+<span class="w">  </span><span class="s">&quot;grrr&quot;</span>
+<span class="k">end</span>
+
+<span class="k">function</span><span class="w"> </span><span class="n">meow</span><span class="p">(</span><span class="n">animal</span><span class="o">::</span><span class="kt">Tiger</span><span class="p">)</span>
+<span class="w">  </span><span class="s">&quot;rawwwr&quot;</span>
+<span class="k">end</span>
+
+<span class="c"># Testando a função meow</span>
+<span class="n">meow</span><span class="p">(</span><span class="n">tigger</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; &quot;rawwr&quot;</span>
+<span class="n">meow</span><span class="p">(</span><span class="n">Lion</span><span class="p">(</span><span class="s">&quot;brown&quot;</span><span class="p">,</span><span class="s">&quot;ROAAR&quot;</span><span class="p">))</span><span class="w"> </span><span class="c"># =&gt; &quot;ROAAR&quot;</span>
+<span class="n">meow</span><span class="p">(</span><span class="n">Panther</span><span class="p">())</span><span class="w"> </span><span class="c"># =&gt; &quot;grrr&quot;</span>
+
+<span class="c"># Revendo o tipo local de hierarchy</span>
+<span class="n">issubtype</span><span class="p">(</span><span class="n">Tiger</span><span class="p">,</span><span class="n">Cat</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; false</span>
+<span class="n">issubtype</span><span class="p">(</span><span class="n">Lion</span><span class="p">,</span><span class="n">Cat</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; true</span>
+<span class="n">issubtype</span><span class="p">(</span><span class="n">Panther</span><span class="p">,</span><span class="n">Cat</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; true</span>
+
+<span class="c"># Definindo uma função que recebe Cats</span>
+<span class="k">function</span><span class="w"> </span><span class="n">pet_cat</span><span class="p">(</span><span class="n">cat</span><span class="o">::</span><span class="kt">Cat</span><span class="p">)</span>
+<span class="w">  </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;The cat says </span><span class="si">$</span><span class="p">(</span><span class="n">meow</span><span class="p">(</span><span class="n">cat</span><span class="p">))</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">pet_cat</span><span class="p">(</span><span class="n">Lion</span><span class="p">(</span><span class="s">&quot;42&quot;</span><span class="p">))</span><span class="w"> </span><span class="c"># =&gt; exibe &quot;The cat says 42&quot;</span>
+<span class="k">try</span>
+<span class="w">    </span><span class="n">pet_cat</span><span class="p">(</span><span class="n">tigger</span><span class="p">)</span><span class="w"> </span><span class="c"># =&gt; ERROR: no method pet_cat(Tiger,)</span>
+<span class="k">catch</span><span class="w"> </span><span class="n">e</span>
+<span class="w">    </span><span class="n">println</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c"># Em linguagens orientadas a objeto, envio unico é comúm</span>
+<span class="c"># isso significa que o método é selecionado baseado no tipo do seu primeiro argumento</span>
+<span class="c"># Em Julia todos os tipos de argumentos contribuem na seleção do melhor método</span>
+
+
+<span class="c"># Vamos definir uma função com mais argumentos, então poderemos ver a diferença</span>
+<span class="k">function</span><span class="w"> </span><span class="n">fight</span><span class="p">(</span><span class="n">t</span><span class="o">::</span><span class="kt">Tiger</span><span class="p">,</span><span class="n">c</span><span class="o">::</span><span class="kt">Cat</span><span class="p">)</span>
+<span class="w">  </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;The </span><span class="si">$</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">coatcolor</span><span class="p">)</span><span class="s"> tiger wins!&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="c"># =&gt; fight (generic function with 1 method)</span>
+
+<span class="n">fight</span><span class="p">(</span><span class="n">tigger</span><span class="p">,</span><span class="n">Panther</span><span class="p">())</span><span class="w"> </span><span class="c"># =&gt; exibe The orange tiger wins!</span>
+<span class="n">fight</span><span class="p">(</span><span class="n">tigger</span><span class="p">,</span><span class="n">Lion</span><span class="p">(</span><span class="s">&quot;ROAR&quot;</span><span class="p">))</span><span class="w"> </span><span class="c"># =&gt; exibir The orange tiger wins!</span>
+
+<span class="c"># Vamos mudar o comportamento quando o gato é especificamente um leão</span>
+<span class="n">fight</span><span class="p">(</span><span class="n">t</span><span class="o">::</span><span class="kt">Tiger</span><span class="p">,</span><span class="n">l</span><span class="o">::</span><span class="kt">Lion</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;The </span><span class="si">$</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">mane_color</span><span class="p">)</span><span class="s">-maned lion wins!&quot;</span><span class="p">)</span>
+<span class="c"># =&gt; fight (generic function with 2 methods)</span>
+
+<span class="n">fight</span><span class="p">(</span><span class="n">tigger</span><span class="p">,</span><span class="n">Panther</span><span class="p">())</span><span class="w"> </span><span class="c"># =&gt; exobe The orange tiger wins!</span>
+<span class="n">fight</span><span class="p">(</span><span class="n">tigger</span><span class="p">,</span><span class="n">Lion</span><span class="p">(</span><span class="s">&quot;ROAR&quot;</span><span class="p">))</span><span class="w"> </span><span class="c"># =&gt; exobe The green-maned lion wins!</span>
+
+<span class="c"># Nós não precisamos de um tigre para brigar</span>
+<span class="n">fight</span><span class="p">(</span><span class="n">l</span><span class="o">::</span><span class="kt">Lion</span><span class="p">,</span><span class="n">c</span><span class="o">::</span><span class="kt">Cat</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;The victorious cat says </span><span class="si">$</span><span class="p">(</span><span class="n">meow</span><span class="p">(</span><span class="n">c</span><span class="p">))</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="c"># =&gt; fight (generic function with 3 methods)</span>
+
+<span class="n">fight</span><span class="p">(</span><span class="n">Lion</span><span class="p">(</span><span class="s">&quot;balooga!&quot;</span><span class="p">),</span><span class="n">Panther</span><span class="p">())</span><span class="w"> </span><span class="c"># =&gt; exibe The victorious cat says grrr</span>
+<span class="k">try</span>
+<span class="w">  </span><span class="n">fight</span><span class="p">(</span><span class="n">Panther</span><span class="p">(),</span><span class="n">Lion</span><span class="p">(</span><span class="s">&quot;RAWR&quot;</span><span class="p">))</span><span class="w"> </span><span class="c"># =&gt; ERROR: no method fight(Panther,Lion)</span>
+<span class="k">catch</span>
+<span class="k">end</span>
+
+<span class="c"># Aliás, vamos deixar o gato ir primeiro</span>
+<span class="n">fight</span><span class="p">(</span><span class="n">c</span><span class="o">::</span><span class="kt">Cat</span><span class="p">,</span><span class="n">l</span><span class="o">::</span><span class="kt">Lion</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;The cat beats the Lion&quot;</span><span class="p">)</span>
+<span class="c"># =&gt; Warning: New definition</span>
+<span class="c">#    fight(Cat,Lion) at none:1</span>
+<span class="c"># is ambiguous with</span>
+<span class="c">#    fight(Lion,Cat) at none:2.</span>
+<span class="c"># Make sure</span>
+<span class="c">#    fight(Lion,Lion)</span>
+<span class="c"># is defined first.</span>
+<span class="c">#fight (generic function with 4 methods)</span>
+
+<span class="c"># Este aviso é porque não está claro qual método fight será chamado em:</span>
+<span class="n">fight</span><span class="p">(</span><span class="n">Lion</span><span class="p">(</span><span class="s">&quot;RAR&quot;</span><span class="p">),</span><span class="n">Lion</span><span class="p">(</span><span class="s">&quot;brown&quot;</span><span class="p">,</span><span class="s">&quot;rarrr&quot;</span><span class="p">))</span><span class="w"> </span><span class="c"># =&gt; exibe The victorious cat says rarrr</span>
+<span class="c"># O resultado pode ser diferente em outras versões de Julia</span>
+
+<span class="n">fight</span><span class="p">(</span><span class="n">l</span><span class="o">::</span><span class="kt">Lion</span><span class="p">,</span><span class="n">l2</span><span class="o">::</span><span class="kt">Lion</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">println</span><span class="p">(</span><span class="s">&quot;The lions come to a tie&quot;</span><span class="p">)</span>
+<span class="n">fight</span><span class="p">(</span><span class="n">Lion</span><span class="p">(</span><span class="s">&quot;RAR&quot;</span><span class="p">),</span><span class="n">Lion</span><span class="p">(</span><span class="s">&quot;brown&quot;</span><span class="p">,</span><span class="s">&quot;rarrr&quot;</span><span class="p">))</span><span class="w"> </span><span class="c"># =&gt; exibe The lions come to a tie</span>
+
+
+<span class="c"># Embaixo dos panos</span>
+<span class="c"># Você pode olhar o llvm e o código assembly gerado.</span>
+
+<span class="n">square_area</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">l</span><span class="w">      </span><span class="c"># square_area (generic function with 1 method)</span>
+
+<span class="n">square_area</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="c">#25</span>
+
+<span class="c"># O que acontece quando alimentamos square_area com um inteiro?</span>
+<span class="c"># What happens when we feed square_area an integer?</span>
+<span class="n">code_native</span><span class="p">(</span><span class="n">square_area</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">Int32</span><span class="p">,))</span>
+<span class="w">    </span><span class="c">#       .section    __TEXT,__text,regular,pure_instructions</span>
+<span class="w">    </span><span class="c">#   Filename: none</span>
+<span class="w">    </span><span class="c">#   Source line: 1              # Prólogo</span>
+<span class="w">    </span><span class="c">#       push    RBP</span>
+<span class="w">    </span><span class="c">#       mov RBP, RSP</span>
+<span class="w">    </span><span class="c">#   Source line: 1</span>
+<span class="w">    </span><span class="c">#       movsxd  RAX, EDI        # Busca l na memoria?</span>
+<span class="w">    </span><span class="c">#       imul    RAX, RAX        # Faz o quadrado de l e armazena o resultado em RAX</span>
+<span class="w">    </span><span class="c">#       pop RBP                 # Restaura o ponteiro de base antigo</span>
+<span class="w">    </span><span class="c">#       ret                     # O resultado continua em RAX</span>
+
+<span class="n">code_native</span><span class="p">(</span><span class="n">square_area</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">Float32</span><span class="p">,))</span>
+<span class="w">    </span><span class="c">#       .section    __TEXT,__text,regular,pure_instructions</span>
+<span class="w">    </span><span class="c">#   Filename: none</span>
+<span class="w">    </span><span class="c">#   Source line: 1</span>
+<span class="w">    </span><span class="c">#       push    RBP</span>
+<span class="w">    </span><span class="c">#       mov RBP, RSP</span>
+<span class="w">    </span><span class="c">#   Source line: 1</span>
+<span class="w">    </span><span class="c">#       vmulss  XMM0, XMM0, XMM0  # Múltiplicação escalar unica de precisão (AVX)</span>
+<span class="w">    </span><span class="c">#       pop RBP</span>
+<span class="w">    </span><span class="c">#       ret</span>
+
+<span class="n">code_native</span><span class="p">(</span><span class="n">square_area</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">Float64</span><span class="p">,))</span>
+<span class="w">    </span><span class="c">#       .section    __TEXT,__text,regular,pure_instructions</span>
+<span class="w">    </span><span class="c">#   Filename: none</span>
+<span class="w">    </span><span class="c">#   Source line: 1</span>
+<span class="w">    </span><span class="c">#       push    RBP</span>
+<span class="w">    </span><span class="c">#       mov RBP, RSP</span>
+<span class="w">    </span><span class="c">#   Source line: 1</span>
+<span class="w">    </span><span class="c">#       vmulsd  XMM0, XMM0, XMM0 # Duplicação ecalar de precisão multipla(AVX)</span>
+<span class="w">    </span><span class="c">#       pop RBP</span>
+<span class="w">    </span><span class="c">#       ret</span>
+<span class="w">    </span><span class="c">#</span>
+<span class="c"># Note que Julia usará instruções de ponto flutuante se quaser um dos</span>
+<span class="c"># argumentos forem float</span>
+<span class="c"># Vamos calcular a área de um circulo</span>
+<span class="n">circle_area</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">pi</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">r</span><span class="w">     </span><span class="c"># circle_area (generic function with 1 method)</span>
+<span class="n">circle_area</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="w">                  </span><span class="c"># 78.53981633974483</span>
+
+<span class="n">code_native</span><span class="p">(</span><span class="n">circle_area</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">Int32</span><span class="p">,))</span>
+<span class="w">    </span><span class="c">#       .section    __TEXT,__text,regular,pure_instructions</span>
+<span class="w">    </span><span class="c">#   Filename: none</span>
+<span class="w">    </span><span class="c">#   Source line: 1</span>
+<span class="w">    </span><span class="c">#       push    RBP</span>
+<span class="w">    </span><span class="c">#       mov RBP, RSP</span>
+<span class="w">    </span><span class="c">#   Source line: 1</span>
+<span class="w">    </span><span class="c">#       vcvtsi2sd   XMM0, XMM0, EDI          # Carrega inteiro (r) da memória</span>
+<span class="w">    </span><span class="c">#       movabs  RAX, 4593140240              # Carrega pi</span>
+<span class="w">    </span><span class="c">#       vmulsd  XMM1, XMM0, QWORD PTR [RAX]  # pi * r</span>
+<span class="w">    </span><span class="c">#       vmulsd  XMM0, XMM0, XMM1             # (pi * r) * r</span>
+<span class="w">    </span><span class="c">#       pop RBP</span>
+<span class="w">    </span><span class="c">#       ret</span>
+<span class="w">    </span><span class="c">#</span>
+
+<span class="n">code_native</span><span class="p">(</span><span class="n">circle_area</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">Float64</span><span class="p">,))</span>
+<span class="w">    </span><span class="c">#       .section    __TEXT,__text,regular,pure_instructions</span>
+<span class="w">    </span><span class="c">#   Filename: none</span>
+<span class="w">    </span><span class="c">#   Source line: 1</span>
+<span class="w">    </span><span class="c">#       push    RBP</span>
+<span class="w">    </span><span class="c">#       mov RBP, RSP</span>
+<span class="w">    </span><span class="c">#       movabs  RAX, 4593140496</span>
+<span class="w">    </span><span class="c">#   Source line: 1</span>
+<span class="w">    </span><span class="c">#       vmulsd  XMM1, XMM0, QWORD PTR [RAX]</span>
+<span class="w">    </span><span class="c">#       vmulsd  XMM0, XMM1, XMM0</span>
+<span class="w">    </span><span class="c">#       pop RBP</span>
+<span class="w">    </span><span class="c">#       ret</span>
+<span class="w">    </span><span class="c">#</span>
+</pre></div>
+<h2>Extras</h2>
+<p>Você pode ver mais um monte de detalhes no <a href="http://docs.julialang.org/en/latest/manual/">manual de Julia</a>
+O melhor lugar pra pedir ajuda em Julia é a (muito amigável) <a href="https://groups.google.com/forum/#!forum/julia-users">mailing list</a>.</p>
+
+        <hr>
+        <p>
+          Sugestões ou correções? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Abra uma issue</a> no repositório do GitHub, ou faça um <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/pt-br/julia-pt.html.markdown">pull request</a> você mesmo!
+        </p>
+        <p class="contributed">
+          Originalmente contribuído por Leah Hanson e atualizado por <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/pt-br/julia-pt.html.markdown">4 colaboradores</a>.
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2024
+            <a href="http://leahhanson.us">Leah Hanson</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

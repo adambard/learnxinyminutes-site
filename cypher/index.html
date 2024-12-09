@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="en">
+    <title>Learn Cypher in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/cypher/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fcypher%2F&amp;text=Learn+X+in+Y+minutes%2C+where+X%3DCypher">
+            Share this page
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">Learn X in Y minutes</a></h1>
+      <h2>Where X=Cypher</h2>
+      <p class="filelink">
+        Get the code:
+        <a href="/files/LearnCypher.cql">LearnCypher.cql</a>
+      </p>
+      <div id="doc">
+<p>Cypher is Neo4j's query language for easily manipulating graphs.
+It reuses syntax from SQL and mixes it with kind of an ASCII-art to represent graphs.
+This tutorial assumes that you already know graph concepts like nodes and relationships.</p>
+<h2>Nodes represent a record in a graph</h2>
+<p><code>()</code> is an empty <em>node</em>, to indicate that there is a <em>node</em>, but it's not relevant for the query.</p>
+<p><code>(n)</code> is a <em>node</em> referred by the variable <code>n</code>, reusable in the query. It begins with lowercase and uses camelCase.</p>
+<p><code>(p:Person)</code> - you can add a <em>label</em> to your node, here <code>Person</code>. It's like a type/class/category. It begins with uppercase and uses camelCase.</p>
+<p><code>(p:Person:Manager)</code> - a node can have many <em>labels</em>.</p>
+<p><code>(p:Person {name : 'Théo Gauchoux', age : 22})</code> - a node can have some <em>properties</em>, here <code>name</code> and <code>age</code>. It begins with lowercase and uses camelCase.</p>
+<p>The types allowed in properties:</p>
+<ul>
+<li>Numeric</li>
+<li>Boolean</li>
+<li>String</li>
+<li>List of previous primitive types</li>
+</ul>
+<p><em>Warning: there's no datetime properties in Cypher! You can use a String with a specific pattern or a Numeric from a specific date.</em></p>
+<p><code>p.name</code> - you can access a property with the dot style.</p>
+<h2>Relationships (or Edges) connect two nodes</h2>
+<p><code>[:KNOWS]</code> is a <em>relationship</em> with the <em>label</em> <code>KNOWS</code>. It's a <em>label</em> as the node's label. It uses UPPER_SNAKE_CASE.</p>
+<p><code>[k:KNOWS]</code> - the same <em>relationship</em>, referred by the variable <code>k</code>, reusable in the query, but it's not necessary.</p>
+<p><code>[k:KNOWS {since:2017}]</code> - the same <em>relationship</em>, with <em>properties</em> (like <em>node</em>), here <code>since</code>.</p>
+<p><code>[k:KNOWS*..4]</code> is structural information to use in a <em>path</em> (seen later). Here, <code>\*..4</code> says &quot;Match the pattern, with the relationship <code>k</code> which can be repeated between 1 and 4 times.</p>
+<h2>Paths - the way to mix nodes and relationships.</h2>
+<p><code>(a:Person)-[:KNOWS]-(b:Person)</code> - a path describing that <code>a</code> and <code>b</code> know each other.</p>
+<p><code>(a:Person)-[:MANAGES]-&gt;(b:Person)</code> - a path can be directed. This path describes that <code>a</code> is the manager of <code>b</code>.</p>
+<p><code>(a:Person)-[:KNOWS]-(b:Person)-[:KNOWS]-(c:Person)</code> - you can chain multiple relationships. This path describes the friend of a friend.</p>
+<p><code>(a:Person)-[:MANAGES]-&gt;(b:Person)-[:MANAGES]-&gt;(c:Person)</code> - a chain can also be directed. This path describes that <code>a</code> is the boss of <code>b</code> and the big boss of <code>c</code>.</p>
+<p>Commonly used patterns (from Neo4j documentation):</p>
+<div class="highlight"><pre lang="cypher"><span class="c1">// Friend-of-a-friend</span>
+<span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">KNOWS</span><span class="o">]-</span><span class="p">(</span><span class="n">friend</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">KNOWS</span><span class="o">]-</span><span class="p">(</span><span class="n">foaf</span><span class="p">)</span>
+
+<span class="c1">// Shortest path</span>
+<span class="n">path</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">shortestPath</span><span class="p">(</span><span class="w"> </span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">KNOWS</span><span class="p">*..</span><span class="m">5</span><span class="o">]-</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="p">)</span>
+
+<span class="c1">// Collaborative filtering</span>
+<span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">PURCHASED</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">product</span><span class="p">)</span><span class="o">&lt;-[</span><span class="p">:</span><span class="n">PURCHASED</span><span class="o">]-</span><span class="p">()</span><span class="o">-[</span><span class="p">:</span><span class="n">PURCHASED</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">otherProduct</span><span class="p">)</span>
+
+<span class="c1">// Tree navigation</span>
+<span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">&lt;-[</span><span class="p">:</span><span class="n">PARENT</span><span class="p">*</span><span class="o">]-</span><span class="p">(</span><span class="n">leaf</span><span class="p">:</span><span class="n">Category</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">ITEM</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">data</span><span class="p">:</span><span class="n">Product</span><span class="p">)</span>
+</pre></div>
+<h2>Create queries</h2>
+<p>Create a new node</p>
+<div class="highlight"><pre lang="cypher"><span class="k">CREATE</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="n">Person</span><span class="w"> </span><span class="p">{</span><span class="n">name</span><span class="p">:</span><span class="s">&quot;Théo Gauchoux&quot;</span><span class="p">})</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">a</span>
+</pre></div>
+<p><em><code>RETURN</code> allows to have a result after the query. It can be multiple, as <code>RETURN a, b</code>.</em></p>
+<p>Create a new relationship (with 2 new nodes)</p>
+<div class="highlight"><pre lang="cypher"><span class="k">CREATE</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span><span class="o">-[</span><span class="n">k</span><span class="p">:</span><span class="n">KNOWS</span><span class="o">]-</span><span class="p">(</span><span class="n">b</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">b</span>
+</pre></div>
+<h2>Match queries</h2>
+<p>Match all nodes</p>
+<div class="highlight"><pre lang="cypher"><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">n</span>
+</pre></div>
+<p>Match nodes by label</p>
+<div class="highlight"><pre lang="cypher"><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">a</span>
+</pre></div>
+<p>Match nodes by label and property</p>
+<div class="highlight"><pre lang="cypher"><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="n">Person</span><span class="w"> </span><span class="p">{</span><span class="n">name</span><span class="p">:</span><span class="s">&quot;Théo Gauchoux&quot;</span><span class="p">})</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">a</span>
+</pre></div>
+<p>Match nodes according to relationships (undirected)</p>
+<div class="highlight"><pre lang="cypher"><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">KNOWS</span><span class="o">]-</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="n">b</span>
+</pre></div>
+<p>Match nodes according to relationships (directed)</p>
+<div class="highlight"><pre lang="cypher"><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">MANAGES</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="n">b</span>
+</pre></div>
+<p>Match nodes with a <code>WHERE</code> clause</p>
+<div class="highlight"><pre lang="cypher"><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Person</span><span class="w"> </span><span class="p">{</span><span class="n">name</span><span class="p">:</span><span class="s">&quot;Théo Gauchoux&quot;</span><span class="p">})</span><span class="o">-[</span><span class="n">s</span><span class="p">:</span><span class="n">LIVES_IN</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">city</span><span class="p">:</span><span class="n">City</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="n">since</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="m">2015</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="n">state</span>
+</pre></div>
+<p>You can use <code>MATCH WHERE</code> clause with <code>CREATE</code> clause</p>
+<div class="highlight"><pre lang="cypher"><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Jacquie&quot;</span><span class="w"> </span><span class="n">AND</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Michel&quot;</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">KNOWS</span><span class="o">]-</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</pre></div>
+<h2>Update queries</h2>
+<p>Update a specific property of a node</p>
+<div class="highlight"><pre lang="cypher"><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Théo Gauchoux&quot;</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">age</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="m">23</span>
+</pre></div>
+<p>Replace all properties of a node</p>
+<div class="highlight"><pre lang="cypher"><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Théo Gauchoux&quot;</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{</span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Michel&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">:</span><span class="w"> </span><span class="m">23</span><span class="p">}</span>
+</pre></div>
+<p>Add new property to a node</p>
+<div class="highlight"><pre lang="cypher"><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Théo Gauchoux&quot;</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="err">+</span><span class="p">=</span><span class="w"> </span><span class="p">{</span><span class="n">studies</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;IT Engineering&quot;</span><span class="p">}</span>
+</pre></div>
+<p>Add a label to a node</p>
+<div class="highlight"><pre lang="cypher"><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Théo Gauchoux&quot;</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">p</span><span class="p">:</span><span class="n">Internship</span>
+</pre></div>
+<h2>Delete queries</h2>
+<p>Delete a specific node (linked relationships must be deleted before)</p>
+<div class="highlight"><pre lang="cypher"><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span><span class="o">-[</span><span class="n">relationship</span><span class="o">]-</span><span class="p">()</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Théo Gauchoux&quot;</span>
+<span class="k">DELETE</span><span class="w"> </span><span class="n">relationship</span><span class="p">,</span><span class="w"> </span><span class="n">p</span>
+</pre></div>
+<p>Remove a property in a specific node</p>
+<div class="highlight"><pre lang="cypher"><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Théo Gauchoux&quot;</span>
+<span class="k">REMOVE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">age</span>
+</pre></div>
+<p><em>Pay attention to the <code>REMOVE</code> keyword, it's not <code>DELETE</code>!</em></p>
+<p>Remove a label from a specific node</p>
+<div class="highlight"><pre lang="cypher"><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Person</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Théo Gauchoux&quot;</span>
+<span class="k">DELETE</span><span class="w"> </span><span class="n">p</span><span class="p">:</span><span class="n">Person</span>
+</pre></div>
+<p>Delete entire database</p>
+<div class="highlight"><pre lang="cypher"><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="k">OPTIONAL</span><span class="w"> </span><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">-[</span><span class="n">r</span><span class="o">]-</span><span class="p">()</span>
+<span class="k">DELETE</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">r</span>
+</pre></div>
+<p><em>Seriously, it's the <code>rm -rf /</code> of Cypher!</em></p>
+<h2>Other useful clauses</h2>
+<p><code>PROFILE</code> - before a query, show its execution plan.</p>
+<p><code>COUNT(e)</code> - count entities (nodes or relationships) matching <code>e</code>.</p>
+<p><code>LIMIT x</code> - limit the result to the first <code>x</code> results.</p>
+<h2>Special hints</h2>
+<ul>
+<li>Cypher only has single-line comments, using double-slashes: <code>// comment</code></li>
+<li>You can execute a Cypher script stored in a .cql file directly in Neo4j (it's an import). However, you can't have multiple statements in this file (separated by <code>;</code>).</li>
+<li>Use the Neo4j shell to write Cypher, it's really awesome.</li>
+<li>Cypher will be the standard query language for all graph databases (known as <a href="https://opencypher.org/">openCypher</a>).</li>
+</ul>
+<p>Read more <a href="https://neo4j.com/developer/cypher-query-language/">here</a>.</p>
+
+        <hr>
+        <p>
+          Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the GitHub Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/cypher.html.markdown">pull request</a> yourself!
+        </p>
+        <p class="contributed">
+          Originally contributed by Théo Gauchoux, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/cypher.html.markdown">2 contributors</a>.
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2024
+            <a href="https://github.com/TheoGauchoux">Théo Gauchoux</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

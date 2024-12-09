@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="en">
+    <title>Learn ZFS in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/zfs/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fzfs%2F&amp;text=Learn+X+in+Y+minutes%2C+where+X%3DZFS">
+            Share this page
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">Learn X in Y minutes</a></h1>
+      <h2>Where X=ZFS</h2>
+      <p class="filelink">
+        Get the code:
+        <a href="/files/LearnZfs.txt">LearnZfs.txt</a>
+      </p>
+      <div id="doc">
+<p><a href="http://open-zfs.org/wiki/Main_Page">ZFS</a>
+is a rethinking of the storage stack, combining traditional file systems as well as volume
+managers into one cohesive tool.  ZFS has some specific terminology that sets it apart from
+more traditional storage systems, however it has a great set of features with a focus on
+usability for systems administrators.</p>
+<h2>ZFS Concepts</h2>
+<h3>Virtual Devices</h3>
+<p>A VDEV (Virtual Device) in ZFS is analogous to a RAID device and similarly offers different
+benefits in terms of redundancy and performance. In general VDEV's offer better reliability
+and safety than a RAID card. It is discouraged to use a RAID setup with ZFS, as ZFS expects
+to directly manage the underlying disks.</p>
+<table>
+<thead>
+<tr>
+<th>VDEV Type</th>
+<th>Similar RAID</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mirror</td>
+<td>RAID 1</td>
+<td>Supports n-way mirroring for redundancy.</td>
+</tr>
+<tr>
+<td>raidz1</td>
+<td>RAID 5</td>
+<td>Single disk parity, offering fault tolerance of one disk failure.</td>
+</tr>
+<tr>
+<td>raidz2</td>
+<td>RAID 6</td>
+<td>Two-disk parity, can tolerate two disk failures.</td>
+</tr>
+<tr>
+<td>raidz3</td>
+<td>-</td>
+<td>Three-disk parity, can tolerate three disk failures.</td>
+</tr>
+<tr>
+<td>Disk</td>
+<td>-</td>
+<td>Represents a single physical disk in a VDEV.</td>
+</tr>
+<tr>
+<td>File</td>
+<td>-</td>
+<td>File-based VDEV, not recommended for production as it adds complexity and reduces reliability.</td>
+</tr>
+</tbody>
+</table>
+<p>Data in a ZFS storage pool is striped across all VDEVs. Adding more VDEVs, Logs, or Caches
+can increase IOPS (Input/Output Operations Per Second), enhancing performance. It's crucial
+to balance VDEVs for optimal performance and redundancy.</p>
+<h3>Storage Pools</h3>
+<p>ZFS uses Storage Pools as an abstraction over the lower level storage provider (VDEV), allow
+you to separate the user visible file system from the physical layout.</p>
+<h3>ZFS Dataset</h3>
+<p>ZFS datasets are analogous to traditional filesystems but with many more features.  They
+provide many of ZFS's advantages.  Datasets support <a href="https://en.wikipedia.org/wiki/Copy-on-write">Copy on Write</a>
+snapshots, quota's, compression and de-duplication.</p>
+<h3>Limits</h3>
+<p>One directory may contain up to 2^48 files, up to 16 exabytes each.  A single storage pool
+can contain up to 256 zettabytes (2^78) of space, and can be striped across 2^64 devices.  A
+single host can have 2^64 storage pools.  The limits are huge.</p>
+<h2>Commands</h2>
+<h3>Storage Pools</h3>
+<p>Actions:</p>
+<ul>
+<li>List</li>
+<li>Status</li>
+<li>Destroy</li>
+<li>Get/Set properties</li>
+</ul>
+<p>List zpools</p>
+<div class="highlight"><pre lang="bash"><span class="c1"># Create a raidz zpool</span>
+$<span class="w"> </span>zpool<span class="w"> </span>create<span class="w"> </span>zroot<span class="w"> </span>raidz1<span class="w"> </span>gpt/zfs0<span class="w"> </span>gpt/zfs1<span class="w"> </span>gpt/zfs2
+
+<span class="c1"># List ZPools</span>
+$<span class="w"> </span>zpool<span class="w"> </span>list
+NAME<span class="w">    </span>SIZE<span class="w">  </span>ALLOC<span class="w">   </span>FREE<span class="w">  </span>EXPANDSZ<span class="w">   </span>FRAG<span class="w">    </span>CAP<span class="w">  </span>DEDUP<span class="w">  </span>HEALTH<span class="w">  </span>ALTROOT
+zroot<span class="w">   </span>141G<span class="w">   </span>106G<span class="w">  </span><span class="m">35</span>.2G<span class="w">         </span>-<span class="w">    </span><span class="m">43</span>%<span class="w">    </span><span class="m">75</span>%<span class="w">  </span><span class="m">1</span>.00x<span class="w">  </span>ONLINE<span class="w">  </span>-
+
+<span class="c1"># List detailed information about a specific zpool</span>
+$<span class="w"> </span>zpool<span class="w"> </span>list<span class="w"> </span>-v<span class="w"> </span>zroot
+NAME<span class="w">                                     </span>SIZE<span class="w">  </span>ALLOC<span class="w">   </span>FREE<span class="w">  </span>EXPANDSZ<span class="w">   </span>FRAG<span class="w">    </span>CAP<span class="w">  </span>DEDUP<span class="w"> </span>HEALTH<span class="w">  </span>ALTROOT
+zroot<span class="w">                                    </span>141G<span class="w">   </span>106G<span class="w">  </span><span class="m">35</span>.2G<span class="w">         </span>-<span class="w">    </span><span class="m">43</span>%<span class="w">    </span><span class="m">75</span>%<span class="w">  </span><span class="m">1</span>.00x<span class="w"> </span>ONLINE<span class="w">  </span>-
+<span class="w">  </span>gptid/c92a5ccf-a5bb-11e4-a77d-001b2172c655<span class="w">   </span>141G<span class="w">   </span>106G<span class="w">  </span><span class="m">35</span>.2G<span class="w">         </span>-<span class="w">    </span><span class="m">43</span>%<span class="w">    </span><span class="m">75</span>%
+</pre></div>
+<p>Status of zpools</p>
+<div class="highlight"><pre lang="bash"><span class="c1"># Get status information about zpools</span>
+$<span class="w"> </span>zpool<span class="w"> </span>status
+<span class="w">  </span>pool:<span class="w"> </span>zroot
+<span class="w"> </span>state:<span class="w"> </span>ONLINE
+<span class="w">  </span>scan:<span class="w"> </span>scrub<span class="w"> </span>repaired<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="k">in</span><span class="w"> </span>2h51m<span class="w"> </span>with<span class="w"> </span><span class="m">0</span><span class="w"> </span>errors<span class="w"> </span>on<span class="w"> </span>Thu<span class="w"> </span>Oct<span class="w">  </span><span class="m">1</span><span class="w"> </span><span class="m">07</span>:08:31<span class="w"> </span><span class="m">2015</span>
+config:
+
+<span class="w">        </span>NAME<span class="w">                                          </span>STATE<span class="w">     </span>READ<span class="w"> </span>WRITE<span class="w"> </span>CKSUM
+<span class="w">        </span>zroot<span class="w">                                         </span>ONLINE<span class="w">       </span><span class="m">0</span><span class="w">     </span><span class="m">0</span><span class="w">     </span><span class="m">0</span>
+<span class="w">          </span>gptid/c92a5ccf-a5bb-11e4-a77d-001b2172c655<span class="w">  </span>ONLINE<span class="w">       </span><span class="m">0</span><span class="w">     </span><span class="m">0</span><span class="w">     </span><span class="m">0</span>
+
+errors:<span class="w"> </span>No<span class="w"> </span>known<span class="w"> </span>data<span class="w"> </span>errors
+
+<span class="c1"># Scrubbing a zpool to correct any errors</span>
+$<span class="w"> </span>zpool<span class="w"> </span>scrub<span class="w"> </span>zroot
+$<span class="w"> </span>zpool<span class="w"> </span>status<span class="w"> </span>-v<span class="w"> </span>zroot
+<span class="w">  </span>pool:<span class="w"> </span>zroot
+<span class="w"> </span>state:<span class="w"> </span>ONLINE
+<span class="w">  </span>scan:<span class="w"> </span>scrub<span class="w"> </span><span class="k">in</span><span class="w"> </span>progress<span class="w"> </span>since<span class="w"> </span>Thu<span class="w"> </span>Oct<span class="w"> </span><span class="m">15</span><span class="w"> </span><span class="m">16</span>:59:14<span class="w"> </span><span class="m">2015</span>
+<span class="w">        </span><span class="m">39</span>.1M<span class="w"> </span>scanned<span class="w"> </span>out<span class="w"> </span>of<span class="w"> </span>106G<span class="w"> </span>at<span class="w"> </span><span class="m">1</span>.45M/s,<span class="w"> </span>20h47m<span class="w"> </span>to<span class="w"> </span>go
+<span class="w">        </span><span class="m">0</span><span class="w"> </span>repaired,<span class="w"> </span><span class="m">0</span>.04%<span class="w"> </span><span class="k">done</span>
+config:
+
+<span class="w">        </span>NAME<span class="w">                                          </span>STATE<span class="w">     </span>READ<span class="w"> </span>WRITE<span class="w"> </span>CKSUM
+<span class="w">        </span>zroot<span class="w">                                         </span>ONLINE<span class="w">       </span><span class="m">0</span><span class="w">     </span><span class="m">0</span><span class="w">     </span><span class="m">0</span>
+<span class="w">          </span>gptid/c92a5ccf-a5bb-11e4-a77d-001b2172c655<span class="w">  </span>ONLINE<span class="w">       </span><span class="m">0</span><span class="w">     </span><span class="m">0</span><span class="w">     </span><span class="m">0</span>
+
+errors:<span class="w"> </span>No<span class="w"> </span>known<span class="w"> </span>data<span class="w"> </span>errors
+</pre></div>
+<p>Properties of zpools</p>
+<div class="highlight"><pre lang="bash"><span class="c1"># Getting properties from the pool properties can be user set or system provided.</span>
+$<span class="w"> </span>zpool<span class="w"> </span>get<span class="w"> </span>all<span class="w"> </span>zroot
+NAME<span class="w">   </span>PROPERTY<span class="w">                       </span>VALUE<span class="w">                          </span>SOURCE
+zroot<span class="w">  </span>size<span class="w">                           </span>141G<span class="w">                           </span>-
+zroot<span class="w">  </span>capacity<span class="w">                       </span><span class="m">75</span>%<span class="w">                            </span>-
+zroot<span class="w">  </span>altroot<span class="w">                        </span>-<span class="w">                              </span>default
+zroot<span class="w">  </span>health<span class="w">                         </span>ONLINE<span class="w">                         </span>-
+...
+
+<span class="c1"># Setting a zpool property</span>
+$<span class="w"> </span>zpool<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="nv">comment</span><span class="o">=</span><span class="s2">&quot;Storage of mah stuff&quot;</span><span class="w"> </span>zroot
+$<span class="w"> </span>zpool<span class="w"> </span>get<span class="w"> </span>comment
+NAME<span class="w">   </span>PROPERTY<span class="w">  </span>VALUE<span class="w">                 </span>SOURCE
+tank<span class="w">   </span>comment<span class="w">   </span>-<span class="w">                     </span>default
+zroot<span class="w">  </span>comment<span class="w">   </span>Storage<span class="w"> </span>of<span class="w"> </span>mah<span class="w"> </span>stuff<span class="w">  </span><span class="nb">local</span>
+</pre></div>
+<p>Remove zpool</p>
+<div class="highlight"><pre lang="bash">$<span class="w"> </span>zpool<span class="w"> </span>destroy<span class="w"> </span><span class="nb">test</span>
+</pre></div>
+<h3>Datasets</h3>
+<p>Actions:</p>
+<ul>
+<li>Create</li>
+<li>List</li>
+<li>Rename</li>
+<li>Delete</li>
+<li>Get/Set properties</li>
+</ul>
+<p>Create datasets</p>
+<div class="highlight"><pre lang="bash"><span class="c1"># Create dataset</span>
+$<span class="w"> </span>zfs<span class="w"> </span>create<span class="w"> </span>zroot/root/data
+$<span class="w"> </span>mount<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>data
+zroot/root/data<span class="w"> </span>on<span class="w"> </span>/data<span class="w"> </span><span class="o">(</span>zfs,<span class="w"> </span>local,<span class="w"> </span>nfsv4acls<span class="o">)</span>
+
+<span class="c1"># Create child dataset</span>
+$<span class="w"> </span>zfs<span class="w"> </span>create<span class="w"> </span>zroot/root/data/stuff
+$<span class="w"> </span>mount<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>data
+zroot/root/data<span class="w"> </span>on<span class="w"> </span>/data<span class="w"> </span><span class="o">(</span>zfs,<span class="w"> </span>local,<span class="w"> </span>nfsv4acls<span class="o">)</span>
+zroot/root/data/stuff<span class="w"> </span>on<span class="w"> </span>/data/stuff<span class="w"> </span><span class="o">(</span>zfs,<span class="w"> </span>local,<span class="w"> </span>nfsv4acls<span class="o">)</span>
+
+
+<span class="c1"># Create Volume</span>
+$<span class="w"> </span>zfs<span class="w"> </span>create<span class="w"> </span>-V<span class="w"> </span>zroot/win_vm
+$<span class="w"> </span>zfs<span class="w"> </span>list<span class="w"> </span>zroot/win_vm
+NAME<span class="w">                 </span>USED<span class="w">  </span>AVAIL<span class="w">  </span>REFER<span class="w">  </span>MOUNTPOINT
+zroot/win_vm<span class="w">         </span><span class="m">4</span>.13G<span class="w">  </span><span class="m">17</span>.9G<span class="w">    </span>64K<span class="w">  </span>-
+</pre></div>
+<p>List datasets</p>
+<div class="highlight"><pre lang="bash"><span class="c1"># List all datasets</span>
+$<span class="w"> </span>zfs<span class="w"> </span>list
+NAME<span class="w">                                                                       </span>USED<span class="w">  </span>AVAIL<span class="w">  </span>REFER<span class="w">  </span>MOUNTPOINT
+zroot<span class="w">                                                                      </span>106G<span class="w">  </span><span class="m">30</span>.8G<span class="w">   </span>144K<span class="w">  </span>none
+zroot/ROOT<span class="w">                                                                </span><span class="m">18</span>.5G<span class="w">  </span><span class="m">30</span>.8G<span class="w">   </span>144K<span class="w">  </span>none
+zroot/ROOT/10.1<span class="w">                                                              </span>8K<span class="w">  </span><span class="m">30</span>.8G<span class="w">  </span><span class="m">9</span>.63G<span class="w">  </span>/
+zroot/ROOT/default<span class="w">                                                        </span><span class="m">18</span>.5G<span class="w">  </span><span class="m">30</span>.8G<span class="w">  </span><span class="m">11</span>.2G<span class="w">  </span>/
+zroot/backup<span class="w">                                                              </span><span class="m">5</span>.23G<span class="w">  </span><span class="m">30</span>.8G<span class="w">   </span>144K<span class="w">  </span>none
+zroot/home<span class="w">                                                                 </span>288K<span class="w">  </span><span class="m">30</span>.8G<span class="w">   </span>144K<span class="w">  </span>none
+...
+
+<span class="c1"># List a specific dataset</span>
+$<span class="w"> </span>zfs<span class="w"> </span>list<span class="w"> </span>zroot/home
+NAME<span class="w">         </span>USED<span class="w">  </span>AVAIL<span class="w">  </span>REFER<span class="w">  </span>MOUNTPOINT
+zroot/home<span class="w">   </span>288K<span class="w">  </span><span class="m">30</span>.8G<span class="w">   </span>144K<span class="w">  </span>none
+
+<span class="c1"># List snapshots</span>
+$<span class="w"> </span>zfs<span class="w"> </span>list<span class="w"> </span>-t<span class="w"> </span>snapshot
+zroot@daily-2015-10-15<span class="w">                                                                  </span><span class="m">0</span><span class="w">      </span>-<span class="w">   </span>144K<span class="w">  </span>-
+zroot/ROOT@daily-2015-10-15<span class="w">                                                             </span><span class="m">0</span><span class="w">      </span>-<span class="w">   </span>144K<span class="w">  </span>-
+zroot/ROOT/default@daily-2015-10-15<span class="w">                                                     </span><span class="m">0</span><span class="w">      </span>-<span class="w">  </span><span class="m">24</span>.2G<span class="w">  </span>-
+zroot/tmp@daily-2015-10-15<span class="w">                                                           </span>124K<span class="w">      </span>-<span class="w">   </span>708M<span class="w">  </span>-
+zroot/usr@daily-2015-10-15<span class="w">                                                              </span><span class="m">0</span><span class="w">      </span>-<span class="w">   </span>144K<span class="w">  </span>-
+zroot/home@daily-2015-10-15<span class="w">                                                             </span><span class="m">0</span><span class="w">      </span>-<span class="w">  </span><span class="m">11</span>.9G<span class="w">  </span>-
+zroot/var@daily-2015-10-15<span class="w">                                                           </span>704K<span class="w">      </span>-<span class="w">  </span><span class="m">1</span>.42G<span class="w">  </span>-
+zroot/var/log@daily-2015-10-15<span class="w">                                                       </span>192K<span class="w">      </span>-<span class="w">   </span>828K<span class="w">  </span>-
+zroot/var/tmp@daily-2015-10-15<span class="w">                                                          </span><span class="m">0</span><span class="w">      </span>-<span class="w">   </span>152K<span class="w">  </span>-
+</pre></div>
+<p>Rename datasets</p>
+<div class="highlight"><pre lang="bash">$<span class="w"> </span>zfs<span class="w"> </span>rename<span class="w"> </span>zroot/root/home<span class="w"> </span>zroot/root/old_home
+$<span class="w"> </span>zfs<span class="w"> </span>rename<span class="w"> </span>zroot/root/new_home<span class="w"> </span>zroot/root/home
+</pre></div>
+<p>Delete dataset</p>
+<div class="highlight"><pre lang="bash"><span class="c1"># Datasets cannot be deleted if they have any snapshots</span>
+$<span class="w"> </span>zfs<span class="w"> </span>destroy<span class="w"> </span>zroot/root/home
+</pre></div>
+<p>Get / set properties of a dataset</p>
+<div class="highlight"><pre lang="bash"><span class="c1"># Get all properties</span>
+$<span class="w"> </span>zfs<span class="w"> </span>get<span class="w"> </span>all<span class="w"> </span>zroot/usr/home
+NAME<span class="w">            </span>PROPERTY<span class="w">              </span>VALUE<span class="w">                  </span>SOURCE
+zroot/home<span class="w">      </span><span class="nb">type</span><span class="w">                  </span>filesystem<span class="w">             </span>-
+zroot/home<span class="w">      </span>creation<span class="w">              </span>Mon<span class="w"> </span>Oct<span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="m">14</span>:44<span class="w"> </span><span class="m">2014</span><span class="w">  </span>-
+zroot/home<span class="w">      </span>used<span class="w">                  </span><span class="m">11</span>.9G<span class="w">                  </span>-
+zroot/home<span class="w">      </span>available<span class="w">             </span><span class="m">94</span>.1G<span class="w">                  </span>-
+zroot/home<span class="w">      </span>referenced<span class="w">            </span><span class="m">11</span>.9G<span class="w">                  </span>-
+zroot/home<span class="w">      </span>mounted<span class="w">               </span>yes<span class="w">                    </span>-
+...
+
+<span class="c1"># Get property from dataset</span>
+$<span class="w"> </span>zfs<span class="w"> </span>get<span class="w"> </span>compression<span class="w"> </span>zroot/usr/home
+NAME<span class="w">            </span>PROPERTY<span class="w">     </span>VALUE<span class="w">     </span>SOURCE
+zroot/home<span class="w">      </span>compression<span class="w">  </span>off<span class="w">       </span>default
+
+<span class="c1"># Set property on dataset</span>
+$<span class="w"> </span>zfs<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="nv">compression</span><span class="o">=</span>lz4<span class="w"> </span>zroot/lamb
+
+<span class="c1"># Get a set of properties from all datasets</span>
+$<span class="w"> </span>zfs<span class="w"> </span>list<span class="w"> </span>-o<span class="w"> </span>name,quota,reservation
+NAME<span class="w">                                                               </span>QUOTA<span class="w">  </span>RESERV
+zroot<span class="w">                                                               </span>none<span class="w">    </span>none
+zroot/ROOT<span class="w">                                                          </span>none<span class="w">    </span>none
+zroot/ROOT/default<span class="w">                                                  </span>none<span class="w">    </span>none
+zroot/tmp<span class="w">                                                           </span>none<span class="w">    </span>none
+zroot/usr<span class="w">                                                           </span>none<span class="w">    </span>none
+zroot/home<span class="w">                                                          </span>none<span class="w">    </span>none
+zroot/var<span class="w">                                                           </span>none<span class="w">    </span>none
+...
+</pre></div>
+<h3>Write Log Pool</h3>
+<p>The ZFS Intent Log (ZIL) is a write log designed to speed up synchronous writes. This is
+typically a faster drive or drive partition than the larger storage pools.</p>
+<div class="highlight"><pre lang="bash"><span class="c1"># Add a log pool</span>
+$<span class="w"> </span>zpool<span class="w"> </span>add<span class="w"> </span>mypool/lamb<span class="w"> </span>log<span class="w"> </span>/dev/sdX
+
+<span class="c1"># Check the configuration</span>
+$<span class="w"> </span>zpool<span class="w"> </span>status<span class="w"> </span>mypool/lamb
+</pre></div>
+<h3>Read Cache Pool</h3>
+<p>The Level 2 Adaptive Replacement Cache (L2ARC) extends the primary ARC (in-RAM cache) and is
+used for read caching. This is typically a faster drive or drive partition than the larger
+storage pools.</p>
+<div class="highlight"><pre lang="bash"><span class="c1"># Add a cache pool</span>
+$<span class="w"> </span>zpool<span class="w"> </span>add<span class="w"> </span>mypool/lamb<span class="w"> </span>cache<span class="w"> </span>/dev/sdY
+
+<span class="c1"># Check the configuration</span>
+$<span class="w"> </span>zpool<span class="w"> </span>status<span class="w"> </span>mypool/lamb
+</pre></div>
+<h3>Data Compression</h3>
+<p>Data compression reduces the amount of space data occupies on disk in exchange for some extra
+CPU usage. When enabled, it can enhance performance by reducing the amount of disk I/O. It
+especially beneficial on systems with more CPU resources than disk bandwidth.</p>
+<div class="highlight"><pre lang="bash"><span class="c1"># Get compression options</span>
+$<span class="w"> </span>zfs<span class="w"> </span>get<span class="w"> </span>-help
+...
+compression<span class="w">     </span>NO<span class="w">       </span>YES<span class="w">   </span>on<span class="w"> </span><span class="p">|</span><span class="w"> </span>off<span class="w"> </span><span class="p">|</span><span class="w"> </span>lzjb<span class="w"> </span><span class="p">|</span><span class="w"> </span>gzip<span class="w"> </span><span class="p">|</span><span class="w"> </span>gzip-<span class="o">[</span><span class="m">1</span>-9<span class="o">]</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>zle<span class="w"> </span><span class="p">|</span><span class="w"> </span>lz4<span class="w"> </span><span class="p">|</span><span class="w"> </span>zstd<span class="w"> </span><span class="p">|</span><span class="w"> </span>zstd-<span class="o">[</span><span class="m">1</span>-19<span class="o">]</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>zstd-fast<span class="w"> </span><span class="p">|</span><span class="w"> </span>zstd-fast-<span class="o">[</span><span class="m">1</span>-10,20,30,40,50,60,70,80,90,100,500,1000<span class="o">]</span>
+...
+
+<span class="c1"># Set compression</span>
+$<span class="w"> </span>zfs<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="nv">compression</span><span class="o">=</span>on<span class="w"> </span>mypool/lamb
+
+<span class="c1"># Check the configuration</span>
+$<span class="w"> </span>zpool<span class="w"> </span>get<span class="w"> </span>compression<span class="w"> </span>mypool/lamb
+</pre></div>
+<h3>Encryption at Rest</h3>
+<p>Encryption allows data to be encrypted on the device at the cost of extra CPU cycles. This
+property can only be set when a dataset is being created.</p>
+<div class="highlight"><pre lang="bash"><span class="c1"># Enable encryption on the pool</span>
+$<span class="w"> </span>zpool<span class="w"> </span><span class="nb">set</span><span class="w"> </span>feature@encryption<span class="o">=</span>enabled<span class="w"> </span>black_hole
+
+<span class="c1"># Create an encrypted dataset with a prompt</span>
+$<span class="w"> </span>zfs<span class="w"> </span>create<span class="w"> </span>-o<span class="w"> </span><span class="nv">encryption</span><span class="o">=</span>on<span class="w"> </span>-o<span class="w"> </span><span class="nv">keyformat</span><span class="o">=</span>passphrase<span class="w"> </span>black_hole/enc
+
+<span class="c1"># Check the configuration</span>
+$<span class="w"> </span>zfs<span class="w"> </span>get<span class="w"> </span>encryption<span class="w"> </span>black_hole/enc
+</pre></div>
+<p>It should be noted that there are parts of the system where the data is not encrypted. See
+the table below for a breakdown.</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Encrypted</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Main Data Storage</td>
+<td>Yes</td>
+<td>Data in datasets/volumes is encrypted.</td>
+</tr>
+<tr>
+<td>ZFS Intent Log (ZIL)</td>
+<td>Yes</td>
+<td>Synchronous write requests are encrypted.</td>
+</tr>
+<tr>
+<td>L2ARC (Cache)</td>
+<td>Yes</td>
+<td>Cached data is stored in an encrypted form.</td>
+</tr>
+<tr>
+<td>RAM (ARC)</td>
+<td>No</td>
+<td>Data in the primary ARC, in RAM, is not encrypted.</td>
+</tr>
+<tr>
+<td>Swap Area</td>
+<td>Conditional</td>
+<td>Encrypted if the ZFS swap dataset is encrypted.</td>
+</tr>
+<tr>
+<td>ZFS Metadata</td>
+<td>Yes</td>
+<td>Metadata is encrypted for encrypted datasets.</td>
+</tr>
+<tr>
+<td>Snapshot Data</td>
+<td>Yes</td>
+<td>Snapshots of encrypted datasets are also encrypted.</td>
+</tr>
+<tr>
+<td>ZFS Send/Receive</td>
+<td>Conditional</td>
+<td>Encrypted during send/receive if datasets are encrypted and <code>-w</code> flag is used.</td>
+</tr>
+</tbody>
+</table>
+<h3>Snapshots</h3>
+<p>ZFS snapshots are one of the things about zfs that are a really big deal</p>
+<ul>
+<li>The space they take up is equal to the difference in data between the filesystem and its snapshot</li>
+<li>Creation time is only seconds</li>
+<li>Recovery is as fast as you can write data.</li>
+<li>They are easy to automate.</li>
+</ul>
+<p>Actions:</p>
+<ul>
+<li>Create</li>
+<li>Delete</li>
+<li>Rename</li>
+<li>Access snapshots</li>
+<li>Send / Receive</li>
+<li>Clone</li>
+</ul>
+<p>Create snapshots</p>
+<div class="highlight"><pre lang="bash"><span class="c1"># Create a snapshot of a single dataset</span>
+zfs<span class="w"> </span>snapshot<span class="w"> </span>zroot/home/sarlalian@now
+
+<span class="c1"># Create a snapshot of a dataset and its children</span>
+$<span class="w"> </span>zfs<span class="w"> </span>snapshot<span class="w"> </span>-r<span class="w"> </span>zroot/home@now
+$<span class="w"> </span>zfs<span class="w"> </span>list<span class="w"> </span>-t<span class="w"> </span>snapshot
+NAME<span class="w">                       </span>USED<span class="w">  </span>AVAIL<span class="w">  </span>REFER<span class="w">  </span>MOUNTPOINT
+zroot/home@now<span class="w">                 </span><span class="m">0</span><span class="w">      </span>-<span class="w">    </span>26K<span class="w">  </span>-
+zroot/home/sarlalian@now<span class="w">       </span><span class="m">0</span><span class="w">      </span>-<span class="w">   </span>259M<span class="w">  </span>-
+zroot/home/alice@now<span class="w">           </span><span class="m">0</span><span class="w">      </span>-<span class="w">   </span>156M<span class="w">  </span>-
+zroot/home/bob@now<span class="w">             </span><span class="m">0</span><span class="w">      </span>-<span class="w">   </span>156M<span class="w">  </span>-
+...
+</pre></div>
+<p>Destroy snapshots</p>
+<div class="highlight"><pre lang="bash"><span class="c1"># How to destroy a snapshot</span>
+$<span class="w"> </span>zfs<span class="w"> </span>destroy<span class="w"> </span>zroot/home/sarlalian@now
+
+<span class="c1"># Delete a snapshot on a parent dataset and its children</span>
+$<span class="w"> </span>zfs<span class="w"> </span>destroy<span class="w"> </span>-r<span class="w"> </span>zroot/home/sarlalian@now
+</pre></div>
+<p>Renaming Snapshots</p>
+<div class="highlight"><pre lang="bash"><span class="c1"># Rename a snapshot</span>
+$<span class="w"> </span>zfs<span class="w"> </span>rename<span class="w"> </span>zroot/home/sarlalian@now<span class="w"> </span>zroot/home/sarlalian@today
+$<span class="w"> </span>zfs<span class="w"> </span>rename<span class="w"> </span>zroot/home/sarlalian@now<span class="w"> </span>today
+
+$<span class="w"> </span>zfs<span class="w"> </span>rename<span class="w"> </span>-r<span class="w"> </span>zroot/home@now<span class="w"> </span>@yesterday
+</pre></div>
+<p>Accessing snapshots</p>
+<div class="highlight"><pre lang="bash"><span class="c1"># CD into a snapshot directory</span>
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/home/.zfs/snapshot/
+</pre></div>
+<p>Sending and Receiving</p>
+<div class="highlight"><pre lang="bash"><span class="c1"># Backup a snapshot to a file</span>
+$<span class="w"> </span>zfs<span class="w"> </span>send<span class="w"> </span>zroot/home/sarlalian@now<span class="w"> </span><span class="p">|</span><span class="w"> </span>gzip<span class="w"> </span>&gt;<span class="w"> </span>backup_file.gz
+
+<span class="c1"># Send a snapshot to another dataset</span>
+$<span class="w"> </span>zfs<span class="w"> </span>send<span class="w"> </span>zroot/home/sarlalian@now<span class="w"> </span><span class="p">|</span><span class="w"> </span>zfs<span class="w"> </span>recv<span class="w"> </span>backups/home/sarlalian
+
+<span class="c1"># Send a snapshot to a remote host</span>
+$<span class="w"> </span>zfs<span class="w"> </span>send<span class="w"> </span>zroot/home/sarlalian@now<span class="w"> </span><span class="p">|</span><span class="w"> </span>ssh<span class="w"> </span>root@backup_server<span class="w"> </span><span class="s1">&#39;zfs recv zroot/home/sarlalian&#39;</span>
+
+<span class="c1"># Send full dataset with snapshots to new host</span>
+$<span class="w"> </span>zfs<span class="w"> </span>send<span class="w"> </span>-v<span class="w"> </span>-R<span class="w"> </span>zroot/home@now<span class="w"> </span><span class="p">|</span><span class="w"> </span>ssh<span class="w"> </span>root@backup_server<span class="w"> </span><span class="s1">&#39;zfs recv zroot/home&#39;</span>
+</pre></div>
+<p>Cloning Snapshots</p>
+<div class="highlight"><pre lang="bash"><span class="c1"># Clone a snapshot</span>
+$<span class="w"> </span>zfs<span class="w"> </span>clone<span class="w"> </span>zroot/home/sarlalian@now<span class="w"> </span>zroot/home/sarlalian_new
+
+<span class="c1"># Promoting the clone so it is no longer dependent on the snapshot</span>
+$<span class="w"> </span>zfs<span class="w"> </span>promote<span class="w"> </span>zroot/home/sarlalian_new
+</pre></div>
+<h3>Putting it all together</h3>
+<p>This following a script utilizing FreeBSD, jails and ZFS to automate
+provisioning a clean copy of a MySQL staging database from a live replication
+slave.</p>
+<div class="highlight"><pre lang="bash"><span class="ch">#!/bin/sh</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;==== Stopping the staging database server ====&quot;</span>
+jail<span class="w"> </span>-r<span class="w"> </span>staging
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;==== Cleaning up existing staging server and snapshot ====&quot;</span>
+zfs<span class="w"> </span>destroy<span class="w"> </span>-r<span class="w"> </span>zroot/jails/staging
+zfs<span class="w"> </span>destroy<span class="w"> </span>zroot/jails/slave@staging
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;==== Quiescing the slave database ====&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;FLUSH TABLES WITH READ LOCK;&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>/usr/local/bin/mysql<span class="w"> </span>-u<span class="w"> </span>root<span class="w"> </span>-pmyrootpassword<span class="w"> </span>-h<span class="w"> </span>slave
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;==== Snapshotting the slave db filesystem as zroot/jails/slave@staging ====&quot;</span>
+zfs<span class="w"> </span>snapshot<span class="w"> </span>zroot/jails/slave@staging
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;==== Starting the slave database server ====&quot;</span>
+jail<span class="w"> </span>-c<span class="w"> </span>slave
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;==== Cloning the slave snapshot to the staging server ====&quot;</span>
+zfs<span class="w"> </span>clone<span class="w"> </span>zroot/jails/slave@staging<span class="w"> </span>zroot/jails/staging
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;==== Installing the staging mysql config ====&quot;</span>
+mv<span class="w"> </span>/jails/staging/usr/local/etc/my.cnf<span class="w"> </span>/jails/staging/usr/local/etc/my.cnf.slave
+cp<span class="w"> </span>/jails/staging/usr/local/etc/my.cnf.staging<span class="w"> </span>/jails/staging/usr/local/etc/my.cnf
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;==== Setting up the staging rc.conf file ====&quot;</span>
+mv<span class="w"> </span>/jails/staging/etc/rc.conf.local<span class="w"> </span>/jails/staging/etc/rc.conf.slave
+mv<span class="w"> </span>/jails/staging/etc/rc.conf.staging<span class="w"> </span>/jails/staging/etc/rc.conf.local
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;==== Starting the staging db server ====&quot;</span>
+jail<span class="w"> </span>-c<span class="w"> </span>staging
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;==== Makes the staging database not pull from the master ====&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;STOP SLAVE;&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>/usr/local/bin/mysql<span class="w"> </span>-u<span class="w"> </span>root<span class="w"> </span>-pmyrootpassword<span class="w"> </span>-h<span class="w"> </span>staging
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;RESET SLAVE;&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>/usr/local/bin/mysql<span class="w"> </span>-u<span class="w"> </span>root<span class="w"> </span>-pmyrootpassword<span class="w"> </span>-h<span class="w"> </span>staging
+</pre></div>
+<h3>Additional Reading</h3>
+<ul>
+<li><a href="http://www.bsdnow.tv/tutorials/zfs">BSDNow's Crash Course on ZFS</a></li>
+<li><a href="https://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/zfs.html">FreeBSD Handbook on ZFS</a></li>
+<li><a href="http://www.bsdnow.tv/tutorials/zfs">BSDNow's Crash Course on ZFS</a></li>
+<li><a href="http://www.oracle.com/technetwork/articles/servers-storage-admin/sto-recommended-zfs-settings-1951715.html">Oracle's Tuning Guide</a></li>
+<li><a href="http://open-zfs.org/wiki/Performance_tuning">OpenZFS Tuning Guide</a></li>
+<li><a href="https://wiki.freebsd.org/ZFSTuningGuide">FreeBSD ZFS Tuning Guide</a></li>
+</ul>
+
+        <hr>
+        <p>
+          Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the GitHub Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/zfs.html.markdown">pull request</a> yourself!
+        </p>
+        <p class="contributed">
+          Originally contributed by sarlalian, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/zfs.html.markdown">10 contributors</a>.
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2024
+            <a href="http://github.com/sarlalian">sarlalian</a>,
+            <a href="https://github.com/81reap">81reap</a>,
+            <a href="https://github.com/A1EF">A1EF</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

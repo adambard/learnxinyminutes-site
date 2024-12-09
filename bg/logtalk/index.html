@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="bg">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="bg">
+    <title>Learn Logtalk in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/bg/logtalk/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fbg%2Flogtalk%2F&amp;text=Learn+X+in+Y+minutes%2C+where+X%3DLogtalk">
+            Share this page
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">Learn X in Y minutes</a></h1>
+      <h2>Where X=Logtalk</h2>
+      <p class="filelink">
+        Get the code:
+        <a href="/bg/files/llearnlogtalk.lgt">llearnlogtalk.lgt</a>
+      </p>
+      <div id="doc">
+<p>Logtalk е обектно-ориентиран (ОО) модерен логически език за програмиране, които разширява Prolog с възможности за капсулиране (еncapsulation) и многократно използване на кода без да компрометира декларативните възможности на езика. Logtalk е имплементиран така че да може да бъде адапртиран към всеки стандартен Prolog като back-end компилатор, тоест е напълно прозрачен за нормална Prolog програма.
+Допълнително, Logtalk също може да интерпретира Prolog модули, като Logtalk обекти.</p>
+<p>Основната структурна единица за изграждане на програмни със Logtalk е чрез използване на обекти.
+Logtalk поддържа както стандартния начин за изграждане на иерархий от класове познати ни от езици като Java, същто така и prototype-OOP познат ни от езици като JavaScript.
+Запомнете че всичко стартира с дефинирането и създаването на обект.</p>
+<h2>Syntax (Синтакс)</h2>
+<p>Logtalk използва стандартен Prolog синтакс, с минимум допълнителни оператори и директиви.
+Важно последствие от това е че кода лесно се капсулира с много малко промени спрямо оригинален код.</p>
+<p>Операторите които Logtalk добавя към Prolog са :</p>
+<div class="highlight"><pre>::/2 - изпраща саобщение до обект (аналогично на метод в стандартните ООП езици)
+::/1 - изпраща саобщение до себе си (self) (тоест до обекта който е получил съобщението което обработваме в момента)
+^^/1 - super call (изпраща саобщение до наследен или импортиран предикат(predicate))
+</pre></div>
+<h2>Entities and roles (Субекти и роли)</h2>
+<p>Logtalk предоставя обекти, портоколи и категории като първокласни-субекти (first-class entities). Връзката между тях описва ролята която субектите изпалняват.
+Обектите могат да играят различни роли в зависимост от как ги дефинираме тоест какви директиви използваме при дефиницията.</p>
+<p>Например когато използваме обект А за да създадем нов обект Б, обект Б играе ролята на &quot;инстанция&quot;, а обект А играе ролята на клас.
+Ако използваме &quot;extends&quot;-дефиниция единия от обектите играе ролята на протоип(prototype) за другия.</p>
+<h2>Defining an object (Дефиниране на обект)</h2>
+<p>Чрез дефинирането на обект ние капсулираме дефиницията на &quot;предикатите&quot;.
+Обекти могат да се създадат динамично или дефинират статично във код-файла.
+Ето как дефинираме примерен обект :</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(list).
+
+<span class="p">    :- </span><span class="k">public</span>(member<span class="o">/</span><span class="m">2</span>).
+    member(<span class="nv">Head</span>, [<span class="nv">Head</span>| <span class="nv">_</span>]).
+    member(<span class="nv">Head</span>, [<span class="nv">_</span>| <span class="nv">Tail</span>]) <span class="o">:-</span>
+        member(<span class="nv">Head</span>, <span class="nv">Tail</span>).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<h2>Compiling source files (Компилиран)</h2>
+<p>Ако предположим че кода е записан във файл с име list.lgt, можем да го компилираме чрез logtalk_load/1 предиката или съкратения вариант {}/1.</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">{</span>list<span class="k">}</span>.
+yes
+</pre></div>
+<h2>Sending a message to an object (Изпращане на събщение до обект)</h2>
+<p>Както казахме ::/2 infix оператор се използва за изпращане на съобщение до обекта. Както в Prolog, ние можем да backtrack-нем за алтернативни решения, понеже метода е просто стандартен предикат :</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> list<span class="o">::</span>member(<span class="nv">X</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]).
+<span class="nv">X</span> <span class="o">=</span> <span class="m">1</span> <span class="o">;</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="m">2</span> <span class="o">;</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="m">3</span>
+yes
+
+<span class="o">?-</span> <span class="k">write_canonical</span>(list<span class="o">::</span>member(<span class="nv">X</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>])).
+<span class="o">::</span>(list,member(<span class="nv">_</span>,[<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]))
+</pre></div>
+<p>Кагато декларирме обект автоматично предикатите са капсулирани (еncapsulation), тоест извън обекта те са невидими за останалата част от програмата. Естествено има опции да променим това поведение чрез public, protected, или private предикати.</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(scopes).
+
+<span class="p">    :- </span><span class="k">private</span>(bar<span class="o">/</span><span class="m">0</span>).
+    bar.
+
+    local.
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Ако кода е записан в scopes.lgt фаил и се опитаме да изпратим саобщтение до частен(private) или локален предикат ще получим грешка:</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">{</span>scopes<span class="k">}</span>.
+yes
+
+<span class="o">?-</span> <span class="k">catch</span>(scopes<span class="o">::</span>bar, <span class="nv">Error</span>, <span class="k">true</span>).
+<span class="nv">Error</span> <span class="o">=</span> error(
+    <span class="k">permission_error</span>(access, private_predicate, bar<span class="o">/</span><span class="m">0</span>),
+    logtalk(scopes<span class="o">::</span>bar, user)
+)
+yes
+
+<span class="o">?-</span> <span class="k">catch</span>(scopes<span class="o">::</span>local, <span class="nv">Error</span>, <span class="k">true</span>).
+<span class="nv">Error</span> <span class="o">=</span> error(
+    <span class="k">existence_error</span>(predicate_declaration, local<span class="o">/</span><span class="m">0</span>),
+    logtalk(scopes<span class="o">::</span>local, user)
+)
+yes
+</pre></div>
+<p>Когато предиката е непознат за обекта това също генерира грешка. Например :</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">catch</span>(scopes<span class="o">::</span>unknown, <span class="nv">Error</span>, <span class="k">true</span>).
+<span class="nv">Error</span> <span class="o">=</span> error(
+    <span class="k">existence_error</span>(predicate_declaration, unknown<span class="o">/</span><span class="m">0</span>),
+    logtalk(scopes<span class="o">::</span>unknown, user)
+)
+yes
+</pre></div>
+<h2>Протоколи (Defining and implementing a protocol)</h2>
+<p>За тези от вас свикнали със стандартно ООП, Protocols наподобяват Interfaces в Java.
+Протоколите съдържат предикати които могат да бъдат в последствие имплементирани в обекти и категории :</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">protocol</span>(listp).
+
+<span class="p">    :- </span><span class="k">public</span>(member<span class="o">/</span><span class="m">2</span>).
+
+<span class="p">:- </span><span class="k">end_protocol</span>.
+
+<span class="p">:- </span><span class="k">object</span>(list,
+    <span class="k">implements</span>(listp)).
+
+    member(<span class="nv">Head</span>, [<span class="nv">Head</span>| <span class="nv">_</span>]).
+    member(<span class="nv">Head</span>, [<span class="nv">_</span>| <span class="nv">Tail</span>]) <span class="o">:-</span>
+        member(<span class="nv">Head</span>, <span class="nv">Tail</span>).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Обхвата(scope) на предикатите в протокола могат да бъде ограничени чрез protected или private клаузи.
+Например:</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(stack,
+    <span class="k">implements</span>(private<span class="o">::</span>listp)).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Всички субекти(entity) релации могат да бъдат пре-дефинирани с public, protected или private, подбно на начина показан по горе.</p>
+<h2>Прототипи (Prototypes)</h2>
+<p>Всеки обект без instantiation или specialization спецификация с друг обект, играе ролята на прототип.
+Прототип-обект може да предефинира и разщири протоипа-родител.</p>
+<div class="highlight"><pre lang="logtalk"><span class="c">% clyde, our prototypical elephant</span>
+<span class="p">:- </span><span class="k">object</span>(clyde).
+
+<span class="p">    :- </span><span class="k">public</span>(color<span class="o">/</span><span class="m">1</span>).
+    color(grey).
+
+<span class="p">    :- </span><span class="k">public</span>(number_of_legs<span class="o">/</span><span class="m">1</span>).
+    number_of_legs(<span class="m">4</span>).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+
+<span class="c">% fred, another elephant, is like clyde, except that he&#39;s white</span>
+<span class="p">:- </span><span class="k">object</span>(fred,
+    <span class="k">extends</span>(clyde)).
+
+    color(white).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Когато системата отговаря на съобщение изпратено до обект който играе ролята на прототип, тя търси отговор първо в прототипа и ако не намери предикат делегира отговора на прототипа-родител-обект :</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> fred<span class="o">::</span>number_of_legs(<span class="nv">N</span>).
+<span class="nv">N</span> <span class="o">=</span> <span class="m">4</span>
+yes
+
+<span class="o">?-</span> fred<span class="o">::</span>color(<span class="nv">C</span>).
+<span class="nv">C</span> <span class="o">=</span> white
+yes
+</pre></div>
+<p>Съобщението е валидно но няма да генерира грещка, ако предиката е дефиниран но не е деклариран/имплементиран. Това е така наречения closed-world assumption.
+Например :</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(foo).
+
+<span class="p">    :- </span><span class="k">public</span>(bar<span class="o">/</span><span class="m">0</span>).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Ако заредим файла и се опитаме да извикаме bar/0, няма да получим отговор, както може да очакваме. Ако обаче предиката не е дори дефиниран, ще получим гращка :</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">{</span>foo<span class="k">}</span>.
+yes
+
+<span class="o">?-</span> foo<span class="o">::</span>bar.
+no
+
+<span class="o">?-</span> <span class="k">catch</span>(foo<span class="o">::</span>baz, <span class="nv">Error</span>, <span class="k">true</span>).
+<span class="nv">Error</span> <span class="o">=</span> error(
+    <span class="k">existence_error</span>(predicate_declaration, baz<span class="o">/</span><span class="m">0</span>),
+    logtalk(foo<span class="o">::</span>baz, user)
+)
+yes
+</pre></div>
+<h2>Класове и инстанции (Classes and instances)</h2>
+<p>За да саздадем обекти които играят ролята на класове и/или инстанции, трябва да използваме поне instantiation или specialization дефиниция с друг обект. Обектите които играят роля на мета-класове могат да се използват ако е нужно още за саздаване на инстанции на класа.
+Следващия пример ще илюстрира как можем динамично да саздадаваме обекти :</p>
+<div class="highlight"><pre lang="logtalk"><span class="c">% a simple, generic, metaclass defining a new/2 predicate for its instances</span>
+<span class="p">:- </span><span class="k">object</span>(metaclass,
+    <span class="k">instantiates</span>(metaclass)).
+
+<span class="p">    :- </span><span class="k">public</span>(new<span class="o">/</span><span class="m">2</span>).
+    new(<span class="nv">Instance</span>, <span class="nv">Clauses</span>) <span class="o">:-</span>
+        <span class="k">self</span>(<span class="nv">Class</span>),
+        <span class="k">create_object</span>(<span class="nv">Instance</span>, [instantiates(<span class="nv">Class</span>)], [], <span class="nv">Clauses</span>).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+
+<span class="c">% a simple class defining age/1 and name/1 predicate for its instances</span>
+<span class="p">:- </span><span class="k">object</span>(person,
+    <span class="k">instantiates</span>(metaclass)).
+
+<span class="p">    :- </span><span class="k">public</span>([
+        age<span class="o">/</span><span class="m">1</span>, name<span class="o">/</span><span class="m">1</span>
+    ]).
+
+    <span class="c">% a default value for age/1</span>
+    age(<span class="m">42</span>).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+
+<span class="c">% a static instance of the class person</span>
+<span class="p">:- </span><span class="k">object</span>(john,
+    <span class="k">instantiates</span>(person)).
+
+    name(john).
+    age(<span class="m">12</span>).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Когато отговаряме на съобщение изпратено до обект който играе ролята на инстанция, системата валидира съобщението първо в текущия клас, след това класа-родител ако е необходимо. Ако съобщението е валидно тогава проверяваме инстанцията :</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> person<span class="o">::</span>new(<span class="nv">Instance</span>, [name(paulo)]).
+<span class="nv">Instance</span> <span class="o">=</span> o1
+yes
+
+<span class="o">?-</span> o1<span class="o">::</span>name(<span class="nv">Name</span>).
+<span class="nv">Name</span> <span class="o">=</span> paulo
+yes
+
+<span class="o">?-</span> o1<span class="o">::</span>age(<span class="nv">Age</span>).
+<span class="nv">Age</span> <span class="o">=</span> <span class="m">42</span>
+yes
+
+<span class="o">?-</span> john<span class="o">::</span>age(<span class="nv">Age</span>).
+<span class="nv">Age</span> <span class="o">=</span> <span class="m">12</span>
+yes
+</pre></div>
+<h2>Категории (Categories)</h2>
+<p>Категорията е капсулран код който може да се рециклира (reuse) в различни обекти. Докато Протокола е само дефиниции Категорията е сащо и декларация/имплементация на предикатите които сме дефинирали.
+В следващия пример ще дефинираме категории представящи автомобилни двигатели след което ще ги импортираме в автомобил-обекти :</p>
+<div class="highlight"><pre lang="logtalk"><span class="c">% a protocol describing engine characteristics</span>
+<span class="p">:- </span><span class="k">protocol</span>(carenginep).
+
+<span class="p">    :- </span><span class="k">public</span>([
+        reference<span class="o">/</span><span class="m">1</span>,
+        capacity<span class="o">/</span><span class="m">1</span>,
+        cylinders<span class="o">/</span><span class="m">1</span>,
+        horsepower_rpm<span class="o">/</span><span class="m">2</span>,
+        bore_stroke<span class="o">/</span><span class="m">2</span>,
+        fuel<span class="o">/</span><span class="m">1</span>
+    ]).
+
+<span class="p">:- </span><span class="k">end_protocol</span>.
+
+<span class="c">% a typical engine defined as a category</span>
+<span class="p">:- </span><span class="k">category</span>(classic,
+    <span class="k">implements</span>(carenginep)).
+
+    reference(<span class="s">&#39;M180.940&#39;</span>).
+    capacity(<span class="m">2195</span>).
+    cylinders(<span class="m">6</span>).
+    horsepower_rpm(<span class="m">94</span>, <span class="m">4800</span>).
+    bore_stroke(<span class="m">80</span>, <span class="m">72.8</span>).
+    fuel(gasoline).
+
+<span class="p">:- </span><span class="k">end_category</span>.
+
+<span class="c">% a souped up version of the previous engine</span>
+<span class="p">:- </span><span class="k">category</span>(sport,
+    <span class="k">extends</span>(classic)).
+
+    reference(<span class="s">&#39;M180.941&#39;</span>).
+    horsepower_rpm(<span class="nv">HP</span>, <span class="nv">RPM</span>) <span class="o">:-</span>
+        <span class="o">^^</span>horsepower_rpm(<span class="nv">ClassicHP</span>, <span class="nv">ClassicRPM</span>),    <span class="c">% &quot;super&quot; call</span>
+        <span class="nv">HP</span> <span class="k">is</span> <span class="k">truncate</span>(<span class="nv">ClassicHP</span><span class="o">*</span><span class="m">1.23</span>),
+        <span class="nv">RPM</span> <span class="k">is</span> <span class="k">truncate</span>(<span class="nv">ClassicRPM</span><span class="o">*</span><span class="m">0.762</span>).
+
+<span class="p">:- </span><span class="k">end_category</span>.
+
+<span class="c">% with engines (and other components), we may start &quot;assembling&quot; some cars</span>
+<span class="p">:- </span><span class="k">object</span>(sedan,
+    <span class="k">imports</span>(classic)).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+
+<span class="p">:- </span><span class="k">object</span>(coupe,
+    <span class="k">imports</span>(sport)).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Категориите се компилират отделно и разрешават импортираните обекти да бъдат обновени като просто обновим категориите без да е необходимо да прекомпилираме обекта:</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> sedan<span class="o">::</span><span class="k">current_predicate</span>(<span class="nv">Predicate</span>).
+<span class="nv">Predicate</span> <span class="o">=</span> reference<span class="o">/</span><span class="m">1</span> <span class="o">;</span>
+<span class="nv">Predicate</span> <span class="o">=</span> capacity<span class="o">/</span><span class="m">1</span> <span class="o">;</span>
+<span class="nv">Predicate</span> <span class="o">=</span> cylinders<span class="o">/</span><span class="m">1</span> <span class="o">;</span>
+<span class="nv">Predicate</span> <span class="o">=</span> horsepower_rpm<span class="o">/</span><span class="m">2</span> <span class="o">;</span>
+<span class="nv">Predicate</span> <span class="o">=</span> bore_stroke<span class="o">/</span><span class="m">2</span> <span class="o">;</span>
+<span class="nv">Predicate</span> <span class="o">=</span> fuel<span class="o">/</span><span class="m">1</span>
+yes
+</pre></div>
+<h2>Hot patching</h2>
+<p>Категориите още могат да се използват за промяна на обекти &quot;в движение&quot;, след като вече са били инстанциирани.
+Например :</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(buggy).
+
+<span class="p">    :- </span><span class="k">public</span>(p<span class="o">/</span><span class="m">0</span>).
+    p <span class="o">:-</span> <span class="k">write</span>(foo).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Да предположим че обекта изпечатва грешното съобщение p/0 :</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">{</span>buggy<span class="k">}</span>.
+yes
+
+<span class="o">?-</span> buggy<span class="o">::</span>p.
+foo
+yes
+</pre></div>
+<p>Ако кода който описва този обект не е наличен и трябва да коригираме приложението, ние можем просто да създадем категория която да коригира необходимия предикат :</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">category</span>(patch,
+    <span class="k">complements</span>(buggy)).
+
+    <span class="c">% fixed p/0 def</span>
+    p <span class="o">:-</span> <span class="k">write</span>(bar).
+
+<span class="p">:- </span><span class="k">end_category</span>.
+</pre></div>
+<p>След компилиране и зареждане на категорията ще получим :</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">{</span>patch<span class="k">}</span>.
+yes
+
+<span class="o">?-</span> buggy<span class="o">::</span>p.
+bar
+yes
+</pre></div>
+<h2>Parametric objects and categories</h2>
+<p>Обектите и категориите могат да се параметризират ако използваме за индентификатор комплексен-термин вместо атом.
+Параметрите са логически променливи достъпни за всички капсулирани предикати.
+Пример с геометрични кръгове :</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(circle(<span class="nv">_Radius</span>, <span class="nv">_Color</span>)).
+
+<span class="p">    :- </span><span class="k">public</span>([
+        area<span class="o">/</span><span class="m">1</span>, perimeter<span class="o">/</span><span class="m">1</span>
+    ]).
+
+    area(<span class="nv">Area</span>) <span class="o">:-</span>
+        <span class="k">parameter</span>(<span class="m">1</span>, <span class="nv">Radius</span>),
+        <span class="nv">Area</span> <span class="k">is</span> <span class="o">pi*</span><span class="nv">Radius</span><span class="o">*</span><span class="nv">Radius</span>.
+
+    perimeter(<span class="nv">Perimeter</span>) <span class="o">:-</span>
+        <span class="k">parameter</span>(<span class="m">1</span>, <span class="nv">Radius</span>),
+        <span class="nv">Perimeter</span> <span class="k">is</span> <span class="m">2</span><span class="o">*pi*</span><span class="nv">Radius</span>.
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Параметричните-обекти се използват като всеки друг обект, обикновенно осигуряваики стойности за параметрите когато изпращаме съобщение.</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> circle(<span class="m">1.23</span>, blue)<span class="o">::</span>area(<span class="nv">Area</span>).
+<span class="nv">Area</span> <span class="o">=</span> <span class="m">4.75291</span>
+yes
+</pre></div>
+<p>Параметричните-обекти още осигуряват лесен начин за ассоцииране на различни предикати със нормални Prolog предикати.
+Prolog факти могат да бъдат интерпретирани като посредници (proxies).
+Например следните клаузи на circle/2 предикат :</p>
+<div class="highlight"><pre lang="logtalk">circle(<span class="m">1.23</span>, blue).
+circle(<span class="m">3.71</span>, yellow).
+circle(<span class="m">0.39</span>, green).
+circle(<span class="m">5.74</span>, black).
+circle(<span class="m">8.32</span>, cyan).
+</pre></div>
+<p>можем лесно да изчислим площа на всички кръгове :</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">findall</span>(<span class="nv">Area</span>, <span class="k">{</span>circle(<span class="nv">_</span>, <span class="nv">_</span>)<span class="k">}</span><span class="o">::</span>area(<span class="nv">Area</span>), <span class="nv">Areas</span>).
+<span class="nv">Areas</span> <span class="o">=</span> [<span class="m">4.75291</span>, <span class="m">43.2412</span>, <span class="m">0.477836</span>, <span class="m">103.508</span>, <span class="m">217.468</span>]
+yes
+</pre></div>
+<p>{Goal}::Message формата доказва(proves) Goal и изпраща съобщение до генерирания термин.</p>
+<h2>Събития и мониторинг (Events and monitors)</h2>
+<p>Logtalk поддържа event-driven програмиране чрез дефинирането на събития и монитори за тези събития.
+Събитие е просто изпращане на съобщение към обект. При обработването на съобщение системата разпознава before-събитие и after-събитие.
+Мониторите дефинират предикати които ще прихаванат тези събития (before/3 и after/3).
+Нампример следния монитор ще прихаване съобщенията изпратени чрез ::/2  :</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(tracer,
+    <span class="k">implements</span>(monitoring)).    <span class="c">% built-in protocol for event handlers</span>
+
+<span class="p">    :- </span><span class="k">initialization</span>(<span class="k">define_events</span>(<span class="nv">_</span>, <span class="nv">_</span>, <span class="nv">_</span>, <span class="nv">_</span>, tracer)).
+
+    <span class="k">before</span>(<span class="nv">Object</span>, <span class="nv">Message</span>, <span class="nv">Sender</span>) <span class="o">:-</span>
+        <span class="k">write</span>(<span class="s">&#39;call: &#39;</span>), <span class="k">writeq</span>(<span class="nv">Object</span>), <span class="k">write</span>(<span class="s">&#39; &lt;-- &#39;</span>), <span class="k">writeq</span>(<span class="nv">Message</span>),
+        <span class="k">write</span>(<span class="s">&#39; from &#39;</span>), <span class="k">writeq</span>(<span class="nv">Sender</span>), <span class="k">nl</span>.
+
+    <span class="k">after</span>(<span class="nv">Object</span>, <span class="nv">Message</span>, <span class="nv">Sender</span>) <span class="o">:-</span>
+        <span class="k">write</span>(<span class="s">&#39;exit: &#39;</span>), <span class="k">writeq</span>(<span class="nv">Object</span>), <span class="k">write</span>(<span class="s">&#39; &lt;-- &#39;</span>), <span class="k">writeq</span>(<span class="nv">Message</span>),
+        <span class="k">write</span>(<span class="s">&#39; from &#39;</span>), <span class="k">writeq</span>(<span class="nv">Sender</span>), <span class="k">nl</span>.
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Ето как можем да проследим реакцията на изпращане на съобщение :</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> list<span class="o">::</span>member(<span class="nv">X</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]).
+
+call<span class="o">:</span> list <span class="o">&lt;--</span> member(<span class="nv">X</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]) from user
+exit<span class="o">:</span> list <span class="o">&lt;--</span> member(<span class="m">1</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]) from user
+<span class="nv">X</span> <span class="o">=</span> <span class="m">1</span> <span class="o">;</span>
+exit<span class="o">:</span> list <span class="o">&lt;--</span> member(<span class="m">2</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]) from user
+<span class="nv">X</span> <span class="o">=</span> <span class="m">2</span> <span class="o">;</span>
+exit<span class="o">:</span> list <span class="o">&lt;--</span> member(<span class="m">3</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]) from user
+<span class="nv">X</span> <span class="o">=</span> <span class="m">3</span>
+yes
+</pre></div>
+<p>Събития могат да се изтрият динамично чрез define_events/5 и abolish_events/5 предикати.</p>
+<h2>Lambda expressions</h2>
+<p>Logtalk поддържа lambda expressions. Lambda параметрите се предават чрез списък към (&gt;&gt;)/2 infix оператор свързвайки ги с lambda.
+Ето няколко примера :</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">{</span>library(metapredicates_loader)<span class="k">}</span>.
+yes
+
+<span class="o">?-</span> meta<span class="o">::</span>map([<span class="nv">X</span>,<span class="nv">Y</span>]<span class="o">&gt;&gt;</span>(<span class="nv">Y</span> <span class="k">is</span> <span class="m">2</span><span class="o">*</span><span class="nv">X</span>), [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>], <span class="nv">Ys</span>).
+<span class="nv">Ys</span> <span class="o">=</span> [<span class="m">2</span>,<span class="m">4</span>,<span class="m">6</span>]
+yes
+</pre></div>
+<p>Currying се поддържа :</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> meta<span class="o">::</span>map([<span class="nv">X</span>]<span class="o">&gt;&gt;</span>([<span class="nv">Y</span>]<span class="o">&gt;&gt;</span>(<span class="nv">Y</span> <span class="k">is</span> <span class="m">2</span><span class="o">*</span><span class="nv">X</span>)), [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>], <span class="nv">Ys</span>).
+<span class="nv">Ys</span> <span class="o">=</span> [<span class="m">2</span>,<span class="m">4</span>,<span class="m">6</span>]
+yes
+</pre></div>
+<p>Lambda free variables can be expressed using the extended syntax {Free1, ...}/[Parameter1, ...]&gt;&gt;Lambda.</p>
+<h2>Макроси (Macros)</h2>
+<p>Термини и Цели могат да бъдат пре-интерпретирани (expanded) по време на компилация ако специфицираме hook-обект който дефинира прецедурите на пре-интерпретиране.
+Нека следният обект е записан във фаил source.lgt :</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(source).
+
+<span class="p">    :- </span><span class="k">public</span>(bar<span class="o">/</span><span class="m">1</span>).
+    bar(<span class="nv">X</span>) <span class="o">:-</span> foo(<span class="nv">X</span>).
+
+    foo(a). foo(b). foo(c).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>и следния hooк-обект е записан в my_macros.lgt, който пре-интерпретира foo/1 предиката :</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(my_macros,
+    <span class="k">implements</span>(expanding)).    <span class="c">% built-in protocol for expanding predicates</span>
+
+    <span class="k">term_expansion</span>(foo(<span class="nv">Char</span>), baz(<span class="nv">Code</span>)) <span class="o">:-</span>
+        <span class="k">char_code</span>(<span class="nv">Char</span>, <span class="nv">Code</span>). <span class="c">% standard built-in predicate</span>
+
+    <span class="k">goal_expansion</span>(foo(<span class="nv">X</span>), baz(<span class="nv">X</span>)).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>След зареждането на файла с макроси ние можем да пре-интерпретираме ползайки hook-флаг за компилатора :</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">logtalk_load</span>(my_macros), <span class="k">logtalk_load</span>(source, [hook(my_macros)]).
+yes
+
+<span class="o">?-</span> source<span class="o">::</span>bar(<span class="nv">X</span>).
+<span class="nv">X</span> <span class="o">=</span> <span class="m">97</span> <span class="o">;</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="m">98</span> <span class="o">;</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="m">99</span>
+<span class="k">true</span>
+</pre></div>
+<h2>Допълнителна информация (Further information)</h2>
+<p>Посетете сайта на <a href="http://logtalk.org">Logtalk website</a> за повече информация.</p>
+
+        <hr>
+        <p>
+          Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the GitHub Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/bg-bg/logtalk-bg.html.markdown">pull request</a> yourself!
+        </p>
+        <p class="contributed">
+          Originally contributed by Paulo Moura, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/bg-bg/logtalk-bg.html.markdown">2 contributors</a>.
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2024
+            <a href="http://github.com/pmoura">Paulo Moura</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

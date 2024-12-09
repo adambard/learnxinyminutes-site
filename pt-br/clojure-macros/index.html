@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="pt-BR">
+    <title>Learn Clojure macros in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/pt-br/clojure-macros/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fpt-br%2Fclojure-macros%2F&amp;text=Aprenda+X+em+Y+Minutos%2C+onde+X%3DClojure+macros">
+            Compartilhe esta página
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">Aprenda X em Y Minutos</a></h1>
+      <h2>Onde X=Clojure macros</h2>
+      <p class="filelink">
+        Baixar o código:
+        <a href="/pt-br/files/learnclojuremacros.clj">learnclojuremacros.clj</a>
+      </p>
+      <div id="doc">
+<p>Como todas as Lisps, a inerente <a href="https://en.wikipedia.org/wiki/Homoiconic">homoiconicity</a>
+do Clojure lhe dá acesso a toda a extensão da linguagem
+para escrever rotinas de geração de código chamados &quot;macros&quot;. Macros fornecem uma poderosa forma de adequar a linguagem
+às suas necessidades.</p>
+<p>Pórem, tenha cuidado. É considerado má pratica escrever uma macro quando uma função vai fazer. Use uma macro apenas
+quando você precisar de controle sobre quando ou se os argumentos de um formulário serão avaliados.</p>
+<p>Você vai querer estar familiarizado com Clojure. Certifique-se de entender tudo em
+<a href="/docs/clojure/">Aprenda Clojure em Y Minutos</a>.</p>
+<div class="highlight"><pre lang="clojure"><span class="c1">;; Defina uma macro utilizando defmacro. Sua macro deve ter como saída uma lista que possa</span>
+<span class="c1">;; ser avaliada como código Clojure.</span>
+<span class="c1">;;</span>
+<span class="c1">;; Essa macro é a mesma coisa que se você escrever (reverse &quot;Hello World&quot;)</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">my-first-macro</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">list reverse </span><span class="s">&quot;Hello World&quot;</span><span class="p">))</span>
+
+<span class="c1">;; Inspecione o resultado de uma macro utilizando macroexpand or macroexpand-1.</span>
+<span class="c1">;;</span>
+<span class="c1">;; Note que a chamada deve utilizar aspas simples.</span>
+<span class="p">(</span><span class="nb">macroexpand </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">my-first-macro</span><span class="p">))</span>
+<span class="c1">;; -&gt; (#&lt;core$reverse clojure.core$reverse@xxxxxxxx&gt; &quot;Hello World&quot;)</span>
+
+<span class="c1">;; Você pode avaliar o resultado de macroexpand diretamente:</span>
+<span class="p">(</span><span class="nb">eval </span><span class="p">(</span><span class="nb">macroexpand </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">my-first-macro</span><span class="p">)))</span>
+<span class="c1">; -&gt; (\d \l \o \r \W \space \o \l \l \e \H)</span>
+
+<span class="c1">;; mas você deve usar essa sintaxe mais sucinta e familiar a funções:</span>
+<span class="p">(</span><span class="nf">my-first-macro</span><span class="p">)</span><span class="w">  </span><span class="c1">; -&gt; (\d \l \o \r \W \space \o \l \l \e \H)</span>
+
+<span class="c1">;; Você pode tornar as coisas mais fáceis pra você, utilizando a sintaxe de citação mais suscinta</span>
+<span class="c1">;; para criar listas nas suas macros:</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">my-first-quoted-macro</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="o">&#39;</span><span class="p">(</span><span class="nb">reverse </span><span class="s">&quot;Hello World&quot;</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nb">macroexpand </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">my-first-quoted-macro</span><span class="p">))</span>
+<span class="c1">;; -&gt; (reverse &quot;Hello World&quot;)</span>
+<span class="c1">;; Note que reverse não é mais uma função objeto, mas um simbolo.</span>
+
+<span class="c1">;; Macros podem ter argumentos.</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">inc2</span><span class="w"> </span><span class="p">[</span><span class="nv">arg</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">list + </span><span class="mi">2</span><span class="w"> </span><span class="nv">arg</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nf">inc2</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; 4</span>
+
+<span class="c1">;; Mas se você tentar fazer isso com uma lista entre aspas simples, você vai receber um erro, por que o </span>
+<span class="c1">;; argumento irá entra aspas simples também. Para contornar isso, Clojure prover uma maneira de utilizar aspas simples </span>
+<span class="c1">;; em macros: `. Dentro `, você pode usar ~ para chegar ao escopo externo.</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">inc2-quoted</span><span class="w"> </span><span class="p">[</span><span class="nv">arg</span><span class="p">]</span>
+<span class="w">  </span><span class="o">`</span><span class="p">(</span><span class="nb">+ </span><span class="mi">2</span><span class="w"> </span><span class="o">~</span><span class="nv">arg</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nf">inc2-quoted</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1">;; Você pode usar os argumentos de destruturação habituais. Expandir lista de variaveis usando ~@</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">unless</span><span class="w"> </span><span class="p">[</span><span class="nv">arg</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nv">body</span><span class="p">]</span>
+<span class="w">  </span><span class="o">`</span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">not </span><span class="o">~</span><span class="nv">arg</span><span class="p">)</span>
+<span class="w">     </span><span class="p">(</span><span class="k">do </span><span class="o">~@</span><span class="nv">body</span><span class="p">)))</span><span class="w"> </span><span class="c1">; Lembrar o do!</span>
+
+<span class="p">(</span><span class="nb">macroexpand </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">unless</span><span class="w"> </span><span class="nv">true</span><span class="w"> </span><span class="p">(</span><span class="nb">reverse </span><span class="s">&quot;Hello World&quot;</span><span class="p">)))</span>
+<span class="c1">;; -&gt;</span>
+<span class="c1">;; (if (clojure.core/not true) (do (reverse &quot;Hello World&quot;)))</span>
+
+<span class="c1">;; (unless) avalia e retorna seu corpo, se o primeiro argumento é falso.</span>
+<span class="c1">;; caso contrario, retorna nil</span>
+
+<span class="p">(</span><span class="nf">unless</span><span class="w"> </span><span class="nv">true</span><span class="w"> </span><span class="s">&quot;Hello&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; nil</span>
+<span class="p">(</span><span class="nf">unless</span><span class="w"> </span><span class="nv">false</span><span class="w"> </span><span class="s">&quot;Hello&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; &quot;Hello&quot;</span>
+
+<span class="c1">;; Usado sem cuidados, macros podem fazer muito mal por sobreporem suas variaveis</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">define-x</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">do</span>
+<span class="w">     </span><span class="p">(</span><span class="k">def </span><span class="nv">x</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">     </span><span class="p">(</span><span class="nb">list </span><span class="nv">x</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">x</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">define-x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span>
+<span class="p">(</span><span class="nb">list </span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span>
+
+<span class="c1">;;s Para evitar isso, use gensym para receber um identificador unico</span>
+<span class="p">(</span><span class="nb">gensym </span><span class="ss">&#39;x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; x1281 (ou outra coisa)</span>
+
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">define-x-safely</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">sym</span><span class="w"> </span><span class="p">(</span><span class="nb">gensym </span><span class="ss">&#39;x</span><span class="p">)]</span>
+<span class="w">    </span><span class="o">`</span><span class="p">(</span><span class="nf">do</span>
+<span class="w">       </span><span class="p">(</span><span class="k">def </span><span class="o">~</span><span class="nv">sym</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">       </span><span class="p">(</span><span class="nb">list </span><span class="o">~</span><span class="nv">sym</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">x</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">define-x-safely</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span>
+<span class="p">(</span><span class="nb">list </span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (4)</span>
+
+<span class="c1">;; Você pode usar # dentro de ` para produzir uma gensym para cada simbolo automaticamente</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">define-x-hygenically</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="o">`</span><span class="p">(</span><span class="nf">do</span>
+<span class="w">     </span><span class="p">(</span><span class="k">def </span><span class="nv">x#</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">     </span><span class="p">(</span><span class="nb">list </span><span class="nv">x#</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">x</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">define-x-hygenically</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (2)</span>
+<span class="p">(</span><span class="nb">list </span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="c1">; -&gt; (4)</span>
+
+<span class="c1">;; É típico o uso de funções de auxilio com macros. Vamos criar um pouco</span>
+<span class="c1">;; Vamos criar um pouco para nos ajudar a suportar uma sintaxe aritmética inline (estupida)</span>
+<span class="p">(</span><span class="kd">declare </span><span class="nv">inline-2-helper</span><span class="p">)</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">clean-arg</span><span class="w"> </span><span class="p">[</span><span class="nv">arg</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">seq? </span><span class="nv">arg</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">inline-2-helper</span><span class="w"> </span><span class="nv">arg</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">arg</span><span class="p">))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">apply-arg</span>
+<span class="w">  </span><span class="s">&quot;Given args [x (+ y)], return (+ x y)&quot;</span>
+<span class="w">  </span><span class="p">[</span><span class="nb">val </span><span class="p">[</span><span class="nv">op</span><span class="w"> </span><span class="nv">arg</span><span class="p">]]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">list </span><span class="nv">op</span><span class="w"> </span><span class="nb">val </span><span class="p">(</span><span class="nf">clean-arg</span><span class="w"> </span><span class="nv">arg</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">inline-2-helper</span>
+<span class="w">  </span><span class="p">[[</span><span class="nv">arg1</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nv">ops-and-args</span><span class="p">]]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">ops</span><span class="w"> </span><span class="p">(</span><span class="nf">partition</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="nv">ops-and-args</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">reduce </span><span class="nv">apply-arg</span><span class="w"> </span><span class="p">(</span><span class="nf">clean-arg</span><span class="w"> </span><span class="nv">arg1</span><span class="p">)</span><span class="w"> </span><span class="nv">ops</span><span class="p">)))</span>
+
+<span class="c1">;; Podemos testar isso imediatamente, sem criar uma macro</span>
+<span class="p">(</span><span class="nf">inline-2-helper</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">a</span><span class="w"> </span><span class="nb">+ </span><span class="p">(</span><span class="nf">b</span><span class="w"> </span><span class="nb">- </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">- </span><span class="p">(</span><span class="nf">c</span><span class="w"> </span><span class="nb">* </span><span class="mi">5</span><span class="p">)))</span><span class="w"> </span><span class="c1">; -&gt; (- (+ a (- b 2)) (* c 5))</span>
+
+<span class="c1">; Entretanto, temos que tornar isso uma macro caso quisermos que isso seja rodado em tempo de compilação</span>
+<span class="p">(</span><span class="kd">defmacro </span><span class="nv">inline-2</span><span class="w"> </span><span class="p">[</span><span class="nv">form</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">inline-2-helper</span><span class="w"> </span><span class="nv">form</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="nb">macroexpand </span><span class="o">&#39;</span><span class="p">(</span><span class="nf">inline-2</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="nb">+ </span><span class="p">(</span><span class="mi">3</span><span class="w"> </span><span class="nb">/ </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">- </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="nb">/ </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">+ </span><span class="mi">1</span><span class="p">)))</span>
+<span class="c1">; -&gt; (+ (- (+ 1 (/ 3 2)) (/ 1 2)) 1)</span>
+
+<span class="p">(</span><span class="nf">inline-2</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="nb">+ </span><span class="p">(</span><span class="mi">3</span><span class="w"> </span><span class="nb">/ </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">- </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="nb">/ </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="nb">+ </span><span class="mi">1</span><span class="p">))</span>
+<span class="c1">; -&gt; 3 (Na verdade, 3N, desde que o numero ficou convertido em uma fração racional com /</span>
+</pre></div>
+<h3>Leitura adicional</h3>
+<p>Escrevendo Macros de <a href="http://www.braveclojure.com/">Clojure para o Brave e True</a>
+<a href="http://www.braveclojure.com/writing-macros/">http://www.braveclojure.com/writing-macros/</a></p>
+<p>Documentos oficiais
+<a href="http://clojure.org/macros">http://clojure.org/macros</a></p>
+<p>Quando utilizar macros?
+<a href="http://dunsmor.com/lisp/onlisp/onlisp_12.html">http://dunsmor.com/lisp/onlisp/onlisp_12.html</a></p>
+
+        <hr>
+        <p>
+          Sugestões ou correções? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Abra uma issue</a> no repositório do GitHub, ou faça um <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/pt-br/clojure-macros-pt.html.markdown">pull request</a> você mesmo!
+        </p>
+        <p class="contributed">
+          Originalmente contribuído por Adam Bard e atualizado por <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/pt-br/clojure-macros-pt.html.markdown">4 colaboradores</a>.
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2024
+            <a href="http://adambard.com/">Adam Bard</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

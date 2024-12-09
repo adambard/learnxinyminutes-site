@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="pt-BR">
+    <title>Learn CMake in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/pt-br/cmake/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fpt-br%2Fcmake%2F&amp;text=Aprenda+X+em+Y+Minutos%2C+onde+X%3DCMake">
+            Compartilhe esta página
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">Aprenda X em Y Minutos</a></h1>
+      <h2>Onde X=CMake</h2>
+      <p class="filelink">
+        Baixar o código:
+        <a href="/pt-br/files/CMake">CMake</a>
+      </p>
+      <div id="doc">
+<p>CMake é um programa de compilação open-source e multiplataforma. Essa ferramenta
+permitirá testar, compilar e criar pacotes a partir do seu código fonte.</p>
+<p>O problema que o CMake tenta resolver são os problemas de configurar os Makefiles
+e Autoconfigure (diferente dos interpretadores make que tem comandos diferentes)
+e sua facilidade de uso envolvendo bibliotecas terceiras.</p>
+<p>CMake é um sistema open-source extensível que gerencia o processo de build em um
+sistema operacional e um método independente de compilador. Diferente de sistemas
+multiplataformas, CMake é designado a usar em conjunto ao ambiente de compilação
+nativo. Seus simples arquivos de configuração localizados em seus diretórios
+(chamados arquivos CMakeLists.txt) que são usados para gerar padrões de arquivos
+de compilação (ex: makefiles no Unix e projetos em Windows MSVC) que são usados
+de maneira simples.</p>
+<div class="highlight"><pre lang="cmake"><span class="c"># No CMake, isso é um comentário</span>
+
+<span class="c"># Para rodar nosso código, iremos utilizar esses comandos:</span>
+<span class="c">#  - mkdir build &amp;&amp; cd build</span>
+<span class="c">#  - cmake ..</span>
+<span class="c">#  - make</span>
+<span class="c">#</span>
+<span class="c"># Com esses comandos, iremos seguir as melhores práticas para compilar em um</span>
+<span class="c"># subdiretório e na segunda linha pediremos ao CMake para gerar um novo Makefile</span>
+<span class="c"># independente de sistema operacional. E finalmente, rodar o comando make.</span>
+
+<span class="c">#------------------------------------------------------------------------------</span>
+<span class="c"># Básico</span>
+<span class="c">#------------------------------------------------------------------------------</span>
+<span class="c">#</span>
+<span class="c"># O arquivo CMake deve ser chamado de &quot;CMakeLists.txt&quot;.</span>
+
+<span class="c"># Configura a versão mínima requerida do CMake para gerar o Makefile</span>
+<span class="nb">cmake_minimum_required</span><span class="w"> </span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">2.8</span><span class="p">)</span>
+
+<span class="c"># Exibe FATAL_ERROR se a versão for menor que  2.8</span>
+<span class="nb">cmake_minimum_required</span><span class="w"> </span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">2.8</span><span class="w"> </span><span class="s">FATAL_ERROR</span><span class="p">)</span>
+
+<span class="c"># Configuramos o nome do nosso projeto. Mas antes disso, iremos alterar alguns</span>
+<span class="c"># diretórios em nome da convenção gerada pelo CMake. Podemos enviar a LANG do</span>
+<span class="c"># código como segundo parâmetro</span>
+<span class="nb">project</span><span class="w"> </span><span class="p">(</span><span class="s">learncmake</span><span class="w"> </span><span class="s">C</span><span class="p">)</span>
+
+<span class="c"># Configure o diretório do código do projeto (somente convenção)</span>
+<span class="nb">set</span><span class="p">(</span><span class="w"> </span><span class="s">LEARN_CMAKE_SOURCE_DIR</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_CURRENT_SOURCE_DIR</span><span class="o">}</span><span class="w"> </span><span class="p">)</span>
+<span class="nb">set</span><span class="p">(</span><span class="w"> </span><span class="s">LEARN_CMAKE_BINARY_DIR</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_CURRENT_BINARY_DIR</span><span class="o">}</span><span class="w"> </span><span class="p">)</span>
+
+<span class="c"># Isso é muito útil para configurar a versão do nosso código no sistema de compilação</span>
+<span class="c"># usando um estilo `semver`</span>
+<span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="s">LEARN_CMAKE_VERSION_MAJOR</span><span class="w"> </span><span class="s">1</span><span class="p">)</span>
+<span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="s">LEARN_CMAKE_VERSION_MINOR</span><span class="w"> </span><span class="s">0</span><span class="p">)</span>
+<span class="nb">set</span><span class="w"> </span><span class="p">(</span><span class="s">LEARN_CMAKE_VERSION_PATCH</span><span class="w"> </span><span class="s">0</span><span class="p">)</span>
+
+<span class="c"># Envie as variáveis (número da versão) para o cabeçalho de código-fonte</span>
+<span class="nb">configure_file</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="s2">&quot;${PROJECT_SOURCE_DIR}/TutorialConfig.h.in&quot;</span>
+<span class="w">  </span><span class="s2">&quot;${PROJECT_BINARY_DIR}/TutorialConfig.h&quot;</span>
+<span class="p">)</span>
+
+<span class="c"># Inclua Diretórios</span>
+<span class="c"># No GCC, isso irá invocar o comando &quot;-I&quot;</span>
+<span class="nb">include_directories</span><span class="p">(</span><span class="w"> </span><span class="s">include</span><span class="w"> </span><span class="p">)</span>
+
+<span class="c"># Onde as bibliotecas adicionais estão instaladas? Nota: permite incluir o path</span>
+<span class="c"># aqui, na sequência as checagens irão resolver o resto</span>
+<span class="nb">set</span><span class="p">(</span><span class="w"> </span><span class="s">CMAKE_MODULE_PATH</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_MODULE_PATH</span><span class="o">}</span><span class="w"> </span><span class="s2">&quot;${CMAKE_SOURCE_DIR}/CMake/modules/&quot;</span><span class="w"> </span><span class="p">)</span>
+
+<span class="c"># Condições</span>
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="s">CONDICAO</span><span class="w"> </span><span class="p">)</span>
+<span class="w">  </span><span class="c"># reposta!</span>
+
+<span class="w">  </span><span class="c"># Informação incidental</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s">STATUS</span><span class="w"> </span><span class="s2">&quot;Minha mensagem&quot;</span><span class="p">)</span>
+
+<span class="w">  </span><span class="c"># Aviso CMake, continua processando</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s">WARNING</span><span class="w"> </span><span class="s2">&quot;Minha mensagem&quot;</span><span class="p">)</span>
+
+<span class="w">  </span><span class="c"># Aviso (dev) CMake, continua processando</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s">AUTHOR_WARNING</span><span class="w"> </span><span class="s2">&quot;Minha mensagem&quot;</span><span class="p">)</span>
+
+<span class="w">  </span><span class="c"># Erro CMake, continua processando, mas pula a geração</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s">SEND_ERROR</span><span class="w"> </span><span class="s2">&quot;Minha mensagem&quot;</span><span class="p">)</span>
+
+<span class="w">  </span><span class="c"># Erro CMake, para o processamento e a geração</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s">FATAL_ERROR</span><span class="w"> </span><span class="s2">&quot;Minha mensagem&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+
+<span class="nb">if</span><span class="p">(</span><span class="w"> </span><span class="s">CONDICAO</span><span class="w"> </span><span class="p">)</span>
+
+<span class="nb">elseif</span><span class="p">(</span><span class="w"> </span><span class="s">CONDICAO</span><span class="w"> </span><span class="p">)</span>
+
+<span class="nb">else</span><span class="p">(</span><span class="w"> </span><span class="s">CONDICAO</span><span class="w"> </span><span class="p">)</span>
+
+<span class="nb">endif</span><span class="p">(</span><span class="w"> </span><span class="s">CONDICAO</span><span class="w"> </span><span class="p">)</span>
+
+<span class="c"># Loops</span>
+<span class="nb">foreach</span><span class="p">(</span><span class="s">loop_var</span><span class="w"> </span><span class="s">arg1</span><span class="w"> </span><span class="s">arg2</span><span class="w"> </span><span class="s">...</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">COMANDO1</span><span class="p">(</span><span class="s">ARGS</span><span class="w"> </span><span class="s">...</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">COMANDO2</span><span class="p">(</span><span class="s">ARGS</span><span class="w"> </span><span class="s">...</span><span class="p">)</span>
+<span class="w">  </span><span class="err">...</span>
+<span class="nb">endforeach</span><span class="p">(</span><span class="s">loop_var</span><span class="p">)</span>
+
+<span class="nb">foreach</span><span class="p">(</span><span class="s">loop_var</span><span class="w"> </span><span class="s">RANGE</span><span class="w"> </span><span class="s">total</span><span class="p">)</span>
+<span class="nb">foreach</span><span class="p">(</span><span class="s">loop_var</span><span class="w"> </span><span class="s">RANGE</span><span class="w"> </span><span class="s">start</span><span class="w"> </span><span class="s">stop</span><span class="w"> </span><span class="s">[step]</span><span class="p">)</span>
+
+<span class="nb">foreach</span><span class="p">(</span><span class="s">loop_var</span><span class="w"> </span><span class="s">IN</span><span class="w"> </span><span class="s">[LISTS</span><span class="w"> </span><span class="s">[list1</span><span class="w"> </span><span class="s">[...]]]</span>
+<span class="w">                    </span><span class="s">[ITEMS</span><span class="w"> </span><span class="s">[item1</span><span class="w"> </span><span class="s">[...]]]</span><span class="p">)</span>
+
+<span class="nb">while</span><span class="p">(</span><span class="s">condicao</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">COMANDO1</span><span class="p">(</span><span class="s">ARGS</span><span class="w"> </span><span class="s">...</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">COMANDO2</span><span class="p">(</span><span class="s">ARGS</span><span class="w"> </span><span class="s">...</span><span class="p">)</span>
+<span class="w">  </span><span class="err">...</span>
+<span class="nb">endwhile</span><span class="p">(</span><span class="s">condicao</span><span class="p">)</span>
+
+
+<span class="c"># Operações Lógicas</span>
+<span class="nb">if</span><span class="p">(</span><span class="s">FALSE</span><span class="w"> </span><span class="s">AND</span><span class="w"> </span><span class="p">(</span><span class="s">FALSE</span><span class="w"> </span><span class="s">OR</span><span class="w"> </span><span class="s">TRUE</span><span class="p">))</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="s2">&quot;Não exiba!&quot;</span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+
+<span class="c"># Configure um cache normal, ou uma variável de ambiente com o dado valor.</span>
+<span class="c"># Se a opção PARENT_SCOPE for informada em uma variável que será setada no escopo</span>
+<span class="c"># acima do escopo corrente.</span>
+<span class="c"># `set(&lt;variavel&gt; &lt;valor&gt;... [PARENT_SCOPE])`</span>
+
+<span class="c"># Como refencia variáveis dentro de aspas ou não, argumentos com strings vazias</span>
+<span class="c"># não serão setados</span>
+<span class="err">${nome_da_variavel}</span>
+
+<span class="c"># Listas</span>
+<span class="c"># Configure a lista de arquivos código-fonte</span>
+<span class="nb">set</span><span class="p">(</span><span class="w"> </span><span class="s">LEARN_CMAKE_SOURCES</span>
+<span class="w">  </span><span class="s">src/main.c</span>
+<span class="w">  </span><span class="s">src/imagem.c</span>
+<span class="w">  </span><span class="s">src/pather.c</span>
+<span class="p">)</span>
+
+<span class="c"># Chama o compilador</span>
+<span class="c">#</span>
+<span class="c"># ${PROJECT_NAME} referencia ao Learn_CMake</span>
+<span class="nb">add_executable</span><span class="p">(</span><span class="w"> </span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">LEARN_CMAKE_SOURCES</span><span class="o">}</span><span class="w"> </span><span class="p">)</span>
+
+<span class="c"># Linka as bibliotecas</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="w"> </span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span><span class="w"> </span><span class="o">${</span><span class="nv">LIBS</span><span class="o">}</span><span class="w"> </span><span class="s">m</span><span class="w"> </span><span class="p">)</span>
+
+<span class="c"># Onde as bibliotecas adicionais serão instaladas? Nota: nos permite incluir o path</span>
+<span class="c"># aqui, em seguida os testes irão resolver o restante</span>
+<span class="nb">set</span><span class="p">(</span><span class="w"> </span><span class="s">CMAKE_MODULE_PATH</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_MODULE_PATH</span><span class="o">}</span><span class="w"> </span><span class="s2">&quot;${CMAKE_SOURCE_DIR}/CMake/modules/&quot;</span><span class="w"> </span><span class="p">)</span>
+
+<span class="c"># Condição do compilador (gcc ; g++)</span>
+<span class="nb">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="s2">&quot;${CMAKE_C_COMPILER_ID}&quot;</span><span class="w"> </span><span class="s">STREQUAL</span><span class="w"> </span><span class="s2">&quot;GNU&quot;</span><span class="w"> </span><span class="p">)</span>
+<span class="w">  </span><span class="nb">message</span><span class="p">(</span><span class="w"> </span><span class="s">STATUS</span><span class="w"> </span><span class="s2">&quot;Setting the flags for ${CMAKE_C_COMPILER_ID} compiler&quot;</span><span class="w"> </span><span class="p">)</span>
+<span class="w">  </span><span class="nb">add_definitions</span><span class="p">(</span><span class="w"> </span><span class="s">--std=c99</span><span class="w"> </span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+
+<span class="c"># Checa o Sistema Operacional</span>
+<span class="nb">if</span><span class="p">(</span><span class="w"> </span><span class="s">UNIX</span><span class="w"> </span><span class="p">)</span>
+<span class="w">    </span><span class="nb">set</span><span class="p">(</span><span class="w"> </span><span class="s">LEARN_CMAKE_DEFINITIONS</span>
+<span class="w">        </span><span class="s2">&quot;${LEARN_CMAKE_DEFINITIONS} -Wall -Wextra -Werror -Wno-deprecated-declarations -Wno-unused-parameter -Wno-comment&quot;</span><span class="w"> </span><span class="p">)</span>
+<span class="nb">endif</span><span class="p">()</span>
+</pre></div>
+<h3>Mais Recursos</h3>
+<ul>
+<li><a href="https://cmake.org/cmake-tutorial/">cmake tutorial</a></li>
+<li><a href="https://cmake.org/documentation/">cmake documentation</a></li>
+<li><a href="http://amzn.com/1930934319/">mastering cmake</a></li>
+</ul>
+
+        <hr>
+        <p>
+          Sugestões ou correções? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Abra uma issue</a> no repositório do GitHub, ou faça um <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/pt-br/cmake-pt.html.markdown">pull request</a> você mesmo!
+        </p>
+        <p class="contributed">
+          Originalmente contribuído por Bruno Alano e atualizado por <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/pt-br/cmake-pt.html.markdown">4 colaboradores</a>.
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2024
+            <a href="https://github.com/brunoalano">Bruno Alano</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

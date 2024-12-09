@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="it">
+    <title>Learn Logtalk in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/it/logtalk/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fit%2Flogtalk%2F&amp;text=Impara+X+in+Y+minuti%2C+dove+X%3DLogtalk">
+            Condividi questa pagina
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">Impara X in Y minuti</a></h1>
+      <h2>Dove X=Logtalk</h2>
+      <p class="filelink">
+        Scarica il codice sorgente:
+        <a href="/it/files/learnlogtalk.lgt">learnlogtalk.lgt</a>
+      </p>
+      <div id="doc">
+<p>Logtalk è un linguaggio di programmazione logica orientata agli oggetti che estende il linguaggio Prolog con le moderne tecniche di Object-Oriented Programming quali incapsulamento, ereditarietà e riutilizzo del codice, senza compromettere le caratteristiche di programmazione dichiarativa del Prolog. Logtalk è implementato in codice altamente portabile e utilizza i più moderni standard di conformità del Prolog rispetto al compilatore backend.</p>
+<p>Per mantenere una dimensione ragionevole, questo tutorial presuppone necessariamente che il lettore abbia una conoscenza del linguaggio Prolog ed è inoltre focalizzato esclusivamente sulla descrizione delle caratteristiche object-oriented di Logtalk.</p>
+<h1>Sintassi</h1>
+<p>Logtalk utilizza la sintassi standard del linguaggio Prolog con l'aggiunta di un paio di operatori e di alcune direttive per una curva di apprendimento morbida e per assicurare ampia portabilità. Una conseguenza importante è che il codice Prolog può essere facilmente incapsulato in oggetti con poche o nessuna modifica. Inoltre, Logtalk può interpretare come oggetti Logtalk, in modo trasparente, la maggior parte dei moduli Prolog già esistenti.</p>
+<p>I principali operatori sono:</p>
+<ul>
+<li><code>::/2</code> - per inviare un messaggio ad un oggetto</li>
+<li><code>::/1</code> - per inviare un messaggio a se stesso <em>self</em> (cioè all'oggetto che riceverà il messaggio)</li>
+<li><code>^^/1</code> - <em>super</em> per chiamare un predicato ereditato o importato</li>
+</ul>
+<p>Alcune delle più importanti entità e direttive saranno introdotte nelle sezioni successive.</p>
+<h1>Entità e Ruoli</h1>
+<p>Logtalk tratta gli oggetti, i protocolli e le categorie come entità di prima classe. I rapporti tra le entità definiscono i <em>patterns of code reuse</em> ossia i modelli di riutilizzo del codice e i  <em>roles</em> ossia i ruoli svolti da tali entità. Ad esempio, quando un oggetto istanzia un altro oggetto, il primo oggetto assume il ruolo di istanza e il secondo oggetto assume il ruolo di classe. Una relazione di tipo <em>extends</em> tra due oggetti implica che entrambi gli oggetti svolgano il ruolo di prototipi, in cui uno di loro estende l'altro, che diventa quindi suo prototipo padre.</p>
+<h1>Definizione di un oggetto</h1>
+<p>Un oggetto incapsula le dichiarazioni e le definizioni dei predicati. Gli oggetti possono essere creati in modo dinamico, ma di solito sono dichiarati come statici e definiti nel codice sorgente. Un singolo file sorgente può contenere un qualsiasi numero di definizioni di entità. Ecco un semplice oggetto <code>list</code> che definisce un membro pubblico <code>member/2</code>:</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(list).
+
+<span class="p">	:- </span><span class="k">public</span>(member<span class="o">/</span><span class="m">2</span>).
+	member(<span class="nv">Head</span>, [<span class="nv">Head</span>| <span class="nv">_</span>]).
+	member(<span class="nv">Head</span>, [<span class="nv">_</span>| <span class="nv">Tail</span>]) <span class="o">:-</span>
+		member(<span class="nv">Head</span>, <span class="nv">Tail</span>).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<h1>Compilazione e il caricamento dei file sorgenti</h1>
+<p>Supponendo che il codice di cui sopra per l'oggetto <code>list</code> venga salvato in un file <code>list.lgt</code>, esso può essere compilato e caricato utilizzando il predicato predefiniti <code>logtalk_load/1</code> o la sua abbreviazione <code>{}/1</code>, con il percorso del file come argomento (l'estensione può essere omessa):</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">{</span>list<span class="k">}</span>.
+yes
+</pre></div>
+<p>In generale, le entità potrebbero avere dipendenze sulle entità definite in altri file di origine (ad esempio le entità di biblioteca). Per caricare un file e tutte le sue dipendenze, la soluzione consigliata consiste nel definire un file <em>loader</em> che carica tutti i file necessari per un'applicazione. Un file loader è semplicemente un file di origine, in genere denominato <code>loader.lgt</code>, che effettua chiamate ai predicati built-in <code>logtalk_load/1-2</code>, di solito
+da una direttiva <code>initialization/1</code> per la portabilità e conformità agli standard. Caricatore file vengono forniti per tutte le librerie, strumenti ed esempi.</p>
+<h1>Inviare un messaggio ad un oggetto</h1>
+<p>L'operatore infisso <code>::/2</code> è usato per inviare messaggi ad un oggetto. Analogamente al Prolog, è possibile fare backtracking per le soluzioni alternative:</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> list<span class="o">::</span>member(<span class="nv">X</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]).
+<span class="nv">X</span> <span class="o">=</span> <span class="m">1</span> <span class="o">;</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="m">2</span> <span class="o">;</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="m">3</span>
+yes
+</pre></div>
+<p>Analogamente alla programmazione object-oriented, logtalk consente anche l'Incapsulamento.
+Un predicato può essere dichiarata pubblico, protetto o privato. Può anche essere <em>local</em> quando non esiste una direttiva specifica per esso all'interno dello scope. Per esempio:</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(scopes).
+
+<span class="p">	:- </span><span class="k">private</span>(bar<span class="o">/</span><span class="m">0</span>).
+	bar.
+
+	local.
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Assumendo che l'oggetto è salvato nel file <code>scopes.lgt</code>:</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">{</span>scopes<span class="k">}</span>.
+yes
+
+<span class="o">?-</span> <span class="k">catch</span>(scopes<span class="o">::</span>bar, <span class="nv">Error</span>, <span class="k">true</span>).
+<span class="nv">Error</span> <span class="o">=</span> error(
+	<span class="k">permission_error</span>(access, private_predicate, bar<span class="o">/</span><span class="m">0</span>),
+	logtalk(scopes<span class="o">::</span>bar, user)
+)
+yes
+
+<span class="o">?-</span> <span class="k">catch</span>(scopes<span class="o">::</span>local, <span class="nv">Error</span>, <span class="k">true</span>).
+<span class="nv">Error</span> <span class="o">=</span> error(
+	<span class="k">existence_error</span>(predicate_declaration, local<span class="o">/</span><span class="m">0</span>),
+	logtalk(scopes<span class="o">::</span>local, user)
+)
+yes
+</pre></div>
+<p>Quando il predicato in un messaggio non è noto per l'oggetto (il ruolo dell'oggetto determina le procedure di ricerca), si ha un errore.
+Per esempio:</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">catch</span>(scopes<span class="o">::</span>unknown, <span class="nv">Error</span>, <span class="k">true</span>).
+<span class="nv">Error</span> <span class="o">=</span> error(
+	<span class="k">existence_error</span>(predicate_declaration, unknown<span class="o">/</span><span class="m">0</span>),
+	logtalk(scopes<span class="o">::</span>unknown, user)
+)
+yes
+</pre></div>
+<p>Un punto fondamentale da capire è che le direttive che specificano il predicato nello scope specificano la semantica di chiamata (<em>calling</em>) del predicato, e non la semantica di definizione (<em>definition</em>). Ad esempio, se un oggetto ha il ruolo di una classe e dichiara un predicato privato, tale predicato può essere definito nelle sue sottoclassi e nelle istanze <em>ma</em> può essere chiamato solo nelle sue istanza (<em>from</em>) dalla classe.</p>
+<h1>Definizione e implementazione di un protocollo</h1>
+<p>Un Protocollo contiene le dichiarazioni dei predicati che possono essere implementati da un qualsivoglia numero di oggetti e categorie:</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">protocol</span>(listp).
+
+<span class="p">	:- </span><span class="k">public</span>(member<span class="o">/</span><span class="m">2</span>).
+
+<span class="p">:- </span><span class="k">end_protocol</span>.
+
+<span class="p">:- </span><span class="k">object</span>(list,
+	<span class="k">implements</span>(listp)).
+
+	member(<span class="nv">Head</span>, [<span class="nv">Head</span>| <span class="nv">_</span>]).
+	member(<span class="nv">Head</span>, [<span class="nv">_</span>| <span class="nv">Tail</span>]) <span class="o">:-</span>
+		member(<span class="nv">Head</span>, <span class="nv">Tail</span>).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Lo scope dei predicati di un protocollo può essere ristretto usando implementazioni protected e private. Ad esempio:</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(stack,
+	<span class="k">implements</span>(private<span class="o">::</span>listp)).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Difatti, tutte le relazioni tra entità (nella direttiva di apertura di un entità) possono essere definite come public (default), protected, o private.</p>
+<h1>Prototipi</h1>
+<p>Un oggetto senza una istanza o senza una relazione di specializzazione con un altro oggetto interpreta il ruolo di prototipo. Un prototipo può estendere un altro oggetto, il suo prototipo genitore.</p>
+<div class="highlight"><pre lang="logtalk"><span class="c">% clyde, our prototypical elephant</span>
+<span class="p">:- </span><span class="k">object</span>(clyde).
+
+<span class="p">	:- </span><span class="k">public</span>(color<span class="o">/</span><span class="m">1</span>).
+	color(grey).
+
+<span class="p">	:- </span><span class="k">public</span>(number_of_legs<span class="o">/</span><span class="m">1</span>).
+	number_of_legs(<span class="m">4</span>).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+
+<span class="c">% fred, another elephant, is like clyde, except that he&#39;s white</span>
+<span class="p">:- </span><span class="k">object</span>(fred,
+	<span class="k">extends</span>(clyde)).
+
+	color(white).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Per rispondere ad un messaggio inviato ad un oggetto che ha il ruolo di prototipo, si cerca prima una risposta nel prototipo stesso e se il prototipo non sa rispondere si passa all'eventuale prototipo genitore (se esiste):</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> fred<span class="o">::</span>number_of_legs(<span class="nv">N</span>).
+<span class="nv">N</span> <span class="o">=</span> <span class="m">4</span>
+yes
+
+<span class="o">?-</span> fred<span class="o">::</span>color(<span class="nv">C</span>).
+<span class="nv">C</span> <span class="o">=</span> white
+yes
+</pre></div>
+<p>Un messaggio è valido se il relativo predicato è dichiarato in un oggetto (e se il mittente è nel campo di applicazione), ma fallirà, piuttosto che lanciare un errore, se il predicato non è definito. Questa è chiamata la <em>closed-world assumption</em>. Ad esempio, si consideri il seguente oggetto, salvato in un file <code>foo.lgt</code>:</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(foo).
+
+<span class="p">	:- </span><span class="k">public</span>(bar<span class="o">/</span><span class="m">0</span>).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Caricando il file e cercando di chiamare il predicato <code>bar/0</code> questo fallisce come previsto. Si noti che ciò è diverso dal chiamare un predicato sconosciuto <em>unknown</em>, che invece genera un errore:</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">{</span>foo<span class="k">}</span>.
+yes
+
+<span class="o">?-</span> foo<span class="o">::</span>bar.
+no
+
+<span class="o">?-</span> <span class="k">catch</span>(foo<span class="o">::</span>baz, <span class="nv">Error</span>, <span class="k">true</span>).
+<span class="nv">Error</span> <span class="o">=</span> error(
+	<span class="k">existence_error</span>(predicate_declaration, baz<span class="o">/</span><span class="m">0</span>),
+	logtalk(foo<span class="o">::</span>baz, user)
+)
+yes
+</pre></div>
+<h1>Classi e istanze</h1>
+<p>Per definire gli oggetti nei ruoli di classi e/o istanze, un oggetto deve avere almeno un istanziazione o una relazione di specializzazione con un altro oggetto. Gli oggetti che hanno il ruolo di meta-classi possono essere utilizzati quando abbiamo bisogno di usare una classe come se fosse un'istanza. Il seguente esempio mostra come creare dinamicamente nuovi oggetti in fase di esecuzione:</p>
+<div class="highlight"><pre lang="logtalk"><span class="c">% a simple, generic, metaclass defining a new/2 predicate for its instances</span>
+<span class="p">:- </span><span class="k">object</span>(metaclass,
+	<span class="k">instantiates</span>(metaclass)).
+
+<span class="p">	:- </span><span class="k">public</span>(new<span class="o">/</span><span class="m">2</span>).
+	new(<span class="nv">Instance</span>, <span class="nv">Clauses</span>) <span class="o">:-</span>
+		<span class="k">self</span>(<span class="nv">Class</span>),
+		<span class="k">create_object</span>(<span class="nv">Instance</span>, [instantiates(<span class="nv">Class</span>)], [], <span class="nv">Clauses</span>).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+
+<span class="c">% a simple class defining age/1 and name/1 predicate for its instances</span>
+<span class="p">:- </span><span class="k">object</span>(person,
+	<span class="k">instantiates</span>(metaclass)).
+
+<span class="p">	:- </span><span class="k">public</span>([
+		age<span class="o">/</span><span class="m">1</span>, name<span class="o">/</span><span class="m">1</span>
+	]).
+
+	<span class="c">% a default value for age/1</span>
+	age(<span class="m">42</span>).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+
+<span class="c">% a static instance of the class person</span>
+<span class="p">:- </span><span class="k">object</span>(john,
+	<span class="k">instantiates</span>(person)).
+
+	name(john).
+	age(<span class="m">12</span>).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Nel rispondere ad un messaggio inviato ad un oggetto ha assunto il ruolo di istanza, tal messaggio viene convalidato partendo dalla sua classe e andando a ritroso nella gerarchia, se necessario, fino alle sue superclassi. Supponendo che il messaggio sia valido, allora si cerca una risposta a partire dall'istanza stessa:</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> person<span class="o">::</span>new(<span class="nv">Instance</span>, [name(paulo)]).
+<span class="nv">Instance</span> <span class="o">=</span> o1
+yes
+
+<span class="o">?-</span> o1<span class="o">::</span>name(<span class="nv">Name</span>).
+<span class="nv">Name</span> <span class="o">=</span> paulo
+yes
+
+<span class="o">?-</span> o1<span class="o">::</span>age(<span class="nv">Age</span>).
+<span class="nv">Age</span> <span class="o">=</span> <span class="m">42</span>
+yes
+
+<span class="o">?-</span> john<span class="o">::</span>age(<span class="nv">Age</span>).
+<span class="nv">Age</span> <span class="o">=</span> <span class="m">12</span>
+yes
+</pre></div>
+<h1>Categorie</h1>
+<p>Una categoria è un'unità atomica di codice riutilizzabile. Una categoria è usata per incapsulare una insieme coesivo (<em>cohesive</em>) di dichiarazioni e di definizioni di predicato ed è atta ad implementare una singola (<em>single</em>) funzionalità che può essere importata in qualsiasi oggetto. Una categoria può quindi essere concepita come il concetto duale di protocollo. Nel seguente esempio, si definiscono prima le categorie che rappresentano i motori di auto e poi si importano tali categorie negli oggetti auto:</p>
+<div class="highlight"><pre lang="logtalk"><span class="c">% a protocol describing engine characteristics</span>
+<span class="p">:- </span><span class="k">protocol</span>(carenginep).
+
+<span class="p">	:- </span><span class="k">public</span>([
+		reference<span class="o">/</span><span class="m">1</span>,
+		capacity<span class="o">/</span><span class="m">1</span>,
+		cylinders<span class="o">/</span><span class="m">1</span>,
+		horsepower_rpm<span class="o">/</span><span class="m">2</span>,
+		bore_stroke<span class="o">/</span><span class="m">2</span>,
+		fuel<span class="o">/</span><span class="m">1</span>
+	]).
+
+<span class="p">:- </span><span class="k">end_protocol</span>.
+
+<span class="c">% a typical engine defined as a category</span>
+<span class="p">:- </span><span class="k">category</span>(classic,
+	<span class="k">implements</span>(carenginep)).
+
+	reference(<span class="s">&#39;M180.940&#39;</span>).
+	capacity(<span class="m">2195</span>).
+	cylinders(<span class="m">6</span>).
+	horsepower_rpm(<span class="m">94</span>, <span class="m">4800</span>).
+	bore_stroke(<span class="m">80</span>, <span class="m">72.8</span>).
+	fuel(gasoline).
+
+<span class="p">:- </span><span class="k">end_category</span>.
+
+<span class="c">% a souped up version of the previous engine</span>
+<span class="p">:- </span><span class="k">category</span>(sport,
+	<span class="k">extends</span>(classic)).
+
+	reference(<span class="s">&#39;M180.941&#39;</span>).
+	horsepower_rpm(<span class="nv">HP</span>, <span class="nv">RPM</span>) <span class="o">:-</span>
+		<span class="o">^^</span>horsepower_rpm(<span class="nv">ClassicHP</span>, <span class="nv">ClassicRPM</span>),	<span class="c">% &quot;super&quot; call</span>
+		<span class="nv">HP</span> <span class="k">is</span> <span class="k">truncate</span>(<span class="nv">ClassicHP</span><span class="o">*</span><span class="m">1.23</span>),
+		<span class="nv">RPM</span> <span class="k">is</span> <span class="k">truncate</span>(<span class="nv">ClassicRPM</span><span class="o">*</span><span class="m">0.762</span>).
+
+<span class="p">:- </span><span class="k">end_category</span>.
+
+<span class="c">% with engines (and other components), we may start &quot;assembling&quot; some cars</span>
+<span class="p">:- </span><span class="k">object</span>(sedan,
+	<span class="k">imports</span>(classic)).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+
+<span class="p">:- </span><span class="k">object</span>(coupe,
+	<span class="k">imports</span>(sport)).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Le Categorie sono compilate in modo indipendente e, quindi, consentono l'importazione di oggetti da aggiornare mediante il semplice aggiornamento delle categorie importate, senza richiedere pertanto la ricompilazione dell'oggetto. Le Categorie forniscono anche la <em>runtime transparency</em>,  cioè il protocollo della categoria si aggiunge al protocollo degli oggetti che importano tale categoria:</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> sedan<span class="o">::</span><span class="k">current_predicate</span>(<span class="nv">Predicate</span>).
+<span class="nv">Predicate</span> <span class="o">=</span> reference<span class="o">/</span><span class="m">1</span> <span class="o">;</span>
+<span class="nv">Predicate</span> <span class="o">=</span> capacity<span class="o">/</span><span class="m">1</span> <span class="o">;</span>
+<span class="nv">Predicate</span> <span class="o">=</span> cylinders<span class="o">/</span><span class="m">1</span> <span class="o">;</span>
+<span class="nv">Predicate</span> <span class="o">=</span> horsepower_rpm<span class="o">/</span><span class="m">2</span> <span class="o">;</span>
+<span class="nv">Predicate</span> <span class="o">=</span> bore_stroke<span class="o">/</span><span class="m">2</span> <span class="o">;</span>
+<span class="nv">Predicate</span> <span class="o">=</span> fuel<span class="o">/</span><span class="m">1</span>
+yes
+</pre></div>
+<h1>Hot patching</h1>
+<p>Le categorie possono essere anche usate per modificare gli oggetti al volo (<em>hot-patch</em>). Una categoria può aggiungere nuovi predicati ad un oggetto e/o sostituire le definizioni dei predicati dell'oggetto. Ad esempio, si consideri il seguente oggetto:</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(buggy).
+
+<span class="p">	:- </span><span class="k">public</span>(p<span class="o">/</span><span class="m">0</span>).
+	p <span class="o">:-</span> <span class="k">write</span>(foo).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Si supponga che l'oggetto stampi la stringa sbagliata quando riceve il messaggio <code>p/0</code>:</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">{</span>buggy<span class="k">}</span>.
+yes
+
+<span class="o">?-</span> buggy<span class="o">::</span>p.
+foo
+yes
+</pre></div>
+<p>Se il codice sorgente dell'oggetto non è disponibile e bisogna correggere l'applicazione che sta eseguendo il codice dell'oggetto, si può semplicemente definire una categoria che corregge il predicato non corretto:</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">category</span>(patch,
+	<span class="k">complements</span>(buggy)).
+
+	<span class="c">% fixed p/0 def</span>
+	p <span class="o">:-</span> <span class="k">write</span>(bar).
+
+<span class="p">:- </span><span class="k">end_category</span>.
+</pre></div>
+<p>Dopo la compilazione e il caricamento della categoria nell'applicazione in esecuzione si ottiene:</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">set_logtalk_flag</span>(complements, allow).
+yes
+
+<span class="o">?-</span> <span class="k">{</span>patch<span class="k">}</span>.
+yes
+
+<span class="o">?-</span> buggy<span class="o">::</span>p.
+bar
+yes
+</pre></div>
+<p>Poiché l'hot-patching interrompe forzatamente l'incapsulamento, è possibile impostare il flag del compilatore <code>complementary</code> può essere impostato (a livello globale o per un singolo oggetto) per consentire, limitare o prevenire l'hot-patching.</p>
+<h1>Oggetti Parametrici e Categorie</h1>
+<p>Gli oggetti e le categorie possono essere parametrizzati utilizzando come identificativo un compound-term al posto di un atomo. Oggetti e parametri di una categoria sono variabili logiche <em>logical variables</em> condivise con tutti i predicati incapsulati. Ecco un esempio con cerchi geometrici:</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(circle(<span class="nv">_Radius</span>, <span class="nv">_Color</span>)).
+
+<span class="p">	:- </span><span class="k">public</span>([
+		area<span class="o">/</span><span class="m">1</span>, perimeter<span class="o">/</span><span class="m">1</span>
+	]).
+
+	area(<span class="nv">Area</span>) <span class="o">:-</span>
+		<span class="k">parameter</span>(<span class="m">1</span>, <span class="nv">Radius</span>),
+		<span class="nv">Area</span> <span class="k">is</span> <span class="o">pi*</span><span class="nv">Radius</span><span class="o">*</span><span class="nv">Radius</span>.
+
+	perimeter(<span class="nv">Perimeter</span>) <span class="o">:-</span>
+		<span class="k">parameter</span>(<span class="m">1</span>, <span class="nv">Radius</span>),
+		<span class="nv">Perimeter</span> <span class="k">is</span> <span class="m">2</span><span class="o">*pi*</span><span class="nv">Radius</span>.
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Oggetti parametrici possono essere utilizzati come qualsiasi altro oggetto e di solito forniscono i valori da assegnare ai parametri quando si invia un messaggio:</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> circle(<span class="m">1.23</span>, blue)<span class="o">::</span>area(<span class="nv">Area</span>).
+<span class="nv">Area</span> <span class="o">=</span> <span class="m">4.75291</span>
+yes
+</pre></div>
+<p>Gli oggetti parametrici forniscono anche un modo semplice per associare un insieme di predicati con un semplice predicato Prolog. Fatti Prolog possono essere interpretati come oggetti proxy parametrici ( <em>parametric object proxies</em>) quando hanno lo stesso funtore e arietà degli identificatori di oggetti parametrici. Per lavorare con i proxy viene fornita una sintassi maneggevole. Per esempio, si prendano le seguenti clausole per il predicato <code>circle/2</code>:</p>
+<div class="highlight"><pre lang="logtalk">circle(<span class="m">1.23</span>, blue).
+circle(<span class="m">3.71</span>, yellow).
+circle(<span class="m">0.39</span>, green).
+circle(<span class="m">5.74</span>, black).
+circle(<span class="m">8.32</span>, cyan).
+</pre></div>
+<p>Con queste clausole, si può facilmente calcolare, ad esempio, un elenco con le aree di tutti i cerchi:</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">findall</span>(<span class="nv">Area</span>, <span class="k">{</span>circle(<span class="nv">_</span>, <span class="nv">_</span>)<span class="k">}</span><span class="o">::</span>area(<span class="nv">Area</span>), <span class="nv">Areas</span>).
+<span class="nv">Areas</span> <span class="o">=</span> [<span class="m">4.75291</span>, <span class="m">43.2412</span>, <span class="m">0.477836</span>, <span class="m">103.508</span>, <span class="m">217.468</span>]
+yes
+</pre></div>
+<p>In pratica, il costrutto <code>{Goal}::Message</code> prova il goal <code>Goal</code>, instanziando le variabili interne e inviando un messaggio <code>Message</code> al termine risultante.</p>
+<h1>Eventi and monitor</h1>
+<p>Logtalk supporta l'<em>event-driven programming</em> mediante la definizione di eventi e di monitor. Un evento è semplicemente l'invio di un messaggio ad un oggetto. Un monitor è un gestore di un evento. L'evento (con l'invio di un messaggio) è un'attività atomica, ed è preceduta da un evento <em>before</em> e da un evento <em>after</em>. Il monitor gestisce tali eventi mediante i predicati, <code>before/3</code> e <code>after/3</code>, che sono chiamati rispettivamente prima e dopo il verificarsi dell'evento. Un monitor può inoltre interrogare, registrare e cancellare un evento nel registro eventi a livello di sistema il quale che associa gli eventi con i monitor. Ad esempio, un semplice tracer per ogni messaggio inviato utilizzando il costrutto <code>::/2</code> può essere definito come:</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(tracer,
+	<span class="k">implements</span>(monitoring)).    <span class="c">% built-in protocol for event handlers</span>
+
+<span class="p">	:- </span><span class="k">initialization</span>(<span class="k">define_events</span>(<span class="nv">_</span>, <span class="nv">_</span>, <span class="nv">_</span>, <span class="nv">_</span>, tracer)).
+
+	<span class="k">before</span>(<span class="nv">Object</span>, <span class="nv">Message</span>, <span class="nv">Sender</span>) <span class="o">:-</span>
+		<span class="k">write</span>(<span class="s">&#39;call: &#39;</span>), <span class="k">writeq</span>(<span class="nv">Object</span>), <span class="k">write</span>(<span class="s">&#39; &lt;-- &#39;</span>), <span class="k">writeq</span>(<span class="nv">Message</span>),
+		<span class="k">write</span>(<span class="s">&#39; from &#39;</span>), <span class="k">writeq</span>(<span class="nv">Sender</span>), <span class="k">nl</span>.
+
+	<span class="k">after</span>(<span class="nv">Object</span>, <span class="nv">Message</span>, <span class="nv">Sender</span>) <span class="o">:-</span>
+		<span class="k">write</span>(<span class="s">&#39;exit: &#39;</span>), <span class="k">writeq</span>(<span class="nv">Object</span>), <span class="k">write</span>(<span class="s">&#39; &lt;-- &#39;</span>), <span class="k">writeq</span>(<span class="nv">Message</span>),
+		<span class="k">write</span>(<span class="s">&#39; from &#39;</span>), <span class="k">writeq</span>(<span class="nv">Sender</span>), <span class="k">nl</span>.
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Supponendo che l'oggetto <code>tracer</code> e l'oggetto <code>list</code> definito in precedenza siano stati già compilati e caricati, si possono osservare i gestori di eventi in azione durante l'invio di un messaggio:</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">set_logtalk_flag</span>(events, allow).
+yes
+
+<span class="o">?-</span> list<span class="o">::</span>member(<span class="nv">X</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]).
+
+call<span class="o">:</span> list <span class="o">&lt;--</span> member(<span class="nv">X</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]) from user
+exit<span class="o">:</span> list <span class="o">&lt;--</span> member(<span class="m">1</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]) from user
+<span class="nv">X</span> <span class="o">=</span> <span class="m">1</span> <span class="o">;</span>
+exit<span class="o">:</span> list <span class="o">&lt;--</span> member(<span class="m">2</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]) from user
+<span class="nv">X</span> <span class="o">=</span> <span class="m">2</span> <span class="o">;</span>
+exit<span class="o">:</span> list <span class="o">&lt;--</span> member(<span class="m">3</span>, [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>]) from user
+<span class="nv">X</span> <span class="o">=</span> <span class="m">3</span>
+yes
+</pre></div>
+<p>Gli eventi possono essere impostati e cancellati dinamicamente in fase di esecuzione chiamando i predicati predefiniti <code>define_events/5</code> e <code>abolish_events/5</code>.</p>
+<p>La programmazione event-driven può essere vista come una forma di <em>computational reflection</em>. Si noti però che gli eventi sono generati solo quando si utilizza il costrutto di controllo per l'invio di messaggi <code>::/2</code>.</p>
+<h1>Espressioni lambda</h1>
+<p>Logtalk supporta anche le espressioni lambda. I parametri della espressioni lambda sono rappresentati mediante una lista con l'operatore infisso <code>(&gt;&gt;)/2</code> che collega i parametri alla relativa lambda espressione. Ecco alcuni semplici esempi che utilizzano la libreria <code>meta</code>.</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">{</span>meta(loader)<span class="k">}</span>.
+yes
+
+<span class="o">?-</span> meta<span class="o">::</span>map([<span class="nv">X</span>,<span class="nv">Y</span>]<span class="o">&gt;&gt;</span>(<span class="nv">Y</span> <span class="k">is</span> <span class="m">2</span><span class="o">*</span><span class="nv">X</span>), [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>], <span class="nv">Ys</span>).
+<span class="nv">Ys</span> <span class="o">=</span> [<span class="m">2</span>,<span class="m">4</span>,<span class="m">6</span>]
+yes
+</pre></div>
+<p>Logtalk supporta anche il <em>currying</em>:</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> meta<span class="o">::</span>map([<span class="nv">X</span>]<span class="o">&gt;&gt;</span>([<span class="nv">Y</span>]<span class="o">&gt;&gt;</span>(<span class="nv">Y</span> <span class="k">is</span> <span class="m">2</span><span class="o">*</span><span class="nv">X</span>)), [<span class="m">1</span>,<span class="m">2</span>,<span class="m">3</span>], <span class="nv">Ys</span>).
+<span class="nv">Ys</span> <span class="o">=</span> [<span class="m">2</span>,<span class="m">4</span>,<span class="m">6</span>]
+yes
+</pre></div>
+<p>Infine, le variabili libere Lambda possono essere espresso usando la sintassi estesa <code>{Free1, ...}/[Parameter1, ...]&gt;&gt;Lambda</code>.</p>
+<h1>Macro</h1>
+<p>I Termini e goal nel file sorgente possono essere <em>estesi</em> al momento della compilazione specificando una hook ad un oggetto (<em>hook object</em>) che definisce le regole di riscrittura dei termini e riscrittura dei quesiti. Ad esempio, si consideri il seguente oggetto semplice, salvato nel file <code>source.lgt</code>:</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(source).
+
+<span class="p">	:- </span><span class="k">public</span>(bar<span class="o">/</span><span class="m">1</span>).
+	bar(<span class="nv">X</span>) <span class="o">:-</span> foo(<span class="nv">X</span>).
+
+	foo(a). foo(b). foo(c).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Si supponga il seguente hook all'oggetto, salvato nel file <code>my_macros.lgt</code>, che estende le clausole e chiama il predicato locale  <code>foo/1</code>:</p>
+<div class="highlight"><pre lang="logtalk"><span class="p">:- </span><span class="k">object</span>(my_macros,
+	<span class="k">implements</span>(expanding)).    <span class="c">% built-in protocol for expanding predicates</span>
+
+	<span class="k">term_expansion</span>(foo(<span class="nv">Char</span>), baz(<span class="nv">Code</span>)) <span class="o">:-</span>
+		<span class="k">char_code</span>(<span class="nv">Char</span>, <span class="nv">Code</span>). <span class="c">% standard built-in predicate</span>
+
+	<span class="k">goal_expansion</span>(foo(<span class="nv">X</span>), baz(<span class="nv">X</span>)).
+
+<span class="p">:- </span><span class="k">end_object</span>.
+</pre></div>
+<p>Dopo aver caricato il file contenente la macro, si può espandere il nostro file sorgente usando il flag del compilatore <code>hook</code>:</p>
+<div class="highlight"><pre lang="logtalk"><span class="o">?-</span> <span class="k">logtalk_load</span>(my_macros), <span class="k">logtalk_load</span>(source, [hook(my_macros)]).
+yes
+
+<span class="o">?-</span> source<span class="o">::</span>bar(<span class="nv">X</span>).
+<span class="nv">X</span> <span class="o">=</span> <span class="m">97</span> <span class="o">;</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="m">98</span> <span class="o">;</span>
+<span class="nv">X</span> <span class="o">=</span> <span class="m">99</span>
+<span class="k">true</span>
+</pre></div>
+<p>La libreria Logtalk fornisce infine il supporto per combinare hook agli oggetti utilizzando diversi modi (ad esempio, definendo una pipeline di espansioni).</p>
+<h1>Maggiori informazioni</h1>
+<p>Visita il <a href="http://logtalk.org">Sito web di Logtalk (en)</a> per maggiori informazioni.</p>
+
+        <hr>
+        <p>
+          Hai un suggerimento? Oppure una correzione? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Apri un issue</a> sul GitHub, o fa un <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/it-it/logtalk-it.html.markdown">pull request</a> da solo!
+        </p>
+        <p class="contributed">
+          In origine contribuita da Paulo Moura, e modificata da <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/it-it/logtalk-it.html.markdown">2 contributore(i)</a>.
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2024
+            <a href="http://github.com/pmoura">Paulo Moura</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="el">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="el">
+    <title>Learn OCaml in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/el/ocaml/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fel%2Focaml%2F&amp;text=%CE%9C%CE%AC%CE%B8%CE%B5%CF%84%CE%B5+%CE%A7+%CF%83%CE%B5+%CE%A5+%CE%BB%CE%B5%CF%80%CF%84%CE%AC%2C+%CF%8C%CF%80%CE%BF%CF%85+X%3DOCaml">
+            Μοιραστείτε αυτή τη σελίδα
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">Μάθετε Χ σε Υ λεπτά</a></h1>
+      <h2>Όπου X=OCaml</h2>
+      <p class="filelink">
+        Αποκτήστε τον κώδικα:
+        <a href="/el/files/learnocaml.ml">learnocaml.ml</a>
+      </p>
+      <div id="doc">
+<p>Η OCaml είναι μία strictly evaluated συναρτησιακή γλώσσα με κάποια στοιχεία
+προστακτικού προγραμματισμού.</p>
+<p>Μαζί με την StandardML και τις διαλέκτους της, ανήκει στην οικογένεια ML γλωσσών.
+Η F# είναι επίσης αρκετά επιρρεασμένη από την OCaml.</p>
+<p>Ακριβώς όπως η StandardML, η OCaml διαθέτει έναν interpreter, που μπορεί να
+χρησιμοποιηθεί διαδραστικά, αλλά και έναν compiler.
+Το εκτελέσιμο αρχείο του interpreter κανονικά έχει το όνομα &quot;ocaml&quot; και ο compiler
+έχει το όνομα &quot;ocamlopt&quot;.
+Υπάρχει και ένας bytecode compiler &quot;ocamlc&quot;, αλλά δεν υπάρχουν πολλοί λόγοι να το
+χρησιμοποιήσει κάποιος.</p>
+<p>Είναι ισχυρά και στατικά τυποποιημένη. Παρ'όλα αυτά , δεν χρειάζεται ο
+προγραμματιστής να δηλώνει τους τύπους, καθώς συμπερασμός τύπων γίνεται με τον
+αλγόριθμο του συστήματος τύπων Hindley-Milner. Αυτό κάνει τις δηλώσεις τύπων μη
+αναγκαίες στις περισσότερες περιπτώσεις, αλλά μπορεί να είναι δύσκολο στην αρχή.</p>
+<p>Όταν είμαστε στο toplevel της OCaml (read-eval-print-loop), η OCaml τυπώνει τον
+τύπο που συμπεραίνει όταν εισάγουμε μια έκφραση.</p>
+<div class="highlight"><pre># let inc x = x	+ 1 ;;
+val inc : int -&gt; int = &lt;fun&gt;
+# let a = 99 ;;
+val a : int = 99
+</pre></div>
+<p>Για ένα source αρχείο μπορούμε να χρησιμοποιούμε την εντολή
+&quot;ocamlc -i /path/to/file.ml&quot; στο terminal για να τυπώσει όλα τα ονόματα και
+τους τύπους.</p>
+<div class="highlight"><pre>$ cat sigtest.ml
+let inc x = x + 1
+let add x y = x + y
+
+let a = 1
+
+$ ocamlc -i ./sigtest.ml
+val inc : int -&gt; int
+val add : int -&gt; int -&gt; int
+val a : int
+</pre></div>
+<p>Σημειώστε ότι τα type signatures των συναρτήσεων με πολλά ορίσματα είναι
+γραμμένα σε curried form. Μια συνάρτηση με πολλά ορίσματα μπορεί να
+αναπαρασταθεί ως σύνθεση συναρτήσεων με μόνο ένα όρισμα.
+Η &quot;f(x,y) = x + y&quot; από το παράδειγμα, όταν εφαρμόζεται στα ορίσματα 2 και 3
+είναι ισοδύναμη με την εφαρμογή της &quot;f0(y) = 2 + y&quot; στο 3. Γι' αυτό έχει τύπο
+&quot;int -&gt; int -&gt; int&quot;.</p>
+<div class="highlight"><pre lang="ocaml"><span class="c">(*** Comments ***)</span>
+
+<span class="c">(* Τα σχόλια περικλείονται σε (* και *). Μπορούν να είναι και εμφωλευμένα *)</span>
+
+<span class="c">(* Δεν υπάρχει ειδικό σύμβολο για σχόλια μιας γραμμής *)</span>
+
+
+<span class="c">(*** Μεταβλητές και Συναρτήσεις ***)</span>
+
+<span class="c">(* Οι εκφράσεις διαχωρίζονται από διπλό semicolon, &quot;;;&quot;.</span>
+<span class="c">   Σε πολλές περιπτώσεις είναι περιττό, αλλά εδώ θα το χρησιμοποιούμε σε</span>
+<span class="c">   κάθε έκφραση για ευκολότερο copy-paste στο interpreter shell.</span>
+<span class="c">   Το να χρησιμοποιούμε περιττά ;; σε αρχεία κώδικα θεωρείται συνήθως</span>
+<span class="c">   κακό στυλιστικά. *)</span>
+
+<span class="c">(* Οι δηλώσεις μεταβλητών και συναρτήσεων χρησιμοποιούν το keyword &quot;let&quot; *)</span>
+<span class="k">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">;;</span>
+
+<span class="c">(* Η OCaml επιτρέπει χαρακτήρες μονών εισαγωγικών σε identifiers.</span>
+<span class="c">   το μονό εισαγωγικό δεν έχει κάποια σημασία σε αυτή την περίπτωση,</span>
+<span class="c">   χρησιμοποιείται συνήθως σε περιπτώσεις που σε άλλες γλώσσες χρησιμοποιούμε</span>
+<span class="c">   ονόματα όπως &quot;foo_tmp&quot;. *)</span>
+<span class="k">let</span> <span class="n">foo</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">;;</span>
+<span class="k">let</span> <span class="n">foo&#39;</span> <span class="o">=</span> <span class="n">foo</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">;;</span>
+
+<span class="c">(* Από τη στιγμή που ο compiler της OCaml συμπεραίνει τους τύπους αυτόματα,</span>
+<span class="c">   κανονικά δεν χρειάζεται να δηλώνουμε ρητά τον τύπο ορισμάτων. Παρ&#39;όλα αυτά</span>
+<span class="c">   μπορούμε να το κάνουμε αν θέλουμε ή χρειάζεται *)</span>
+<span class="k">let</span> <span class="n">inc_int</span> <span class="o">(</span><span class="n">x</span><span class="o">:</span> <span class="kt">int</span><span class="o">)</span> <span class="o">:</span> <span class="kt">int</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">;;</span>
+
+<span class="c">(* Μία από αυτές τις περιπτώσεις που είναι αναγκαίο να δηλώσουμε ρητά τύπους</span>
+<span class="c">   είναι για να λύσουμε την αμφισημία μεταξύ δύο record types που έχουν πεδία με</span>
+<span class="c">   όμοια ονόματα. Η εναλλακτική είναι να βάλουμε αυτούς τους τύπους σε modules,</span>
+<span class="c">   αλλά και τα δύο αυτά θέματα είναι εκτός του σκοπού αυτού το μαθήματος. *)</span>
+
+<span class="c">(* Πρέπει να δηλώνουμε ότι μία συνάρτηση είναι αναδρομική με &quot;rec&quot;. *)</span>
+<span class="k">let</span> <span class="k">rec</span> <span class="n">factorial</span> <span class="n">n</span> <span class="o">=</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">then</span> <span class="mi">1</span>
+    <span class="k">else</span> <span class="n">n</span> <span class="o">*</span> <span class="n">factorial</span> <span class="o">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span>
+<span class="o">;;</span>
+
+<span class="c">(* H εφαρμογή συναρτήσεων συνήθως δεν χρειάζεται παρενθέσεις γύρω από ορίσματα *)</span>
+<span class="k">let</span> <span class="n">fact_5</span> <span class="o">=</span> <span class="n">factorial</span> <span class="mi">5</span> <span class="o">;;</span>
+
+<span class="c">(* ...εκτός αν τα ορίσματα είναι εκφράσεις *)</span>
+<span class="k">let</span> <span class="n">fact_4</span> <span class="o">=</span> <span class="n">factorial</span> <span class="o">(</span><span class="mi">5</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">;;</span>
+<span class="k">let</span> <span class="n">sqr2</span> <span class="o">=</span> <span class="n">sqr</span> <span class="o">(-</span><span class="mi">2</span><span class="o">)</span> <span class="o">;;</span>
+
+<span class="c">(* Κάθε συνάρητση πρέπει να έχει τουλάχιστον ένα όρισμα.</span>
+<span class="c">   Από τη στιγμή που κάποιες συναρτήσεις, από τη φύση τους, δεν παίρνουν κάποιο</span>
+<span class="c">   όρισμα, υπάρχει ο τύπος &quot;unit&quot; που έχει μόνο μία τιμή,</span>
+<span class="c">   την οποία γράφουμε ως &quot;()&quot;. *)</span>
+<span class="k">let</span> <span class="n">print_hello</span> <span class="bp">()</span> <span class="o">=</span> <span class="n">print_endline</span> <span class="s2">&quot;hello world&quot;</span> <span class="o">;;</span>
+
+<span class="c">(* Προσέχετε ότι πρέπει να γράφουμε το &quot;()&quot; ως όρισμα και όταν την καλούμε. *)</span>
+<span class="n">print_hello</span> <span class="bp">()</span> <span class="o">;;</span>
+
+<span class="c">(* Το να καλούμε μια συνάρτηση με λιγότερα ορίσματα από όσα δέχεται</span>
+<span class="c">   δεν προκαλεί πρόβλημα, απλά παράγει μια νέα συνάρτηση. *)</span>
+<span class="k">let</span> <span class="n">make_inc</span> <span class="n">x</span> <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">;;</span> <span class="c">(* make_inc is int -&gt; int -&gt; int *)</span>
+<span class="k">let</span> <span class="n">inc_2</span> <span class="o">=</span> <span class="n">make_inc</span> <span class="mi">2</span> <span class="o">;;</span>   <span class="c">(* inc_2 is int -&gt; int *)</span>
+<span class="n">inc_2</span> <span class="mi">3</span> <span class="o">;;</span> <span class="c">(* Αποτιμάται σε 5 *)</span>
+
+<span class="c">(* Μπορούμε να χρησιμοποιούμε πολλές εκφράσεις στο σώμα μιας συνάρτησης.</span>
+<span class="c">   Η αποτίμηση της τελευταίας έκφρασης είναι η τιμή που επιστρέφει η συνάρτηση.</span>
+<span class="c">   Όλες οι ενδιάμεσες εκφράσεις πρέπει να είναι τύπου &quot;unit&quot;.</span>
+<span class="c">   Αυτό είναι ιδιαίτερα χρήσιμο όταν γράφουμε σε προστακτικό στυλ, η απλούστερη</span>
+<span class="c">   μορφή αυτού είναι η εισαγωγή ενός debug print. *)</span>
+<span class="k">let</span> <span class="n">print_and_return</span> <span class="n">x</span> <span class="o">=</span>
+    <span class="n">print_endline</span> <span class="o">(</span><span class="n">string_of_int</span> <span class="n">x</span><span class="o">);</span>
+    <span class="n">x</span>
+<span class="o">;;</span>
+
+<span class="c">(* Ως συναρτησιακή γλώσσα η OCaml δεν έχει &quot;procedures&quot; (διαδικασίες).</span>
+<span class="c">   Κάθε συνάρτηση πρέπει να επιστρέφει κάτι. Οπότε, συναρτήσεις που δεν</span>
+<span class="c">   επιστρέφουν κάτι και καλούνται μόνο για τις παρενέργειες τους,</span>
+<span class="c">   όπως η print_endline, επιστρέφουν τιμή τύπου &quot;unit&quot;. *)</span>
+
+
+<span class="c">(* Οι ορισμοί μπορούν να γίνουν αλυσιδωτά με τη δομή &quot;let ... in&quot;.</span>
+<span class="c">   Αυτό είναι περίπου το ίδιο με το να αναθέτουμε τιμές σε πολλές μεταβλητές</span>
+<span class="c">   πριν τις χρησιμοποιήσουμε σε εκφράσεις σε προστακτικές γλώσσες. *)</span>
+<span class="k">let</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">10</span> <span class="k">in</span>
+<span class="k">let</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">20</span> <span class="k">in</span>
+<span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">;;</span>
+
+<span class="c">(* Εναλλακτικά μπορούμε να χρησιμποιούμε τη δομή &quot;let ... and ... in&quot;.</span>
+<span class="c">   Αυτό είναι εξαιρετικά χρήσιμο για αμοιβαία αποκλειόμενες συναρτήσεις,</span>
+<span class="c">   όπυ με &quot;let .. in&quot;, ο compiler θα παραπονιόταν για unbound values *)</span>
+<span class="k">let</span> <span class="k">rec</span>
+  <span class="n">is_even</span> <span class="o">=</span> <span class="k">function</span>
+  <span class="o">|</span> <span class="mi">0</span> <span class="o">-&gt;</span> <span class="bp">true</span>
+  <span class="o">|</span> <span class="n">n</span> <span class="o">-&gt;</span> <span class="n">is_odd</span> <span class="o">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span>
+<span class="k">and</span>
+  <span class="n">is_odd</span> <span class="o">=</span> <span class="k">function</span>
+  <span class="o">|</span> <span class="mi">0</span> <span class="o">-&gt;</span> <span class="bp">false</span>
+  <span class="o">|</span> <span class="n">n</span> <span class="o">-&gt;</span> <span class="n">is_even</span> <span class="o">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span>
+<span class="o">;;</span>
+
+<span class="c">(* Οι ανώνυμες συναρτήσεις χρησιμοποιούν την εξής σύνταξη: *)</span>
+<span class="k">let</span> <span class="n">my_lambda</span> <span class="o">=</span> <span class="k">fun</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="o">;;</span>
+
+<span class="c">(*** Τελεστές ***)</span>
+
+<span class="c">(* Δεν υπάρχει ιδιαίτερη διάκριση ανάμεσα σε τελεστές και συναρτήσεις.</span>
+<span class="c">   Κάθε τελεστής μπορεί να κληθεί ως συνάρτηση. *)</span>
+
+<span class="o">(+)</span> <span class="mi">3</span> <span class="mi">4</span>  <span class="c">(* Same as 3 + 4 *)</span>
+
+<span class="c">(* Υπάρχει ένας αριθμός built-in τελεστών. Ένα ασυνήθιστο χαρακτηριστικό είναι</span>
+<span class="c">   ότι η OCaml δεν μπορεί να κάνει έμμεση μετατροπή τύπων</span>
+<span class="c">   ανάμεσα σε ακεραίους και floats, επίσης, χρησιμοποιεί διαφορετικούς τελεστές</span>
+<span class="c">   για τους floats (αριθμούς κινητής υποδιαστολής) *)</span>
+<span class="mi">12</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">;;</span> <span class="c">(* Πρόσθεση ακεραίων. *)</span>
+<span class="mi">12</span><span class="o">.</span><span class="mi">0</span> <span class="o">+.</span> <span class="mi">3</span><span class="o">.</span><span class="mi">0</span> <span class="o">;;</span> <span class="c">(* Πρόσθεση κινητής υποδιαστολής. *)</span>
+
+<span class="mi">12</span> <span class="o">/</span> <span class="mi">3</span> <span class="o">;;</span> <span class="c">(* Διαίρεση ακεραίων. *)</span>
+<span class="mi">12</span><span class="o">.</span><span class="mi">0</span> <span class="o">/.</span> <span class="mi">3</span><span class="o">.</span><span class="mi">0</span> <span class="o">;;</span> <span class="c">(* Διαίρεση κινητής υποδιαστολής. *)</span>
+<span class="mi">5</span> <span class="ow">mod</span> <span class="mi">2</span> <span class="o">;;</span> <span class="c">(* Υπόλοιπο. *)</span>
+
+<span class="c">(* Το ενός-ορίσματος μείον είναι αξιοσημείωτη εξαίρεση, είναι πολυμορφικό.</span>
+<span class="c">   Ωστόσο, έχει καθαρές μορφές ακεραίων και float. *)</span>
+<span class="o">-</span> <span class="mi">3</span> <span class="o">;;</span> <span class="c">(* Πολυμορφικό, ακέραιοι *)</span>
+<span class="o">-</span> <span class="mi">4</span><span class="o">.</span><span class="mi">5</span> <span class="o">;;</span> <span class="c">(* Πολυμορφικό, float *)</span>
+<span class="o">~-</span> <span class="mi">3</span> <span class="c">(* Μόνο για integer *)</span>
+<span class="o">~-</span> <span class="mi">3</span><span class="o">.</span><span class="mi">4</span> <span class="c">(* Type error *)</span>
+<span class="o">~-.</span> <span class="mi">3</span><span class="o">.</span><span class="mi">4</span> <span class="c">(* Μόνο για float *)</span>
+
+<span class="c">(* Μπορούμε να ορίζουμε δικούς μας τελεστές ή να ξανα-ορίσουμε υπάρχοντες.</span>
+<span class="c">   Σε αντίθεση με την SML ή τη Haskell, μόνο ορισμένα σύμβολα μπορούν να</span>
+<span class="c">   χρησιμοποιηθούν για ονόματα τελεστών και το πρώτο σύμβολο ορίζει την</span>
+<span class="c">   επιμεριστικότητα και προτεραιότητα πράξεων. *)</span>
+<span class="k">let</span> <span class="o">(+)</span> <span class="n">a</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span> <span class="o">;;</span> <span class="c">(* και καλή τύχη στον επόμενο... *)</span>
+
+<span class="c">(* Πιο χρήσιμο: ένας τελεστής αντιστρόφου για floats.</span>
+<span class="c">   οι τελεστές ενός-ορίσματος πρέπει να ξεκινούν με &quot;~&quot;. *)</span>
+<span class="k">let</span> <span class="o">(~/)</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span><span class="o">.</span><span class="mi">0</span> <span class="o">/.</span> <span class="n">x</span> <span class="o">;;</span>
+<span class="o">~/</span><span class="mi">4</span><span class="o">.</span><span class="mi">0</span> <span class="c">(* = 0.25 *)</span>
+
+
+<span class="c">(*** Built-in δομές δεδομένων ***)</span>
+
+<span class="c">(* Οι λίστες περικλείονται από αγκύλες και τα στοιχεία τους</span>
+<span class="c">   διαχωρίζονται με semicolons. *)</span>
+<span class="k">let</span> <span class="n">my_list</span> <span class="o">=</span> <span class="o">[</span><span class="mi">1</span><span class="o">;</span> <span class="mi">2</span><span class="o">;</span> <span class="mi">3</span><span class="o">]</span> <span class="o">;;</span>
+
+<span class="c">(* Οι tuples (προαιρετικά) περικλείονται από παρενθέσεις, τα στοιχεία τους</span>
+<span class="c">   διαχωρίζονται με κόμματα. *)</span>
+<span class="k">let</span> <span class="n">first_tuple</span> <span class="o">=</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">4</span> <span class="o">;;</span> <span class="c">(* Έχει τύπο &quot;int * int&quot;. *)</span>
+<span class="k">let</span> <span class="n">second_tuple</span> <span class="o">=</span> <span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">)</span> <span class="o">;;</span>
+
+<span class="c">(* Συνέπεια: αν προσπαθήσεουμε να διαχωρίσουμε τα στοιχεία μιας λίστας</span>
+<span class="c">   με κόμματα, θα πάρουμε μια λίστα με ένα tuple ως στοιχείο.</span>
+<span class="c">   Μπορεί να την πατήσουμε εύκολα έτσι. *)</span>
+<span class="k">let</span> <span class="n">bad_list</span> <span class="o">=</span> <span class="o">[</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">]</span> <span class="o">;;</span> <span class="c">(* Becomes [(1, 2)] *)</span>
+
+<span class="c">(* Μπρούμε να προσπελάσουμε στοιχεία μιας λίστας με τη συνάρτηση List.nth. *)</span>
+<span class="nn">List</span><span class="p">.</span><span class="n">nth</span> <span class="n">my_list</span> <span class="mi">1</span> <span class="o">;;</span>
+
+<span class="c">(* Yπάρχουν συναρτήσεις ανώτερης τάξης για λίστες, όπως οι map και filter. *)</span>
+<span class="nn">List</span><span class="p">.</span><span class="n">map</span> <span class="o">(</span><span class="k">fun</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">2</span><span class="o">)</span> <span class="o">[</span><span class="mi">1</span><span class="o">;</span> <span class="mi">2</span><span class="o">;</span> <span class="mi">3</span><span class="o">]</span> <span class="o">;;</span>
+<span class="nn">List</span><span class="p">.</span><span class="n">filter</span> <span class="o">(</span><span class="k">fun</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span> <span class="ow">mod</span> <span class="mi">2</span> <span class="o">=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">[</span><span class="mi">1</span><span class="o">;</span> <span class="mi">2</span><span class="o">;</span> <span class="mi">3</span><span class="o">;</span> <span class="mi">4</span><span class="o">]</span> <span class="o">;;</span>
+
+<span class="c">(* Μπορούμε να προσθέτουμε στοιχεία στην αρχή μιας λίστας με τον</span>
+<span class="c">   constructor &quot;::&quot;, συνήθως αναφέρεται ως &quot;cons&quot;. *)</span>
+<span class="mi">1</span> <span class="o">::</span> <span class="o">[</span><span class="mi">2</span><span class="o">;</span> <span class="mi">3</span><span class="o">]</span> <span class="o">;;</span> <span class="c">(* Αποτέλεσμα: [1; 2; 3] *)</span>
+
+<span class="c">(* Οι πίνακες Arrays περικλείονται από [| |] *)</span>
+<span class="k">let</span> <span class="n">my_array</span> <span class="o">=</span> <span class="o">[|</span> <span class="mi">1</span><span class="o">;</span> <span class="mi">2</span><span class="o">;</span> <span class="mi">3</span> <span class="o">|]</span> <span class="o">;;</span>
+
+<span class="c">(* Προσπελαύνουμε στοιχεία ενός πίνακα ως εξής: *)</span>
+<span class="n">my_array</span><span class="o">.(</span><span class="mi">0</span><span class="o">)</span> <span class="o">;;</span>
+
+
+<span class="c">(*** Strings και Χαρακτήρες ***)</span>
+
+<span class="c">(* Χρησιμοποιούμε διπλά εισαγωγικά για τα string literals. *)</span>
+<span class="k">let</span> <span class="n">my_str</span> <span class="o">=</span> <span class="s2">&quot;Hello world&quot;</span> <span class="o">;;</span>
+
+<span class="c">(* Μονά εισαγωγικά για τα literals χαρακτήρων. *)</span>
+<span class="k">let</span> <span class="n">my_char</span> <span class="o">=</span> <span class="sc">&#39;a&#39;</span> <span class="o">;;</span>
+
+<span class="c">(* Τα μονά και τα διπλά εισαγωγικά δεν είναι ισοδύναμα. *)</span>
+<span class="k">let</span> <span class="n">bad_str</span> <span class="o">=</span> <span class="k">&#39;</span><span class="n">syntax</span> <span class="n">error&#39;</span> <span class="o">;;</span> <span class="c">(* Syntax error. *)</span>
+
+<span class="c">(* Αυτό μας δίνει ένα string με έναν χαρακτήρα και όχι εναν χαρακτήρα. *)</span>
+<span class="k">let</span> <span class="n">single_char_str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span> <span class="o">;;</span>
+
+<span class="c">(* Τα strings παρατίθενται με τον τελεστή &quot;^&quot;. *)</span>
+<span class="k">let</span> <span class="n">some_str</span> <span class="o">=</span> <span class="s2">&quot;hello&quot;</span> <span class="o">^</span> <span class="s2">&quot;world&quot;</span> <span class="o">;;</span>
+
+<span class="c">(* Τα strings δεν είναι πίνακες από χαρακτήρες όπως στην C.</span>
+<span class="c">   Δεν μπορούμε να ανακατεύουμε strings με χαρακτήρες σε εκφράσεις.</span>
+<span class="c">   Μπορούμε να μετατρέπουμε χαρακτήρες σε strings με &quot;String.make 1 my_char&quot;.</span>
+<span class="c">   Υπάρχουν πιο βολικές συναρτήσεις για αυτό το σκοπό σε πρόσθετες βιβλιοθήκες,</span>
+<span class="c">   όπως η Core.Std που μπορεί να μην έχουν εγκατασταθεί/φορτωθεί by default. *)</span>
+<span class="k">let</span> <span class="n">ocaml</span> <span class="o">=</span> <span class="o">(</span><span class="nn">String</span><span class="p">.</span><span class="n">make</span> <span class="mi">1</span> <span class="sc">&#39;O&#39;</span><span class="o">)</span> <span class="o">^</span> <span class="s2">&quot;Caml&quot;</span> <span class="o">;;</span>
+
+<span class="c">(* Υπάρχει και μια συνάρτηση printf. *)</span>
+<span class="nn">Printf</span><span class="p">.</span><span class="n">printf</span> <span class="s2">&quot;%d %s&quot;</span> <span class="mi">99</span> <span class="s2">&quot;bottles of beer&quot;</span> <span class="o">;;</span>
+
+<span class="c">(* Υπάρχουν και συναρτήσεις read/write χωρίς μορφοποίηση. *)</span>
+<span class="n">print_string</span> <span class="s2">&quot;hello world</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">;;</span>
+<span class="n">print_endline</span> <span class="s2">&quot;hello world&quot;</span> <span class="o">;;</span>
+<span class="k">let</span> <span class="n">line</span> <span class="o">=</span> <span class="n">read_line</span> <span class="bp">()</span> <span class="o">;;</span>
+
+
+<span class="c">(*** User-defined τύποι δεδομένων ***)</span>
+
+<span class="c">(* Μπορούμε να ορίζουμε τύπους δεδομένων με τη δομή &quot;type some_type&quot;.</span>
+<span class="c">   Όπως σε αυτό τον άχρηστο τύπο που αντιγράφει τους ακεραίους: *)</span>
+<span class="k">type</span> <span class="n">my_int</span> <span class="o">=</span> <span class="kt">int</span> <span class="o">;;</span>
+
+<span class="c">(* Πιο ενδιαφέροντες τύποι περιλαμβάνουν τους λεγόμενους type constructors.</span>
+<span class="c">   Αυτοί πρέπει να ξεκινούν με κεφαλαίο γράμμα. *)</span>
+<span class="k">type</span> <span class="n">ml</span> <span class="o">=</span> <span class="nc">OCaml</span> <span class="o">|</span> <span class="nc">StandardML</span> <span class="o">;;</span>
+<span class="k">let</span> <span class="n">lang</span> <span class="o">=</span> <span class="nc">OCaml</span> <span class="o">;;</span>  <span class="c">(* Έχει τύπο &quot;ml&quot;. *)</span>
+
+<span class="c">(* Οι type constructors δε χρειάζεται να είναι κενοί. *)</span>
+<span class="k">type</span> <span class="n">my_number</span> <span class="o">=</span> <span class="nc">PlusInfinity</span> <span class="o">|</span> <span class="nc">MinusInfinity</span> <span class="o">|</span> <span class="nc">Real</span> <span class="k">of</span> <span class="kt">float</span> <span class="o">;;</span>
+<span class="k">let</span> <span class="n">r0</span> <span class="o">=</span> <span class="nc">Real</span> <span class="o">(-</span><span class="mi">3</span><span class="o">.</span><span class="mi">4</span><span class="o">)</span> <span class="o">;;</span> <span class="c">(* Έχει τύπο &quot;my_number&quot;. *)</span>
+
+<span class="c">(* Μπορούν να χρησιμοποιηθούν για πολυμορφική αριθμιτική *)</span>
+<span class="k">type</span> <span class="n">number</span> <span class="o">=</span> <span class="nc">Int</span> <span class="k">of</span> <span class="kt">int</span> <span class="o">|</span> <span class="nc">Float</span> <span class="k">of</span> <span class="kt">float</span> <span class="o">;;</span>
+
+<span class="c">(* Σημείο στο επίπεδο, βασικά ένα tuple περιορισμένου συγκεκριμένου τύπου *)</span>
+<span class="k">type</span> <span class="n">point2d</span> <span class="o">=</span> <span class="nc">Point</span> <span class="k">of</span> <span class="kt">float</span> <span class="o">*</span> <span class="kt">float</span> <span class="o">;;</span>
+<span class="k">let</span> <span class="n">my_point</span> <span class="o">=</span> <span class="nc">Point</span> <span class="o">(</span><span class="mi">2</span><span class="o">.</span><span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">.</span><span class="mi">0</span><span class="o">)</span> <span class="o">;;</span>
+
+<span class="c">(* Οι τύποι μπορούν να είναι παραμετροποιημένοι, όπως σε αυτόν τον τύπο για</span>
+<span class="c">   λίστες λίστών με οτιδήποτε τύπου στοιχεία. Το &#39;a μπορεί να αντικατασταθεί από</span>
+<span class="c">   οποιονδήποτε τύπο. *)</span>
+<span class="k">type</span> <span class="k">&#39;</span><span class="n">a</span> <span class="n">list_of_lists</span> <span class="o">=</span> <span class="k">&#39;</span><span class="n">a</span> <span class="kt">list</span> <span class="kt">list</span> <span class="o">;;</span>
+<span class="k">type</span> <span class="n">int_list_list</span> <span class="o">=</span> <span class="kt">int</span> <span class="n">list_of_lists</span> <span class="o">;;</span>
+
+<span class="c">(* Οι τύποι μπορούν επίσης να ορίζονται αναδρομικά. Σαν αυτόν εδώ τον τύπο που</span>
+<span class="c">   είναι ανάλογος της built in λίστας από ακεραίους. *)</span>
+<span class="k">type</span> <span class="n">my_int_list</span> <span class="o">=</span> <span class="nc">EmptyList</span> <span class="o">|</span> <span class="nc">IntList</span> <span class="k">of</span> <span class="kt">int</span> <span class="o">*</span> <span class="n">my_int_list</span> <span class="o">;;</span>
+<span class="k">let</span> <span class="n">l</span> <span class="o">=</span> <span class="nc">IntList</span> <span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="nc">EmptyList</span><span class="o">)</span> <span class="o">;;</span>
+
+
+<span class="c">(*** Ταίριασμα Προτύπων - Pattern Matching ***)</span>
+
+<span class="c">(* Το ταίριασμα προτύπων είναι κάπως σαν το switch statement σε προστακτικές</span>
+<span class="c">   γλώσσες προγραμματισμού, αλλά παρέχει πολύ μεγαλύτερη εκφραστική ισχύ.</span>
+
+<span class="c">   Παρόλο που φαίνεται περίπλοκο, στην πραγματικότητα είναι απλώς ταίριασμα</span>
+<span class="c">   ενός ορίσματος με μια συγκεκριμένη τιμή, ένα κατηγόρημα ή έναν type constructor</span>
+<span class="c">   Το σύστημα τύπων είναι αυτό που το κάνει τόσο ισχυρό. *)</span>
+
+<span class="c">(** Ταίριασμα με ακριβείς τιμές.  **)</span>
+
+<span class="k">let</span> <span class="n">is_zero</span> <span class="n">x</span> <span class="o">=</span>
+    <span class="k">match</span> <span class="n">x</span> <span class="k">with</span>
+    <span class="o">|</span> <span class="mi">0</span> <span class="o">-&gt;</span> <span class="bp">true</span>
+    <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="bp">false</span>  <span class="c">(* Το &quot;_&quot; σημαίνει &quot;οτιδήποτε άλλο&quot;. *)</span>
+<span class="o">;;</span>
+
+<span class="c">(* Εναλλακτικά μπορούμε να χρησιμοποιούμε το keyword &quot;function&quot;. *)</span>
+<span class="k">let</span> <span class="n">is_one</span> <span class="o">=</span> <span class="k">function</span>
+<span class="o">|</span> <span class="mi">1</span> <span class="o">-&gt;</span> <span class="bp">true</span>
+<span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="bp">false</span>
+<span class="o">;;</span>
+
+<span class="c">(* Ταίριασμα με κατηγορήματα, γνωστό και ως &quot;guarded pattern matching&quot;. *)</span>
+<span class="k">let</span> <span class="n">abs</span> <span class="n">x</span> <span class="o">=</span>
+    <span class="k">match</span> <span class="n">x</span> <span class="k">with</span>
+    <span class="o">|</span> <span class="n">x</span> <span class="k">when</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">-&gt;</span> <span class="o">-</span><span class="n">x</span>
+    <span class="o">|</span> <span class="o">_</span> <span class="o">-&gt;</span> <span class="n">x</span>
+<span class="o">;;</span>
+
+<span class="n">abs</span> <span class="mi">5</span> <span class="o">;;</span> <span class="c">(* 5 *)</span>
+<span class="n">abs</span> <span class="o">(-</span><span class="mi">5</span><span class="o">)</span> <span class="o">;;</span> <span class="c">(* 5 πάλι *)</span>
+
+<span class="c">(** Ταίριασμα με type constructors **)</span>
+
+<span class="k">type</span> <span class="n">animal</span> <span class="o">=</span> <span class="nc">Dog</span> <span class="k">of</span> <span class="kt">string</span> <span class="o">|</span> <span class="nc">Cat</span> <span class="k">of</span> <span class="kt">string</span> <span class="o">;;</span>
+
+<span class="k">let</span> <span class="n">say</span> <span class="n">x</span> <span class="o">=</span>
+    <span class="k">match</span> <span class="n">x</span> <span class="k">with</span>
+    <span class="o">|</span> <span class="nc">Dog</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span> <span class="o">^</span> <span class="s2">&quot; says woof&quot;</span>
+    <span class="o">|</span> <span class="nc">Cat</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span> <span class="o">^</span> <span class="s2">&quot; says meow&quot;</span>
+<span class="o">;;</span>
+
+<span class="n">say</span> <span class="o">(</span><span class="nc">Cat</span> <span class="s2">&quot;Fluffy&quot;</span><span class="o">)</span> <span class="o">;;</span> <span class="c">(* &quot;Fluffy says meow&quot;. *)</span>
+
+<span class="c">(** Διάσχιση δομών δεδομένων με ταίριασμα προτύπων **)</span>
+
+<span class="c">(* Οι αναδρομικοί τύποι μπορούν να διασχιστούν εύκολα με ταίριασμα προτύπων.</span>
+<span class="c">   Ας δούμε πώς μπορούμε να διασχίσουμε μια λίστα.</span>
+<span class="c">   Παρόλο που το built-in cons (&quot;::&quot;) μοιάζει με infix τελεστή,</span>
+<span class="c">   στην πραγματικότητα είναι ένας type constructor και μπορεί να</span>
+<span class="c">   ταιριαστεί όπως όλοι οι type constructors. *)</span>
+<span class="k">let</span> <span class="k">rec</span> <span class="n">sum_list</span> <span class="n">l</span> <span class="o">=</span>
+    <span class="k">match</span> <span class="n">l</span> <span class="k">with</span>
+    <span class="o">|</span> <span class="bp">[]</span> <span class="o">-&gt;</span> <span class="mi">0</span>
+    <span class="o">|</span> <span class="n">head</span> <span class="o">::</span> <span class="n">tail</span> <span class="o">-&gt;</span> <span class="n">head</span> <span class="o">+</span> <span class="o">(</span><span class="n">sum_list</span> <span class="n">tail</span><span class="o">)</span>
+<span class="o">;;</span>
+
+<span class="n">sum_list</span> <span class="o">[</span><span class="mi">1</span><span class="o">;</span> <span class="mi">2</span><span class="o">;</span> <span class="mi">3</span><span class="o">]</span> <span class="o">;;</span> <span class="c">(* Αποτιμάται σε 6 *)</span>
+
+<span class="c">(* Η built-in συνταξη των cons εμποδίζει τη δομή λίγο, γι αυτό θα φτιάξουμε</span>
+<span class="c">   το δικό μας τύπο λίστας για την παρουσίαση. *)</span>
+<span class="k">type</span> <span class="n">int_list</span> <span class="o">=</span> <span class="nc">Nil</span> <span class="o">|</span> <span class="nc">Cons</span> <span class="k">of</span> <span class="kt">int</span> <span class="o">*</span> <span class="n">int_list</span> <span class="o">;;</span>
+<span class="k">let</span> <span class="k">rec</span> <span class="n">sum_int_list</span> <span class="n">l</span> <span class="o">=</span>
+  <span class="k">match</span> <span class="n">l</span> <span class="k">with</span>
+      <span class="o">|</span> <span class="nc">Nil</span> <span class="o">-&gt;</span> <span class="mi">0</span>
+      <span class="o">|</span> <span class="nc">Cons</span> <span class="o">(</span><span class="n">head</span><span class="o">,</span> <span class="n">tail</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">head</span> <span class="o">+</span> <span class="o">(</span><span class="n">sum_int_list</span> <span class="n">tail</span><span class="o">)</span>
+<span class="o">;;</span>
+
+<span class="k">let</span> <span class="n">t</span> <span class="o">=</span> <span class="nc">Cons</span> <span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="nc">Cons</span> <span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="nc">Cons</span> <span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="nc">Nil</span><span class="o">)))</span> <span class="o">;;</span>
+<span class="n">sum_int_list</span> <span class="n">t</span> <span class="o">;;</span>
+</pre></div>
+<h2>Περισσότερα για την OCaml</h2>
+<ul>
+<li>Επισκεφθείτε την επίσημη σελίδα της OCaml για να κατεβάσετε τον compiler και να διαβάσετε το documentation: <a href="http://ocaml.org/">http://ocaml.org/</a></li>
+<li>Δοκιμάστε διαδραστικά μαθήματα και έναν web-based interpreter από την OCaml Pro: <a href="http://try.ocamlpro.com/">http://try.ocamlpro.com/</a></li>
+</ul>
+
+        <hr>
+        <p>
+          Έχετε κάποια πρόταση; Κάποια διόρθωση, ίσως; <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Δημιουργήστε ένα Issue</a> στο GitHub Repo μας, ή ανοίξτε ένα <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/el-gr/ocaml-gr.html.markdown">pull request</a>!
+        </p>
+        <p class="contributed">
+          Αρχική συμβολή: Daniil Baturin, ενημερώσεις/επεξεργασία: <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/el-gr/ocaml-gr.html.markdown">4 contributor(s)</a>.
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2024
+            <a href="http://baturin.org/">Daniil Baturin</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

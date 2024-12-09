@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="ja">
+    <title>Learn C in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/ja/c/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fja%2Fc%2F&amp;text=X%E3%82%92Y%E5%88%86%E3%81%A7%E5%AD%A6%E3%81%B6%2C+%E3%81%9F%E3%81%A0%E3%81%97+X%3DC">
+            このページをシェアする
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">XをY分で学ぶ</a></h1>
+      <h2>ただし X=C</h2>
+      <p class="filelink">
+        ソースコードの取得：
+        <a href="/ja/files/learnc.c">learnc.c</a>
+      </p>
+      <div id="doc">
+<p>え、C？　あぁ、<strong>未だに</strong>モダンで高パフォーマンスを実現できるあの言語のことだな。</p>
+<p>Cはほとんどのプログラマが最低水準言語として使われているが、その特徴は実行速度の速さだけ
+ではないのだ。CはPythonなどの高水準言語とは異なり、メモリの自動管理機能がなく、
+プログラマーの手で管理する必要があり、これが初学者を苦しめる要素となるが、うまく使えば、
+ロボットなどで実行速度やメモリの使用率などを大幅に最適化できる。</p>
+<div class="highlight"><pre lang="c"><span class="c1">// 行コメントは//で始まる (C99より前のC標準では使えない)</span>
+
+<span class="c1">// Cに限ったことではないが、ソースコードで日本語コメントを書くときにはファイルを</span>
+<span class="c1">// UTF-8で保存することをおすすめします。なぜならgccなど特定のコンパイラでは</span>
+<span class="c1">// 文字コード変換の影響で意図しないコメントアウトが引き起こされる可能性があります。</span>
+
+<span class="c1">// 例：</span>
+<span class="c1">// forループで似たコードの繰り返しを解消することが可能</span>
+<span class="c1">// このコメントを消すと何故か動かない</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">// 解説：shift-jisで「能」は 94 5c で、標準ASCIIでは 5c は&quot;\&quot;でLinux gccでは</span>
+<span class="c1">// 次の行もコメントアウトされる仕様で、この例ではforループの最初の定義が</span>
+<span class="c1">// コメントアウトされエラーとなります。</span>
+
+<span class="cm">/*</span>
+<span class="cm">複数行コメント、C89標準でも使える。</span>
+<span class="cm">*/</span>
+
+<span class="cm">/*</span>
+<span class="cm">複数行コメントはネストできないので/*注意*/</span><span class="w"> </span><span class="c1">// コメントはここで終わり、</span>
+<span class="o">*/</span><span class="w">　</span><span class="c1">// ここのコメント終了は扱われない。</span>
+
+<span class="c1">// 定数・マクロ：#define &lt;定数名(英数字のみ)&gt;</span>
+<span class="c1">// 定数はすべて大文字で定義することをおすすめします。</span>
+<span class="cp">#define DAYS_IN_YEAR 365</span>
+
+<span class="c1">// 列挙体も定数を定義する方法の一つです。</span>
+<span class="c1">// すべてのコード行は半角英数字で書き、セミコロン「;」で終わる必要があります。</span>
+<span class="k">enum</span><span class="w"> </span><span class="n">days</span><span class="w"> </span><span class="p">{</span><span class="n">SUN</span><span class="p">,</span><span class="w"> </span><span class="n">MON</span><span class="p">,</span><span class="w"> </span><span class="n">TUE</span><span class="p">,</span><span class="w"> </span><span class="n">WED</span><span class="p">,</span><span class="w"> </span><span class="n">THU</span><span class="p">,</span><span class="w"> </span><span class="n">FRI</span><span class="p">,</span><span class="w"> </span><span class="n">SAT</span><span class="p">};</span>
+<span class="c1">// SUNは0、MONは1、TUEは2、などと続く。</span>
+
+<span class="c1">// 列挙体の値は別の値にできますが、数字が大きくなるようにする必要があります。</span>
+<span class="k">enum</span><span class="w"> </span><span class="n">days</span><span class="w"> </span><span class="p">{</span><span class="n">SUN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">MON</span><span class="p">,</span><span class="w"> </span><span class="n">TUE</span><span class="p">,</span><span class="w"> </span><span class="n">WED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">99</span><span class="p">,</span><span class="w"> </span><span class="n">THU</span><span class="p">,</span><span class="w"> </span><span class="n">FRI</span><span class="p">,</span><span class="w"> </span><span class="n">SAT</span><span class="p">};</span>
+<span class="c1">// MONは自動的に2、TUEは3、と続き、WEDで99、THUは100、FRIは101、などと続く。</span>
+
+<span class="c1">// #include でヘッダーファイルをインポートできる。</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
+
+<span class="c1">// &lt;アングルブラケット&gt;で囲まれたファイル名はヘッダーファイルをシステムライブラリから</span>
+<span class="c1">// 探すことをコンパイラに伝え、自分で書いたヘッダーファイルを使うときには ”引用符” で</span>
+<span class="c1">//そのファイルのパスを囲みます。</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;my_header.h&quot;</span><span class="c1">               // ローカルファイル</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;../my_lib/my_lib_header.h&quot;</span><span class="c1"> // 相対パス</span>
+
+<span class="c1">// 予め関数を .h (ヘッダー)ファイルで宣言するか、</span>
+<span class="c1">// .c (ソースコード)ファイルの上方に書いて宣言してください。</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">function_1</span><span class="p">();</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">function_2</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="c1">// 関数を使用する前に、最低でも、関数プロトタイプを宣言しなければなりません。</span>
+<span class="c1">// プロトタイプは関数定義の前に書くのが一般的です。</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">add_two_ints</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">x2</span><span class="p">);</span><span class="w"> </span><span class="c1">// 関数プロトタイプ</span>
+<span class="c1">// 上記の書き方でも問題ありませんが(引数の連番)、引数にはコード保守を</span>
+<span class="c1">// 容易にするためになるべくちゃんとした名前をつけてあげましょう。</span>
+
+<span class="c1">// 関数プロトタイプはその関数を使う前に定義を書いておけば必要ありません。</span>
+<span class="c1">// しかし、関数プロトタイプをヘッダーファイルに記述し、ソースコードの上方に#includeを</span>
+<span class="c1">// 使ってインポートすれば、コンパイラにまだ定義されていない関数を呼び出すことを防ぎ、</span>
+<span class="c1">// ヘッダーファイルにどんな関数が定義されるのかが分かるのでプログラムの保守性も上がります。</span>
+
+<span class="c1">// プログラムが最初に実行する関数はエントリーポイントといい、Cではmain()関数となります。</span>
+<span class="c1">// 返り値はどんな型でも良いですが、Windowsなどの大抵のOSはエラーコードを検知・処理するために</span>
+<span class="c1">// 関数はint型（整数型）を返すことが定められています。</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// プログラムはここへ</span>
+<span class="p">}</span>
+
+<span class="c1">// コマンドライン引数はプログラムの挙動やオプションを実行時に設定することができます。</span>
+<span class="c1">// argcは引数の数を表し、プログラム名もカウントされるので常に1以上の値が入ります。</span>
+<span class="c1">// argvは引数文字列の配列を表し、プログラム名含むすべての引数が入るます。</span>
+<span class="c1">// argv[0]はプログラム名を、argv[1]は最初の引数などです。</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// コンソールに文字などを表示するときにはprintf関数を使います。</span>
+<span class="w">  </span><span class="c1">// printfは”print format”のことで、書式に沿って値を表示させます。</span>
+<span class="w">  </span><span class="c1">// %dには整数が入り、\nは新しい行(&quot;n&quot;ew line)へ移動します。</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; 0が表示される</span>
+
+<span class="w">  </span><span class="c1">// scanf関数はコンソールからユーザの入力を受け付けます。</span>
+<span class="w">  </span><span class="c1">// 変数の前の&#39;&amp;&#39;記号はメモリ上の変数の住所(address)を求める一種の演算子です。</span>
+<span class="w">  </span><span class="c1">// この例では整数型の値をinput変数の住所に値を代入します。</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">input</span><span class="p">;</span>
+<span class="w">  </span><span class="n">scanf</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">input</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">  </span><span class="c1">// 型</span>
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">  </span><span class="c1">// C99標準の互換性がないコンパイラでは、そのスコープで使用するすべての変数は</span>
+<span class="w">  </span><span class="c1">// スコープの一番上に宣言する必要があります。C99標準互換のコンパイラは、使用する前なら</span>
+<span class="w">  </span><span class="c1">// スコープ内のどこでも宣言可能です。このチュートリアルでは、C99標準に統一して書いていきます。</span>
+
+<span class="w">  </span><span class="c1">// int型は大抵の場合整数を4バイトのメモリで格納しますが、古いCPUでは2バイトで格納します。</span>
+<span class="w">  </span><span class="c1">// sizeof演算子を使えば、その型が何バイト使うか確認できます。</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">x_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// short型は2バイトで整数を格納。</span>
+<span class="w">  </span><span class="kt">short</span><span class="w"> </span><span class="n">x_short</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// char型は大抵のプロセッサーでは、最小のサイズで、</span>
+<span class="w">  </span><span class="c1">// 1バイトのサイズで整数またはASCII文字一つを格納できます。</span>
+<span class="w">  </span><span class="c1">// この型のサイズはプロセッサーによって異なり、2バイト以上の物もあります。</span>
+<span class="w">  </span><span class="c1">// (例：TIからリリースされたTMS320は2バイトで格納される。)</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">x_char</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">y_char</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;y&#39;</span><span class="p">;</span><span class="w"> </span><span class="c1">// ASCII文字リテラルは&#39;&#39;で囲まれる。</span>
+
+<span class="w">  </span><span class="c1">// long型は4~8バイトで整数を格納します。long long型は常に8バイトであることが保証されます。</span>
+<span class="w">  </span><span class="kt">long</span><span class="w"> </span><span class="n">x_long</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">long</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">x_long_long</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// float型は32ビットの単精度浮遊少数を格納します。</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">x_float</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">;</span><span class="w"> </span><span class="c1">// &#39;f&#39;はその数字リテラルが単精度浮遊少数であることを示します。</span>
+
+<span class="w">  </span><span class="c1">// double型は64ビットの倍精度浮遊少数を格納します。</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">x_double</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span><span class="w"> </span><span class="c1">// 実数のあとに何もつかない数字リテラルは倍精度浮遊少数として扱います。</span>
+
+<span class="w">  </span><span class="c1">// 整数型はunsignedをつけることで0以上の正の数のみを格納させることができます。</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">short</span><span class="w"> </span><span class="n">ux_short</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ux_int</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">ux_long_long</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// char型に格納されている文字はASCIIなどの文字コードに対応する整数でもあります。</span>
+<span class="w">  </span><span class="sc">&#39;0&#39;</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; ASCIIで48を表す。</span>
+<span class="w">  </span><span class="sc">&#39;A&#39;</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; ASCIIで65を表す。</span>
+
+<span class="w">  </span><span class="c1">// sizeof(T)でその型のサイズをバイトで返す(Tには型名が入る。)</span>
+<span class="w">  </span><span class="c1">// sizeof(obj)はその値の型のサイズを返す。(objには定数、変数、生の値が入る。)</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span><span class="w"> </span><span class="c1">// =&gt; 4 (on most machines with 4-byte words)</span>
+
+<span class="w">  </span><span class="c1">// もしsizeof演算子の引数が式だった場合、VLA(可変長配列、Variable Length Array)でない限り、</span>
+<span class="w">  </span><span class="c1">// その式は評価されません。この場合の引数の値はコンパイル時定数である。</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// size_t型は変数などの型サイズを表す2バイト以上の非負の整数を格納します。</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">a</span><span class="o">++</span><span class="p">);</span><span class="w"> </span><span class="c1">// a++ は評価されない。</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof(a++) = %zu where a = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// prints &quot;sizeof(a++) = 4 where a = 1&quot; (32ビット環境での場合)</span>
+
+<span class="w">  </span><span class="c1">// 配列は定義時にサイズを決める必要があります。</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">my_char_array</span><span class="p">[</span><span class="mi">20</span><span class="p">];</span><span class="w"> </span><span class="c1">// この配列は 1 * 20 = 20 バイト使います</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">my_int_array</span><span class="p">[</span><span class="mi">20</span><span class="p">];</span><span class="w"> </span><span class="c1">// この配列は 4 * 20 = 80 バイト使います</span>
+<span class="w">  </span><span class="c1">// (4バイト整数環境であると仮定した場合)</span>
+
+<span class="w">  </span><span class="c1">// 次の定義では整数配列を20個の0で埋めた状態で初期値が与えられます。</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">my_array</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="w">  </span><span class="c1">// &quot;{0}&quot;は配列初期化子です。</span>
+<span class="w">  </span><span class="c1">// 初期化子に含まれる要素以外の要素は、（もしあれば）すべて0に初期化されます：</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">my_array</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">};</span>
+<span class="w">  </span><span class="c1">// 上記の定義ではmy_arrayは5つの要素があり、最初の2つ以外は0に初期化されています：</span>
+<span class="w">  </span><span class="c1">// [1, 2, 0, 0, 0]</span>
+<span class="w">  </span><span class="c1">// 配列定義のときに明示的に初期化を行えば、要素数を決める必要がなくなります：</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">my_array</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="w">  </span><span class="c1">// サイズを指定しないで定義すると配列初期化子の要素数がそのまま自動的に決めまれます。</span>
+<span class="w">  </span><span class="c1">// よって&quot;{0}&quot;で初期化した場合、配列のサイズは1となり、&quot;[0]&quot;が代入されます。</span>
+<span class="w">  </span><span class="c1">// 実行時に配列の要素数を調べるには、配列のサイズを1つの要素のサイズで割れば良いのです。</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">my_array_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">my_array</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">my_array</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="w">  </span><span class="c1">// 注意；この操作は配列ごとに、かつ関数に渡す前に実行することを勧めします。なぜなら</span>
+<span class="w">  </span><span class="c1">// 関数に配列を渡すと、ポインター（メモリ上の場所を表す単なる整数）に変換され、</span>
+<span class="w">  </span><span class="c1">// 関数内で同じ操作を行うと、間違った結果につながる恐れがあるからです。</span>
+
+<span class="w">  </span><span class="c1">// 要素へアクセスするときは他の言語と同じようにできます。</span>
+<span class="w">  </span><span class="c1">// 正しく言えば、Cに似た言語です。</span>
+<span class="w">  </span><span class="n">my_array</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="c1">// =&gt; 0</span>
+
+<span class="w">  </span><span class="c1">// 配列は変更可能です。</span>
+<span class="w">  </span><span class="n">my_array</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">my_array</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span><span class="w"> </span><span class="c1">// =&gt; 2</span>
+
+<span class="w">  </span><span class="c1">// C99標準以降（C11では任意選択）では、可変長配列(VLA)が使用可能で、コンパイル時に</span>
+<span class="w">  </span><span class="c1">// 定数による要素数指定をしなくても、変数などによる指定ができるようになります。</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Enter the array size: &quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// ユーザーに要素数を入力してもらう。</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">array_size</span><span class="p">;</span>
+<span class="w">  </span><span class="n">fscanf</span><span class="p">(</span><span class="n">stdin</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;%d&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">array_size</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">var_length_array</span><span class="p">[</span><span class="n">array_size</span><span class="p">];</span><span class="w"> </span><span class="c1">// VLAを宣言する。</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof array = %zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">var_length_array</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// 例:</span>
+<span class="w">  </span><span class="c1">// &gt; Enter the array size: 10</span>
+<span class="w">  </span><span class="c1">// &gt; sizeof array = 40</span>
+
+<span class="w">  </span><span class="c1">// 文字列はヌル文字(0x00, &#39;\0&#39;)で終わる配列でもあります。</span>
+<span class="w">  </span><span class="c1">// 文字列リテラルを使用する場合はコンパイラが末尾に塗る文字を追加するので明示的に</span>
+<span class="w">  </span><span class="c1">// 入れなくても良いです。</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">a_string</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;This is a string&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a_string</span><span class="p">);</span><span class="w"> </span><span class="c1">// %s フォーマットで文字列を表示</span>
+
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a_string</span><span class="p">[</span><span class="mi">16</span><span class="p">]);</span><span class="w"> </span><span class="c1">// =&gt; 0</span>
+<span class="w">  </span><span class="c1">// 例, 17番目のバイトは0 (18, 19, 20番目も同様)</span>
+
+<span class="w">  </span><span class="c1">// シングルクォーテーションで囲まれた文字は文字リテラルです。これはchar型*ではなく*、</span>
+<span class="w">  </span><span class="c1">// int型です。(これには歴史的背景があります。)</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">cha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">;</span><span class="w"> </span><span class="c1">// OK</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">chb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">;</span><span class="w"> </span><span class="c1">// これもOK (intからcharへの暗黙的型変換)</span>
+
+<span class="w">  </span><span class="c1">// 多次元配列:</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">multi_array</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="c1">// 要素の取得:</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">array_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">multi_array</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">];</span><span class="w"> </span><span class="c1">// =&gt; 3</span>
+
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">  </span><span class="c1">// 演算子</span>
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">  </span><span class="c1">// 複数の同一型変数の略記法:</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">i1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">i2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">f1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">f2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+<span class="w">  </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 四則演算は直感的にかけます:</span>
+<span class="w">  </span><span class="n">i1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 3</span>
+<span class="w">  </span><span class="n">i2</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">i1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1</span>
+<span class="w">  </span><span class="n">i2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">i1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 2</span>
+<span class="w">  </span><span class="n">i1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">i2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0 (0.5だが、0に繰り下げられている)</span>
+
+<span class="w">  </span><span class="c1">// 結果を少数にするにはどちらか一方の変数をfloat型へキャスティングする必要がある。</span>
+<span class="w">  </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">i1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">i2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0.5f</span>
+<span class="w">  </span><span class="n">i1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">i2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0.5 // double型でも同様の操作ができる</span>
+<span class="w">  </span><span class="n">f1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">f2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0.5, プラスマイナス計算機イプシロン(その型が表せる最小の少数)</span>
+
+<span class="w">  </span><span class="c1">// 浮動小数点数はIEEE 754の仕様で定義されているので、コンピューターは正確な</span>
+<span class="w">  </span><span class="c1">// 数をメモリ上で保存できない。よって意図しない数になることがある。例えば、0.1は</span>
+<span class="w">  </span><span class="c1">// 0.099999999999、0.3は0.300000000001として保存されているかもしれません。</span>
+<span class="w">  </span><span class="p">(</span><span class="mf">0.1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.1</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mf">0.3</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1 (真)</span>
+<span class="w">  </span><span class="c1">// なのでこれは上記の理由でこの真偽式は真になりません。</span>
+<span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="mf">1e123</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1e123</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1e123</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1e123</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1 (真)</span>
+<span class="w">  </span><span class="c1">// こちらは科学的表記法です : 1e123 = 1*10^123</span>
+
+<span class="w">  </span><span class="c1">// ほとんどのシステムはIEEE 754に基づいて浮動小数点数を定義していることを</span>
+<span class="w">  </span><span class="c1">// 知っておくことが重要になってきます。科学演算で多用されるPythonでも最終的に</span>
+<span class="w">  </span><span class="c1">// IEEE 754を使うCを呼び出すことになります。この注意書きはCの浮動小数点数の</span>
+<span class="w">  </span><span class="c1">// 仕様が悪く使うべきではないということをほのめかすのではなく、こういった誤差</span>
+<span class="w">  </span><span class="c1">// (イプシロン)を考慮した上で比較するというのを頭に入れておくために書かれました。</span>
+
+<span class="w">  </span><span class="c1">// 剰余演算もありますが、負の値を計算するときには注意してください：</span>
+<span class="w">  </span><span class="mi">11</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w">    </span><span class="c1">// =&gt; 2 (11 = 2 + 3*x (x=3))</span>
+<span class="w">  </span><span class="p">(</span><span class="mi">-11</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; -2 (-11 = -2 + 3*x (x=-3))</span>
+<span class="w">  </span><span class="mi">11</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="p">(</span><span class="mi">-3</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; 直感に反し被除数と同じ符号になる、2 (11 = 2 + (-3)*x (x=-3))</span>
+
+<span class="w">  </span><span class="c1">// 比較演算は親しみがあるかもしれませんが、Cには真偽型がなく、</span>
+<span class="w">  </span><span class="c1">// 代わりに整数型が使われます。(C99以降は _Bool型がstdbool.hで</span>
+<span class="w">  </span><span class="c1">// 提供されました。) 0は偽を表し、それ以外はすべて真として扱います。</span>
+<span class="w">  </span><span class="c1">// 比較演算を使用する際は必ず0か1を返します。</span>
+<span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0 (偽)　等しい</span>
+<span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1 (真)　等しくない</span>
+<span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">  </span><span class="c1">// =&gt; 1       より大きい</span>
+<span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">  </span><span class="c1">// =&gt; 0       より小さい</span>
+<span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1       以下</span>
+<span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1       以上</span>
+
+<span class="w">  </span><span class="c1">// CはPythonではないので、演算子の連鎖はできません。</span>
+<span class="w">  </span><span class="c1">// 下記の例では問題なくコンパイルしますが、`0 &lt; a &lt; 2`は`(0 &lt; a) &lt; 2`になり、</span>
+<span class="w">  </span><span class="c1">// `(0 &lt; a)`の結果が真でも偽でも結局`0 &lt; 2`または`1 &lt; 2`となるので常に真となります。</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">between_0_and_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// 代わりにこう書きます:</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">between_0_and_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 整数に対する論理演算子:</span>
+<span class="w">  </span><span class="o">!</span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0 (否定)</span>
+<span class="w">  </span><span class="o">!</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1</span>
+<span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1 (論理積)</span>
+<span class="w">  </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0</span>
+<span class="w">  </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1 (論理和)</span>
+<span class="w">  </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0</span>
+
+<span class="w">  </span><span class="c1">// 条件付き三元式 ( ? : )</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">z</span><span class="p">;</span>
+<span class="w">  </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">f</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">f</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 10 &quot;もし(e &gt; f)が真ならばeを、偽ならばfを返す。&quot;</span>
+
+<span class="w">  </span><span class="c1">// 加算・減算演算子:</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">;</span><span class="w"> </span><span class="c1">// jを返してからjを1増やす (s = 0, j = 1)</span>
+<span class="w">  </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">;</span><span class="w"> </span><span class="c1">// jを1増やしてからjを返す (s = 2, j = 2)</span>
+<span class="w">  </span><span class="c1">// 減算演算子 j-- と --j でも同様</span>
+
+<span class="w">  </span><span class="c1">// ビット演算子</span>
+<span class="w">  </span><span class="c1">// 整数などのデータは0と1の2進数で表されておりそれぞれをビットといいます。</span>
+<span class="w">  </span><span class="c1">// これらの演算子は各ビットに論理演算を適用します。</span>
+<span class="w">  </span><span class="o">~</span><span class="mh">0x0F</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0xFFFFFFF0 (ビット単位NOT、補数、32ビット16進数整数での例)</span>
+<span class="w">  </span><span class="mh">0x0F</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xF0</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0x00 (ビット単位AND)</span>
+<span class="w">  </span><span class="mh">0x0F</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mh">0xF0</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0xFF (ビット単位OR)</span>
+<span class="w">  </span><span class="mh">0x04</span><span class="w"> </span><span class="o">^</span><span class="w"> </span><span class="mh">0x0F</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0x0B (ビット単位XOR)</span>
+<span class="w">  </span><span class="mh">0x01</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0x02 (算術左シフト (1ビット幅))</span>
+<span class="w">  </span><span class="mh">0x02</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0x01 (算術右シフト (1ビット幅))</span>
+
+<span class="w">  </span><span class="c1">// 正負のついた整数に対するビットシフトには注意してください - これらの操作は未定義です:</span>
+<span class="w">  </span><span class="c1">// - 符号ビットへのビットシフト (int a = 1 &lt;&lt; 31)</span>
+<span class="w">  </span><span class="c1">// - 負の整数を左シフトする (int a = -1 &lt;&lt; 2)</span>
+<span class="w">  </span><span class="c1">// - 型のビットサイズ以上の幅でシフト:</span>
+<span class="w">  </span><span class="c1">//   int a = 1 &lt;&lt; 32; // 32ビット幅の整数の場合では未定義の動作</span>
+
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">  </span><span class="c1">// 制御構造</span>
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">  </span><span class="c1">// 条件文</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;I am never run</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;I am also never run</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;I print</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// whileループ文</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">ii</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">ii</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// 10以下の整数がこの条件を満たす</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d, &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ii</span><span class="o">++</span><span class="p">);</span><span class="w"> </span><span class="c1">// ii++ が値を使用してから1加算される。</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="c1">// =&gt; &quot;0, 1, 2, 3, 4, 5, 6, 7, 8, 9, &quot;が出力される</span>
+
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// do-whileループ文</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">kk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="k">do</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d, &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">kk</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">++</span><span class="n">kk</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span><span class="w"> </span><span class="c1">// ++kk が値を使用する*前*に1加算される.</span>
+<span class="w">  </span><span class="c1">// =&gt; &quot;0, 1, 2, 3, 4, 5, 6, 7, 8, 9, &quot;が出力される</span>
+
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// forループ文</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">jj</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">jj</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">jj</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="n">jj</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d, &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">jj</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="c1">// =&gt; &quot;0, 1, 2, 3, 4, 5, 6, 7, 8, 9, &quot;が出力される</span>
+
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// *****注*****:</span>
+<span class="w">  </span><span class="c1">// ループ文、関数には最低でも一つの命令・文が必要になります:</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">;</span><span class="w"> </span><span class="c1">// セミコロン単体で何もしないという命令を作れる(ヌル命令)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">// 別の表記法:</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// switch文(if文より高速)</span>
+<span class="w">  </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span><span class="w"> </span><span class="c1">// caseレーベルにはint型や列挙型やchar型等の整数で表せるものに限定されます。</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hey, &#39;a&#39; equals 0!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">break</span><span class="p">;</span><span class="w"> </span><span class="c1">// ブレイク文がなければ後続のcaseレーベルも実行されてしまいます。</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="mi">1</span><span class="p">:</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Huh, &#39;a&#39; equals 1!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// break文がそのcaseレーベルになければ、break文があるレーベルまですべて実行されます。</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="mi">3</span><span class="p">:</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="mi">4</span><span class="p">:</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Look at that.. &#39;a&#39; is either 3, or 4</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">break</span><span class="p">;</span>
+<span class="w">  </span><span class="k">default</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// 上記の条件がすべて合致しなければdefaultレーベル下の命令が実行されます。</span>
+<span class="w">    </span><span class="n">fputs</span><span class="p">(</span><span class="s">&quot;Error!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">stderr</span><span class="p">);</span>
+<span class="w">    </span><span class="n">exit</span><span class="p">(</span><span class="mi">-1</span><span class="p">);</span>
+<span class="w">    </span><span class="k">break</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// goto文</span>
+<span class="w">  </span><span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kt">bool</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// C99より前のC標準ではブール値が標準で定義されていません。</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">disaster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="mi">100</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="mi">100</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="p">((</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">150</span><span class="p">)</span>
+<span class="w">        </span><span class="n">disaster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">disaster</span><span class="p">)</span>
+<span class="w">        </span><span class="k">goto</span><span class="w"> </span><span class="n">error</span><span class="p">;</span><span class="w">  </span><span class="c1">// 両方のforループから抜ける</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="nl">error</span><span class="p">:</span><span class="w"> </span><span class="c1">// goto error;&quot;で&quot;error&quot;レーベルまで「ジャンプ」します。</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Error occurred at i = %d &amp; j = %d.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">);</span>
+<span class="w">  </span><span class="cm">/*</span>
+<span class="cm">    この例の出所: https://ideone.com/GuPhd6</span>
+<span class="cm">    &quot;Error occurred at i = 51 &amp; j = 99.&quot;が出力されます。</span>
+<span class="cm">  */</span>
+<span class="w">  </span><span class="cm">/*</span>
+<span class="cm">    ほとんどの場合、goto文を使うのは、そのコードが何をするかわかっていない限り、</span>
+<span class="cm">    良くないとされています。詳細は</span>
+<span class="cm">    https://ja.wikipedia.org/wiki/スパゲッティプログラム#goto文の濫用</span>
+<span class="cm">    を読んでください。</span>
+<span class="cm">  */</span>
+
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">  </span><span class="c1">// 型キャスティング(型変換)</span>
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">  </span><span class="c1">// すべての値には型がありますが、これらは、互換性がある別の型にキャスティングすることができます。</span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">x_hex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x01</span><span class="p">;</span><span class="w"> </span><span class="c1">// 16進数リテラルで変数を定義できます。</span>
+<span class="w">                    </span><span class="c1">// 2進数リテラルにはコンパイラごとに差があります。</span>
+<span class="w">                    </span><span class="c1">// (GCCではx_bin = 0b0010010110)</span>
+
+<span class="w">  </span><span class="c1">// 型キャスティングを行うとその値を保持しようとします。</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x_hex</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; 1</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">short</span><span class="p">)</span><span class="w"> </span><span class="n">x_hex</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; 1</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="p">)</span><span class="w"> </span><span class="n">x_hex</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; 1</span>
+
+<span class="w">  </span><span class="c1">// キャスティング先の型のサイズより大きい値をキャストすると警告なしに値が丸められます。</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="p">)</span><span class="w"> </span><span class="mi">257</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; 1 (8ビット長のunsigned char型が保持できる最大値は255)</span>
+
+<span class="w">  </span><span class="c1">// char, signed char, unsigned char型の最大値はそれぞれ、&lt;limits.h&gt;で提供される</span>
+<span class="w">  </span><span class="c1">// CHAR_MAX, SCHAR_MAX, UCHAR_MAXマクロを使用できます。</span>
+
+<span class="w">  </span><span class="c1">// 整数型と浮動小数点数型は双方向にキャスティング可能です。</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%f</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span><span class="w"> </span><span class="c1">// %f はdouble型と</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%f</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="w">  </span><span class="mi">100</span><span class="p">);</span><span class="w"> </span><span class="c1">// float型をフォーマットします。</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="p">)</span><span class="mf">100.0</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">  </span><span class="c1">// ポインター</span>
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">  </span><span class="c1">// ポインターはメモリ上のアドレスを保持する整数の変数であり、型と共に宣言・定義されます。</span>
+<span class="w">  </span><span class="c1">// 変数から直接アドレスを取得できることができます。</span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">x</span><span class="p">);</span><span class="w"> </span><span class="c1">// &amp;を用いて変数のアドレスを取得します。</span>
+<span class="w">  </span><span class="c1">// (%p は void *型の値をフォーマットします。)</span>
+<span class="w">  </span><span class="c1">// =&gt; 結果: 変数が保持されているメモリーアドレスが表示される</span>
+
+<span class="w">  </span><span class="c1">// ポインターは型名の直後にまたは変数名の直前に * を書いて宣言・定義します。</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">px</span><span class="p">,</span><span class="w"> </span><span class="n">not_a_pointer</span><span class="p">;</span><span class="w"> </span><span class="c1">// px はint型の値を指すポインター</span>
+<span class="w">  </span><span class="n">px</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x</span><span class="p">;</span><span class="w"> </span><span class="c1">// pxにxのアドレスを代入する。</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">px</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; &amp;xと同様の結果が出力されるはずです。</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%zu, %zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">px</span><span class="p">),</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">not_a_pointer</span><span class="p">));</span>
+<span class="w">  </span><span class="c1">// =&gt; 64ビット環境では&quot;8, 4&quot;が出力されます。</span>
+
+<span class="w">  </span><span class="c1">// ポインターから指示しているメモリー領域の値を取得(ディレファレンス)するには</span>
+<span class="w">  </span><span class="c1">// ポインター宣言と同じようにポインター名の前に * を書きます。</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">px</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; xの値である0を出力</span>
+
+<span class="w">  </span><span class="c1">// この機能を用いて、ポインターが指示している値を変更することができます。</span>
+<span class="w">  </span><span class="c1">// 加算演算子はディレファレンス演算子より優先順位が高いので数学同様ディレファレンス操作を</span>
+<span class="w">  </span><span class="c1">// 丸括弧で括ります。</span>
+<span class="w">  </span><span class="p">(</span><span class="o">*</span><span class="n">px</span><span class="p">)</span><span class="o">++</span><span class="p">;</span><span class="w"> </span><span class="c1">// pxが指しているxの値を1加算する</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">px</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; 1</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; 1</span>
+
+<span class="w">  </span><span class="c1">// 配列は連続したメモリー領域を確保するのに有効です。</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">x_array</span><span class="p">[</span><span class="mi">20</span><span class="p">];</span><span class="w"> </span><span class="c1">// 長さ20の不可変長配列を宣言</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">xx</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">xx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">xx</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span><span class="w"> </span><span class="n">xx</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">x_array</span><span class="p">[</span><span class="n">xx</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">xx</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="c1">// x_arrayの値を 20, 19, 18,... 2, 1 と一括初期化する。</span>
+
+<span class="w">  </span><span class="c1">// int型の値を指し示すポインターを宣言し、x_arrayのアドレスで初期化する</span>
+<span class="w">  </span><span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="n">x_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x_array</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// x_ptrは整数20個の配列の最初の要素を指しています。</span>
+<span class="w">  </span><span class="c1">// この場合配列は代入時に最初の要素へのポインターへ変換されます。</span>
+<span class="w">  </span><span class="c1">// 関数に配列を渡す際にも暗黙的にポインターに変換されます。</span>
+<span class="w">  </span><span class="c1">// 例外：`&amp;`を配列に適用した場合、その配列のアドレスが返り、要素の型ではなく、</span>
+<span class="w">  </span><span class="c1">// 配列型のポインターが使用されます：</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">arr</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">ptr_to_arr</span><span class="p">)[</span><span class="mi">10</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">arr</span><span class="p">;</span><span class="w"> </span><span class="c1">// &amp;arr は `int *`型ではない！</span>
+<span class="w">  </span><span class="c1">// これは「（10個の整数の）配列へのポインター」型です。</span>
+<span class="w">  </span><span class="c1">// もう一つの例外には文字列リテラルをchar型配列に代入する場合：</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">otherarr</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;foobarbazquirk&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// または、`sizeof`, `alignof`演算子を使用した場合：</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">arraythethird</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arraythethird</span><span class="p">;</span><span class="w"> </span><span class="c1">// equivalent with int *ptr = &amp;arr[0];</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%zu, %zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">arraythethird</span><span class="p">),</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">ptr</span><span class="p">));</span>
+<span class="w">  </span><span class="c1">// &quot;40, 4&quot; または &quot;40, 8&quot; が出力されます。</span>
+
+<span class="w">  </span><span class="c1">// ポインター型の値を加算・減算するとその方に応じて操作できます。</span>
+<span class="w">  </span><span class="c1">// この操作のことをポインター演算といいます。</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">x_ptr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span><span class="w"> </span><span class="c1">// =&gt; 19</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x_array</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span><span class="w"> </span><span class="c1">// =&gt; 19</span>
+
+<span class="w">  </span><span class="c1">// 標準ライブラリ関数の一つであるmallocを使えば連続したメモリ領域を動的に確保できます。</span>
+<span class="w">  </span><span class="c1">// malloc関数は確保するバイト数を設定するsize_t型の引数が一つあります。</span>
+<span class="w">  </span><span class="c1">// （確保するのは大抵の場合ヒープ領域に確保されますが、組み込みデバイスなどでは</span>
+<span class="w">  </span><span class="c1">// 挙動が異なる場合があります。このことはC標準では説明されていません。）</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">my_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">my_ptr</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">20</span><span class="p">);</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">xx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">xx</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span><span class="w"> </span><span class="n">xx</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="o">*</span><span class="p">(</span><span class="n">my_ptr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">xx</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">xx</span><span class="p">;</span><span class="w"> </span><span class="c1">// my_ptr[xx] = 20-xx</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="c1">// メモリー領域を整数型配列として初期化する [20, 19, 18 ... 1]</span>
+
+<span class="w">  </span><span class="c1">// mallocで確保されたメモリー領域へのデータの書き込みには注意してください。</span>
+<span class="w">  </span><span class="c1">// 安全性を保証するには、確保すると同時にそのメモリー領域をすべて0で埋め尽くすcalloc関数を使用してください。</span>
+<span class="w">  </span><span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="n">my_other_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calloc</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+
+<span class="w">  </span><span class="c1">// Cには動的配列のサイズをその場で求める方法はほとんどなく、関数などに渡すときに要素数を記録する別の変数が</span>
+<span class="w">  </span><span class="c1">// 必要になることがよくあります。詳細は次の関数についてのセクションを読んでください。</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">my_arr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calloc</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+<span class="w">  </span><span class="c1">// 要素を追加する</span>
+<span class="w">  </span><span class="n">size</span><span class="o">++</span><span class="p">;</span>
+<span class="w">  </span><span class="n">my_arr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">realloc</span><span class="p">(</span><span class="n">my_arr</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">size</span><span class="p">);</span><span class="w"> </span><span class="c1">// realloc関数で配列のサイズを更新する。</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">my_arr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// mallocやreallocなどを使う際には領域確保に異常がない確認するために</span>
+<span class="w">    </span><span class="c1">// ヌルチェックをすることをおすすめします。</span>
+<span class="w">    </span><span class="k">return</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">my_arr</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 確保されていないメモリー領域へアクセスは予測不可能な結果を招く可能性があります。</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">my_ptr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">21</span><span class="p">));</span><span class="w"> </span><span class="c1">// =&gt; who-knows-what? が出力される**かも**、クラッシュするかもしれない。</span>
+
+<span class="w">  </span><span class="c1">// メモリー領域の使用を終えたら必ずfree関数を使ってその領域を解放しなければなりません。</span>
+<span class="w">  </span><span class="c1">// 解放しなければ、プログラムが終了しても他のプログラムからそのメモリー領域を再利用できず、</span>
+<span class="w">  </span><span class="c1">// システム全体で使用できる容量が減ってしまいます。このことをメモリーリークと呼びます。</span>
+<span class="w">  </span><span class="n">free</span><span class="p">(</span><span class="n">my_ptr</span><span class="p">);</span><span class="w"> </span><span class="c1">// my_ptrでポイントされてるメモリー領域を解放する。</span>
+
+<span class="w">  </span><span class="c1">// 文字列はchar型の配列で表せますが、よく使用されるのは文字列の最初の文字を指すcharポインターです。</span>
+<span class="w">  </span><span class="c1">// もし、単に文字列リテラルを使用するだけならば&quot;const char*&quot;を使い、変更不能にしておくことが推奨されています。</span>
+<span class="w">  </span><span class="c1">// なぜならば、本来文字列リテラルのデータは変更すべきではないからです。</span>
+<span class="w">  </span><span class="c1">// なので、&quot; foo[0] = &#39;a&#39; &quot;といった操作はできません。</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">my_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;This is my very own string literal&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%c</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">my_str</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; &#39;T&#39;</span>
+
+<span class="w">  </span><span class="c1">// char型の配列で定義されている場合は別で、文字列リテラルで初期化できますが、</span>
+<span class="w">  </span><span class="c1">// 各要素は変更可能です。例に：</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">foo</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;foo&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="n">foo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">;</span><span class="w"> </span><span class="c1">// この操作は許されており、&quot;aoo&quot; に変更される。</span>
+
+<span class="w">  </span><span class="n">function_1</span><span class="p">();</span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// main 関数の終わり</span>
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// 関数</span>
+<span class="c1">///////////////////////////////////////</span>
+
+<span class="c1">// 関数定義の構文：</span>
+<span class="c1">// &lt;戻り値の型&gt; &lt;関数名&gt;(&lt;引数&gt;)</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">add_two_ints</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">x2</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">x1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x2</span><span class="p">;</span><span class="w"> </span><span class="c1">// returnで値を返す。</span>
+<span class="p">}</span>
+
+<span class="cm">/*</span>
+<span class="cm">関数は値によって呼び出されます。関数が呼ばれると、引数として渡した値はコピーされ、</span>
+<span class="cm">関数内で値を変更したとしても、渡した引数の値は変わりません。（配列はこれに従わない。）</span>
+
+<span class="cm">関数内で引数の値を変更したい場合はポインターとして渡す必要があり、配列も渡すときに自動的にポインターになります。</span>
+
+<span class="cm">例：即興文字列反転</span>
+<span class="cm">*/</span>
+
+<span class="c1">// void型関数は値を返さない</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">str_reverse</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">str_in</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">tmp</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">ii</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strlen</span><span class="p">(</span><span class="n">str_in</span><span class="p">);</span><span class="w"> </span><span class="c1">// `strlen()` はC標準ライブラリ関数です。</span>
+<span class="w">                               </span><span class="c1">// NOTE: `strlen` で返される文字列の長さは終端文字の</span>
+<span class="w">                               </span><span class="c1">//       ヌルバイト(&#39;\0&#39;)を含んでいない状態です。</span>
+<span class="w">  </span><span class="c1">// C99標準以降では、ループ定義の中にループ制御変数が定義できます。</span>
+<span class="w">  </span><span class="c1">// 例：｀for (size_t ii = 0; ...｀</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">ii</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">ii</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">len</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="n">ii</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">str_in</span><span class="p">[</span><span class="n">ii</span><span class="p">];</span>
+<span class="w">    </span><span class="n">str_in</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">str_in</span><span class="p">[</span><span class="n">len</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">ii</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">];</span><span class="w"> </span><span class="c1">// 後ろから ii 番目の要素 を 前から ii 番目の要素にする</span>
+<span class="w">    </span><span class="n">str_in</span><span class="p">[</span><span class="n">len</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">ii</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tmp</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">//NOTE: string.h のヘッダーファイルを#includeしないとstrlen()関数が使用できません。</span>
+
+<span class="cm">/*</span>
+<span class="cm">char c[] = &quot;This is a test.&quot;;</span>
+<span class="cm">str_reverse(c);</span>
+<span class="cm">printf(&quot;%s\n&quot;, c); // =&gt; &quot;.tset a si sihT&quot;</span>
+<span class="cm">*/</span>
+<span class="cm">/*</span>
+<span class="cm">一つの変数を変更することができるように、</span>
+<span class="cm">ポインター渡しで複数の変数を変更できます。</span>
+<span class="cm">*/</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">swapTwoNumbers</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">;</span>
+<span class="w">    </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">;</span>
+<span class="w">    </span><span class="o">*</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="cm">/*</span>
+<span class="cm">int first = 10;</span>
+<span class="cm">int second = 20;</span>
+<span class="cm">printf(&quot;first: %d\nsecond: %d\n&quot;, first, second);</span>
+<span class="cm">swapTwoNumbers(&amp;first, &amp;second);</span>
+<span class="cm">printf(&quot;first: %d\nsecond: %d\n&quot;, first, second);</span>
+<span class="cm">// 変数の値が交換される</span>
+<span class="cm">*/</span>
+
+<span class="c1">// 一度に複数の値を返す</span>
+<span class="c1">// Cではreturn文を使って複数の値を返すことができません。一度に複数の値を返すには、</span>
+<span class="c1">// 引数にそれぞれの戻り値を格納する変数へのポインターを設定しなければなりません。</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">return_multiple</span><span class="p">(</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">array_of_3</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">ret1</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">ret2</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">ret3</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">array_of_3</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">//エラーコードを返す (偽)</span>
+
+<span class="w">    </span><span class="c1">//値を変更するためにポインターをディレファレンスする。</span>
+<span class="w">   </span><span class="o">*</span><span class="n">ret1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">array_of_3</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">   </span><span class="o">*</span><span class="n">ret2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">array_of_3</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="w">   </span><span class="o">*</span><span class="n">ret3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">array_of_3</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">//エラーコードを返す (真)</span>
+<span class="p">}</span>
+
+<span class="cm">/*</span>
+<span class="cm">引数に配列型を使用するときは、配列は必ずポインターに変換されることに注意してください。これは</span>
+<span class="cm">malloc関数で動的に確保したものでも、静的に定義した配列でも同じことが起きます。繰り返しになるが、</span>
+<span class="cm">Cでは引数として渡された動的配列の長さを標準仕様で知ることができません。</span>
+<span class="cm">*/</span>
+<span class="c1">// 引数として配列のサイズを渡してください。</span>
+<span class="c1">// でなければ、渡された配列の長さを知る術がありません。</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">printIntArray</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">size</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;arr[%d] is: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="cm">/*</span>
+<span class="cm">int my_arr[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };</span>
+<span class="cm">int size = 10;</span>
+<span class="cm">printIntArray(my_arr, size);</span>
+<span class="cm">// &quot;arr[0] is: 1&quot; などが出力される。</span>
+<span class="cm">*/</span>
+
+<span class="c1">// 関数外で定義されている変数へアクセスするにはexternキーワードを使用します。</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">testFunc</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w"> </span><span class="c1">//この変数iは外部変数iとして使用できる</span>
+<span class="p">}</span>
+
+<span class="c1">// 外部変数を他のソースファイルから見えないようにする：</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">// testFunc2()を使用する他のファイルは変数jに直接アクセスできない。</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">testFunc2</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// staticキーワードはコンパイルユニット外での変数のアクセスを禁じ、プライベートにします。</span>
+<span class="c1">// （大抵のシステムでのコンパイルユニットとは .c ソースコードのことを指す。）</span>
+<span class="c1">// このstaticキーワードは（コンパイルユニットの）グローバルスコープと関数スコープどちらでも使用できますが、</span>
+<span class="c1">// 関数スコープで使用すると挙動が変わり、アクセス制限をするのではなく、変数の寿命がプログラム終了まで延長されます。</span>
+<span class="c1">// これはその変数が関数の実行が終了したあともメモリーにとどまり、グローバル変数と同じように</span>
+<span class="c1">// 値を保持し続けることができるようになります。グローバル変数とは違って、変数は定義された関数のスコープ内のみで使用できます。</span>
+<span class="c1">// 更に、staticで宣言された変数は初期値が与えられてなくても必ず0で初期化されます。</span>
+<span class="c1">// **関数をstatic宣言することで変数と同じようにプライベートにすることができます。**</span>
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// ユーザー定義の型と構造体</span>
+<span class="c1">///////////////////////////////////////</span>
+
+<span class="c1">// typedefキーワードを使えば型の別名をつけることができます</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">my_type</span><span class="p">;</span><span class="w"> </span><span class="c1">// my_type は int型の別名になった。</span>
+<span class="n">my_type</span><span class="w"> </span><span class="n">my_type_var</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">// int my_type_var = 0; と等しい</span>
+
+<span class="c1">// 構造体は複数のデータを一つにまとめたものであり、上から下の順で定義されたメンバーがメモリーに割り当てられる：</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">rectangle</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">width</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">height</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// この構造体のサイズは必ずしも</span>
+<span class="c1">// sizeof(struct rectangle) == sizeof(int) + sizeof(int)</span>
+<span class="c1">// にならない、なぜならコンパイル時にシステムがメモリーを割り当てやすい位置にパッディングするからである。[1]</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">function_1</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">rectangle</span><span class="w"> </span><span class="n">my_rec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// メンバーは定義時に初期化できる</span>
+
+<span class="w">  </span><span class="c1">// &quot;.&quot; で個別のメンバーへアクセスできる</span>
+<span class="w">  </span><span class="n">my_rec</span><span class="p">.</span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<span class="w">  </span><span class="n">my_rec</span><span class="p">.</span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 構造体へのポインターも定義できる：</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">rectangle</span><span class="w"> </span><span class="o">*</span><span class="n">my_rec_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">my_rec</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// ディレファレンスしてからメンバーの値をセットするのも良いが...</span>
+<span class="w">  </span><span class="p">(</span><span class="o">*</span><span class="n">my_rec_ptr</span><span class="p">).</span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// 可読性を高めるために&quot;-&gt;&quot;を使ってポインターから直接メンバーへアクセスすることもできる。</span>
+<span class="w">  </span><span class="n">my_rec_ptr</span><span class="o">-&gt;</span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="c1">// (*my_rec_ptr).height = 10; と同じ</span>
+<span class="p">}</span>
+
+<span class="c1">// 毎回structを打たなくてもいいように構造体に別名をつけることができます</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">rectangle</span><span class="w"> </span><span class="n">rect</span><span class="p">;</span><span class="w"> </span><span class="c1">// rect = struct rectangle</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">area</span><span class="p">(</span><span class="n">rect</span><span class="w"> </span><span class="n">r</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">width</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">height</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// typedefは構造体定義と同時に使えます：</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">width</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">height</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">rect</span><span class="p">;</span><span class="w"> </span><span class="c1">// 無名構造体にrectと名付けている。</span>
+<span class="c1">// これで</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">rectangle</span><span class="w"> </span><span class="n">r</span><span class="p">;</span>
+<span class="c1">// を打たなくても</span>
+<span class="n">rect</span><span class="w"> </span><span class="n">r</span><span class="p">;</span>
+<span class="c1">// と楽に宣言・定義できる</span>
+
+<span class="c1">// サイズが大きい構造体は値渡しの代わりにポインター渡しでコピー作成の時間・メモリー使用量増大を避けることができます：</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">areaptr</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">rect</span><span class="w"> </span><span class="o">*</span><span class="n">r</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">r</span><span class="o">-&gt;</span><span class="n">width</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">r</span><span class="o">-&gt;</span><span class="n">height</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// 関数ポインター</span>
+<span class="c1">///////////////////////////////////////</span>
+<span class="cm">/*</span>
+<span class="cm">実行時には、関数はプログラムに決められたメモリーアドレスにあります。関数ポインターは他のポインターとほとんど変わりません。</span>
+<span class="cm">違うところは、ポインターを使って関数を呼び出せることです。これにより、関数の引数として他の関数をコールバックとしてわすことができます。</span>
+<span class="cm">難しいところは、他の変数へのポインターとは表記法が違ってくることです。</span>
+
+<span class="cm">例：str_reverse関数をポインターとして使う</span>
+<span class="cm">*/</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">str_reverse_through_pointer</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">str_in</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// 戻り値がvoid型fの名前がついた関数ポインターを宣言する。</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">f</span><span class="p">)(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">);</span><span class="w"> </span><span class="c1">// 引数も一緒に書きますが、指している関数と同じ戻り値と引数の型でなければなりません(引数名は入れずにただ型を列挙する)。</span>
+<span class="w">  </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">str_reverse</span><span class="p">;</span><span class="w"> </span><span class="c1">// 関数のアドレスを代入する（アドレスは実行時に決定される）。</span>
+<span class="w">  </span><span class="c1">// f = str_reverse; これも正しくコンパイルできる - 配列同様ポインターに変換される</span>
+<span class="w">  </span><span class="p">(</span><span class="o">*</span><span class="n">f</span><span class="p">)(</span><span class="n">str_in</span><span class="p">);</span><span class="w"> </span><span class="c1">// 関数ポインターから実行する</span>
+<span class="w">  </span><span class="c1">// f(str_in); // この表記法でも正しく実行できる</span>
+<span class="p">}</span>
+
+<span class="cm">/*</span>
+<span class="cm">同じ戻り値型と引数である限り、どの関数でも使えます。</span>
+<span class="cm">可読性と単純性を実現するために、typedefが使われます。</span>
+<span class="cm">*/</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">my_fnp_type</span><span class="p">)(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">);</span>
+
+<span class="c1">// 下記で直背ポインター変数を宣言できます:</span>
+<span class="c1">// ...</span>
+<span class="c1">// my_fnp_type f;</span>
+
+
+<span class="c1">/////////////////////////////////////</span>
+<span class="c1">// printf()を用いて文字などを出力する</span>
+<span class="c1">/////////////////////////////////////</span>
+
+<span class="c1">//特殊文字:</span>
+<span class="cm">/*</span>
+<span class="cm">&#39;\a&#39;; // 警告 (ベル) 文字</span>
+<span class="cm">&#39;\n&#39;; // 改行文字</span>
+<span class="cm">&#39;\t&#39;; // タブ文字 (左揃えテキスト)</span>
+<span class="cm">&#39;\v&#39;; // 垂直タブ文字</span>
+<span class="cm">&#39;\f&#39;; // (フォームフィードの)新規ページ</span>
+<span class="cm">&#39;\r&#39;; // 復帰文字</span>
+<span class="cm">&#39;\b&#39;; // バックスペース文字</span>
+<span class="cm">&#39;\0&#39;; // ヌル文字 - Cでは文字列終端文字として使用される。</span>
+<span class="cm">//   hello\n\0. \0が明示的に文字列の終わりを表している。</span>
+<span class="cm">&#39;\\&#39;; // バックスラッシュ</span>
+<span class="cm">&#39;\?&#39;; // 疑問符</span>
+<span class="cm">&#39;\&#39;&#39;; // シングルクォーテーションマーク</span>
+<span class="cm">&#39;\&quot;&#39;; // ダブルクォーテーションマーク</span>
+<span class="cm">&#39;\xhh&#39;; // 文字コード（16進数） 例: &#39;\xb&#39; = 垂直タブ文字</span>
+<span class="cm">&#39;\0oo&#39;; // 文字コード（8進数）  例: &#39;\013&#39; = 垂直タブ文字</span>
+
+<span class="cm">// printf等で使われるフォーマティング:</span>
+<span class="cm">&quot;%d&quot;;    // 整数</span>
+<span class="cm">&quot;%3d&quot;;   // 整数最低3桁表示 (右揃え)</span>
+<span class="cm">&quot;%s&quot;;    // 文字列</span>
+<span class="cm">&quot;%f&quot;;    // 浮動小数点</span>
+<span class="cm">&quot;%ld&quot;;   // 長整数</span>
+<span class="cm">&quot;%3.2f&quot;; // 小数点以下2桁、小数点以上最低3桁で表示される浮動小数点</span>
+<span class="cm">&quot;%7.4s&quot;; // (文字列としての浮動小数点でも同じことができる)</span>
+<span class="cm">&quot;%c&quot;;    // 文字（単一）</span>
+<span class="cm">&quot;%p&quot;;    // ポインター 注：ポインターを渡すときには (void*) 型へ</span>
+<span class="cm">         //                変換しなければならない。</span>
+<span class="cm">&quot;%x&quot;;    // 整数16進数表示</span>
+<span class="cm">&quot;%o&quot;;    // 整数8進数表示</span>
+<span class="cm">&quot;%%&quot;;    // &quot;%&quot; を挿入する</span>
+<span class="cm">*/</span>
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// 評価順序</span>
+<span class="c1">///////////////////////////////////////</span>
+
+<span class="c1">// 順位は上から下へ、一番上は優先順位が最も高い</span>
+<span class="c1">//------------------------------------------------------//</span>
+<span class="c1">// 演算子                                    |  優先順位  //</span>
+<span class="c1">//------------------------------------------------------//</span>
+<span class="c1">//  () [] -&gt; .                              |  左から右  //</span>
+<span class="c1">//  ! ~ ++ -- + = *(型) sizeof               |  右から左  //</span>
+<span class="c1">//  * %                                     |  左から右  //</span>
+<span class="c1">//  + -                                     |  左から右  //</span>
+<span class="c1">//  &lt;&lt; &gt;&gt;                                   |  左から右  //</span>
+<span class="c1">//  &lt; &lt;= &gt; &gt;=                               |  左から右  //</span>
+<span class="c1">//  == !=                                   |  左から右  //</span>
+<span class="c1">//  &amp;                                       |  左から右  //</span>
+<span class="c1">//  ^                                       |  左から右  //</span>
+<span class="c1">//  |                                       |  左から右  //</span>
+<span class="c1">//  &amp;&amp;                                      |  左から右  //</span>
+<span class="c1">//  ||                                      |  左から右  //</span>
+<span class="c1">//  ? :                                     |  右から左  //</span>
+<span class="c1">//  = += -= *= /= %= &amp;= ^= |= &lt;&lt;= &gt;&gt;=       |  右から左  //</span>
+<span class="c1">//  ,                                       |  左から右  //</span>
+<span class="c1">//------------------------------------------------------//</span>
+
+<span class="cm">/******************************* ヘッダーファイル **********************************</span>
+
+<span class="cm">ヘッダーファイルはC言語の重要な役割で、ソースファイル間の依存関係の管理を</span>
+<span class="cm">容易にすることや関数などの宣言を他のファイルに分けることができます。</span>
+
+<span class="cm">ヘッダーファイル内は通常のC言語と変わりませんが、ファイル拡張子が &quot;.h&quot; になっており、</span>
+<span class="cm">同じディレクトリー（フォルダー）に存在するなら` #include &quot;ファイル名.h&quot; `で</span>
+<span class="cm">ヘッダーファイルで宣言した関数、定数などをソースファイルで使用できます。</span>
+<span class="cm">*/</span>
+
+<span class="cm">/*</span>
+<span class="cm">セーフガードは#includeマクロを使用する際に、複数回宣言されるのを防ぎます。</span>
+<span class="cm">特に互いを参照しあってしまう相互依存の場合に有効です。</span>
+<span class="cm">*/</span>
+<span class="cp">#ifndef EXAMPLE_H </span><span class="cm">/* もし EXAMPLE_H が定義されていないならば、*/</span>
+<span class="cp">#define EXAMPLE_H </span><span class="cm">/* マクロ EXAMPLE_H を定義する。*/</span>
+
+<span class="c1">// ヘッダーファイル内で他のヘッダーファイルを #include することができます。</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
+
+<span class="cm">/* 通常と同じように、マクロを用いて定数を定義できます。これは</span>
+<span class="cm">ヘッダーファイルとそれを#includeしたソースファイルで使用できます。 */</span>
+<span class="cp">#define EXAMPLE_NAME &quot;Dennis Ritchie&quot;</span>
+
+<span class="c1">// 関数マクロも定義できます</span>
+<span class="cp">#define ADD(a, b) ((a) + (b))</span>
+
+<span class="cm">/*</span>
+<span class="cm">引数である変数の周りに丸括弧がありますが、これはマクロの展開時に評価順序が</span>
+<span class="cm">意図しないものにならないようにするためです。(例：関数 MUL(x, y) (x * y);</span>
+<span class="cm">があるとします。MUL(1 + 2, 3) は(1 + 2 * 3)と展開され、間違った答えが帰ってきます。)</span>
+<span class="cm">*/</span>
+<span class="c1">// struct, typedefも同じように定義できます。</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">Node</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">val</span><span class="p">;</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">Node</span><span class="w"> </span><span class="o">*</span><span class="n">next</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">Node</span><span class="p">;</span>
+
+<span class="c1">// 列挙体も同じく、</span>
+<span class="k">enum</span><span class="w"> </span><span class="n">traffic_light_state</span><span class="w"> </span><span class="p">{</span><span class="n">GREEN</span><span class="p">,</span><span class="w"> </span><span class="n">YELLOW</span><span class="p">,</span><span class="w"> </span><span class="n">RED</span><span class="p">};</span>
+
+<span class="cm">/*</span>
+<span class="cm">関数プロトタイプもヘッダーファイルで宣言できます。ヘッダーファイルで定義を</span>
+<span class="cm">書くのはよろしくないとされており、定義はソースファイルで記述することを</span>
+<span class="cm">強く勧めます。</span>
+<span class="cm">*/</span>
+<span class="n">Node</span><span class="w"> </span><span class="nf">createLinkedList</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">vals</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">len</span><span class="p">);</span>
+
+<span class="cm">/*</span>
+<span class="cm">これ以外の要素はソースファイルに残します。過剰な#includeや定義は1つの</span>
+<span class="cm">ヘッダーファイルには入れず、別の複数のヘッダーファイルかソースファイルに</span>
+<span class="cm">分けてください。</span>
+<span class="cm">*/</span>
+
+<span class="cp">#endif </span><span class="c1">// if系列マクロの終わり</span>
+</pre></div>
+<h2>関連記事、教材(一部英語)</h2>
+<p><a href="https://cs50.jp/">CS50 日本語版</a> はハーバード大学が無料で公開しているコンピューターサイエンスコースで
+字幕付きの動画と一緒にC, Python, SQL, HTML, CSS, JavaScriptなどの言語を使った素晴らしいコースです。
+C言語を学ぶ者は第1-5週目を受けることをおすすめします。</p>
+<p><a href="http://learncodethehardway.org/c/">Learn C The Hard Way</a> は有料だが、良い英語での教材です。</p>
+<p>質問があるならば、<a href="http://c-faq.com">compl.lang.c Frequently Asked Questions</a> を見るのが良い。</p>
+<p>インデンテーションや空白の使い方はどこでも一定であることが望まれています。たとえそのコードが画期的で実行速度が速くとも、
+可読性が確保できなければ保守性に欠けます。良いコーディングスタイルの一つには<a href="https://www.kernel.org/doc/Documentation/process/coding-style.rst">Linuxカーネル</a>のものがあります。</p>
+<p>それでも分からんことがあったら、GPTにかける前にググってこい。
+Googleは友達だからな。</p>
+<p>[1] <a href="https://creepfablic.site/2019/09/16/clangu-alignment-padding/">【C言語】構造体を作る上でのアライメントのお話。そもそもアライメントとは...</a></p>
+
+        <hr>
+        <p>
+          提案がありますか？それとも修正が必要ですか？ GitHubレポジトリで<a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Issueを開く</a>か自分で<a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/ja-jp/c-jp.html.markdown">プルリクエスト</a>を作ってください。
+        </p>
+        <p class="contributed">
+          Adam Bardが初めて貢献し、後に<a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/ja-jp/c-jp.html.markdown">2人の貢献者</a>が更新してきました。
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2024
+            <a href="http://adambard.com/">Adam Bard</a>,
+            <a href="http://twitter.com/H2CO3_iOS">Árpád Goretity</a>,
+            <a href="http://cbs.stgn.pl">Jakub Trzebiatowski</a>,
+            <a href="https://marcoms.github.io">Marco Scannadinari</a>,
+            <a href="https://github.io/zfergus2">Zachary Ferguson</a>,
+            <a href="https://github.com/himanshu81494">himanshu</a>,
+            <a href="https://github.com/JoshuaRLi">Joshua Li</a>,
+            <a href="https://github.com/dchirila">Dragos B. Chirila</a>,
+            <a href="https://github.com/heitorPB/">Heitor P. de Bittencourt</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

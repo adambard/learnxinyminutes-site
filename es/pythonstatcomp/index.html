@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="es">
+    <title>Learn Statistical computing with Python in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/es/pythonstatcomp/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fes%2Fpythonstatcomp%2F&amp;text=Aprende+X+en+Y+minutos%2C+donde+X%3DStatistical+computing+with+Python">
+            Comparte esta página
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">Aprende X en Y minutos</a></h1>
+      <h2>Donde X=Statistical computing with Python</h2>
+      <p class="filelink">
+        Descarga el código:
+        <a href="/es/files/pythonstatcomp.py">pythonstatcomp.py</a>
+      </p>
+      <div id="doc">
+<p>Este es un tutorial de como realizar tareas típicas de programación estadística usando Python. Está destinado a personas con cierta familiaridad con Python y con experiencia en programación estadística en lenguajes como R, Stata, SAS, SPSS, or MATLAB.</p>
+<div class="highlight"><pre lang="python"><span class="c1"># 0. Cómo configurar ====</span>
+
+<span class="sd">&quot;&quot;&quot; Configurar con IPython y pip install lo siguiente: numpy, scipy, pandas,</span>
+<span class="sd">    matplotlib, seaborn, requests.</span>
+<span class="sd">        Asegúrese de realizar este tutorial con el IPython notebook para tener fácil</span>
+<span class="sd">    acceso a las ayudas en tiempo real y la documentación respectiva.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># 1. Captura de datos ====</span>
+
+<span class="sd">&quot;&quot;&quot; Muchos prefieren Python sobre R ya que quieren interactuar mucho</span>
+<span class="sd">    con la web, bien sea haciendo webscraping o solicitando datos mediante</span>
+<span class="sd">    un API. Esto se puede hacer en R, pero en el contexto de un proyecto</span>
+<span class="sd">    que ya usa Python, existen beneficios al mantener un solo lenguaje.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">requests</span> <span class="c1"># para llamados HTTP (webscraping, APIs)</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c1"># webscraping</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://github.com/adambard/learnxinyminutes-docs&quot;</span><span class="p">)</span>
+<span class="n">r</span><span class="o">.</span><span class="n">status_code</span> <span class="c1"># si es 200, el llamado ha sido exitoso</span>
+<span class="n">r</span><span class="o">.</span><span class="n">text</span> <span class="c1"># código fuente de la página</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="c1"># formateado y embellecido</span>
+<span class="c1"># graba el código fuente en un fichero:</span>
+<span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="c1"># verifica cual es el directorio de trabajo</span>
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;learnxinyminutes.html&quot;</span><span class="p">,</span><span class="s2">&quot;wb&quot;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">))</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="c1"># descargando un csv</span>
+<span class="n">fp</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/adambard/learnxinyminutes-docs/master/&quot;</span>
+<span class="n">fn</span> <span class="o">=</span> <span class="s2">&quot;pets.csv&quot;</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fp</span> <span class="o">+</span> <span class="n">fn</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span><span class="s2">&quot;wb&quot;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">))</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="sd">&quot;&quot;&quot; para saber más del módulo de peticiones, incluyendo APIs, ver</span>
+<span class="sd">    http://docs.python-requests.org/en/latest/user/quickstart/</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># 2. Leyendo un fichero CSV ====</span>
+
+<span class="sd">&quot;&quot;&quot; El paquete pandas de Wes McKinney brinda objetos &#39;DataFrame&#39; en Python. Si</span>
+<span class="sd">    has usado R, ya estarás familiarizado con la idea de &quot;data.frame&quot;.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span><span class="o">,</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span><span class="o">,</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="n">pets</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+<span class="n">pets</span>
+<span class="c1">#       nombre edad  peso especies</span>
+<span class="c1"># 0    fluffy     3    14      cat</span>
+<span class="c1"># 1  vesuvius     6    23     fish</span>
+<span class="c1"># 2       rex     5    34      dog</span>
+
+<span class="sd">&quot;&quot;&quot; Usuarios de R: notar que Python, al igual que otros lenguajes de programación</span>
+<span class="sd">    normales, comienza indexando desde 0. R de forma inusual comienza desde 1.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># dos formas distintas de imprimir una columna</span>
+<span class="n">pets</span><span class="o">.</span><span class="n">age</span>
+<span class="n">pets</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span>
+
+<span class="n">pets</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># imprime las primeras dos filas</span>
+<span class="n">pets</span><span class="o">.</span><span class="n">tail</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># imprime la última fila</span>
+
+<span class="n">pets</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># &#39;vesuvius&#39;</span>
+<span class="n">pets</span><span class="o">.</span><span class="n">species</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># &#39;cat&#39;</span>
+<span class="n">pets</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="c1"># 34</span>
+
+<span class="c1"># en R, puedes esperar obtener 3 filas haciendo esto, pero aquí obtienes 2:</span>
+<span class="n">pets</span><span class="o">.</span><span class="n">age</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+<span class="c1"># 0    3</span>
+<span class="c1"># 1    6</span>
+
+<span class="nb">sum</span><span class="p">(</span><span class="n">pets</span><span class="o">.</span><span class="n">age</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span> <span class="c1"># 28</span>
+<span class="nb">max</span><span class="p">(</span><span class="n">pets</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">pets</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span> <span class="c1"># 20</span>
+
+<span class="sd">&quot;&quot;&quot; Si estás procesando grandes cantidades de cálculos de álgebra lineal, podrías</span>
+<span class="sd">    querer usar matrices, no DataFrames. Los DataFrames son ideales para combinar</span>
+<span class="sd">    columnas de diferentes tipos.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># 3. Gráficas ====</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span><span class="o">,</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="c1"># Para hacer virtualización de datos en Python, usa matplotlib</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">pets</span><span class="o">.</span><span class="n">age</span><span class="p">);</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">pets</span><span class="o">.</span><span class="n">weight</span><span class="p">);</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">pets</span><span class="o">.</span><span class="n">age</span><span class="p">,</span> <span class="n">pets</span><span class="o">.</span><span class="n">weight</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;age&quot;</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">);</span>
+
+<span class="c1"># seaborn está por encima de matplotlib y logra mejores gráficos</span>
+
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">pets</span><span class="o">.</span><span class="n">age</span><span class="p">,</span> <span class="n">pets</span><span class="o">.</span><span class="n">weight</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;age&quot;</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">);</span>
+
+<span class="c1"># también hay algunas funciones gráficas específicas de seaborn</span>
+<span class="c1"># nota como seaborn etiqueta automáticamente el eje x en este gráfico de barras</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">pets</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">])</span>
+
+<span class="c1"># los veteranos de R pueden seguir usando ggplot</span>
+<span class="kn">from</span> <span class="nn">ggplot</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">ggplot</span><span class="p">(</span><span class="n">aes</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;age&quot;</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">),</span> <span class="n">data</span><span class="o">=</span><span class="n">pets</span><span class="p">)</span> <span class="o">+</span> <span class="n">geom_point</span><span class="p">()</span> <span class="o">+</span> <span class="n">labs</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;pets&quot;</span><span class="p">)</span>
+<span class="c1"># fuente: https://pypi.python.org/pypi/ggplot</span>
+
+<span class="c1"># incluso hay un porteo d3.js: https://github.com/mikedewar/d3py</span>
+
+<span class="c1"># 4. Limpieza simple de datos y análisis exploratorio ====</span>
+
+<span class="sd">&quot;&quot;&quot; Tenemos ahora un ejemplo más complicado que demuestra un flujo básico para</span>
+<span class="sd">    limpieza de datos que lleva a la creación de algunos gráficos exploratorios</span>
+<span class="sd">    y la ejecución de una regresión lineal.</span>
+<span class="sd">        El conjunto de datos fue transcrito de Wikipedia a mano. Contiene</span>
+<span class="sd">    todos los Emperadores Romanos Sagrados y fechas claves en sus vidas</span>
+<span class="sd">    (nacimiento, muerte, coronación, etc.).</span>
+<span class="sd">        El objetivo del análisis es explorar si existe alguna relación</span>
+<span class="sd">    entre el año de nacimiento del Emperador y su tiempo de vida.</span>
+<span class="sd">    fuente de datos: https://en.wikipedia.org/wiki/Holy_Roman_Emperor</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># cargar algunos datos de los Emperadores Romanos Sagrados</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://raw.githubusercontent.com/e99n09/R-notes/master/data/hre.csv&quot;</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="n">fp</span> <span class="o">=</span> <span class="s2">&quot;hre.csv&quot;</span>
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span><span class="s2">&quot;wb&quot;</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">))</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="n">hre</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>
+
+<span class="n">hre</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">   Ix      Dynasty        Name        Birth             Death Election 1  </span>
+<span class="sd">0 NaN  Carolingian   Charles I  2 April 742    28 January 814        NaN   </span>
+<span class="sd">1 NaN  Carolingian     Louis I          778       20 June 840        NaN   </span>
+<span class="sd">2 NaN  Carolingian   Lothair I          795  29 September 855        NaN   </span>
+<span class="sd">3 NaN  Carolingian    Louis II          825     12 August 875        NaN   </span>
+<span class="sd">4 NaN  Carolingian  Charles II  13 June 823     6 October 877        NaN   </span>
+
+<span class="sd">  Election 2      Coronation 1   Coronation 2 Ceased to be Emperor  </span>
+<span class="sd">0        NaN   25 December 800            NaN       28 January 814   </span>
+<span class="sd">1        NaN  11 September 813  5 October 816          20 June 840   </span>
+<span class="sd">2        NaN       5 April 823            NaN     29 September 855   </span>
+<span class="sd">3        NaN        Easter 850     18 May 872        12 August 875   </span>
+<span class="sd">4        NaN   29 December 875            NaN        6 October 877   </span>
+
+<span class="sd">  Descent from whom 1 Descent how 1 Descent from whom 2 Descent how 2  </span>
+<span class="sd">0                 NaN           NaN                 NaN           NaN  </span>
+<span class="sd">1           Charles I           son                 NaN           NaN  </span>
+<span class="sd">2             Louis I           son                 NaN           NaN  </span>
+<span class="sd">3           Lothair I           son                 NaN           NaN  </span>
+<span class="sd">4             Louis I           son                 NaN           NaN  </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># limpiar las columnas de Nacimiento y Muerte</span>
+
+<span class="kn">import</span> <span class="nn">re</span> <span class="c1"># módulo para expresiones regulares</span>
+
+<span class="n">rx</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\d+$&#39;</span><span class="p">)</span> <span class="c1"># coincidencia de últimos dígitos</span>
+
+<span class="sd">&quot;&quot;&quot; Esta función aplica una expresión regular a una columna de entrada (Birth,</span>
+<span class="sd">    Death), nivela la lista resultante, la convierte en un objeto Series, y</span>
+<span class="sd">    finalmente convierte el tipo del objeto Series de string a entero. Para</span>
+<span class="sd">    más información sobre que hace cada parte del código, ver:</span>
+<span class="sd">      - https://docs.python.org/2/howto/regex.html</span>
+<span class="sd">      - http://stackoverflow.com/questions/11860476/how-to-unlist-a-python-list</span>
+<span class="sd">      - http://pandas.pydata.org/pandas-docs/stable/generated/pandas.Series.html</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">extractYear</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="n">x</span><span class="o">+</span><span class="n">y</span><span class="p">,</span><span class="nb">map</span><span class="p">(</span><span class="n">rx</span><span class="o">.</span><span class="n">findall</span><span class="p">,</span><span class="n">v</span><span class="p">),[]))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+
+<span class="n">hre</span><span class="p">[</span><span class="s2">&quot;BirthY&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">extractYear</span><span class="p">(</span><span class="n">hre</span><span class="o">.</span><span class="n">Birth</span><span class="p">)</span>
+<span class="n">hre</span><span class="p">[</span><span class="s2">&quot;DeathY&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">extractYear</span><span class="p">(</span><span class="n">hre</span><span class="o">.</span><span class="n">Death</span><span class="p">)</span>
+
+<span class="c1"># hacer una columna decir la edad estimada</span>
+<span class="n">hre</span><span class="p">[</span><span class="s2">&quot;EstAge&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">hre</span><span class="o">.</span><span class="n">DeathY</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">-</span> <span class="n">hre</span><span class="o">.</span><span class="n">BirthY</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="c1"># gráfica de dispersión simple, sin línea de tendencia, el color representa dinastía</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lmplot</span><span class="p">(</span><span class="s2">&quot;BirthY&quot;</span><span class="p">,</span> <span class="s2">&quot;EstAge&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">hre</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;Dynasty&quot;</span><span class="p">,</span> <span class="n">fit_reg</span><span class="o">=</span><span class="kc">False</span><span class="p">);</span>
+
+<span class="c1"># usa scipy para hacer regresiones lineales</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
+<span class="p">(</span><span class="n">slope</span><span class="p">,</span><span class="n">intercept</span><span class="p">,</span><span class="n">rval</span><span class="p">,</span><span class="n">pval</span><span class="p">,</span><span class="n">stderr</span><span class="p">)</span><span class="o">=</span><span class="n">stats</span><span class="o">.</span><span class="n">linregress</span><span class="p">(</span><span class="n">hre</span><span class="o">.</span><span class="n">BirthY</span><span class="p">,</span><span class="n">hre</span><span class="o">.</span><span class="n">EstAge</span><span class="p">)</span>
+<span class="c1"># código fuente: http://wiki.scipy.org/Cookbook/LinearRegression</span>
+
+<span class="c1"># verifica la pendiente (slope)</span>
+<span class="n">slope</span> <span class="c1"># 0.0057672618839073328</span>
+
+<span class="c1"># verifica el valor R^2 :</span>
+<span class="n">rval</span><span class="o">**</span><span class="mi">2</span> <span class="c1"># 0.020363950027333586</span>
+
+<span class="c1"># verifica el valor p</span>
+<span class="n">pval</span> <span class="c1"># 0.34971812581498452</span>
+
+<span class="c1"># usa seaborn para hacer un gráfico de dispersión y dibujar una regresión lineal</span>
+<span class="c1"># de la tendencia</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">lmplot</span><span class="p">(</span><span class="s2">&quot;BirthY&quot;</span><span class="p">,</span> <span class="s2">&quot;EstAge&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">hre</span><span class="p">);</span>
+
+<span class="sd">&quot;&quot;&quot; Para más información sobre seaborn, ver</span>
+<span class="sd">      - http://web.stanford.edu/~mwaskom/software/seaborn/</span>
+<span class="sd">      - https://github.com/mwaskom/seaborn</span>
+<span class="sd">    Para más información sobre SciPy, ver</span>
+<span class="sd">      - http://wiki.scipy.org/SciPy</span>
+<span class="sd">      - http://wiki.scipy.org/Cookbook/</span>
+<span class="sd">    Para ver una versión del análisis de los Emperadores Romanos usando R, ver</span>
+<span class="sd">      - http://github.com/e99n09/R-notes/blob/master/holy_roman_emperors_dates.R</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+<p>Si quieres aprender más, obtén <em>Python for Data Analysis</em> por Wes McKinney. Es un extraordinario recurso usado como referencia para escribir este tutorial.</p>
+<p>También puedes encontrar gran cantidad de tutoriales interactivos de IPython en temas específicos a tus intereses, como Pilon de Cam Davidson <a href="http://camdavidsonpilon.github.io/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers/">Probabilistic Programming and Bayesian Methods for Hackers</a>.</p>
+<p>Ver más módulos para investigar:</p>
+<ul>
+<li>análisis de texto y procesamiento natural del lenguaje: <a href="http://www.nltk.org">nltk</a></li>
+<li>análisis de redes sociales: <a href="http://igraph.org/python/">igraph</a></li>
+</ul>
+
+        <hr>
+        <p>
+          ¿Tienes una sugerencia o rectificación? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Abre un issue</a> en el repositorio de GitHub, o haz un <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/es-es/pythonstatcomp-es.html.markdown">pull request</a> tu mismo
+        </p>
+        <p class="contributed">
+          Originalmente contribuido por e99n09, y actualizado por <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/es-es/pythonstatcomp-es.html.markdown">4 colaboradores</a>.
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2024
+            <a href="https://github.com/e99n09">e99n09</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

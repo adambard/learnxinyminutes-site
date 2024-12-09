@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="en">
+    <title>Learn CUE in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/cue/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fcue%2F&amp;text=Learn+X+in+Y+minutes%2C+where+X%3DCUE">
+            Share this page
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">Learn X in Y minutes</a></h1>
+      <h2>Where X=CUE</h2>
+      <p class="filelink">
+        Get the code:
+        <a href="/files/learncue.cue">learncue.cue</a>
+      </p>
+      <div id="doc">
+<p>CUE is an expressive (but not Turing-complete) JSON superset, exportable to JSON or YAML. It supports optional types and many other conveniences for working with large configuration sets. The unification engine has roots in logic programming, and as such it provides a ready solution to modern configuration management problems.</p>
+<p>When CUE is exported to JSON, values from every processed file are unified into one giant object. Consider these two files:</p>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//name.cue</span>
+<span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;Daniel&quot;</span>
+</pre></div>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//disposition.cue</span>
+<span class="l l-Scalar l-Scalar-Plain">disposition</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;oblivious&quot;</span>
+</pre></div>
+<p>Now we can unify and export to JSON:</p>
+<div class="highlight"><pre lang="bash">%<span class="w"> </span>cue<span class="w"> </span><span class="nb">export</span><span class="w"> </span>name.cue<span class="w"> </span>disposition.cue
+<span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;Daniel&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;disposition&quot;</span>:<span class="w"> </span><span class="s2">&quot;oblivious&quot;</span>
+<span class="o">}</span>
+</pre></div>
+<p>Or YAML:</p>
+<div class="highlight"><pre lang="bash">%<span class="w"> </span>cue<span class="w"> </span><span class="nb">export</span><span class="w"> </span>--out<span class="w"> </span>yaml<span class="w"> </span>name.cue<span class="w"> </span>disposition.cue
+name:<span class="w"> </span>Daniel
+disposition:<span class="w"> </span>oblivious
+</pre></div>
+<p>Notice the C-style comments are not in the output. Also notice that the keys in CUE syntax did not require quotes. Some special characters do require quotes:</p>
+<div class="highlight"><pre lang="yaml"><span class="nt">works_fine</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="s">&quot;needs-quotes&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+<p>Unification doesn't just unify across files, it is also a <em>global merge</em> of all types and values. The following fails, because the <em>types</em> are different.</p>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//string_value.cue</span>
+<span class="l l-Scalar l-Scalar-Plain">foo</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;baz&quot;</span>
+</pre></div>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//integer_value.cue</span>
+<span class="l l-Scalar l-Scalar-Plain">foo</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+</pre></div>
+<div class="highlight"><pre lang="bash">%<span class="w"> </span>cue<span class="w"> </span><span class="nb">export</span><span class="w"> </span>string_value.cue<span class="w"> </span>integer_value.cue
+foo:<span class="w"> </span>conflicting<span class="w"> </span>values<span class="w"> </span><span class="s2">&quot;baz&quot;</span><span class="w"> </span>and<span class="w"> </span><span class="m">100</span><span class="w"> </span><span class="o">(</span>mismatched<span class="w"> </span>types<span class="w"> </span>string<span class="w"> </span>and<span class="w"> </span>int<span class="o">)</span>:
+<span class="w">    </span>integer_value.cue:1:6
+<span class="w">    </span>string_value.cue:1:6
+</pre></div>
+<p>But even if we quote the integer, it still fails, because the <em>values</em> conflict and there is no way to unify everything into a top-level object.</p>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//string_value.cue</span>
+<span class="l l-Scalar l-Scalar-Plain">foo</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;baz&quot;</span>
+</pre></div>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//integer_value.cue</span>
+<span class="l l-Scalar l-Scalar-Plain">foo</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;100&quot;</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">// a string now</span>
+</pre></div>
+<div class="highlight"><pre lang="bash">%<span class="w"> </span>cue<span class="w"> </span><span class="nb">export</span><span class="w"> </span>string_value.cue<span class="w"> </span>integer_value.cue
+foo:<span class="w"> </span>conflicting<span class="w"> </span>values<span class="w"> </span><span class="s2">&quot;100&quot;</span><span class="w"> </span>and<span class="w"> </span><span class="s2">&quot;baz&quot;</span>:
+<span class="w">    </span>integer_value.cue:1:6
+<span class="w">    </span>string_value.cue:1:6
+</pre></div>
+<p>Types in CUE <em>are</em> values; special ones that the unification engine knows have certain behavior relative to other values. During unification it requires that values match the specified types, and when concrete values are required, you will get an error if there's only a type. So this is fine:</p>
+<div class="highlight"><pre lang="yaml"><span class="nt">street</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1</span><span class="nv"> </span><span class="s">Infinite</span><span class="nv"> </span><span class="s">Loop&quot;</span>
+<span class="nt">street</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+</pre></div>
+<p>While <code>cue export</code> produces YAML or JSON, <code>cue eval</code> produces CUE. This is useful for converting YAML or JSON to CUE, or for inspecting the unified output in CUE itself. It's fine to be missing concrete values in CUE (though it prefers concrete values when emitting CUE when both are available and match),</p>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//type-only.cue</span>
+<span class="l l-Scalar l-Scalar-Plain">amount</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+</pre></div>
+<div class="highlight"><pre lang="bash">%<span class="w"> </span>cue<span class="w"> </span><span class="nb">eval</span><span class="w"> </span>type-only.cue
+amount:<span class="w"> </span>float
+</pre></div>
+<p>but you <em>need</em> concrete values if you want to export (or if you tell <code>eval</code> to require them with <code>-c</code>):</p>
+<div class="highlight"><pre lang="bash">%<span class="w"> </span>cue<span class="w"> </span><span class="nb">export</span><span class="w"> </span>type-only.cue
+amount:<span class="w"> </span>incomplete<span class="w"> </span>value<span class="w"> </span>float
+</pre></div>
+<p>Give it a value that unifies with the type, and all is well.</p>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//concrete-value.cue</span>
+<span class="l l-Scalar l-Scalar-Plain">amount</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.14</span>
+</pre></div>
+<div class="highlight"><pre lang="bash">%<span class="w"> </span>cue<span class="w"> </span><span class="nb">export</span><span class="w"> </span>type-only.cue<span class="w"> </span>concrete-value.cue
+<span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;amount&quot;</span>:<span class="w"> </span><span class="m">3</span>.14
+<span class="o">}</span>
+</pre></div>
+<p>The method of unifying concrete values with types that share a common syntax is very powerful, and much more compact than, e.g., JSON Schema. This way, schema, defaults, and data are all expressible in CUE.</p>
+<p>Default values may be supplied with a type using an asterisk:</p>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">// default-port.cue</span>
+<span class="l l-Scalar l-Scalar-Plain">port</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int | *8080</span>
+</pre></div>
+<div class="highlight"><pre lang="bash">%<span class="w"> </span>cue<span class="w"> </span><span class="nb">eval</span><span class="w"> </span>default-port.cue
+port:<span class="w"> </span><span class="m">8080</span>
+</pre></div>
+<p>Enum-style options (&quot;disjunctions&quot; in CUE) may be specified with an <code>|</code> separator:</p>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//severity-enum.cue</span>
+<span class="l l-Scalar l-Scalar-Plain">severity</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;high&quot;</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="err"> &quot;medium&quot; | &quot;low&quot;</span>
+<span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;unknown&quot;</span>
+</pre></div>
+<div class="highlight"><pre lang="bash">%<span class="w"> </span>cue<span class="w"> </span><span class="nb">eval</span><span class="w"> </span>severity-enum.cue
+severity:<span class="w"> </span><span class="m">3</span><span class="w"> </span>errors<span class="w"> </span><span class="k">in</span><span class="w"> </span>empty<span class="w"> </span>disjunction:
+severity:<span class="w"> </span>conflicting<span class="w"> </span>values<span class="w"> </span><span class="s2">&quot;high&quot;</span><span class="w"> </span>and<span class="w"> </span><span class="s2">&quot;unknown&quot;</span>:
+<span class="w">    </span>./severity-enum.cue:1:11
+<span class="w">    </span>./severity-enum.cue:1:48
+severity:<span class="w"> </span>conflicting<span class="w"> </span>values<span class="w"> </span><span class="s2">&quot;low&quot;</span><span class="w"> </span>and<span class="w"> </span><span class="s2">&quot;unknown&quot;</span>:
+<span class="w">    </span>./severity-enum.cue:1:31
+<span class="w">    </span>./severity-enum.cue:1:48
+severity:<span class="w"> </span>conflicting<span class="w"> </span>values<span class="w"> </span><span class="s2">&quot;medium&quot;</span><span class="w"> </span>and<span class="w"> </span><span class="s2">&quot;unknown&quot;</span>:
+<span class="w">    </span>./severity-enum.cue:1:20
+<span class="w">    </span>./severity-enum.cue:1:48
+</pre></div>
+<p>You can even have disjunctions of structs (not shown, but it works like you'd expect).</p>
+<p>CUE has &quot;definitions&quot;, and you can use them like you would variable declarations in other languages. They are also for defining struct types. You can apply a struct of type definitions to some concrete value(s) with <code>&amp;</code>. Also notice you can say &quot;a list with type #Whatever&quot; using <code>[...#Whatever]</code>.</p>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">// definitions.cue</span>
+
+<span class="l l-Scalar l-Scalar-Plain">#DashboardPort</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1337</span>
+
+<span class="nt">configs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span>
+<span class="nt">    host</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;localhost&quot;</span>
+<span class="nt">    port</span><span class="p">:</span><span class="w"> </span><span class="c1">#DashboardPort</span>
+<span class="p p-Indicator">}</span>
+
+<span class="c1">#Address: {</span>
+<span class="w">    </span><span class="nt">street</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">    </span><span class="nt">city</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">zip?</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int  // ? makes zip optional</span>
+<span class="err">}</span>
+
+<span class="nt">some_address</span><span class="p">:</span><span class="w"> </span><span class="c1">#Address &amp; {</span>
+<span class="w">  </span><span class="nt">street</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1</span><span class="nv"> </span><span class="s">Rocket</span><span class="nv"> </span><span class="s">Rd&quot;</span>
+<span class="w">  </span><span class="nt">city</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Hawthorne&quot;</span>
+<span class="err">}</span>
+
+<span class="nt">more_addresses</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">...#Address</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="err">&amp;</span><span class="w"> </span><span class="p p-Indicator">[</span>
+<span class="w">  </span><span class="p p-Indicator">{</span><span class="nt">street</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1600</span><span class="nv"> </span><span class="s">Amphitheatre</span><span class="nv"> </span><span class="s">Parkway&quot;</span><span class="p p-Indicator">,</span><span class="nt"> city</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Mountain</span><span class="nv"> </span><span class="s">View&quot;</span><span class="p p-Indicator">,</span><span class="nt"> zip</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;94043&quot;</span><span class="p p-Indicator">},</span>
+<span class="w">  </span><span class="p p-Indicator">{</span><span class="nt">street</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1</span><span class="nv"> </span><span class="s">Hacker</span><span class="nv"> </span><span class="s">Way&quot;</span><span class="p p-Indicator">,</span><span class="nt"> city</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Menlo</span><span class="nv"> </span><span class="s">Park&quot;</span><span class="p p-Indicator">}</span>
+<span class="p p-Indicator">]</span>
+</pre></div>
+<div class="highlight"><pre lang="bash">%<span class="w"> </span>cue<span class="w"> </span><span class="nb">export</span><span class="w"> </span>--out<span class="w"> </span>yaml<span class="w"> </span>definitions.cue
+configs:
+<span class="w">  </span>host:<span class="w"> </span>localhost
+<span class="w">  </span>port:<span class="w"> </span><span class="m">1337</span>
+some_address:
+<span class="w">  </span>street:<span class="w"> </span><span class="m">1</span><span class="w"> </span>Rocket<span class="w"> </span>Rd
+<span class="w">  </span>city:<span class="w"> </span>Hawthorne
+more_addresses:
+<span class="w">  </span>-<span class="w"> </span>street:<span class="w"> </span><span class="m">1600</span><span class="w"> </span>Amphitheatre<span class="w"> </span>Parkway
+<span class="w">    </span>city:<span class="w"> </span>Mountain<span class="w"> </span>View
+<span class="w">    </span>zip:<span class="w"> </span><span class="s2">&quot;94043&quot;</span>
+<span class="w">  </span>-<span class="w"> </span>street:<span class="w"> </span><span class="m">1</span><span class="w"> </span>Hacker<span class="w"> </span>Way
+<span class="w">    </span>city:<span class="w"> </span>Menlo<span class="w"> </span>Park
+</pre></div>
+<p>CUE supports more complex values and validation:</p>
+<div class="highlight"><pre lang="yaml"><span class="c1">#Country: {</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">=~&quot;^\\p{Lu}&quot; // Must start with an upper-case letter</span>
+<span class="w">  </span><span class="nt">pop</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;</span><span class="err">800 &amp; &lt;9_000_000_000 // More than 800, fewer than 9 billion</span>
+<span class="err">}</span>
+
+<span class="nt">vatican_city</span><span class="p">:</span><span class="w"> </span><span class="c1">#Country &amp; {</span>
+<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Vatican</span><span class="nv"> </span><span class="s">City&quot;</span>
+<span class="w">  </span><span class="nt">pop</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">825</span>
+<span class="err">}</span>
+</pre></div>
+<p>CUE may save you quite a bit of time with all the sugar it provides on top of mere JSON. Here we're defining, &quot;modifying&quot;, and validating a nested structure in three lines: (Notice the <code>[]</code> syntax used around <code>string</code> to signal to the engine that <code>string</code> is a constraint, not a string in this case.)</p>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//paths.cue</span>
+
+<span class="l l-Scalar l-Scalar-Plain">// path-value pairs</span>
+<span class="l l-Scalar l-Scalar-Plain">outer</span><span class="nt">: middle1: inner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="nt">outer: middle2: inner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7</span>
+
+<span class="l l-Scalar l-Scalar-Plain">// collection-constraint pair</span>
+<span class="nt">outer</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">string</span><span class="p p-Indicator">]</span><span class="nt">: inner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span>
+</pre></div>
+<div class="highlight"><pre lang="bash">%<span class="w"> </span>cue<span class="w"> </span><span class="nb">export</span><span class="w"> </span>paths.cue
+<span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;outer&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="s2">&quot;middle1&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">            </span><span class="s2">&quot;inner&quot;</span>:<span class="w"> </span><span class="m">3</span>
+<span class="w">        </span><span class="o">}</span>,
+<span class="w">        </span><span class="s2">&quot;middle2&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">            </span><span class="s2">&quot;inner&quot;</span>:<span class="w"> </span><span class="m">7</span>
+<span class="w">        </span><span class="o">}</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+<p>In the same vein, CUE supports &quot;templates&quot;, which are a bit like functions of a single argument. Here <code>Name</code> is bound to each string key immediately under <code>container</code> while the struct underneath <em>that</em> is evaluated.</p>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//templates.cue</span>
+
+<span class="l l-Scalar l-Scalar-Plain">container</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Name=_</span><span class="p p-Indicator">]:</span><span class="w"> </span><span class="p p-Indicator">{</span>
+<span class="nt">    name</span><span class="p">:</span><span class="w">     </span><span class="nv">Name</span>
+<span class="w">    </span><span class="nv">replicas</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="nv">uint | *1</span>
+<span class="w">    </span><span class="nv">command</span><span class="p p-Indicator">:</span><span class="w">  </span><span class="nv">string</span>
+<span class="p p-Indicator">}</span>
+
+<span class="nt">container: sidecar: command</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;envoy&quot;</span>
+
+<span class="nt">container: service</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span>
+<span class="nt">    command</span><span class="p">:</span><span class="w">  </span><span class="s">&quot;fibonacci&quot;</span>
+<span class="nt">    replicas</span><span class="p">:</span><span class="w"> </span><span class="nv">2</span>
+<span class="p p-Indicator">}</span>
+</pre></div>
+<div class="highlight"><pre lang="bash">%<span class="w"> </span>cue<span class="w"> </span><span class="nb">eval</span><span class="w"> </span>templates.cue
+container:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span>sidecar:<span class="w"> </span><span class="o">{</span>
+<span class="w">        </span>name:<span class="w">     </span><span class="s2">&quot;sidecar&quot;</span>
+<span class="w">        </span>replicas:<span class="w"> </span><span class="m">1</span>
+<span class="w">        </span>command:<span class="w">  </span><span class="s2">&quot;envoy&quot;</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="w">    </span>service:<span class="w"> </span><span class="o">{</span>
+<span class="w">        </span>name:<span class="w">     </span><span class="s2">&quot;service&quot;</span>
+<span class="w">        </span>command:<span class="w">  </span><span class="s2">&quot;fibonacci&quot;</span>
+<span class="w">        </span>replicas:<span class="w"> </span><span class="m">2</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+<p>And while we're talking about references like that, CUE supports scoped references.</p>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//scopes-and-references.cue</span>
+<span class="l l-Scalar l-Scalar-Plain">v</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="s">&quot;top-level</span><span class="nv"> </span><span class="s">v&quot;</span>
+<span class="nt">b</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v // a reference</span>
+<span class="nt">a</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span>
+<span class="nt">    b</span><span class="p">:</span><span class="w"> </span><span class="nv">v // matches the top-level v</span>
+<span class="p p-Indicator">}</span>
+
+<span class="l l-Scalar l-Scalar-Plain">let V = v</span>
+<span class="nt">a</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span>
+<span class="nt">    v</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;a&#39;s</span><span class="nv"> </span><span class="s">inner</span><span class="nv"> </span><span class="s">v&quot;</span>
+<span class="nt">    c</span><span class="p">:</span><span class="w"> </span><span class="nv">v // matches the inner v</span>
+<span class="w">    </span><span class="nv">d</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="nv">V // matches the top-level v now shadowed by a.v</span>
+<span class="p p-Indicator">}</span>
+<span class="nt">av</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a.v // matches a&#39;s v</span>
+</pre></div>
+<div class="highlight"><pre lang="bash">%<span class="w"> </span>cue<span class="w"> </span><span class="nb">eval</span><span class="w"> </span>--out<span class="w"> </span>yaml<span class="w"> </span>scopes-and-references.cue
+</pre></div>
+<div class="highlight"><pre lang="yaml"><span class="nt">v</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">top-level v</span>
+<span class="nt">b</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">top-level v</span>
+<span class="nt">a</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">b</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">top-level v</span>
+<span class="w">  </span><span class="nt">v</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a&#39;s inner v</span>
+<span class="w">  </span><span class="nt">c</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a&#39;s inner v</span>
+<span class="w">  </span><span class="nt">d</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">top-level v</span>
+<span class="nt">av</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">a&#39;s inner v</span>
+</pre></div>
+<p>I changed the order of the keys in the output for clarity. Order doesn't actually matter, and notice that duplicate keys at a given level are <em>all</em> unified.</p>
+<p>You can hide fields be prefixing them with <code>_</code> (quote the field if you need a <code>_</code> prefix in an emitted field)</p>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//hiddens.cue</span>
+<span class="l l-Scalar l-Scalar-Plain">&quot;_foo&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="nt">_foo</span><span class="p">:</span><span class="w">   </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="nt">foo</span><span class="p">:</span><span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="l l-Scalar l-Scalar-Plain">_#foo</span><span class="p p-Indicator">:</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="c1">#foo : 6</span>
+</pre></div>
+<div class="highlight"><pre lang="bash">%<span class="w"> </span>cue<span class="w"> </span><span class="nb">eval</span><span class="w"> </span>hiddens.cue
+<span class="s2">&quot;_foo&quot;</span>:<span class="w"> </span><span class="m">2</span>
+foo:<span class="w">    </span><span class="m">4</span>
+<span class="c1">#foo:   6</span>
+
+%<span class="w"> </span>cue<span class="w"> </span><span class="nb">export</span><span class="w"> </span>hiddens.cue
+<span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;_foo&quot;</span>:<span class="w"> </span><span class="m">2</span>,
+<span class="w">    </span><span class="s2">&quot;foo&quot;</span>:<span class="w"> </span><span class="m">4</span>
+<span class="o">}</span>
+</pre></div>
+<p>Notice the difference between <code>eval</code> and <code>export</code> with respect to definitions. If you want to hide a definition in CUE, you can prefix <em>that</em> with <code>_</code>.</p>
+<p>Interpolation of values and fields:</p>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//interpolation.cue</span>
+
+<span class="l l-Scalar l-Scalar-Plain">#expense</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90</span>
+<span class="c1">#revenue: 100</span>
+<span class="nt">message</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Your</span><span class="nv"> </span><span class="s">profit</span><span class="nv"> </span><span class="s">was</span><span class="nv"> </span><span class="s">$</span><span class="err">\</span><span class="s">(</span><span class="nv"> </span><span class="s">#revenue</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">#expense)&quot;</span>
+
+<span class="nt">cat</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span>
+<span class="nt">    type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Cuddly&quot;</span>
+<span class="w">    </span><span class="s">&quot;is</span><span class="err">\</span><span class="s">(type)&quot;</span><span class="p p-Indicator">:</span><span class="w">    </span><span class="nv">true</span>
+<span class="p p-Indicator">}</span>
+</pre></div>
+<div class="highlight"><pre lang="bash">%<span class="w"> </span>cue<span class="w"> </span><span class="nb">export</span><span class="w"> </span>interpolation.cue
+<span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;message&quot;</span>:<span class="w"> </span><span class="s2">&quot;Your profit was </span><span class="nv">$10</span><span class="s2">&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;cat&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="s2">&quot;type&quot;</span>:<span class="w"> </span><span class="s2">&quot;Cuddly&quot;</span>,
+<span class="w">        </span><span class="s2">&quot;isCuddly&quot;</span>:<span class="w"> </span><span class="nb">true</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+<p>Operators, list comprehensions, conditionals, imports...:</p>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//getting-out-of-hand-now.cue</span>
+<span class="l l-Scalar l-Scalar-Plain">import &quot;strings&quot;  // we&#39;ll come back to this</span>
+
+<span class="l l-Scalar l-Scalar-Plain">// operators are nice</span>
+<span class="l l-Scalar l-Scalar-Plain">g</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5 / 3         // CUE can do math</span>
+<span class="nt">h</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3 * &quot;blah&quot;    // and Python-like string repetition</span>
+<span class="nt">i</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3 * [1, 2, 3] // with lists too</span>
+<span class="nt">j</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8 &lt; 10        // and supports boolean ops</span>
+
+<span class="l l-Scalar l-Scalar-Plain">// conditionals are also nice</span>
+<span class="nt">price</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">number</span>
+<span class="l l-Scalar l-Scalar-Plain">// Require a justification if price is too high</span>
+<span class="l l-Scalar l-Scalar-Plain">if price &gt; 100 {</span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">justification</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="err">}</span>
+<span class="nt">price</span><span class="p">:</span><span class="w">         </span><span class="l l-Scalar l-Scalar-Plain">200</span>
+<span class="nt">justification</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;impulse</span><span class="nv"> </span><span class="s">buy&quot;</span>
+
+<span class="l l-Scalar l-Scalar-Plain">// list comprehensions are powerful and compact</span>
+<span class="c1">#items: [ 1, 2, 3, 4, 5, 6, 7, 8, 9]</span>
+<span class="nt">comp</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">for x in</span><span class="w"> </span><span class="c1">#items if x rem 2 == 0 {x*x}]</span>
+
+<span class="nv">// and... well you can do this too</span>
+<span class="nv">#a</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="s">&quot;Apple&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;Google&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;SpaceX&quot;</span><span class="p p-Indicator">]</span>
+<span class="nv">for k</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">v in</span><span class="w"> </span><span class="c1">#a {</span>
+<span class="w">    </span><span class="s">&quot;</span><span class="err">\</span><span class="s">(</span><span class="nv"> </span><span class="s">strings.ToLower(v)</span><span class="nv"> </span><span class="s">)&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="p p-Indicator">{</span>
+<span class="nt">        pos</span><span class="p">:</span><span class="w">     </span><span class="nv">k + 1</span>
+<span class="w">        </span><span class="nv">name</span><span class="p p-Indicator">:</span><span class="w">    </span><span class="nv">v</span>
+<span class="w">        </span><span class="nv">nameLen</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="nv">len(v)</span>
+<span class="w">    </span><span class="p p-Indicator">}</span>
+<span class="err">}</span>
+</pre></div>
+<div class="highlight"><pre lang="bash">%<span class="w"> </span>cue<span class="w"> </span><span class="nb">export</span><span class="w"> </span>getting-out-of-hand-now.cue
+</pre></div>
+<div class="highlight"><pre lang="json"><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;g&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.66666666666666666666667</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;h&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;blahblahblah&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;i&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;j&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;apple&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;pos&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Apple&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;nameLen&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;google&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;pos&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Google&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;nameLen&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;price&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;justification&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;impulse buy&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;comp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">        </span><span class="mi">16</span><span class="p">,</span>
+<span class="w">        </span><span class="mi">36</span><span class="p">,</span>
+<span class="w">        </span><span class="mi">64</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;spacex&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;pos&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SpaceX&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;nameLen&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<p>At this point it's worth mentioning that CUE may not be Turing-complete, but it <em>is</em> powerful enough for you to shoot yourself in the foot, so do try to keep it clear. It's easy to go off the deep end and make your config <em>harder</em> to work with if you're not careful. Make use of those comments, at least, and/or...</p>
+<p>To that end, CUE supports packages and modules. CUE files are standalone by default, but if you put a package clause at the top, you're saying that file is unifiable with other files &quot;in&quot; the same package.</p>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//a.cue</span>
+<span class="l l-Scalar l-Scalar-Plain">package config</span>
+
+<span class="l l-Scalar l-Scalar-Plain">foo</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="nt">bar</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span>
+</pre></div>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//b.cue</span>
+<span class="l l-Scalar l-Scalar-Plain">package config</span>
+
+<span class="l l-Scalar l-Scalar-Plain">bar</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
+</pre></div>
+<p>If you create these two files in a new directory and run <code>cue eval</code> (no arguments), it will unify them like you'd expect. It searches the current directory for .cue files, and if they all have the same package, they will be unified.</p>
+<p>Packages are more clear in the context of &quot;modules&quot;. Modules are the <em>largest</em> unit of organization. Basically every time you have a project that spans multiple files, you should create a module and name it with something that looks like the domain and path of a URL, e.g., <code>example.com/something</code>. When you import anything from this module, even from <em>within</em> the module, you must do so using the fully-qualified module path which will be prefixed with this module name.</p>
+<p>You can create a new module like so:</p>
+<div class="highlight"><pre lang="bash">mkdir<span class="w"> </span>mymodule<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>mymodule
+cue<span class="w"> </span>mod<span class="w"> </span>init<span class="w"> </span>example.com/mymodule
+</pre></div>
+<p>This creates a <code>cue.mod/</code> subdirectory within that <code>mymodule</code> directory, and <code>cue.mod/</code> contains the following file and subdirectories:</p>
+<ul>
+<li><code>module.cue</code>  (which defines your module name, in this case with <code>module: &quot;example.com/mymodule&quot;</code>)</li>
+<li>pkg/</li>
+<li>gen/</li>
+<li>usr/</li>
+</ul>
+<p>For a different perspective on this and details about what's in there, see <a href="https://cuelang.org/docs/concepts/packages/">cuelang.org/docs/concepts/packages/</a>. For my purposes here, I'll say you don't need to think about the contents of this directory <em>at all</em>, except that your module name will be the prefix for all imports within your module.</p>
+<p>Where will your module file hierarchy go? All files and directories for your module are rooted in <code>mymodule/</code>, the directory that also contains <code>cue.mod/</code>. If you want to import a package, you'll prefix it with <code>example.com/mymodule</code>, followed by a relative path rooted in <code>mymodule/</code>.</p>
+<p>To make it concrete, consider the following:</p>
+<div class="highlight"><pre>mymodule
+├── config
+│   ├── a.cue
+│   └── b.cue
+├── cue.mod
+│   ├── module.cue
+│   ├── pkg
+│   └── usr
+└── main.cue
+</pre></div>
+<p><code>cue.mod/</code> and the files underneath it were created by <code>cue mod init example.com/mymodule</code>. I then created the <code>config/</code> subdirectory with <code>a.cue</code> and <code>b.cue</code> inside. Then I created <code>main.cue</code> to act as my top-level file to rule them all.</p>
+<p>Running <code>eval</code> (no arguments) checks to see if there's only one package in all .cue files in the current directory, and if so, it unifies them and outputs the result. In this case, there's only main.cue with package <code>main</code> (nothing special about &quot;main&quot; there, it just seemed appropriate), so that's the one.</p>
+<div class="highlight"><pre lang="bash">%<span class="w"> </span>cue<span class="w"> </span><span class="nb">eval</span>
+configuredBar:<span class="w"> </span><span class="m">200</span>
+</pre></div>
+<p>The contents of <code>main.cue</code> is:</p>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//main.cue</span>
+
+<span class="l l-Scalar l-Scalar-Plain">package main</span>
+<span class="l l-Scalar l-Scalar-Plain">import &quot;example.com/mymodule/config&quot;</span>
+
+<span class="l l-Scalar l-Scalar-Plain">configuredBar</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">config.bar</span>
+</pre></div>
+<p><code>config/a.cue</code> and <code>config/b.cue</code> are files from earlier, except now they've both got <code>package config</code> at the top:</p>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//a.cue</span>
+<span class="l l-Scalar l-Scalar-Plain">package config</span>
+
+<span class="l l-Scalar l-Scalar-Plain">foo</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="nt">bar</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">int</span>
+</pre></div>
+<div class="highlight"><pre lang="yaml"><span class="l l-Scalar l-Scalar-Plain">//b.cue</span>
+<span class="l l-Scalar l-Scalar-Plain">package config</span>
+
+<span class="l l-Scalar l-Scalar-Plain">bar</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
+</pre></div>
+<p>So there you go. If you want to verify that it's actually unifying both files under <code>config/</code>, you can change <code>bar: int</code> to <code>bar: string</code> in <code>a.cue</code> and re-run <code>cue eval</code> to get a nice type error:</p>
+<div class="highlight"><pre>cue eval                                                                     2022-01-06 17:51:24
+configuredBar: conflicting values string and 200 (mismatched types string and int):
+    ./config/a.cue:4:6
+    ./config/b.cue:3:6
+    ./main.cue:5:16
+</pre></div>
+<p>That's it for now. I understand there are more package management features coming in the future and the design decisions around <code>cue.mod</code> are looking ahead to that.</p>
+<p>Finally, CUE has built-in modules with powerful functionality. We saw one of these earlier, when we imported &quot;strings&quot; and used <code>strings.ToLower</code>. Imports without fully-qualified module names are assumed to be built-ins. The full list and documentation for each is here: <a href="https://pkg.go.dev/cuelang.org/go/pkg">pkg.go.dev/cuelang.org/go/pkg</a></p>
+<p>This has been a condensation of the official docs and tutorials, so go give the source material some love: <a href="https://cuelang.org/docs/tutorials/">cuelang.org/docs/tutorials/</a></p>
+
+        <hr>
+        <p>
+          Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the GitHub Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/cue.html.markdown">pull request</a> yourself!
+        </p>
+        <p class="contributed">
+          Originally contributed by Daniel Cox, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/cue.html.markdown">3 contributors</a>.
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2024
+            <a href="https://github.com/danielpcox">Daniel Cox</a>,
+            <a href="https://github.com/dontlaugh">Coleman McFarland</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>
