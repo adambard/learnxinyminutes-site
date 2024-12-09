@@ -145,7 +145,9 @@ def highlight_code(html):
         highlighted = pygments.highlight(code, lexer, formatter)
 
         if lang:
-            return f'<div class="highlight"><pre lang="{lang}">{highlighted}</pre></div>'
+            return (
+                f'<div class="highlight"><pre lang="{lang}">{highlighted}</pre></div>'
+            )
         return f'<div class="highlight"><pre>{highlighted}</pre></div>'
 
     result = code_expr.sub(replacer, html)
@@ -188,7 +190,7 @@ def count_contributors(path):
 
 
 def twitter_share_url(url, doc):
-    full_url = "https://learnxinyminutes.com" + (('/' + url) if url else "")
+    full_url = "https://learnxinyminutes.com" + (("/" + url) if url else "")
     text = doc or ""
     qs = urlencode({"url": full_url, "text": text})
     return f"https://twitter.com/intent/tweet?{qs}"
@@ -209,7 +211,7 @@ for root, dirs, files in os.walk(docs_dir):
             orig_language = language = filename.stem.split(".")[0]
             if len(filename.parts) > 3:
                 orig_lang = lang = filename.parts[2]
-                if re.search(r"-[a-z]{2}$", language):
+                if re.search(r"-[a-z]{2}$", language) and language != "standard-ml":
                     language = language.rsplit("-", 1)[0]
             lang = lang_map.get(lang, lang)
 
@@ -280,7 +282,7 @@ def get_category_display_name(c):
 for language in articles:
     for lang, article in articles[language].items():
         metadata = article.metadata
-        if "en" in language:
+        if "en" in articles[language]:
             metadata = {**articles[language]["en"].metadata, **metadata}
 
         content = article.content
