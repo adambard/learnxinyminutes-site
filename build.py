@@ -276,7 +276,7 @@ for language in articles:
         name = metadata.get("name", language)
         context = {
             "name": name,
-            "learn_x_in_y_name": metadata.get("learn_x_in_y_name", name),
+            "where_x_eq_name": metadata.get("where_x_eq_name", name),
             "filename": filename,
             "content": markdown_to_html(content),
             "lang": lang,
