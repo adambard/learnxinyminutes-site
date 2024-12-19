@@ -717,8 +717,8 @@ bool faireQuelqueChoseAvecUnFichier(const char* nomDuFichier)
 
     // Suppose que chaque fonction retourne faux si elle échoue
     if (!faireQuelqueChoseAvecLeFichier(fh)) {
-        fclose(fh); // Ferme le flux d'entrée du fichier pour empêcher les fuites
-        return false; // Propage l'erreur
+        fclose(fh); // Ferme le flux d'entrée du fichier pour empêcher les fuites
+        return false; // Propage l'erreur
     }
     if (!faireAutreChoseAvec(fh)) {
         fclose(fh);

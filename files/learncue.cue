@@ -283,12 +283,12 @@ mkdir mymodule && cd mymodule
 cue mod init example.com/mymodule
 mymodule
 ├── config
-│   ├── a.cue
-│   └── b.cue
+│   ├── a.cue
+│   └── b.cue
 ├── cue.mod
-│   ├── module.cue
-│   ├── pkg
-│   └── usr
+│   ├── module.cue
+│   ├── pkg
+│   └── usr
 └── main.cue
 % cue eval
 configuredBar: 200
