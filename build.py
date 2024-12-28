@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 from pathlib import Path
 from datetime import date
 import os
@@ -90,10 +91,12 @@ def highlight_code(html):
     )
 
     def replacer(match) -> str:
+        lang = match.group("lang")
         try:
-            lang = match.group("lang")
             lexer = pygments.lexers.get_lexer_by_name(lang)
         except pygments.util.ClassNotFound:
+            if lang is not None:
+                print(f"Pygments doesn't support language: {lang}", file=sys.stderr)
             lang = None
             lexer = pygments.lexers.TextLexer()
 
@@ -257,27 +260,13 @@ for language in articles:
             metadata = {**articles[language]["en"].metadata, **metadata}
 
         content = article.content
-
-        filename = metadata.get("filename")
-        if filename:
-            new_filename = filename
-            if "." in filename:
-                f, ext = filename.split(".", 1)
-            else:
-                f, ext = filename, ""
-            if "-" in f and len(f.rsplit("-", 1)[1]) == 2:
-                new_filename = f.rsplit("-", 1)[0]
-                if ext:
-                    new_filename += "." + ext
-                filename = new_filename
-
         orig_path = metadata["orig_path"]
 
         name = metadata.get("name", language)
         context = {
             "name": name,
             "where_x_eq_name": metadata.get("where_x_eq_name", name),
-            "filename": filename,
+            "filename": metadata.get("filename"),
             "content": markdown_to_html(content),
             "lang": lang,
             "langs": sorted(articles[language].keys()),
