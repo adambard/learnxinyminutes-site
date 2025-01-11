@@ -263,10 +263,11 @@ for language in articles:
         orig_path = metadata["orig_path"]
 
         name = metadata.get("name", language)
+        filename = metadata.get("filename")
         context = {
             "name": name,
             "where_x_eq_name": metadata.get("where_x_eq_name", name),
-            "filename": metadata.get("filename"),
+            "filename": filename,
             "content": markdown_to_html(content),
             "lang": lang,
             "langs": sorted(articles[language].keys()),
