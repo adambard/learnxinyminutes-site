@@ -238,7 +238,7 @@ zur nächsten Zeile, ""Wahnsinn!"", die Massen waren kaum zu bändigen";
             int fooWhile = 0;
             while (fooWhile < 100)
             {
-                // Wird 100mal wiederholt, fooWhile 0->99
+                // Wird 100-mal wiederholt, fooWhile 0->99
                 fooWhile++;
             }
 
@@ -246,14 +246,14 @@ zur nächsten Zeile, ""Wahnsinn!"", die Massen waren kaum zu bändigen";
             int fooDoWhile = 0;
             do
             {
-                // Wird 100mal wiederholt, fooDoWhile 0->99
+                // Wird 100-mal wiederholt, fooDoWhile 0->99
                 fooDoWhile++;
             } while (fooDoWhile < 100);
 
             //for-Schleifen => for(<start_statement>; <conditional>; <step>)
             for (int fooFor = 0; fooFor < 10; fooFor++)
             {
-                // Wird 10mal wiederholt, fooFor 0->9
+                // Wird 10-mal wiederholt, fooFor 0->9
             }
 
             // foreach-Schleife
@@ -372,7 +372,7 @@ zur nächsten Zeile, ""Wahnsinn!"", die Massen waren kaum zu bändigen";
         MethodSignatures(
             // Erstes Argument, erwartet int
             int maxCount,
-            // setzt sich selbst auf 0 wenn kein anderer Wert übergeben wird
+            // setzt sich selbst auf 0, wenn kein anderer Wert übergeben wird
             int count = 0,
             int another = 3,
             // enthält alle weiteren der Methode übergebenen Parameter (quasi Splats)
@@ -434,7 +434,7 @@ zur nächsten Zeile, ""Wahnsinn!"", die Massen waren kaum zu bändigen";
             Console.WriteLine("Mein Nullable: " + nullable);
             bool hasValue = nullable.HasValue; // true wenn nicht null
 
-            // ?? ist "syntaktischer Zucker" um einen Defaultwert für den Fall
+            // ?? ist "syntaktischer Zucker" um einen Default-Wert für den Fall,
             // dass die Variable null ist festzulegen.
             int notNullable = nullable ?? 0; // 0
 
@@ -463,7 +463,7 @@ zur nächsten Zeile, ""Wahnsinn!"", die Massen waren kaum zu bändigen";
             // Disposables - einfaches Management von nicht verwalteten Ressourcen
             // So gut wie alle Objekte die auf nicht verwaltete Ressourcen
             // (Dateien, Geräte, ...) zugreifen, implementieren das Interface
-            // IDisposable. Das using Statement stellt sicher dass die vom
+            // IDisposable. Das using Statement stellt sicher, dass die vom
             // IDisposable benutzten Ressourcen nach der Benutzung wieder
             // freigegeben werden:
             using (StreamWriter writer = new StreamWriter("log.txt"))
@@ -503,7 +503,7 @@ zur nächsten Zeile, ""Wahnsinn!"", die Massen waren kaum zu bändigen";
 
             // Dynamische Objekte (gut um mit anderen Sprachen zu arbeiten)
             dynamic student = new ExpandoObject();
-            // hier muss keine Typ angegeben werden
+            // hier muss kein Typ angegeben werden
             student.FirstName = "Christian";
 
             // Einem solchen Objekt kann man sogar Methoden zuordnen.
@@ -571,7 +571,7 @@ zur nächsten Zeile, ""Wahnsinn!"", die Massen waren kaum zu bändigen";
                 .Select(b => b.Name); // auch hier: immer noch keine Abfrage
 
             // Erst hier wird die Datenbankabfrage wirklich ausgeführt,
-            // limitiert auf die Elemente die der foreach-Loop verwendet
+            // limitiert auf die Elemente, die der foreach-Loop verwendet
             foreach (string bike in query)
             {
                 Console.WriteLine(result);
@@ -604,11 +604,11 @@ zur nächsten Zeile, ""Wahnsinn!"", die Massen waren kaum zu bändigen";
         // Das Keyword public macht das Member von überall zugänglich
         public int Cadence
         {
-            get // get definiert eine Methode um die Eigenschaft abzurufen
+            get // get definiert eine Methode, um die Eigenschaft abzurufen
             {
                 return _cadence;
             }
-            set // set definiert eine Methode um die Eigenschaft zu setzen
+            set // set definiert eine Methode, um die Eigenschaft zu setzen
             {
                 _cadence = value; // value ist der dem Setter übergebene Wert
             }
@@ -648,7 +648,7 @@ zur nächsten Zeile, ""Wahnsinn!"", die Massen waren kaum zu bändigen";
             Kynast // 43
         }
         // Nachdem dieser Typ in der Klasse "Bicycle" definiert ist,
-        // sollte Code ausserhalb der Klasse den Typen als Bicycle.Brand referenzieren
+        // sollte Code außerhalb der Klasse den Typen als Bicycle.Brand referenzieren
 
         // Nachdem das Enum deklariert ist, können wir den Typen verwenden:
         public BikeBrand Brand;
