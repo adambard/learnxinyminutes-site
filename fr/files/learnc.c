@@ -720,7 +720,7 @@ typedef void (*my_fnp_type)(char *);
 //        Operateurs                 | Associativité      //
 //--------------------------------------------------------//
 // () [] -> .                        | de gauche à droite //
-// ! ~ ++ -- + = *(type)sizeof       | de droite à gauche //
+// ! ~ ++ -- + - *(type)sizeof       | de droite à gauche //
 // * / %                             | de gauche à droite //
 // + -                               | de gauche à droite //
 // << >>                             | de gauche à droite //

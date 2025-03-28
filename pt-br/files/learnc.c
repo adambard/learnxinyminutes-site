@@ -594,7 +594,7 @@ typedef void (*minha_função_type)(char *);
 //        Operadores                       | Associatividade //
 //-----------------------------------------------------------//
 // () [] -> .                        | esquerda para direita //
-// ! ~ ++ -- + = *(type)sizeof       | direita para esqureda //
+// ! ~ ++ -- + - *(type)sizeof       | direita para esqureda //
 // * / %                             | esquerda para direita //
 // + -                               | esquerda para direita //
 // << >>                             | esquerda para direita //
