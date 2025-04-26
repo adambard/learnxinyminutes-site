@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="it">
+    <title>Learn C in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/it/c/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="share">
+        <span class="sharemsg">
+          <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flearnxinyminutes.com%2Fit%2Fc%2F&amp;text=Impara+X+in+Y+minuti%2C+dove+X%3DC">
+            Condividi questa pagina
+          </a>
+        </span>
+        <span class='st_facebook_large' displayText='Facebook'></span>
+        <span class='st_twitter_large' displayText='Tweet'></span>
+      </div>
+      <h1><a href="/">Impara X in Y minuti</a></h1>
+      <h2>Dove X=C</h2>
+      <p class="filelink">
+        Scarica il codice sorgente:
+        <a href="/it/files/learnc-it.c">learnc-it.c</a>
+      </p>
+      <div id="doc">
+<p>Ah, C. Ancora <strong>il</strong> linguaggio per il moderno calcolo ad alte prestazioni.</p>
+<p>C è il linguaggio di più basso livello che la maggior parte dei programmatori utilizzerà mai,
+ma compensa ampiamente con la sua velocità pura.
+Basta essere consapevoli della gestione manuale della memoria e C ti porterà ovunque tu abbia bisogno</p>
+<div class="highlight"><pre lang="c"><span class="c1">// Una singola riga di commenti comincia con // - utilizzabile in C99 e superiori</span>
+
+<span class="cm">/*</span>
+<span class="cm">I commenti multi-riga appaiono come questo. Funzionano anche in C89.</span>
+<span class="cm">*/</span>
+
+<span class="cm">/*</span>
+<span class="cm">I commenti multi-riga non si nidificano /* fai attenzione */</span><span class="w"> </span><span class="c1">// commento termina con questa linea</span>
+<span class="o">*/</span><span class="w"> </span><span class="c1">// ...non con questa!</span>
+
+<span class="c1">// Costanti: #define &lt;parolachiave&gt;</span>
+<span class="c1">// Le costanti sono scritte in MAIUSCOLO per convenzione</span>
+<span class="cp">#define DAYS_IN_YEAR 365</span>
+
+<span class="c1">// Le enumerazioni sono anche sono modi per dichiarare costanti. </span>
+<span class="c1">// Tutte le dichiarazioni devono finire con un punto e virgola</span>
+<span class="k">enum</span><span class="w"> </span><span class="n">days</span><span class="w"> </span><span class="p">{</span><span class="n">SUN</span><span class="p">,</span><span class="w"> </span><span class="n">MON</span><span class="p">,</span><span class="w"> </span><span class="n">TUE</span><span class="p">,</span><span class="w"> </span><span class="n">WED</span><span class="p">,</span><span class="w"> </span><span class="n">THU</span><span class="p">,</span><span class="w"> </span><span class="n">FRI</span><span class="p">,</span><span class="w"> </span><span class="n">SAT</span><span class="p">};</span>
+<span class="c1">// SUN ottiene 0, MON ottiene 1, TUE ottiene 2, etc.</span>
+
+<span class="c1">// Il valore delle enumerazioni può essere anche specificato</span>
+<span class="k">enum</span><span class="w"> </span><span class="n">days</span><span class="w"> </span><span class="p">{</span><span class="n">SUN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">MON</span><span class="p">,</span><span class="w"> </span><span class="n">TUE</span><span class="p">,</span><span class="w"> </span><span class="n">WED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">99</span><span class="p">,</span><span class="w"> </span><span class="n">THU</span><span class="p">,</span><span class="w"> </span><span class="n">FRI</span><span class="p">,</span><span class="w"> </span><span class="n">SAT</span><span class="p">};</span>
+<span class="c1">// MON ottiene 2 automaticamente, TUE ottiene 3, etc.</span>
+<span class="c1">// WED ottiene 99, THU ottiene 100, FRI ottiene 101, etc.</span>
+
+<span class="c1">// Importa le intestazioni con #include</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdlib.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
+
+<span class="c1">// I nomi dei file tra &lt;parentesi angolari&gt; dicono al compilatore dove guardare nel tuo sistema.</span>
+<span class="c1">// di librerie per l&#39;intestazioni.</span>
+<span class="c1">// Per le tue intestazioni, usa le doppi virgolette invece di parentesi angolari </span>
+<span class="c1">// e fornisci il percorso</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;my_header.h&quot;</span><span class="c1"> 		// file locale</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;../my_lib/my_lib_header.h&quot;</span><span class="c1"> // percorso relativo</span>
+
+<span class="c1">// Dichiara le segnature della funzione in anticipo in un file.h o nella parte superiore</span>
+<span class="c1">// del tuo file .c</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">function_1</span><span class="p">();</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">function_2</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="c1">// Almeno, è necessario dichiarare un &#39;prototipo di funzione&#39; prima del suo utilizzo in qualsiasi funzione. </span>
+<span class="c1">// Normalmente, i prototipi sono nella parte superiore del file prima di qualsiasi definizione di funzione.</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">add_two_ints</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">x2</span><span class="p">);</span><span class="w"> </span><span class="c1">// prototipo di funzione</span>
+<span class="c1">// Sebbene &#39;int add_two_ints(int, int);&#39; è valido (non è necessario nominare gli argomenti),</span>
+<span class="c1">// si consiglia di nominare anche gli argomenti nel prototipo per un&#39;ispezione più semplice.</span>
+
+<span class="c1">// Prototipi di funzione non sono necessari se la definizione della funzione avviene prima</span>
+<span class="c1">// qualsiasi altra funzione che chiama quella funzione. Comunque, è pratica standard </span>
+<span class="c1">// aggiungere sempre il prototipo di funzione a un file di intestazione (*.h) e quindi #define</span>
+<span class="c1">// il file sopra. Ciò impedisce ogni errore dove una funzione potrebbe essere chiamata</span>
+<span class="c1">// prima che il compilatore sappia della sua esistenza, dando anche allo sviluppatore</span>
+<span class="c1">// una intestazione pulita da condividere con il resto del progetto.</span>
+
+<span class="c1">// Il tuo punto di accesso al programma è una funzione chiamata &#39;main&#39;. Il tipo di ritorno </span>
+<span class="c1">// può essere qualsiasi, tuttavia molti sistemi operativi si aspettano un tipo di ritorno &#39;int&#39;</span>
+<span class="c1">// per l&#39;elaborazione del codice di errore.</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// il tuo programma</span>
+<span class="p">}</span>
+
+<span class="c1">// Gli argomenti della riga di comando utilizzati per eseguire il programma vengono anche passati al main </span>
+<span class="c1">// argc è il numero di argomenti: il nome del programma conta come 1</span>
+<span class="c1">// argv è un array di array di caratteri - contiene gli argomenti stessi</span>
+<span class="c1">// argv[0] = nome del programma</span>
+<span class="c1">// argv[1] = primo argomento, ecc</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">**</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">// stampa l&#39;output usanto &#39;printf&#39;, per la formattazione di stampa</span>
+<span class="w">  </span><span class="c1">// %d è un intero, \n è un a capo</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; Stampa 0</span>
+
+<span class="w">  </span><span class="c1">// prende un input utilizzando &#39;scanf&#39;</span>
+<span class="w">  </span><span class="c1">// &#39;&amp;&#39; viene utilizzato per definire la posizione</span>
+<span class="w">  </span><span class="c1">// dove vogliamo archiviare il valore di input</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">input</span><span class="p">;</span>
+<span class="w">  </span><span class="n">scanf</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">input</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">  </span><span class="c1">// Tipi</span>
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">  </span><span class="c1">// I compilatori che non sono uniformi a C99 richiedono che le variabili DEVONO essere</span>
+<span class="w">  </span><span class="c1">// dichiarate nella parte superiore del blocco corrente.</span>
+<span class="w">  </span><span class="c1">// I compilatori che sono uniformi a C99 permettono la dichiarazione delle variabili vicino </span>
+<span class="w">  </span><span class="c1">// al punto in cui viene utilizzato il valore.</span>
+<span class="w">  </span><span class="c1">// Per motivi di tutorial, le variaibli sono dichiarate dinamicamente sotto lo standard coforme a C99.</span>
+
+<span class="w">  </span><span class="c1">// gli int (interi) sono generalmente di 4 byte (usa l&#39;operatore `sizeof` per controllare)</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">x_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// gli short sono generalmente di 2 byte (usa l&#39;operatore `sizeof` per controllare)</span>
+<span class="w">  </span><span class="kt">short</span><span class="w"> </span><span class="n">x_short</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span>
+<span class="w">  </span><span class="c1">// i char (letterali) sono definiti come le unità indirizzabili più piccole per un processore.</span>
+<span class="w">  </span><span class="c1">// Questo generalmente è 1 byte, ma per alcuni sistemi può essere più, </span>
+<span class="w">  </span><span class="c1">// (es. per TMS320 da TI è 2 byte).</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">x_char</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">y_char</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;y&#39;</span><span class="p">;</span><span class="w"> </span><span class="c1">// i char sono citati con &#39;&#39;</span>
+
+<span class="w">  </span><span class="c1">// i long sono generalmente di 4 o 8 byte; i lunghi long sono garantiti almeno per essere 8 byte</span>
+<span class="w">  </span><span class="kt">long</span><span class="w"> </span><span class="n">x_long</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">long</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">x_long_long</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// i float sono generalmente 32 bit, numeri a virgola mobile</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">x_float</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">;</span><span class="w"> </span><span class="c1">// il suffisso &#39;f&#39; indica &#39;floating&#39; per floating point, quindi numeri a virgola mobile </span>
+
+<span class="w">  </span><span class="c1">// i double sono generalmente 64 bit, numeri a virgola mobile</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">x_double</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span><span class="w"> </span><span class="c1">// i numeri reali senza nessun suffiso sono double</span>
+
+<span class="w">  </span><span class="c1">// i tipi interi possono essere &#39;unsigned&#39;, sono firmati (maggiore o uguale a zero)</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">short</span><span class="w"> </span><span class="n">ux_short</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ux_int</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">ux_long_long</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// i char all&#39;interno delle virgolette singole sono numeri interi nel insieme di caratteri della macchina.</span>
+<span class="w">  </span><span class="sc">&#39;0&#39;</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 48 nel insieme di caratteri ASCII.</span>
+<span class="w">  </span><span class="sc">&#39;A&#39;</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 65 nel insieme di caratteri ASCII.</span>
+
+<span class="w">  </span><span class="c1">// sizeof(T) ti dà la dimensione di una variabile con tipo T in byte</span>
+<span class="w">  </span><span class="c1">// sizeof(OBJ) produce la dimensione dell&#39;espressione (variabile, letterale, ecc)</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span><span class="w"> </span><span class="c1">// =&gt; 4 (sulla maggior parte delle macchine con parole a 4 byte)</span>
+
+<span class="w">  </span><span class="c1">// Se l&#39;argomento del operatore `sizeof` è un espressione, allora il suo argomento </span>
+<span class="w">  </span><span class="c1">// non viene valutato (trannte VLA, vedi sotto)</span>
+<span class="w">  </span><span class="c1">// Il valore che produce in questo caso è una costante a tempo di compilazione.</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// size_t è un tipo intero non firmato di almeno 2 byte usati per rappresentare</span>
+<span class="w">  </span><span class="c1">// la dimensione di un oggetto.</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">a</span><span class="o">++</span><span class="p">);</span><span class="w"> </span><span class="c1">// a++ non viene valutato</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof(a++) = %zu where a = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// la stampa &quot;sizeof(a++) = 4 dove a=1&quot; (su un&#39;archiettura a 32 bit)</span>
+
+<span class="w">  </span><span class="c1">// Gli array devono essere inizializzati con una dimensione fissa</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">my_char_array</span><span class="p">[</span><span class="mi">20</span><span class="p">];</span><span class="w"> </span><span class="c1">// Questo array occupa 1 * 20 = 20 bytes</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">my_int_array</span><span class="p">[</span><span class="mi">20</span><span class="p">];</span><span class="w"> </span><span class="c1">// Questo array 4 * 20 = 80 bytes</span>
+<span class="w">  </span><span class="c1">// (assumendo parole a 4 byte)</span>
+
+<span class="w">  </span><span class="c1">// Puoi inizializzare un array di venti int dove sono tutti 0 così:</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">my_array</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="w">  </span><span class="c1">// dove la parte &#39;{0}&#39; è chiamata &#39;Initializer array&#39; (inizializzatore di array)</span>
+<span class="w">  </span><span class="c1">// Tutti gli elementi (se presenti) oltre quelli nell&#39;inizializzatore sono inizializzati a 0:</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">my_array</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">};</span>
+<span class="w">  </span><span class="c1">// Quindi my_array ora ha cinque elementi, tutti tranne i primi due sono 0:</span>
+<span class="w">  </span><span class="c1">// [1, 2, 0, 0, 0]</span>
+<span class="w">  </span><span class="c1">// NOTE: se non dichiari esplicitamente la dimensione del array</span>
+<span class="w">  </span><span class="c1">// puoi inizializzarlo comunque sulla stessa riga</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">my_array</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="w">  </span><span class="c1">// NOTE: quando non si dichiara la lunghezza, la lunghezza è il numero</span>
+<span class="w">  </span><span class="c1">// degli elementi nell&#39;inizializzatore. Con &#39;{0}&#39; my_array è ora di dimensioni: [0].</span>
+<span class="w">  </span><span class="c1">// Per valutare le dimensioni dell&#39;array in fase di esecuzione, </span>
+<span class="w">  </span><span class="c1">// dividere le dimensioni del byte per le dimensioni del byte del tipo di elemento:</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">my_array_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">my_array</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">my_array</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="w">  </span><span class="c1">// ATTENZIONE: È necessario valutare la dimensione prima di iniziare a passare l&#39;array</span>
+<span class="w">  </span><span class="c1">// alle funzioni (vedi discussione successiva) perchè gli array vengono &#39;declassati&#39;</span>
+<span class="w">  </span><span class="c1">// a puntatori grezzi quando vengono passati alle funzioni </span>
+<span class="w">  </span><span class="c1">// (quindi l&#39;affermazione sopra produrra il risultato errato all&#39;interno della funzione)</span>
+
+<span class="w">  </span><span class="c1">// Indicizzare un array è come negli altri linguaggi </span>
+<span class="w">  </span><span class="c1">// o meglio, gli altri linguaggi sono come il C.</span>
+<span class="w">  </span><span class="n">my_array</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="c1">// =&gt; 0</span>
+
+<span class="w">  </span><span class="c1">// Gli array sono immutabili, È solo memorial!</span>
+<span class="w">  </span><span class="n">my_array</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">my_array</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span><span class="w"> </span><span class="c1">// =&gt; 2</span>
+
+<span class="w">  </span><span class="c1">// Nel C99 (e come caratteristica opzionale in C11), gli array a lunghezza variabile (VLA)</span>
+<span class="w">  </span><span class="c1">// possono essere dichiarati. La dimensione di tale array non deve essere specificata a tempo di compilazione.</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Enter the array size: &quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// chiede al utente la lunghezza del array</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">array_size</span><span class="p">;</span>
+<span class="w">  </span><span class="n">fscanf</span><span class="p">(</span><span class="n">stdin</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;%d&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">array_size</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">var_length_array</span><span class="p">[</span><span class="n">array_size</span><span class="p">];</span><span class="w"> </span><span class="c1">// dichiarazione di VLA</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof array = %zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">var_length_array</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Example:</span>
+<span class="w">  </span><span class="c1">// &gt; Enter the array size: 10  -&gt; (Inserisci la lunghezza del array: 10)</span>
+<span class="w">  </span><span class="c1">// &gt; sizeof array = 40 -&gt; (sizeof array = 40)</span>
+
+<span class="w">  </span><span class="c1">// Le Stringhe sono solo array di caratteri terminati da un byte null (0x00),</span>
+<span class="w">  </span><span class="c1">// rappresentato nelle stringhe come il carattere speciale &#39;\0&#39;</span>
+<span class="w">  </span><span class="c1">// (non dobbiamo includere il byte null nei letterali delle stringhe,</span>
+<span class="w">  </span><span class="c1">// il compilatore lo inserisce alla fine dell&#39;array per noi).</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">a_string</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;This is a string&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a_string</span><span class="p">);</span><span class="w"> </span><span class="c1">// %s formattazione di una stringa</span>
+
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a_string</span><span class="p">[</span><span class="mi">16</span><span class="p">]);</span><span class="w"> </span><span class="c1">// =&gt; 0</span>
+<span class="w">  </span><span class="c1">// i.e., byte #17 è 0 (come sono 18, 19, e 20)</span>
+
+<span class="w">  </span><span class="c1">// Se noi abbiamo caratteri tra le vergolette doppie (&quot;&quot;), quei caratteri sono un letterale.</span>
+<span class="w">  </span><span class="c1">// È di tipo `int` e *non* `char` (per motivi storici)</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">cha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">;</span><span class="w"> </span><span class="c1">// ok</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">chb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">;</span><span class="w"> </span><span class="c1">// ok lo stesso (implicitamente la conversione da int a char)</span>
+
+<span class="w">  </span><span class="c1">// Array di più dimensioni:</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">multi_array</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">5</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">}</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="c1">// accesso agli elementi:</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">array_int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">multi_array</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">];</span><span class="w"> </span><span class="c1">// =&gt; 3</span>
+
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">  </span><span class="c1">// Operatori</span>
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">  </span><span class="c1">// versione corta per molteplici dichiarazioni:</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">i1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">i2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">f1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="n">f2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+<span class="w">  </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// Aritmetica semplice</span>
+<span class="w">  </span><span class="n">i1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 3</span>
+<span class="w">  </span><span class="n">i2</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">i1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1</span>
+<span class="w">  </span><span class="n">i2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">i1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 2</span>
+<span class="w">  </span><span class="n">i1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">i2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0 (0.5, ma troncato è 0)</span>
+
+<span class="w">  </span><span class="c1">// Hai bisogno di un cambio di tipo (cast) da `int` a `float` per ottenere un risultato in virgola mobile</span>
+<span class="w">  </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">i1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">i2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0.5f</span>
+<span class="w">  </span><span class="n">i1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">i2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0.5 // Lo stesso per i double</span>
+<span class="w">  </span><span class="n">f1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">f2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0.5, più o meno epsilon</span>
+
+<span class="w">  </span><span class="c1">// I numeri a virgola mobile sono definiti da IEEE 754, quindi non possono archiviare perfettamente</span>
+<span class="w">  </span><span class="c1">// valori esatti. Ad esempio, quanto segue non produce risultati previsti</span>
+<span class="w">  </span><span class="c1">// perchè 0.1 potrebbe effettivamente essere 0,09999999999 dentro il computer,</span>
+<span class="w">  </span><span class="c1">// e 0.3 potrebbe essere memorizzato come 0.300000000001.</span>
+<span class="w">  </span><span class="p">(</span><span class="mf">0.1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.1</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mf">0.3</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1 (vero)</span>
+<span class="w">  </span><span class="c1">// e non è associato per ragioni di sopra menzionate.</span>
+<span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="mf">1e123</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1e123</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1e123</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1e123</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1 (vero)</span>
+<span class="w">  </span><span class="c1">// questa notazione è la notazione scientifica per i numeri: 1e123 = 1*10^123</span>
+
+<span class="w">  </span><span class="c1">// È importante considerare che la maggior parte dei sistemi utilizza IEEE 754 per </span>
+<span class="w">  </span><span class="c1">// rappresentare i numeri in virgola mobile, Anche in python viene utilizzato per il calcolo scientifico</span>
+<span class="w">  </span><span class="c1">// alla fine chiama C che utilizza IEEE754. È mensionato in questo modo non per indicare che l&#39;implementazione </span>
+<span class="w">  </span><span class="c1">// è scarsa, ma invece come avvertimento per quando si effettuano confronti in virgola mobile</span>
+<span class="w">  </span><span class="c1">// un po di errore (Epsilon) deve essere considerato.</span>
+
+<span class="w">  </span><span class="c1">// Il modulo è presente, ma fai attenzione se gli argomenti sono negativi</span>
+<span class="w">  </span><span class="mi">11</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w">    </span><span class="c1">// =&gt; 2 come 11 = 2 + 3*x (x=3)</span>
+<span class="w">  </span><span class="p">(</span><span class="mi">-11</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; -2, come ci si aspetterebbe</span>
+<span class="w">  </span><span class="mi">11</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="p">(</span><span class="mi">-3</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; 2 e non -2, ed è abbastanza intuitivo </span>
+
+<span class="w">  </span><span class="c1">// Gli operatori di confronto sono probabilmente famigliari, </span>
+<span class="w">  </span><span class="c1">// ma non esiste nessun tipo di booleano in C. Usiamo invece &#39;int&#39;.</span>
+<span class="w">  </span><span class="c1">// (C99 ha introdotto il tipo _bool fornito in stdbool.h)</span>
+<span class="w">  </span><span class="c1">// 0 è falso, qualsiasi altra cosa è vera. </span>
+<span class="w">  </span><span class="c1">// (il confronto tra operatori produce sempre 0 o 1 -&gt; falso o vero) </span>
+<span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0 (falso)</span>
+<span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1 (vero)</span>
+<span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">  </span><span class="c1">// =&gt; 1</span>
+<span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w">  </span><span class="c1">// =&gt; 0</span>
+<span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1</span>
+<span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1</span>
+
+<span class="w">  </span><span class="c1">// C non è python - i confronti non sono a catena.</span>
+<span class="w">  </span><span class="c1">// ATTENZIONE: la riga seguente si compilerà, ma significa &#39;(0 a) 2&#39;.</span>
+<span class="w">  </span><span class="c1">// Questa espressione è sempre vera, perchè (0 a) potrebbe essere 1 o 0.</span>
+<span class="w">  </span><span class="c1">// In questo caso è 1, perchè (0 1).</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">between_0_and_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// Invece utilizza:</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">between_0_and_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// La logica lavora sugli &#39;int&#39;</span>
+<span class="w">  </span><span class="o">!</span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0 (Logica not)</span>
+<span class="w">  </span><span class="o">!</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1</span>
+<span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1 (Logica and)</span>
+<span class="w">  </span><span class="mi">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0</span>
+<span class="w">  </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 1 (Logica or)</span>
+<span class="w">  </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0</span>
+
+<span class="w">  </span><span class="c1">// Espressione di condizione ternaria ( ? : )</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">z</span><span class="p">;</span>
+<span class="w">  </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">f</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">f</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 10 &quot;if e &gt; f return e, else return f.&quot;</span>
+
+<span class="w">  </span><span class="c1">// Incremento e decremento degli operatori:</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">;</span><span class="w"> </span><span class="c1">// Return j THEN incremento j. (s = 0, j = 1)</span>
+<span class="w">  </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">;</span><span class="w"> </span><span class="c1">// Incremento j THEN return j. (s = 2, j = 2)</span>
+<span class="w">  </span><span class="c1">// stesso con j-- e --j</span>
+
+<span class="w">  </span><span class="c1">// Operatori bitwise!</span>
+<span class="w">  </span><span class="o">~</span><span class="mh">0x0F</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0xFFFFFFF0 (negazione bitwise, &quot;complemento di 1&quot;, nel esempio il risultato per int a 32 bit)</span>
+<span class="w">  </span><span class="mh">0x0F</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xF0</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0x00 (bitwise AND)</span>
+<span class="w">  </span><span class="mh">0x0F</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mh">0xF0</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0xFF (bitwise OR)</span>
+<span class="w">  </span><span class="mh">0x04</span><span class="w"> </span><span class="o">^</span><span class="w"> </span><span class="mh">0x0F</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0x0B (bitwise XOR)</span>
+<span class="w">  </span><span class="mh">0x01</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0x02 (bitwise spostamento a sinistra (di 1))</span>
+<span class="w">  </span><span class="mh">0x02</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// =&gt; 0x01 (bitwise spostamento a destra (di 1))</span>
+
+<span class="w">  </span><span class="c1">// Fai attenzione quando si spostano numeri interi: i seguenti sono indefiniti:</span>
+<span class="w">  </span><span class="c1">// - spostamento nel bit di segno di un numero intero (int a = 1 &lt;&lt; 31)</span>
+<span class="w">  </span><span class="c1">// - spostamento a sinistra di un numero negativo (int a = -1 &lt;&lt; 2)</span>
+<span class="w">  </span><span class="c1">// - spostamento di un offset che è &gt;= la larghezza del tipo di LHS:</span>
+<span class="w">  </span><span class="c1">// int a = 1 &lt;&lt; 32; // oltre la grandezza di a se l&#39;intero è largo 32 bit</span>
+
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">  </span><span class="c1">// Strutture di controllo</span>
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;I am never run</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;I am also never run</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;I print</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">// Esistono i while loop innestati</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">ii</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">ii</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// qualsiasi valore inferiore a dieci è vero.</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d, &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ii</span><span class="o">++</span><span class="p">);</span><span class="w"> </span><span class="c1">// il ii++ incrementa ii DOPO aver utilizzato il suo valore corrente.</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="c1">// =&gt; stampa &quot;0, 1, 2, 3, 4, 5, 6, 7, 8, 9, &quot;</span>
+
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">kk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="k">do</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d, &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">kk</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">++</span><span class="n">kk</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span><span class="w"> </span><span class="c1">// il ++kk incrementa kk PRIMA di utilizzare il suo valore corrente.</span>
+<span class="w">  </span><span class="c1">// =&gt; stampa &quot;0, 1, 2, 3, 4, 5, 6, 7, 8, 9, &quot;</span>
+
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Esistono anche i ciclo for</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">jj</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">jj</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">jj</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="n">jj</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d, &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">jj</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="c1">// =&gt; stampa &quot;0, 1, 2, 3, 4, 5, 6, 7, 8, 9, &quot;</span>
+
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// *****NOTES*****:</span>
+<span class="w">  </span><span class="c1">// Cicli e funzioni devono avere un corpo. Se nessun corpo è necessario:</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">;</span><span class="w"> </span><span class="c1">// usa le &#39;;&#39; per fungere da corpo (null statement)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">// oppure</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// ramificazione con più scelte: switch ()</span>
+<span class="w">  </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span><span class="w"> </span><span class="c1">// Le etichette devono essere *espessioni costanti* (come gli enums)</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Hey, &#39;a&#39; equals 0!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">break</span><span class="p">;</span><span class="w"> </span><span class="c1">// se non si rompe il flusso (break) continua sulle etichette successive</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="mi">1</span><span class="p">:</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Huh, &#39;a&#39; equals 1!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// Stai attendo: senza &#39;break&#39; l&#39;esecuzione continua fino a che non viene </span>
+<span class="w">    </span><span class="c1">// raggiunta la prossima pausa</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="mi">3</span><span class="p">:</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="mi">4</span><span class="p">:</span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Look at that.. &#39;a&#39; is either 3, or 4</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="k">break</span><span class="p">;</span>
+<span class="w">  </span><span class="k">default</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// se il valore di a non corrisponde a nessuna delle etichette</span>
+<span class="w">    </span><span class="n">fputs</span><span class="p">(</span><span class="s">&quot;Error!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">stderr</span><span class="p">);</span>
+<span class="w">    </span><span class="n">exit</span><span class="p">(</span><span class="mi">-1</span><span class="p">);</span>
+<span class="w">    </span><span class="k">break</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="cm">/*</span>
+<span class="cm">    Usiamo il &quot;goto&quot; in C</span>
+<span class="cm">  */</span>
+<span class="w">  </span><span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kt">bool</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// per il C che non ha booleani come tipi di dato prima del C99 :(</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">disaster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="mi">100</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">&lt;</span><span class="mi">100</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="p">((</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">150</span><span class="p">)</span>
+<span class="w">        </span><span class="n">disaster</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">disaster</span><span class="p">)</span>
+<span class="w">        </span><span class="k">goto</span><span class="w"> </span><span class="n">error</span><span class="p">;</span><span class="w">  </span><span class="c1">// esci da entrambi i cicli for</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="nl">error</span><span class="p">:</span><span class="w"> </span><span class="c1">// questa è un etichetta a cui puoi &quot;saltare&quot; con `goto error`</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Error occurred at i = %d &amp; j = %d.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">);</span>
+<span class="w">  </span><span class="cm">/*</span>
+<span class="cm">    https://ideone.com/GuPhd6</span>
+<span class="cm">    Questo stamperà l&#39;errore &#39;Error occured at i=51 &amp; j=99.&#39;</span>
+<span class="cm">  */</span>
+<span class="w">  </span><span class="cm">/*</span>
+<span class="cm">    È generalmente considerato una cattiva pratica farlo, </span>
+<span class="cm">    tranne se davvero sai cosa stai facendo, vedi:</span>
+<span class="cm">    https://en.wikipedia.org/wiki/Spaghetti_code#Meaning</span>
+<span class="cm">  */</span>
+
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">  </span><span class="c1">// Typecasting</span>
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">  </span><span class="c1">// Ogni valore in C ha un tipo, ma puoi lanciare un valore in un altro tipo</span>
+<span class="w">  </span><span class="c1">// se vuoi (con alcuni vincoli)</span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">x_hex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x01</span><span class="p">;</span><span class="w"> </span><span class="c1">// Puoi assegnare variabili con caratteri esadecimali</span>
+<span class="w">                    </span><span class="c1">// il binario non è nello standard, ma consentito da alcuni</span>
+<span class="w">                    </span><span class="c1">// compilatori (x_bin = 0b0010010110)</span>
+
+<span class="w">  </span><span class="c1">// I casting tra i tipi tenterà di preservare i loro valori numerici</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x_hex</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; Stampa 1</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">short</span><span class="p">)</span><span class="w"> </span><span class="n">x_hex</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; Stampa 1</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="p">)</span><span class="w"> </span><span class="n">x_hex</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; Stampa1 1</span>
+
+<span class="w">  </span><span class="c1">// Se si assegna un valore superiore a un tipo di massimo, il rollover senza preavviso.</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="p">)</span><span class="w"> </span><span class="mi">257</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; 1 (Max char = 255 se char è lunga 8 bits)</span>
+
+<span class="w">  </span><span class="c1">// Per determinare il valore massimo di un `char`, un char unsigned è un char senza sengno,</span>
+<span class="w">  </span><span class="c1">// rispettivamente, usa i macro char_max, schar_max e uchar_max da limiti.h</span>
+
+<span class="w">  </span><span class="c1">// I tipi integrati possono essere cambiati (cast) in virgola mobile e vice versa</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%f</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span><span class="w"> </span><span class="c1">// %f formatta sempre un doppio...</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%f</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="w">  </span><span class="mi">100</span><span class="p">);</span><span class="w"> </span><span class="c1">// ...anche con un vigola mobile.</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="p">)</span><span class="mf">100.0</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+<span class="w">  </span><span class="c1">// Puntatori (Pointers)</span>
+<span class="w">  </span><span class="c1">///////////////////////////////////////</span>
+
+<span class="w">  </span><span class="c1">// Un puntatore è una variabile chiamata per archiviare un indirizzo di memoria.</span>
+<span class="w">  </span><span class="c1">// La sua dichiarazione dirà il tipo di dato a cui è indicato.</span>
+<span class="w">  </span><span class="c1">// Puoi recuperare l&#39;indirizzo di memoria dalle tue variabili, poi potrai utilizzarle.</span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">x</span><span class="p">);</span><span class="w"> </span><span class="c1">// Usa e recupera l&#39;indirizzo di una variabile</span>
+<span class="w">  </span><span class="c1">// (%p formattazione di un puntatore, oggetto di tipo void *)</span>
+<span class="w">  </span><span class="c1">// =&gt; Stampa alcuni indirizzi in memoria;</span>
+
+<span class="w">  </span><span class="c1">// I puntatori iniziano con * nella loro dichiarazione</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">px</span><span class="p">,</span><span class="w"> </span><span class="n">not_a_pointer</span><span class="p">;</span><span class="w"> </span><span class="c1">// px è un puntatore ad un int</span>
+<span class="w">  </span><span class="n">px</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">x</span><span class="p">;</span><span class="w"> </span><span class="c1">// memorizza l&#39;indirizzo di x in px</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">px</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; stampa un indirizzo di memoria</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%zu, %zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">px</span><span class="p">),</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">not_a_pointer</span><span class="p">));</span>
+<span class="w">  </span><span class="c1">// =&gt; Stampa &#39;8, 4&#39; su un tipico sistema a 64 bit</span>
+
+<span class="w">  </span><span class="c1">// Per recuperare il valore all&#39;indirizzo che un puntatore sta puntando</span>
+<span class="w">  </span><span class="c1">// metti * davanti alla referenza</span>
+<span class="w">  </span><span class="c1">// Note: si, potrebbe confondere il fatto che &#39;*&#39; si usa per entrambe,</span>
+<span class="w">  </span><span class="c1">// dichiarazione a puntatore e referenza ad esso.</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">px</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; Stampa 0, la variabile di x</span>
+
+<span class="w">  </span><span class="c1">// Puoi anche modificare il valore a cui punta il puntatore.</span>
+<span class="w">  </span><span class="c1">// dovremmo avvolgere la referenza tra parentesi perchè</span>
+<span class="w">  </span><span class="c1">// ++ ha una precedenza maggiore di *.</span>
+<span class="w">  </span><span class="p">(</span><span class="o">*</span><span class="n">px</span><span class="p">)</span><span class="o">++</span><span class="p">;</span><span class="w"> </span><span class="c1">// Incrementa il valore che px punta di 1</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">px</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; Stampa 1</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; Stampa 1</span>
+
+<span class="w">  </span><span class="c1">// Gli array sono un buon modo di allocare blocchi di memoria contigui</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">x_array</span><span class="p">[</span><span class="mi">20</span><span class="p">];</span><span class="w"> </span><span class="c1">// dichiarazione di un array di dimensione 20 (non può essere cambiata la dimensione)</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">xx</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">xx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">xx</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span><span class="w"> </span><span class="n">xx</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">x_array</span><span class="p">[</span><span class="n">xx</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">xx</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="c1">// Inizializza x_array a 20, 19, 18,... 2, 1</span>
+
+<span class="w">  </span><span class="c1">// dichiara un puntatore di tipo int e inizializzalo per indicare x_array </span>
+<span class="w">  </span><span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="n">x_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x_array</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// x_ptr ora indica il primo elemento nell&#39;array (il numero intero 20).</span>
+<span class="w">  </span><span class="c1">// Funziona perchè gli array spesso decadono nei puntatori del loro primo elemento.</span>
+<span class="w">  </span><span class="c1">// Ad esempio, quando un array viene passato a una funzione o viene assegnato a un puntatore,</span>
+<span class="w">  </span><span class="c1">// decade in (implicitamente convertito in) un puntatore.</span>
+<span class="w">  </span><span class="c1">// Eccezioni: quando l&#39;array è l&#39;argomento dell&#39;operatore `&amp;` (indirizzo di): </span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">arr</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">ptr_to_arr</span><span class="p">)[</span><span class="mi">10</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">arr</span><span class="p">;</span><span class="w"> </span><span class="c1">// &amp;arr non è un tipo`int *`!</span>
+<span class="w">  </span><span class="c1">// È un tipo &#39;puntatore all&#39;array&#39; (del decimo &#39;int&#39;).</span>
+<span class="w">  </span><span class="c1">// o quando l&#39;array è una stringa di caratteri utilizzata per l&#39;inizializzazione di un array di char:</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">otherarr</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;foobarbazquirk&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// oppure quando è un argomento di un operatore `sizeof` o `alignof`:</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">arraythethird</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arraythethird</span><span class="p">;</span><span class="w"> </span><span class="c1">// equivalente con int *ptr = &amp;arr[0];</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%zu, %zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">arraythethird</span><span class="p">),</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">ptr</span><span class="p">));</span>
+<span class="w">  </span><span class="c1">// probabilmente stamperà &quot;40, 4&quot; or &quot;40, 8&quot;</span>
+
+<span class="w">  </span><span class="c1">// I puntatori sono incrementati e decrementati in base al loro tipo</span>
+<span class="w">  </span><span class="c1">// (questo si chiama puntatore aritmetico)</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">x_ptr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span><span class="w"> </span><span class="c1">// =&gt; Stampa 19</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x_array</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span><span class="w"> </span><span class="c1">// =&gt; Stampa 19</span>
+
+<span class="w">  </span><span class="c1">// E ancora possibile allocare dinamicamente blocchi di memoria contigui con la</span>
+<span class="w">  </span><span class="c1">// funzione di libreria standard malloc, che prende un argomento di tipo `size_t`</span>
+<span class="w">  </span><span class="c1">// che rappresenta il numero di byte da allocare (di solito dalla heap, sebbene questo</span>
+<span class="w">  </span><span class="c1">// potrebbe non essere vero su alcuni sistemi embedded - il C standard non dice nulla al riguardo).</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">my_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">my_ptr</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">20</span><span class="p">);</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">xx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">xx</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span><span class="w"> </span><span class="n">xx</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="o">*</span><span class="p">(</span><span class="n">my_ptr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">xx</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">xx</span><span class="p">;</span><span class="w"> </span><span class="c1">// my_ptr[xx] = 20-xx</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="c1">// Inizializza la memoria a 20, 19, 18, 17... 2, 1 (come int)</span>
+
+<span class="w">  </span><span class="c1">// Fai attenzione a passare i valori forniti dall&#39;utente alla malloc!</span>
+<span class="w">  </span><span class="c1">// Se vuoi essere al sicuro, puoi usare calloc invece (che, a differenza di malloc,</span>
+<span class="w">  </span><span class="c1">// inizializza tutti zero in memorial)</span>
+<span class="w">  </span><span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="n">my_other_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calloc</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+
+<span class="w">  </span><span class="c1">// Nota che non esiste un modo standard per ottenere la lunghezza di un array allocato dinamicamente in C.</span>
+<span class="w">  </span><span class="c1">// Per questo motivo, se i tuoi array sono passati attraverso il programma per molto tempo, </span>
+<span class="w">  </span><span class="c1">// avrai bisogno di un altra variabile per tenere traccia del numero di elementi (dimensione) del array.</span>
+<span class="w">  </span><span class="c1">// Vedi la sezione delle funzioni per maggiori informazioni.</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">my_arr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calloc</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+<span class="w">  </span><span class="c1">// Aggiungi un elemento all&#39;array</span>
+<span class="w">  </span><span class="n">size</span><span class="o">++</span><span class="p">;</span>
+<span class="w">  </span><span class="n">my_arr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">realloc</span><span class="p">(</span><span class="n">my_arr</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">size</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">my_arr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Ricordati di verificare il fallimento di realloc!</span>
+<span class="w">    </span><span class="k">return</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">my_arr</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// la Memoria di dereferenziazione che non hai assegnato darà &#39;risultati imprevedibili&#39;</span>
+<span class="w">  </span><span class="c1">// - Si dice che il programma invochi &#39;comportamento indefinito&#39;  </span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="p">(</span><span class="n">my_ptr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">21</span><span class="p">));</span><span class="w"> </span><span class="c1">// =&gt; Stampa chi-sa-cosa? potrebbe anche andare in crash.</span>
+
+<span class="w">  </span><span class="c1">// Quando hai finito con un blocco di memoria malloc, devi liberarlo,</span>
+<span class="w">  </span><span class="c1">// altrimenti nessun altro può usarlo fino a quando il programma non termina</span>
+<span class="w">  </span><span class="c1">// (questo è chiamato perdita di memoria (= memory leak))</span>
+<span class="w">  </span><span class="n">free</span><span class="p">(</span><span class="n">my_ptr</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Le stringhe sono array di char, ma solitamente sono rappresentate come</span>
+<span class="w">  </span><span class="c1">// puntatori-al-char (che è un puntatore al primo elemento dell&#39;array).</span>
+<span class="w">  </span><span class="c1">// È una buona pratica usare `const chat *` quando si fa riferimento a una stringa di caratteri,</span>
+<span class="w">  </span><span class="c1">// poichè i caratteri di una stringa non devono essere modificati </span>
+<span class="w">  </span><span class="c1">// (ovvero &#39;foo&#39; [0] = &#39;a&#39; è illegale)</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">my_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;This is my very own string literal&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%c</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">my_str</span><span class="p">);</span><span class="w"> </span><span class="c1">// =&gt; &#39;T&#39;</span>
+
+<span class="w">  </span><span class="c1">// Questo non è il caso se la stringa è un array </span>
+<span class="w">  </span><span class="c1">// (potenzialmente inizializzato con una stringa di caratteri)</span>
+<span class="w">  </span><span class="c1">// che risiede nella memoria scrivibile, come in:</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">foo</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;foo&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="n">foo</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">;</span><span class="w"> </span><span class="c1">// questo è legale, foo ora contiene &#39;aoo&#39;.</span>
+
+<span class="w">  </span><span class="n">function_1</span><span class="p">();</span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// fine della funzione main</span>
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Funzioni (Functions)</span>
+<span class="c1">///////////////////////////////////////</span>
+
+<span class="c1">// Sintassi della dichiarazione di una funzione:</span>
+<span class="c1">// &lt;tipo ritorno&gt; &lt;nome funzione&gt;(&lt;argomenti&gt;)</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">add_two_ints</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">x1</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">x2</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">x1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x2</span><span class="p">;</span><span class="w"> </span><span class="c1">// Utilizzare return per restituire un valore</span>
+<span class="p">}</span>
+
+<span class="cm">/*</span>
+<span class="cm">Le funzioni sono chiamate per valore. Quando viene chiamata una funzione,</span>
+<span class="cm">gli argomenti passati alla funzione sono copie di argomenti originali (tranne gli array).</span>
+<span class="cm">Qualunque cosa tu fai l&#39;argomento nella funzione non cambia il valore originale rispetto </span>
+<span class="cm">a quando è stata chiamata.</span>
+
+<span class="cm">Usa i puntatori se te hai bisogno di modificare l&#39;argomento originale  </span>
+<span class="cm">(gli array sono sempre passati come puntatori).</span>
+
+<span class="cm">Esempio: inversione della stringa.</span>
+<span class="cm">*/</span>
+
+<span class="c1">// Una funzione void in ritorna nulla</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">str_reverse</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">str_in</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">tmp</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">ii</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">strlen</span><span class="p">(</span><span class="n">str_in</span><span class="p">);</span><span class="w"> </span><span class="c1">// `strlen()` è parte della libreria standard</span>
+<span class="w">                               </span><span class="c1">// NOTE: la lunghezza ritornata da `strlen` NON</span>
+<span class="w">                               </span><span class="c1">//       include la terminazione con il NULL byte (&#39;\0&#39;)</span>
+<span class="w">  </span><span class="c1">// nella versione C99 e superiori, puoi direttamente dichiamare le variabili nel controllo del ciclo</span>
+<span class="w">  </span><span class="c1">// nelle parentesi del loop e.g. `for (size_t ii = 0; ...`</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">ii</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">ii</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">len</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="n">ii</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">str_in</span><span class="p">[</span><span class="n">ii</span><span class="p">];</span>
+<span class="w">    </span><span class="n">str_in</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">str_in</span><span class="p">[</span><span class="n">len</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">ii</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">];</span><span class="w"> </span><span class="c1">// ii-iesimo chat dalla fine</span>
+<span class="w">    </span><span class="n">str_in</span><span class="p">[</span><span class="n">len</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">ii</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tmp</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">//NOTE: string.h il file di intestazione ha bisogno di includere</span>
+
+<span class="cm">/*</span>
+<span class="cm">char c[] = &quot;This is a test.&quot;;</span>
+<span class="cm">str_reverse(c);</span>
+<span class="cm">printf(&quot;%s\n&quot;, c); // =&gt; &quot;.tset a si sihT&quot;</span>
+<span class="cm">*/</span>
+<span class="cm">/*</span>
+<span class="cm">come possiamo ritornare solo una variabile</span>
+<span class="cm">per cambiare valori in più di una variabile possiamo utilizzare le referenze</span>
+<span class="cm">*/</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">swapTwoNumbers</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">a</span><span class="p">;</span>
+<span class="w">    </span><span class="o">*</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">;</span>
+<span class="w">    </span><span class="o">*</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="cm">/*</span>
+<span class="cm">int first = 10;</span>
+<span class="cm">int second = 20;</span>
+<span class="cm">printf(&quot;first: %d\nsecond: %d\n&quot;, first, second);</span>
+<span class="cm">swapTwoNumbers(&amp;first, &amp;second);</span>
+<span class="cm">printf(&quot;first: %d\nsecond: %d\n&quot;, first, second);</span>
+<span class="cm">// i valori verranno scambiati</span>
+<span class="cm">*/</span>
+
+<span class="c1">// Restituire più valori.</span>
+<span class="c1">// Il linguaggio C non permette di restituire più valori utilizzando l&#39;istruzione return.</span>
+<span class="c1">// Se si desidera restituire più valori, la funzione deve ricevere in ingresso le variabili</span>
+<span class="c1">// in cui salvare i risultati. Queste variabili devono essere passate come puntatori,</span>
+<span class="c1">// in modo che la funzione possa modificarne direttamente il contenuto.</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">return_multiple</span><span class="p">(</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">array_of_3</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">ret1</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">ret2</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">ret3</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">array_of_3</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">// ritorna il codice d&#39;errore (falso)</span>
+
+<span class="w">    </span><span class="c1">// mettiamo le varibili nel puntatore in modo da modificare il suo valore</span>
+<span class="w">   </span><span class="o">*</span><span class="n">ret1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">array_of_3</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">   </span><span class="o">*</span><span class="n">ret2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">array_of_3</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="w">   </span><span class="o">*</span><span class="n">ret3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">array_of_3</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">//return codice d&#39;errore (vero)</span>
+<span class="p">}</span>
+
+<span class="cm">/*</span>
+<span class="cm">Per qunato riguarda gli array, saranno sempre passati alla funzioni come indicatori.</span>
+<span class="cm">Anche se allochi staticamente un array come `arr[10]`</span>
+<span class="cm">Viene ancora passato come puntatore al primo elemento in qualsiasi chiamata di funzioni.</span>
+<span class="cm">Ancora una volta non esiste un modo standard per ottenere le dimensioni di un array allocato dinamicamente in C. </span>
+<span class="cm">*/</span>
+<span class="c1">// La grandezza deve essere passata!</span>
+<span class="c1">// Altrimenti, questa funzione non ha modo di sapere quanto sia grande l&#39;array.</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">printIntArray</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">size</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;arr[%d] is: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="cm">/*</span>
+<span class="cm">int my_arr[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };</span>
+<span class="cm">int size = 10;</span>
+<span class="cm">printIntArray(my_arr, size);</span>
+<span class="cm">// stamperà &quot;arr[0] is: 1&quot; etc</span>
+<span class="cm">*/</span>
+
+<span class="c1">// Se si fa riferimento a variaibli esterne, fuori dalla funzione, </span>
+<span class="c1">// è necessario utilizzare la parola chiave extern</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">testFunc</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w"> </span><span class="c1">//i qui ora sta usando la variabile esterna i</span>
+<span class="p">}</span>
+
+<span class="c1">// rendi le variabili esterne private per il file di origine con static:</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">// altri file che utilizzano testFunc2() non possono accedere alla variabile j</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">testFunc2</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1">// La parola chiave `static` rende una variabile inaccessibile al codice al di fuori del</span>
+<span class="c1">// unità di compilazione. (Su quasi tutti i sistemi, un&#39;unità di compilazione è un file .c).</span>
+<span class="c1">// `static` si può applicare sia alla variabili globali (all&#39;unità di compilazione),</span>
+<span class="c1">// funzioni e variabili e variabili di funzioni locali.</span>
+<span class="c1">// Quando si usa `static` con variabili di funzioni locali, la variabile è effettivamente globale </span>
+<span class="c1">// e conserva il suo valore tra le chiamate di funzione, ma è accessibile solo all&#39;interno della funzione </span>
+<span class="c1">// in cui è dichiarata.</span>
+<span class="c1">// In più, le variabili statiche sono inizializzate a 0 se non dichiarate con qualche valore di partenza.</span>
+<span class="c1">// **Puoi dichiarare funzioni statiche per renderle private**</span>
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Tipi definiti dal utente e strutture</span>
+<span class="c1">///////////////////////////////////////</span>
+
+<span class="c1">// Typedefs può essere utilizzato per creare alias di tipo</span>
+<span class="k">typedef</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">my_type</span><span class="p">;</span>
+<span class="n">my_type</span><span class="w"> </span><span class="n">my_type_var</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="c1">// Le strutture sono delle raccolte di dati, i membri vengono allocati in memorial in sequenza,</span>
+<span class="c1">// nell&#39;ordine sono scritti:</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">rectangle</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">width</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">height</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// non è generalmente vero</span>
+<span class="c1">// sizeof(struct rectangle) == sizeof(int) + sizeof(int)</span>
+<span class="c1">// a causa del possibile padding tra i membri </span>
+<span class="c1">// della struttura (necessario per motivi di allineamento) [1]</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">function_1</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">rectangle</span><span class="w"> </span><span class="n">my_rec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">};</span><span class="w"> </span><span class="c1">// Campo che può essere inizializzato immediatamente</span>
+
+<span class="w">  </span><span class="c1">// Accesso alla struttura con .</span>
+<span class="w">  </span><span class="n">my_rec</span><span class="p">.</span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<span class="w">  </span><span class="n">my_rec</span><span class="p">.</span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// Puoi dichiarare puntatori alle strutture</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">rectangle</span><span class="w"> </span><span class="o">*</span><span class="n">my_rec_ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">my_rec</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// Usa la dereferenziazione per impostare i membri del puntatore...</span>
+<span class="w">  </span><span class="p">(</span><span class="o">*</span><span class="n">my_rec_ptr</span><span class="p">).</span><span class="n">width</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// ... o anche meglio: preferisci la -&gt; per motivi di legibilità</span>
+<span class="w">  </span><span class="n">my_rec_ptr</span><span class="o">-&gt;</span><span class="n">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="c1">// Stesso di (*my_rec_ptr).height = 10;</span>
+<span class="p">}</span>
+
+<span class="c1">// Puoi applicare typedef alla struttura per convenienza</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">rectangle</span><span class="w"> </span><span class="n">rect</span><span class="p">;</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">area</span><span class="p">(</span><span class="n">rect</span><span class="w"> </span><span class="n">r</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">width</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">height</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// I Typedefs possono anche essere definiti a destra durante la definizione della struttura </span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">width</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">height</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">rect</span><span class="p">;</span>
+<span class="c1">// Come prima, fare questo significa che puoi scrivere</span>
+<span class="n">rect</span><span class="w"> </span><span class="n">r</span><span class="p">;</span>
+<span class="c1">// invece di dover digitare</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">rectangle</span><span class="w"> </span><span class="n">r</span><span class="p">;</span>
+
+<span class="c1">// Se hai strutture di grandi dimensioni, puoi passarle `per puntatore` </span>
+<span class="c1">// per evitare di copiare l&#39;intera struttura:</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">areaptr</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">rect</span><span class="w"> </span><span class="o">*</span><span class="n">r</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">r</span><span class="o">-&gt;</span><span class="n">width</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">r</span><span class="o">-&gt;</span><span class="n">height</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Puntatori a funzioni</span>
+<span class="c1">///////////////////////////////////////</span>
+<span class="cm">/*</span>
+<span class="cm">In fase di esecuzioni, le funzioni si trovano su indirizzi di memoria noti. </span>
+<span class="cm">I puntatori della funzione sono proprio come qualsiasi altro puntatore </span>
+<span class="cm">(memorizzano solo un indirizzo di memoria), ma possono essere utilizzati</span>
+<span class="cm">per invocare le funzioni direttamente (o le funzioni di callback).</span>
+<span class="cm">Tuttavia, la sintassi della definizione può essere inizialmente confusa</span>
+
+<span class="cm">Esempio: usa str_reverse da un puntatore:</span>
+<span class="cm">*/</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">str_reverse_through_pointer</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">str_in</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Definire una variabile puntatore della funzione, denominata f.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">f</span><span class="p">)(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">);</span><span class="w"> </span><span class="c1">// La segnatura dovrebbe corrispondere esattamente alla funzione target.</span>
+<span class="w">  </span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">str_reverse</span><span class="p">;</span><span class="w"> </span><span class="c1">// Assegna l&#39;indirizzo per la funzione effettiva (determinato a tempo d&#39;esecuzione)</span>
+<span class="w">  </span><span class="c1">// f = str_reverse; funzionerebbe anche: le funzioni decadono nei puntatori, simili agli array</span>
+<span class="w">  </span><span class="p">(</span><span class="o">*</span><span class="n">f</span><span class="p">)(</span><span class="n">str_in</span><span class="p">);</span><span class="w"> </span><span class="c1">// Per chiamare la funzione attraverso il puntatore</span>
+<span class="w">  </span><span class="c1">// f(str_in); // Questa è una sintassi alternativa ma ugualmente valida per chiamarla</span>
+<span class="p">}</span>
+
+<span class="cm">/*</span>
+<span class="cm">Finchè le segnature delle funzioni corrispondono, è possibile assegnare qualsiasi funzione allo stesso puntatore.</span>
+<span class="cm">I puntatori della funzione sono generalmente scritti per semplicità e leggibilità come segue:</span>
+<span class="cm">*/</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">my_fnp_type</span><span class="p">)(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">);</span>
+
+<span class="c1">// quindi utilizzato quando si dichiara la variabile del puntatore effettivo:</span>
+<span class="c1">// ...</span>
+<span class="c1">// my_fnp_type f;</span>
+
+
+<span class="c1">/////////////////////////////</span>
+<span class="c1">// Stampando caratteri con printf()</span>
+<span class="c1">/////////////////////////////</span>
+
+<span class="c1">//Caratteri speciali:</span>
+<span class="cm">/*</span>
+<span class="cm">&#39;\a&#39;; // carattere di allarme</span>
+<span class="cm">&#39;\n&#39;; // carattere di nuova riga  </span>
+<span class="cm">&#39;\t&#39;; // carattere di tabulazione (allinea il testo a sinistra)  </span>
+<span class="cm">&#39;\v&#39;; // tabulazione verticale  </span>
+<span class="cm">&#39;\f&#39;; // nuova pagina (form feed)  </span>
+<span class="cm">&#39;\r&#39;; // ritorno a capo (carriage return)  </span>
+<span class="cm">&#39;\b&#39;; // carattere di backspace (cancella il carattere precedente)  </span>
+<span class="cm">&#39;\0&#39;; // carattere NULL. Di solito viene utilizzato alla fine delle stringhe in C.  </span>
+<span class="cm">//   Esempio: &quot;hello\n\0&quot;. \0 viene usato per convenzione per indicare la fine della stringa.  </span>
+<span class="cm">&#39;\\&#39;; // barra inversa (backslash)  </span>
+<span class="cm">&#39;\?&#39;; // punto interrogativo  </span>
+<span class="cm">&#39;\&#39;&#39;; // apostrofo (singolo apice)  </span>
+<span class="cm">&#39;\&quot;&#39;; // doppio apice  </span>
+<span class="cm">&#39;\xhh&#39;; // numero esadecimale. Esempio: &#39;\xb&#39; corrisponde al carattere di tabulazione verticale  </span>
+<span class="cm">&#39;\0oo&#39;; // numero ottale. Esempio: &#39;\013&#39; corrisponde al carattere di tabulazione verticale  </span>
+
+<span class="cm">// Formattazione della stampa:  </span>
+<span class="cm">&quot;%d&quot;;    // intero  </span>
+<span class="cm">&quot;%3d&quot;;   // intero con una lunghezza minima di 3 cifre (allineato a destra)  </span>
+<span class="cm">&quot;%s&quot;;    // stringa  </span>
+<span class="cm">&quot;%f&quot;;    // numero in virgola mobile (float)  </span>
+<span class="cm">&quot;%ld&quot;;   // numero long  </span>
+<span class="cm">&quot;%3.2f&quot;; // numero float con almeno 3 cifre prima della virgola e 2 dopo  </span>
+<span class="cm">&quot;%7.4s&quot;; // applicabile anche alle stringhe  </span>
+<span class="cm">&quot;%c&quot;;    // carattere  </span>
+<span class="cm">&quot;%p&quot;;    // puntatore. NOTA: è necessario effettuare un cast a (void *) prima di passarlo come argomento a `printf`.  </span>
+<span class="cm">&quot;%x&quot;;    // numero esadecimale  </span>
+<span class="cm">&quot;%o&quot;;    // numero ottale  </span>
+<span class="cm">&quot;%%&quot;;    // stampa il carattere %  </span>
+<span class="cm">*/</span>
+
+
+<span class="c1">///////////////////////////////////////</span>
+<span class="c1">// Ordine di valutazione</span>
+<span class="c1">///////////////////////////////////////</span>
+
+<span class="c1">// Da sopra a sotto, il sopra ha la precedenza </span>
+<span class="c1">//----------------------------------------------------------//</span>
+<span class="c1">//        Operatori                  | Associatività        //</span>
+<span class="c1">//----------------------------------------------------------//</span>
+<span class="c1">// () [] -&gt; .                        | da sinistra a destra //</span>
+<span class="c1">// ! ~ ++ -- + = *(tipo) sizeof      | da destra a sinistra //</span>
+<span class="c1">// * / %                             | da sinistra a destra //</span>
+<span class="c1">// + -                               | da sinistra a destra //</span>
+<span class="c1">// &lt;&lt; &gt;&gt;                             | da sinistra a destra //</span>
+<span class="c1">// &lt; &lt;= &gt; &gt;=                         | da sinistra a destra //</span>
+<span class="c1">// == !=                             | da sinistra a destra //</span>
+<span class="c1">// &amp;                                 | da sinistra a destra //</span>
+<span class="c1">// ^                                 | da sinistra a destra //</span>
+<span class="c1">// |                                 | da sinistra a destra //</span>
+<span class="c1">// &amp;&amp;                                | da sinistra a destra //</span>
+<span class="c1">// ||                                | da sinistra a destra //</span>
+<span class="c1">// ?:                                | da destra a sinistra //</span>
+<span class="c1">// = += -= *= /= %= &amp;= ^= |= &lt;&lt;= &gt;&gt;= | da destra a sinistra //</span>
+<span class="c1">// ,                                 | da sinistra a destra //</span>
+<span class="c1">//----------------------------------------------------------//</span>
+
+
+<span class="cm">/******************************* File d&#39;intestazione **********************************</span>
+
+<span class="cm">I file d&#39;intestazione sono una parte importante del C, lo permettono la connesione di </span>
+<span class="cm">file sorgenti in C e possono semplificare il codice e le definizioni separandoli in file diversi.</span>
+
+<span class="cm">I file d&#39;intestazione sono sintatticamente simili ai file di sorgente C ma risiedono in &#39;.h&#39;</span>
+<span class="cm">Possono essere inclusi nel tuo file sorgente utilizzando il pre-processore con la direttiva #include &#39;Esempio.h&#39;</span>
+<span class="cm">dato che &#39;esempio.h&#39; esiste nella stessa cartella come file c. </span>
+<span class="cm">*/</span>
+
+<span class="cm">/* Una protezione per evitare che l&#39;header venga definito troppe volte. Questo */</span>
+<span class="cm">/* accade in caso di dipendenze circolari, quando il contenuto dell&#39;header è   */</span>
+<span class="cm">/* già stato definito.                                                         */</span>
+<span class="cp">#ifndef EXAMPLE_H </span><span class="cm">/* Se EXAMPLE_H non è ancora stato definito. */</span>
+<span class="cp">#define EXAMPLE_H </span><span class="cm">/* Definisce la macro EXAMPLE_H. */</span>
+
+<span class="cm">/* Altri header possono essere inclusi negli header e quindi inclusi in modo  */</span>
+<span class="cm">/* transitivo nei file che includono questo header.                           */</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
+
+<span class="cm">/* Come per i file sorgente in C, le macro possono essere definite negli header */</span>
+<span class="cm">/* e utilizzate nei file che includono questo file header.                      */</span>
+<span class="cp">#define EXAMPLE_NAME &quot;Dennis Ritchie&quot;</span>
+
+<span class="cm">/* Anche le macro funzione possono essere definite. */</span>
+<span class="cp">#define ADD(a, b) ((a) + (b))</span>
+
+<span class="cm">/* Nota le parentesi che racchiudono gli argomenti: sono importanti per evitare */</span>
+<span class="cm">/* che `a` e `b` vengano espansi in modo inaspettato. Ad esempio, considera    */</span>
+<span class="cm">/* MUL(x, y) (x * y); MUL(1 + 2, 3) verrebbe espanso in (1 + 2 * 3), dando un  */</span>
+<span class="cm">/* risultato errato.                                                            */</span>
+
+<span class="cm">/* Le struct e i typedef possono essere usati per garantire coerenza tra i file. */</span>
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">Node</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">val</span><span class="p">;</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">Node</span><span class="w"> </span><span class="o">*</span><span class="n">next</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">Node</span><span class="p">;</span>
+
+<span class="cm">/* Anche le enumerazioni possono essere definite qui. */</span>
+<span class="k">enum</span><span class="w"> </span><span class="n">traffic_light_state</span><span class="w"> </span><span class="p">{</span><span class="n">GREEN</span><span class="p">,</span><span class="w"> </span><span class="n">YELLOW</span><span class="p">,</span><span class="w"> </span><span class="n">RED</span><span class="p">};</span>
+
+<span class="cm">/* I prototipi di funzione possono essere definiti qui per l&#39;uso in più file,  */</span>
+<span class="cm">/* ma è una cattiva pratica definire la funzione direttamente nell&#39;header.     */</span>
+<span class="cm">/* Le definizioni dovrebbero essere inserite in un file C separato.            */</span>
+<span class="n">Node</span><span class="w"> </span><span class="nf">createLinkedList</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">vals</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">len</span><span class="p">);</span>
+
+<span class="cm">/* Oltre agli elementi sopra citati, altre definizioni dovrebbero essere lasciate */</span>
+<span class="cm">/* a un file sorgente C. Inoltre, non bisognerebbe includere troppi file o      */</span>
+<span class="cm">/* definizioni in un unico header, ma organizzarli in più header separati o in  */</span>
+<span class="cm">/* un file C.                                                                   */</span>
+
+<span class="cp">#endif </span><span class="cm">/* Fine della direttiva preprocessor if. */</span>
+</pre></div>
+<h2>Ulteriori letture</h2>
+<p>È meglio procurarsi una copia di <a href="https://en.wikipedia.org/wiki/The_C_Programming_Language">K&amp;R, aka &quot;The C Programming Language&quot;</a>. È il libro sul C, scritto da Dennis Ritchie, il creatore del linguaggio, e Brian Kernighan. Tuttavia, fai attenzione: è piuttosto datato e contiene alcune imprecisioni (o meglio, idee che oggi non sono più considerate valide) e pratiche che nel tempo sono cambiate.</p>
+<p>Un'altra buona risorsa è <a href="http://learncodethehardway.org/c/">Learn C The Hard Way</a> (non è gratuito).</p>
+<p>Se hai una domanda, consulta le <a href="http://c-faq.com">compl.lang.c Frequently Asked Questions</a>.</p>
+<p>È molto importante utilizzare una corretta spaziatura, indentazione e mantenere uno stile di codifica coerente in generale.
+Un codice leggibile è migliore di un codice &quot;intelligente&quot; o veloce. Per uno stile di codifica chiaro e ben strutturato, puoi fare riferimento al <a href="https://www.kernel.org/doc/Documentation/process/coding-style.rst">Linux kernel coding style</a>.</p>
+<p>[1] <a href="https://stackoverflow.com/questions/119123/why-isnt-sizeof-for-a-struct-equal-to-the-sum-of-sizeof-of-each-member">Why isn't sizeof for a struct equal to the sum of sizeof of each member?</a></p>
+
+        <hr>
+        <p>
+          Hai un suggerimento? Oppure una correzione? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Apri un issue</a> sul GitHub, o fa un <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/it/c.md">pull request</a> da solo!
+        </p>
+        <p class="contributed">
+          In origine contribuita da Adam Bard, e modificata da <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/it/c.md">1 contributore(i)</a>.
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 88px; height: 31px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2025
+            <a href="http://adambard.com/">Adam Bard</a>,
+            <a href="http://twitter.com/H2CO3_iOS">Árpád Goretity</a>,
+            <a href="http://cbs.stgn.pl">Jakub Trzebiatowski</a>,
+            <a href="https://marcoms.github.io">Marco Scannadinari</a>,
+            <a href="https://github.io/zfergus2">Zachary Ferguson</a>,
+            <a href="https://github.com/himanshu81494">himanshu</a>,
+            <a href="https://github.com/JoshuaRLi">Joshua Li</a>,
+            <a href="https://github.com/dchirila">Dragos B. Chirila</a>,
+            <a href="https://github.com/heitorPB/">Heitor P. de Bittencourt</a>
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>
