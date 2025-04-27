@@ -182,6 +182,7 @@ for root, dirs, files in os.walk(docs_dir):
                 "Algorithms & Data Structures": "name",
                 "framework": "framework",
                 "language": "language",
+                "markup": "language",
                 "tool": "tool",
             }[article.metadata.get("category", "language")]
             if name_key in article.metadata:
@@ -239,6 +240,7 @@ def get_category_display_name(c):
         "framework": "Frameworks and Libraries",
         "tool": "Tools",
         "Algorithms & Data Structures": "Algorithms & Data Structures",
+        "markup": "Markup Languages"
     }[c]
 
 
@@ -301,6 +303,7 @@ categories = {
     "framework": [],
     "tool": [],
     "Algorithms & Data Structures": [],
+    "markup": [],
 }
 for language in articles:
     lang = sorted_english_first(articles[language].keys())[0]
