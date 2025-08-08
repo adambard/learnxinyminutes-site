@@ -148,13 +148,6 @@ else
   "...aber dies!"
 end
 
-# ...und ebenso `unless`
-unless true do
-  "Dies wird nie jemand sehen..."
-else
-  "...aber dies!"
-end
-
 # Du erinnerst dich an 'pattern matching'? Viele Kontrollstrukturen in Elixir
 # arbeiten damit.
 
