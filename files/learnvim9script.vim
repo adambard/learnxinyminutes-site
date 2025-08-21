@@ -1,5 +1,3 @@
-vim9script
-
 # The vim9script namespace, above, is required to distinguish a Vim9 script
 # *.vim file from a legacy vimscript file.  In Vim's command-line mode,
 # or in a legacy script, using the command `:vim9cmd` (or just `:vim9`) before
