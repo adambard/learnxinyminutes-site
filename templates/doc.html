@@ -11,6 +11,20 @@
       </div>
       <h1><a href="/">{{ i18n['title'] }}</a></h1>
       <h2>{{ i18n['where'] }}{{ where_x_eq_name }}</h2>
+
+      {% if langs|length > 1 %}
+      <div class="lang-choice">
+        <label for="lang-select">{{ i18n.get('selectLanguage', 'Language') }}:</label>
+        <select id="lang-select" name="lang-select">
+          <option value="{{ lang }}">{{ native_name(lang) }}</option>
+          {% for l in langs %}
+          {% if l != lang %}
+          <option value="{{ l }}" data-url="{{ path(l, language) }}">{{ native_name(l) }}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
       {% if filename %}
       <p class="filelink">
         {{ i18n['getCode'] }}
@@ -49,4 +63,17 @@
           {% endif %}
         </footer>
       </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const langSelect = document.getElementById('lang-select');
+          langSelect?.addEventListener('change', () => {
+            const selectedOption = langSelect.options[langSelect.selectedIndex];
+            const url = selectedOption?.getAttribute('data-url');
+            if (url) {
+              window.location.href = url;
+            }
+          });
+        });
+      </script>
 {% endblock %}

@@ -242,6 +242,10 @@ def get_category_display_name(c):
     }[c]
 
 
+def path(lang, language):
+    return f"/{lang}/{language}/" if lang != "en" else f"/{language}/"
+
+
 # Inherit metadata from English articles
 for language in articles:
     for lang, article in articles[language].items():
@@ -271,6 +275,7 @@ for language in articles:
             "content": markdown_to_html(content),
             "lang": lang,
             "langs": sorted(articles[language].keys()),
+            "language": language,
             "contributors": metadata.get("contributors", []),
             "contributor_count": metadata.get("contributor_count", 0),
             "new_issue_url": f"{docs_repo}/issues/new",
@@ -281,6 +286,8 @@ for language in articles:
             "twitter_share_url": twitter_share_url,
             "canonical": f"{lang + '/' if lang != 'en' else ''}{language}/",
             "current_year": date.today().year,
+            "path": path,
+            "native_name": native_name,
         }
         html = render_template("doc.html", context)
 
@@ -314,10 +321,6 @@ for c in categories:
 
 all_langs = set(l for article in articles.values() for l in article.keys())
 all_langs = sorted_english_first(all_langs)
-
-
-def path(lang, language):
-    return f"/{lang}/{language}/" if lang != "en" else f"/{language}/"
 
 
 def render_language_index(lang):
