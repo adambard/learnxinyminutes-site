@@ -242,6 +242,10 @@ def get_category_display_name(c):
     }[c]
 
 
+def path(lang, language):
+    return f"/{lang}/{language}/" if lang != "en" else f"/{language}/"
+
+
 # Inherit metadata from English articles
 for language in articles:
     for lang, article in articles[language].items():
@@ -314,10 +318,6 @@ for c in categories:
 
 all_langs = set(l for article in articles.values() for l in article.keys())
 all_langs = sorted_english_first(all_langs)
-
-
-def path(lang, language):
-    return f"/{lang}/{language}/" if lang != "en" else f"/{language}/"
 
 
 def render_language_index(lang):
