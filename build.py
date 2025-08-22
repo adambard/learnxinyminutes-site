@@ -275,6 +275,7 @@ for language in articles:
             "content": markdown_to_html(content),
             "lang": lang,
             "langs": sorted(articles[language].keys()),
+            "language": language,
             "contributors": metadata.get("contributors", []),
             "contributor_count": metadata.get("contributor_count", 0),
             "new_issue_url": f"{docs_repo}/issues/new",
@@ -285,6 +286,8 @@ for language in articles:
             "twitter_share_url": twitter_share_url,
             "canonical": f"{lang + '/' if lang != 'en' else ''}{language}/",
             "current_year": date.today().year,
+            "path": path,
+            "native_name": native_name,
         }
         html = render_template("doc.html", context)
 
