@@ -119,7 +119,7 @@ fi
 # L'operatore =~ funziona solo dentro alle doppie parentesi quadre [[ ]],
 # che hanno un comportamento leggermente diverso rispetto alle singole [ ].
 # Se vuoi approfondire, visita questo link (in inglese):
-# http://www.gnu.org/software/bash/manual/bashref.html#Conditional-Constructs
+# https://www.gnu.org/software/bash/manual/bashref.html#Conditional-Constructs
 
 # Usando `alias`, puoi definire nuovi comandi o modificare quelli già esistenti.
 # Ad esempio, così puoi ridefinire il comando ping per inviare solo 5 pacchetti

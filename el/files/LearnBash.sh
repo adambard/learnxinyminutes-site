@@ -181,7 +181,7 @@ then
 fi
 # Να σημειωθεί πως ο τελεστής `=~` δουλεύει μόνο με διπλές αγκύλες [[ ]],
 # που είναι ωστόσο διαφορετικές από τις μονές [ ].
-# Δείτε το http://www.gnu.org/software/bash/manual/bashref.html#Conditional-Constructs
+# Δείτε το https://www.gnu.org/software/bash/manual/bashref.html#Conditional-Constructs
 # για περισσότερες πληροφορίες σχετικά με αυτό.
 
 # Επαναπροσδιορισμός της εντολής `ping` ως alias (ψευδώνυμο) για την αποστολή 5

@@ -166,7 +166,7 @@ fi
 # Обратите внимание, что =~ работает только внутри
 # двойных квадратных скобок [[ ]],
 # которые несколько отличаются от одинарных скобок [ ].
-# Для более подробной информации см. http://www.gnu.org/software/bash/manual/bashref.html#Conditional-Constructs.
+# Для более подробной информации см. https://www.gnu.org/software/bash/manual/bashref.html#Conditional-Constructs.
 
 # Переопределить команду «ping» как псевдоним для отправки только пяти пакетов
 alias ping='ping -c 5'

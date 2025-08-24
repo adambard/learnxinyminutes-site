@@ -1,5 +1,5 @@
 #!/bin/bash
-# Den første linjen i et bash skript starter med '#!' (shebang) 
+# Den første linjen i et bash skript starter med '#!' (shebang)
 # etterfulgt av stien til bash http://en.wikipedia.org/wiki/Shebang_(Unix)
 # Kommentarer starter med #.
 
@@ -14,15 +14,15 @@ VARIABLE="En tekststreng"
 
 # Men ikke slik:
 VARIABLE = "En tekststreng"
-# Bash vil tolke dette som at VARIABLE er en kommando den skal kjøre 
+# Bash vil tolke dette som at VARIABLE er en kommando den skal kjøre
 # og gi en feilmelding dersom kommandoen ikke finnes
 
 # Bruk av den nydeklarerte variabelen:
 echo $VARIABLE
 echo "$VARIABLE"
 echo '$VARIABLE'
-# Når du bruker variabelen, for eksempel setter verdien eller eksporterer den, 
-# skriver du navnet dens uten $. Hvis du vil bruke variabelens verdi, 
+# Når du bruker variabelen, for eksempel setter verdien eller eksporterer den,
+# skriver du navnet dens uten $. Hvis du vil bruke variabelens verdi,
 # skriver du $ før variabelnavnet.
 
 # Strenginnhold i en variabel kan erstattes på følgende måte:
@@ -37,7 +37,7 @@ echo ${VARIABLE:0:7}
 echo ${FOO:-"StandardVerdiDersomFOOErTom"}
 # Dette fungerer for null (FOO=), tom streng (FOO="") og tallet null (FOO=0)
 
-# Det finnes en rekke hendige innebygde variable, eksempel: 
+# Det finnes en rekke hendige innebygde variable, eksempel:
 echo "Siste programs returnerte verdi: $?"
 echo "Skript's PID: $$"
 echo "Antall argumenter: $#"
@@ -62,7 +62,7 @@ fi
 echo "Kjøres alltid" || echo "Kjøres kun dersom første kommando feilet"
 echo "Kjøres alltid" && echo "Kjøres kun dersom første kommando IKKE feilet"
 
-# For å bruke && (logisk OG) og || (logisk ELLER) sammen med if setninger, 
+# For å bruke && (logisk OG) og || (logisk ELLER) sammen med if setninger,
 # trenger man par av firkantklammer [] på hver side av et logisk uttrykk:
 if [ $NAME == "Steve" ] && [ $AGE -eq 15 ]
 then
@@ -77,7 +77,7 @@ fi
 # Matematiske uttrykk skrives slik:
 echo $(( 10 + 5 ))
 
-# Ulikt de fleste programmeringsspråk, så er bash et skall - det medfører at en 
+# Ulikt de fleste programmeringsspråk, så er bash et skall - det medfører at en
 # kommando i et skript kjører i en bestemt mappe i filsystemet. Du kan skrive
 # ut innholdet i nåværende mappe med ls kommandoen:
 ls
@@ -103,7 +103,7 @@ for line in sys.stdin:
     print(line, file=sys.stdout)
 EOF
 
-# Kjør hello.py (et python skript) 
+# Kjør hello.py (et python skript)
 # med ulike stdin, stdout, and stderr omdirigeringer:
 python hello.py < "input.in"
 python hello.py > "output.out"
@@ -141,7 +141,7 @@ echo "There are $(ls | wc -l) items here."
 echo "There are `ls | wc -l` items here."
 
 # Bash har en 'case' setning som fungerer omtrent som en 'switch' i Java/C:
-case "$VARIABLE" in 
+case "$VARIABLE" in
     # Skriv ønskede match med tilhørende kommandoer
     0) echo "There is a zero.";;
     1) echo "There is a one.";;
@@ -214,7 +214,7 @@ grep "^foo.*bar$" file.txt
 grep -c "^foo.*bar$" file.txt
 # hvis du vil matche en bestemt streng, og ikke et regulært uttrykk
 # bruker du enten "fgrep" eller ekvivalenten "grep -f"
-fgrep "^foo.*bar$" file.txt 
+fgrep "^foo.*bar$" file.txt
 
 
 # Les Bash sin egen dokumentasjon om innebygde konstruksjoner:
