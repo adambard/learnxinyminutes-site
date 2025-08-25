@@ -152,13 +152,6 @@ def count_contributors(path):
         return 0
 
 
-def twitter_share_url(url, doc):
-    full_url = "https://learnxinyminutes.com" + (("/" + url) if url else "")
-    text = doc or ""
-    qs = urlencode({"url": full_url, "text": text})
-    return f"https://twitter.com/intent/tweet?{qs}"
-
-
 # Load all articles
 articles = {}
 for root, dirs, files in os.walk(docs_dir):
@@ -283,7 +276,6 @@ for language in articles:
             "blame_url": f"{docs_repo}/blame/master/{orig_path}",
             "i18n": i18n_data.get(lang.replace("-", "_"), i18n_data["default"]),
             "pluralize": pluralize,
-            "twitter_share_url": twitter_share_url,
             "canonical": f"{lang + '/' if lang != 'en' else ''}{language}/",
             "current_year": date.today().year,
             "path": path,
