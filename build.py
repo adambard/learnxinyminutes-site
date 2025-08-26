@@ -8,6 +8,8 @@ import subprocess
 import shutil
 from urllib.parse import urlencode
 import re
+from functools import lru_cache
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from html import unescape
 import pygments
@@ -32,6 +34,8 @@ IGNORE = {
 }
 
 docs_repo = "https://github.com/adambard/learnxinyminutes-docs"
+
+MAX_WORKERS = max(1, min(15, os.cpu_count() - 1))
 
 
 def native_name(lang):
@@ -83,29 +87,32 @@ def render_template(template_name, context):
     return template.render(context)
 
 
+
+HTML_FORMATTER = pygments.formatters.HtmlFormatter(nowrap=True)
+CODE_EXPR = re.compile(
+    r'<pre( lang="(?P<lang>[^"]+)")?><code>(?P<code>.+?)</code></pre>', re.DOTALL
+)
+
+# re-use lexer objects to not re-compile regexes
+@lru_cache(maxsize=200)
+def get_lexer(lang):
+    try:
+        lexer = pygments.lexers.get_lexer_by_name(lang)
+        return lang, lexer
+    except pygments.util.ClassNotFound:
+        if lang is not None:
+            print(f"Pygments doesn't support language: {lang}", file=sys.stderr)
+        return None, pygments.lexers.TextLexer()
+
 def highlight_code(html):
-    formatter = pygments.formatters.HtmlFormatter(nowrap=True)
-
-    code_expr = re.compile(
-        r'<pre( lang="(?P<lang>[^"]+)")?><code>(?P<code>.+?)</code></pre>', re.DOTALL
-    )
-
     def replacer(match) -> str:
-        lang = match.group("lang")
-        try:
-            lexer = pygments.lexers.get_lexer_by_name(lang)
-        except pygments.util.ClassNotFound:
-            if lang is not None:
-                print(f"Pygments doesn't support language: {lang}", file=sys.stderr)
-            lang = None
-            lexer = pygments.lexers.TextLexer()
-
+        lang, lexer = get_lexer(match.group("lang"))
         code = match.group("code")
 
         # Decode html entities in the code.
         code = unescape(code)
 
-        highlighted = pygments.highlight(code, lexer, formatter)
+        highlighted = pygments.highlight(code, lexer, HTML_FORMATTER)
 
         if lang:
             return (
@@ -113,7 +120,7 @@ def highlight_code(html):
             )
         return f'<div class="highlight"><pre>{highlighted}</pre></div>'
 
-    result = code_expr.sub(replacer, html)
+    result = CODE_EXPR.sub(replacer, html)
 
     return result
 
@@ -151,6 +158,17 @@ def count_contributors(path):
         print(f"git blame error: {e.stderr}", end="")
         return 0
 
+# Run git blame in parallel because running it on hundreds of files takes a while
+contributor_counts = {}
+md_files = list(docs_dir.rglob("*.md"))
+with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+    future_to_file = {executor.submit(count_contributors, f): f for f in md_files}
+    for fut in as_completed(future_to_file):
+        f = future_to_file[fut]
+        try:
+            contributor_counts[f] = fut.result()
+        except Exception as e:
+            print(f"Error processing {f}: {e}")
 
 # Load all articles
 articles = {}
@@ -182,7 +200,7 @@ for root, dirs, files in os.walk(docs_dir):
                     name_key, article.metadata.get("name")
                 )
             article.metadata["orig_path"] = filename.relative_to(docs_dir)
-            article.metadata["contributor_count"] = count_contributors(filename)
+            article.metadata["contributor_count"] = contributor_counts.get(filename, 0)
 
             if language not in articles:
                 articles[language] = {}
