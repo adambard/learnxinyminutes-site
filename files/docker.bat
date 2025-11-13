@@ -42,7 +42,7 @@ $ docker run -d ubuntu sleep 60s
 # CONTAINER ID   IMAGE     COMMAND       CREATED         STATUS         PORTS     NAMES
 # 133261b4894a   ubuntu    "sleep 60s"   3 seconds ago   Up 2 seconds             vigorous_gould
 
-$ docker run <container-id> -p 3000:8000
+$ docker run -p 3000:8000 <image-id>
 # The -p (or --publish) flag is used to expose port 8000 inside the container to
 # port 3000 outside the container. This is because the app inside the container
 # runs in isolation, hence the port 8000 where the app runs is private to the
@@ -52,9 +52,9 @@ $ docker run -i
 # or
 $ docker run -it
 # Docker runs our containers in a non-interactive mode i.e. they do not accept
-# inputs or work dynamically while running. The -i flag keeps input open to the
-# container, and the -t flag creates a pseudo-terminal that the shell can attach
-# to (can be combined as -it)
+# inputs or work dynamically while running. The -i (or --interactive) flag
+# keeps input open to the container, and the -t (or --tty) flag creates a
+# pseudo-terminal that the shell can attach to (can be combined as -it)
 
 $ docker ps -a
 # The `docker ps` command only shows running containers by default. To see all
@@ -123,7 +123,8 @@ FROM <base-image>
 
 ENV USERNAME='admin'\
     PWD='****'
-# optionally define environmental variables
+# optionally define environmental variables, real credentials
+# should be handled more securely (like using .env file)
 
 RUN apt-get update
 # run linux commands inside container env, does not affect host env
@@ -141,12 +142,11 @@ CMD [<args>,...]
 # `CMD node server.js`
 # This executes after image creation only when the container from the image
 # is running.
-$ docker build <path-to-dockerfile>
-# used to build an image from the specified Dockerfile
-# instead of path we could also specify a URL
-# -t tag is optional and used to name and tag your images for e.g.
-# `$ docker build -t my-image:0.1 ./home/app`
-# rebuild images everytime you make changes in the dockerfile
+$ docker build -t <image-name>:<tag> <path-to-dockerfile>
+# used to build an image from the specified Dockerfile.
+# -t (or --tag) is used to give the image a name and tag.
+# Instead of path we could specify '.' (which means,
+# check for a Dockerfile in the current directory) or a URL.
 $ docker login
 # to login to Docker Hub using your username and password
 
