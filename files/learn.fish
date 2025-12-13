@@ -14,8 +14,8 @@
 ~/images/nudes/peppa.jpg
 ~/images/screenshots/2020-42-69.jpg
 ~/images/omegalul.jpg
->echo sick egg, nadia. no u do really goofy shit.   | grep [udense]
->echo This\ is\ text > file.txt
+> echo sick egg, nadia. no u do really goofy shit.   | grep [udense]
+> echo This\ is\ text > file.txt
 >echo This\ is\ a\ line >> file.txt
 >echo This\ is\ a\ second\ line >> file.txt
 > echo "My home is $HOME"
@@ -24,14 +24,18 @@ My home is /home/myuser
 My home is $HOME
 > echo Lol; echo this is fun
 > set var lol && echo $var
-> if not echo It's very late I should not waste my time with this  
-      echo Nobody heard you  
+> set var lol &&    # press Enter here
+      echo $var
+whoami \    # press Enter here
+    --version
+> if not echo It's very late I should not waste my time with this
+      echo Nobody heard you
   end
 # This is a comment in fish.
-# 
-# If you execute a file without specifying an interpreter, 
-# meaning the software that runs your script, you need to tell the shell, 
-# where that interpreter is. 
+#
+# If you execute a file without specifying an interpreter,
+# meaning the software that runs your script, you need to tell the shell,
+# where that interpreter is.
 # For fish you just add the following comment as the first line in your script:
 
 #!/bin/fish
@@ -49,11 +53,11 @@ set -x name value
 set -e name
 # to Erase
 
-# a variable set with a space doesn't get sent as two arguments, but as one, as you would expect it. 
+# a variable set with a space doesn't get sent as two arguments, but as one, as you would expect it.
 set turtlefolder 'Turtle Folder'
 mkdir $turtlefolder
 
-# This will create one folder, as expected, not two, like in bash... 
+# This will create one folder, as expected, not two, like in bash...
 # Who would even want that? tHiS iS a fEaTurE, nOt a bUg...
 
 # you can even have lists as variables. This actually makes sense, because if you want to have a variable that would create two folders, you just give mkdir a list of your foldernames.
@@ -61,8 +65,8 @@ mkdir $turtlefolder
 # you can then count the entries in that list with:
 count $PATH
 
-# Not only is everything awesome, but in fish, everything is also a list. 
-# So $PWD for example is a list of length 1. 
+# Not only is everything awesome, but in fish, everything is also a list.
+# So $PWD for example is a list of length 1.
 # To make a list, just give the set command multiple arguments:
 set list entry1 entry2 entry3
 
@@ -70,13 +74,13 @@ set list entry1 entry2 entry3
 set PATH $PATH ~/cowsay/
 
 # But, as previously mentioned, we also have a simpler way to do that specifically in fish.
-# As with every Array/List, you can access it with 
+# As with every Array/List, you can access it with
 $listvar[2]
 
-# there's also ranges with 
+# there's also ranges with
 $listvar[1..5]
 
-# and you can use negative numbers like 
+# and you can use negative numbers like
 $listvar[-1]
 # e.g to access the last element.
 
@@ -88,10 +92,11 @@ echo $a$1
 
 # Of course, if you separate them, it will see them as two separate arguments and echo them one after the other. THAT is expected behavior @bash.
 
-# There are also other useful things, like command substitutions. For example, when you want to output the returns of two commands in one line. In bash you would do that with
-echo "`ls` is in $PWD" 
-# or 
-echo "$(ls) is in $PWD" 
+# There are also other useful things, like command substitutions. For example, when you want to output the returns of two commands in one line.
+# In bash you would do that with
+# echo "`ls` is in $PWD"
+# or
+# echo "$(ls) is in $PWD"
 
 # if you ask me, that's unnecessary. I always type in the wrong apostrophe. Why not just use two parenthesis, like in fish?
 echo (ls) is in $PWD
@@ -108,10 +113,17 @@ set myvar "The file"(ls -a)" is in the directory $PWD"
 
 set myvar "The files" (ls -a) " are in the directory $PWD"
 
+# Passing the output of a command to another command that only accepts files can be achieved with process substitution.
+# In bash you use <(command):
+# diff <(ls dir1) <(ls dir2)
+
+# fish uses (command | psub) for that:
+diff (ls dir1 | psub) (ls dir2 | psub)
+
 # There's also if, else if, else
-if grep fish /etc/shells
+if grep -q fish /etc/shells
     echo Found fish
-else if grep bash /etc/shells
+else if grep -q bash /etc/shells
     echo Found bash
 else
     echo Got nothing
@@ -119,8 +131,8 @@ end
 
 # A little weird is that you compare stuff with one = sign, of course because we don't need it to set variables, but still... and the keyword "test":
 if test $var = "test"
-    echo yes 
-else 
+    echo yes
+else
     echo no
 end
 
@@ -155,7 +167,7 @@ end
 functions --handlers
 
 
-# You can use the functions command to learn more about, well, functions. 
+# You can use the functions command to learn more about, well, functions.
 # For example you can print the source code of every function:
 functions cd
 functions print
@@ -182,5 +194,5 @@ end
 # Cool!
 
 # The bashrc equivalent is not fishrc, but the previously mentioned config.fish file in ~/.config/fish/
-# To add a function to fish, though, you should create a simple .fish file in that directory. Don't just paste that function in the config.fish. That's ugly. 
+# To add a function to fish, though, you should create a simple .fish file in that directory. Don't just paste that function in the config.fish. That's ugly.
 # If you have more, just add it, but those are the most important basics.
