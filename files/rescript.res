@@ -4,7 +4,7 @@
 /*----------------------------------------------
  * Variable and function declaration
  *----------------------------------------------
- * Variables and functions use the let keyword and end with a semi-colon
+ * Variables and functions use the let keyword
  * `let` bindings are immutable
  */
 
