@@ -13,7 +13,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta http-equiv="Content-Language" content="en">
-    <title>Learn Vim9Script in Y Minutes</title>
+    <title>Learn Vim9 script in Y Minutes</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -35,287 +35,358 @@
   <body>
     <div class="container">
       <h1><a href="/">Learn X in Y minutes</a></h1>
-      <h2>Where X=Vim9Script</h2>
+      <h2>Where X=Vim9 script</h2>
 
       <p class="filelink">
         Get the code:
         <a href="/files/learnvim9script.vim">learnvim9script.vim</a>
       </p>
       <div id="doc">
-<p>Vim9script is a modernized, TypeScript-like language to script the Vim text editor.
-(See however <a href="https://github.com/yegappan/Vim9ScriptForPythonDevelopers">Yegappan's Vim9 for Python Developers</a>).</p>
-<p>It improves on its predecessor, legacy Vimscript, also called VimL, which is a sequence of Ex commands enhanced with scripting constructs like variables, functions, and control flow.
-(Ex commands, such as <code>:echo</code>, <code>:write</code>, <code>:substitute</code>, <code>:quit</code>, ... are commands that are part of the legacy Ex editor to execute a single action, one-liners without return values.)
-Legacy Vimscript is interpreted line by line, requiring backslashes to continue lines, and commands like <code>let</code> and <code>call</code> are used to make them resemble ex-commands.</p>
-<p>In contrast, Vim9script supports multi-line syntax natively, without needing line continuation.
-This makes it less suited for command-line usage, unlike traditional ex-commands, so that Vim9Script complements these for scripting.</p>
-<p>Vim9Script enforces stricter syntax, improves performance, and supports modern programming features such as strong typing, classes, lambdas, and modules.
-Differences (see <a href="https://vimhelp.org/vim9.txt.html#vim9-differences">https://vimhelp.org/vim9.txt.html#vim9-differences</a>) include:</p>
-<ol>
-<li>
-<p>New syntax basics</p>
-<ul>
-<li>Comments start with <code>#</code> instead of <code>&quot;</code>.</li>
-<li>Line-continuation backslashes are rarely needed --- just concatenate with <code>..</code>.</li>
-<li>Whitespace is significant in many places to keep things readable.</li>
-</ul>
-</li>
-<li>
-<p>Variables and constants</p>
-<ul>
-<li>Declare regular variables with <code>:var</code>, e.g. <code>var count = 0</code></li>
-<li>Change them with standard operators (<code>count += 3</code>) --- no more <code>:let</code>.</li>
-<li>Declare immutable names with <code>:const</code> or <code>:final</code>.</li>
-</ul>
-</li>
-<li>
-<p>Typed, script-local functions</p>
-<ul>
-<li>All functions (and variables) are script-local by default.</li>
-<li>Use <code>:def</code> with typed params and a return type, e.g.
-<code>def foo(x: number, y: string): bool</code></li>
-<li>Call them like normal functions (no <code>:call</code>).</li>
-</ul>
-</li>
-</ol>
-<p>All Ex commands can still be used inside functions and, vice-versa, you can call a function by an Ex command with <code>:vim9</code> (respectively <code>:call</code> in legacy vimscript) on the command line.
-You can also define your own commands that call functions.</p>
-<p>Try <a href="https://github.com/ubaldot/vim9-conversion-aid">vim9-conversion-aid</a> as a starting point to convert legacy Vimscript to Vim9Script.</p>
-<div class="highlight"><pre># The vim9script namespace, above, is required to distinguish a Vim9 script
-# *.vim file from a legacy vimscript file.  In Vim&#39;s command-line mode,
-# or in a legacy script, using the command `:vim9cmd` (or just `:vim9`) before
-# a command also evaluates and executes code as Vim9 script.
+<h2>About Vim9 script</h2>
+<p>Vim9 script is a modernized, TypeScript-like language to script the Vim
+text editor.  It improves significantly on its predecessor,
+legacy <a href="https://learnxinyminutes.com/vimscript/">Vim script</a> (<em>aka</em> “VimL”).</p>
+<p>In Vim9 script, Ex commands (such as <code>:echo</code>, <code>:write</code>, <code>:substitute</code>,
+etc.) can be used inside functions and, vice-versa, you can call a function
+with an Ex command, using <code>:vim9cmd</code> on the command line.
+However, Vim9 script removes many of legacy Vim script’s unusual
+and esoteric features (see
+<a href="https://vimhelp.org/vim9.txt.html#vim9-differences">vim9-differences</a>).
+Vim9 script also enforces stricter syntax, markedly improves performance,
+and supports modern programming features such as strong typing, classes,
+and generic functions.</p>
+<h3>Sourcing the Code Blocks</h3>
+<p>The following sections include short, complete, and sourceable scripts.
+For how to source them within Vim, see
+<a href="https://vimhelp.org/repeat.txt.html#%3Asource-range">source-range</a>.
+If using the link at &quot;Get the code:
+<a href="https://learnxinyminutes.com/files/learnvim9script.vim">learnvim9script.vim</a>&quot;,
+near the top of this page, each <code>vim9script</code> block delineates a distinct,
+sourceable script.</p>
+<h2>1. Types, Operators, Expressions, and Regular Expressions</h2>
+<h3>Primitive and Collection Types</h3>
+<div class="highlight"><pre>&quot; The `vim9script` command is required to distinguish Vim9 script from
+&quot; legacy Vim script in a `.vim` file.  Before the command, legacy Vim script
+&quot; comments (starting with the &quot; character) can be used, like these lines do.
+&quot;
+&quot; After the `vim9script` command, the # character is used for comments
 
-# See https://vimhelp.org/vim9.txt.html#vim9-mix for mixing these.
+vim9script
+# PRIMITIVE AND COLLECTION TYPES
 
-# There is no distinction between single and multi-line comments.
-# Use # inside a line at any position to comment out all following characters.
+# Vim’s builtin function `typename()` may be used to reveal the type
 
-# You can run this Vim9 script directly in Vim.  After pasting the content
-# into a Vim buffer, enter the command `so` in command-line mode (press `:`
-# first to enter command-line mode).
+# Primitive data types
+echo typename(1)           # number
+echo typename(1.1)         # float
+echo typename(true)        # bool
 
-##################################################################
-## 1. Primitive types, collection types, operators, and regex
-##################################################################
+# Collection data types
+echo typename(&quot;Hi&quot;)        # string
+echo typename(0zFE0F)      # blob (a binary object)
+echo typename([1])         # list&lt;number&gt;
+echo typename((1, ))       # tuple&lt;number&gt;
+echo typename({1: &#39;one&#39;})  # dict&lt;string&gt;
 
-# The builtin function typename() may be used to reveal the type.
-# Primitive data types are number (integer), float, and bool(ean)
-echo typename(1)  # number
-echo typename(1.1)  # float
-echo typename(true)  # bool
+# Type casting may be used to fail early when there is a type mismatch
+echo &lt;number&gt;3             # 3
+echo &lt;number&gt;&#39;3&#39;           # E1012: Type mismatch; expected number but got str
 
-# Collection data types are string, blob, list, tuple, and dict(ionary)
-echo typename(&quot;Hello world&quot;)  # string
-# Blob is a binary object
-echo typename(0zFE0F)  # blob
-echo typename([1, 2])  # list&lt;number&gt;
-# echo typename((1, 2))  # tuple (Yet commented as it&#39;s a recent addition)
-echo typename({1: &#39;one&#39;, 2: &#39;two&#39;})  # dict&lt;string&gt;
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Operators and Expressions</h3>
+<div class="highlight"><pre>vim9script
+# OPERATORS AND EXPRESSIONS
 
-# Arithmetic with the number (integer) type.
-echo 1 + 1  # 2
-echo 2 - 1  # 1
-echo 3 * 2  # 6
-echo 8 / 2  # 4
-# If the result is not an integer, the remainder is not returned.
-echo 9 / 2  # 4
-# But modulo returns the remainder.
-echo 9 % 2  # 1
+# Arithmetic with the number (integer) type
+echo 1 + 1                 # 2
+echo 2 - 1                 # 1
+echo 3 * 2                 # 6
+echo 8 / 2                 # 4
 
-# Similarly, for the float type.
-echo 3.14 + 0.0015  # 3.1415
-echo 3.0 * 2.0  # 6.0
-# An integer and float will return a float.
-echo 9 / 2.0  # 4.5
+# If the result is not an integer, the remainder is not returned
+echo 9 / 2                 # 4
+# But modulo returns the remainder
+echo 9 % 2                 # 1
 
-# Logical OR (||), AND (&amp;&amp;), and NOT (!).
-echo true || false  # true
-echo true &amp;&amp; false  # false
-echo !true  # false
+# The float type returns with the applicable number of decimal places
+echo 1.25 * 6.1            # 7.625
+echo 3.1405 + 0.0005       # 3.141
+# An integer and float expression returns a float
+echo 9 / 2.0               # 4.5
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Logical and Comparison Operators</h3>
+<div class="highlight"><pre>vim9script
+# LOGICAL AND COMPARISON OPERATORS
+
+# Logical OR (||), AND (&amp;&amp;), and NOT (!)
+echo true || false         # true
+echo true &amp;&amp; false         # false
+echo !true                 # false
 
 # Equality (==) and inequality (!=) work on all three primitive types and
-# comparisons (&gt;, &gt;=, &lt;=, and &lt;) on numbers and floats.
-echo [1, 2] == [1, 2]  # true
-echo &#39;apples&#39; != &#39;pears&#39;  # true
-echo 9 &gt; 8  # true
-echo 8 &gt;= 8  # true
-echo 8 &lt;= 9  # true
-echo 8 &lt; 9  # true
+# comparisons (&gt;, &gt;=, &lt;=, and &lt;) on numbers and floats
+echo [1, 2] == [1, 2]      # true
+echo &#39;apples&#39; != &#39;pears&#39;   # true
+echo 9 &gt; 8                 # true
+echo 8 &gt;= 8                # true
+echo 8 &lt;= 9                # true
+echo 8 &lt; 9                 # true
 
-# Ternary operator.
+# Ternary operator
 echo 9 &gt; 8 ? true : false  # true
 
-# Falsy (&quot;null coalescing operator&quot;).
-echo 9 &gt; 8 ?? 1 + 1  # true
-echo 8 &gt; 9 ?? 1 + 1  # 2
+# Falsy operator (&quot;null coalescing operator&quot;)
+echo 9 &gt; 8 ?? 1 + 1        # true
+echo 8 &gt; 9 ?? 1 + 1        # 2
 
-# Bitwise operators (&gt;&gt; and &lt;&lt;).
-echo 1 &lt;&lt; 2  # 4
-echo 9 &gt;&gt; 1  # 5
+# Bitwise operators (&gt;&gt; and &lt;&lt;)
+echo 1 &lt;&lt; 2                # 4
+echo 9 &gt;&gt; 1                # 5
 
-# String concatenation.
-echo &quot;Hello&quot; .. &quot; &quot; .. &#39;world&#39;  # Hello world
-# String indexing is at the character level (not byte level like vimscript)
-echo &#39;fenêtre&#39;[-4 : -1]  # être
-# There are dozens of builtin string functions.  Examples.
-echo reverse(&quot;moor&quot;)  # room
-echo toupper(&quot;summer&quot;)  # SUMMER
-echo str2list(&#39;yes&#39;)  # [121, 101, 115]
-echo strcharlen(&#39;length&#39;)  # 6
-
-# Type casting may be used to give an error for a type mismatch.
-# (This example could use `try`, but that&#39;s covered later.)
-echo &lt;number&gt;3  # 3
-# echo &lt;number&gt;&#39;3&#39;  # This errors, but could be caught with try/catch
-
-# Not-a-real-number values may be tested with isinf() and isnan() builtin
-# functions.  These examples also illustrate method chaining.
-echo 1.0 / 0.0 -&gt;isinf()  # inf
-echo -1.0 / 0.0 -&gt;isinf()  # -inf
-echo 0.0 / 0.0 -&gt;isnan()  # nan
-
-# The maximum number is either a 32 or 64 bit signed number, which may
-# be checked using:
-echo v:numbersize  # echos either 32 or 64
-# The implication is that any arithmatic where the number exceeds the
-# permitted value, for 64-bit 9,223,372,036,854,775,807, will fail:
-echo 9223372036854775807 + 1  # -9223372036854775808
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Numbers</h3>
+<div class="highlight"><pre>vim9script
+# NUMBERS
 
 # Numbers may be expressed as decimal, hexadecimal (prefixed with 0x),
-# octal (0o or 0O), or binary (0b).  These are all decimal 15:
-echo 15 + 0b1111 + 0xF + 0o17  # 60
+# octal (prefixed with 0o or 0O), or binary (prefixed with 0b)
 
-# Pattern matching on strings.
-echo &#39;foobar&#39; =~ &#39;foo&#39;  # true (matches pattern)
-echo &#39;foobar&#39; !~ &#39;baz&#39;  # true (does not match pattern)
+# These are all decimal 15
+echo 15                       # 15
+echo 0b1111                   # 15
+echo 0xF                      # 15
+echo 0o17                     # 15
 
-# Vim uses distinct regular expressions.  The basics are the same as many
-# other languages.  The basics:
-# `.` any character, `*` zero+ times, `\+` one+ times
-# `\c` case-insensitive, `\C` case-sensitive
-# `\d` digit, `\w` word char, `\s` whitespace, `^` start, `$` end, `\|` OR
-# Character classes may also be used.  Examples.
-# [:blank:] is the same as \s, [:digit:] is the same as \d
-# Some things like the &quot;very nomagic&quot; and &quot;very magic&quot; are unique.
-# `\v` very magic, most chars are special, closer to extended regexes
-# `\V`: very nomagic, all but \ are literal
-echo &#39;Foobar&#39; =~ &#39;\c^foo&#39;  # true
-echo &quot;The year is 2025&quot; =~ &#39;[[:digit:]]\+$&#39;  # true
-echo &#39;abc123&#39; =~ &#39;\v\d+&#39;  # true
-echo &#39;a|b&#39; =~ &#39;\Va|b&#39;  # true
+# The maximum number is either a 32 or 64 bit signed number, which may
+# be checked using Vim’s builtin variable `v:numbersize`
+echo v:numbersize             # either 32 or 64
 
-# `\zs`: Sets the start of the match.
-# `\ze`: Sets the end of the match.
-# Match only the domain from an email:
-var email = &#39;user@example.com&#39;
-echo matchstr(email, &#39;@\zs[^ ]\+\ze&#39;)  # Output: &#39;example.com&#39;
+# The implication is that any arithmetic where the number exceeds the
+# permitted value (for 64-bit 9,223,372,036,854,775,807) will fail
+echo 9223372036854775807 + 1  # -9223372036854775808
 
+# Not-a-real-number values may be tested with `isnan()` and `isinf()` builtin
+# functions - the second and third lines also illustrate method calling
+echo isnan(0.0 / 0.0)         # nan
+echo 1.0 / 0.0 -&gt;isinf()      # inf
+echo -1.0 / 0.0 -&gt;isinf()     # -inf
 
-####################################################
-## 2. Variables
-####################################################
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Strings</h3>
+<div class="highlight"><pre>vim9script
+# STRINGS
 
-# `var` is used to declare a variable, which may have a type
-var name: string = &#39;Vim&#39;  # type declared
-var count = 10  # type inferred (number)
-# When the type is declared as a list or dict, its type(s) must be also, but
-# may be &quot;&lt;any&gt;&quot;.
-var Alist: list&lt;list&lt;number&gt;&gt; = [[1, 2], [3, 4]]
-var Adict: dict&lt;any&gt; = {a: 1, b: &#39;two&#39;}
+# String concatenation with `..`
+echo &quot;Hello&quot; .. &quot; &quot; .. &#39;world&#39;    # Hello world
+
+# String interpolation with `$`
+echo $&quot;Adam is {1 + 41}&quot;          # Adam is 42
+
+# String indexing is by character (like Java/Python 3) not byte (like C/Rust)
+echo &#39;fenêtre&#39;[-4 : -1]           # être
+
+# Vim has dozens of builtin string functions, which can be called
+# procedurally, as methods, and may be chained
+echo toupper(&quot;summer&quot;)            # SUMMER
+echo &#39;metre&#39;-&gt;strcharlen()        # 5
+echo &quot;Ho&quot;-&gt;reverse()-&gt;tolower()   # oh
+
+# Pattern matching on strings
+echo &#39;foobar&#39; =~ &#39;foo&#39;            # true (matches pattern)
+echo &#39;foobar&#39; !~ &#39;baz&#39;            # true (does not match pattern)
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Regular Expressions</h3>
+<div class="highlight"><pre>vim9script
+# REGULAR EXPRESSIONS
+
+# Vim uses a distinct flavor of regular expressions, though the basics
+# are similar to many other languages.
+
+# Using Vim&#39;s builtin function matchstr() to show regex matches:
+echo matchstr(&quot;Hello&quot;, &#39;.....&#39;)                 # &#39;.&#39; is any character
+echo matchstr(&quot;Hello&quot;, &#39;Hel*o&#39;)                 # (&#39;*&#39; is zero+ times)
+echo matchstr(&quot;Hello&quot;, &#39;H.\+&#39;)                  # (&#39;\+&#39; is one+ times)
+echo matchstr(&quot;Hello&quot;, &#39;\cheLlo&#39;)               # (&#39;\c&#39; is case-insensitive)
+echo matchstr(&quot;Hello&quot;, &#39;^Hello$&#39;)               # (&#39;^&#39; is start, &#39;$&#39; is end)
+echo matchstr(&quot;Hello&quot;, &#39;H\(e\|x\)llo&#39;)          # (&#39;\|&#39; is or)
+
+# Shorthand character classes and POSIX bracket expressions may be used
+# \u is uppercase, \a is alpha, \s is space or tab, \d is decimal digit
+echo &quot;Dec 2025&quot; =~ &#39;\u\a\a\s\d\{4\}&#39;                        # true
+# [[:digit:]] is a decimal digit as are [0-9] and \d
+echo &quot;2025-12-10&quot; =~ &#39;[[:digit:]]\{4\}-[0-9]\{2\}-\d\{2\}&#39;  # true
+
+# Some things like &quot;very magic&quot; and &quot;very nomagic&quot; are unique to Vim:
+#   \v  very magic means most chars are special, closer to extended regexes
+#   \V  very nomagic, all but \ and the terminating character are literal
+echo matchstr(&quot;Hello&quot;, &#39;\v^(.*)$&#39;)                          # Hello
+echo matchstr(&quot;Hello&quot;, &#39;\V\^\(\.\*\)\$&#39;)                    # Hello
+
+# \zs sets the start of a match and \ze sets the end of the match
+var email = &#39;Addy user@example.com is fictitious&#39;
+echo matchstr(email, &#39;@\zs\a\+[.]com\ze[^\w]&#39;)              # example.com
+
+# PCRE-style assertions may also be used:
+#   \@&lt;= is positive lookbehind, \@= is positive lookahead
+echo matchstr(email, &#39;@\@&lt;=\a\+[.]com\@=[^\w]&#39;)             # example.com
+
+#   \@&lt;! is negative lookbehind, \@= is negative lookahead
+echo matchstr(email, &#39;[^@]\@&lt;!\a\+[.]com\([\w]\)\@!&#39;)       # example.com
+
+# Combined with very magic they are easier to read
+echo matchstr(email, &#39;\v[@]@&lt;=\a+[.]com@=[^\w]&#39;)            # example.com
+echo matchstr(email, &#39;\v[^@]@&lt;!\a+[.]com([\w])@!&#39;)          # example.com
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<h2>2. Variables</h2>
+<h3>Declarations</h3>
+<div class="highlight"><pre>vim9script
+# DECLARATIONS
+
+# `var` is used to declare a variable, which may have a type specified
+var count = 10               # type inferred (number)
+var name: string = &#39;Vim&#39;     # type declared
+
+# When the type is a list or dict, the list’s type(s) must be declared too,
+# though `&lt;any&gt;` may be used to allow mixed types
+var a_list: list&lt;list&lt;number&gt;&gt; = [[1, 2], [3, 4]]
+var a_dict: dict&lt;any&gt; = {a: 1, b: &#39;two&#39;}
+echo $&quot;a_list is type {typename(a_list)} and a_dict is type {typename(a_dict)}&quot;
 
 # Constants
-# `const` may be used to make both the variable and values constant.
+# `const` may be used to make both the variable and values constant
 const PI: dict&lt;float&gt; = {2: 3.14, 4: 3.1415}  # Cannot add items to this dict
-echo PI[4]  # 3.1415
+echo PI[4]                   # 3.1415
 # `final` may be used to make the variable a constant and the values mutable.
 final pi: dict&lt;float&gt; = {2: 3.14, 4: 3.1415}
-# Adding a key-value pair to pi.
+# Adding a key-value pair to `pi`
 pi[3] = 3.142
-echo pi  # {2: 3.14, 3: 3.142, 4: 3.1415}
-# Dictionary key-value pairs may also be accessed using dict.key
-echo pi.4  # 3.1415
+echo pi                      # {2: 3.14, 3: 3.142, 4: 3.1415}
 
-# There are many builtin functions for variable manipulation.  Some have been
-# illustrated, above.  A selection of some more related to lists.
-var MyList: list&lt;number&gt; = [0, 1, 2, 3]
-echo MyList[0]  # 0
-MyList-&gt;add(4)
-MyList-&gt;remove(0)
-echo join(MyList, &#39;, &#39;)  # 1, 2, 3, 4
-# String interpolation with $.
-echo $&quot;The first and last items in MyList are {MyList[0]} and {MyList[-1]}&quot;
+# Dictionary key-value pairs may also be accessed using `{dict}.key`.
+echo pi.4                    # 3.1415
 
-# Variables exist within scopes.  When unprefixed, as the examples are, above,
-# the scope is script-local (which differs from vimscript, which uses `s:`).
-# Other scopes are global (prefixed with `g:`), window-local (`w:`),
-# buffer-local (`b:`), and tab-local (`t:`).
-# Vim help on scopes: https://vimhelp.org/eval.txt.html#variable-scope
-# Use `g:` for global variables, `b:` for buffer-local, `w:` for window-local,
-# and so on.  Vim also has many Vim-defined `v:` prefixed global variables.
-g:global_var = &#39;I am global&#39;
-echo g:global_var  # I am global
-echo v:version  # 901 (or whatever version you are running; 901 means 9.1)
-echo b:current_syntax  # vim (if the buffer&#39;s filetype is vim with &#39;syntax&#39; on)
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Manipulating Container Variables</h3>
+<div class="highlight"><pre>vim9script
+# MANIPULATING CONTAINER VARIABLES
+
+# There are many builtin functions for variable manipulation. These are a few
+# relevant to lists.
+var MyList = [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]
+echo MyList[0]               # a
+MyList-&gt;add(&#39;d&#39;)             # Adds &#39;d&#39; to the end of the list
+MyList-&gt;remove(2)            # Removes item at index 2 (starting at 0)
+echo join(MyList, &#39;, &#39;)      # a, b, d
+
+# String interpolation with $.  (More idiomatic than `printf()`)
+echo $&quot;The first and last items in MyList are &#39;{MyList[0]}&#39; and &#39;{MyList[-1]}&#39;&quot;
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Variables’ Scopes</h3>
+<div class="highlight"><pre>vim9script
+# VARIABLES’ SCOPES
+
+# Variables exist within scopes.  When unprefixed their scope is script-local.
+# Other scopes are global (prefixed with `g:`), window-local (`w:`), 
+# buffer-local (`b:`), and tab-local (`t:`).  Vim also has many Vim-defined
+# (`v:`) global variables.
+var my_var: string = &#39;Script-local variables have no prefix in Vim9 script&#39;
+g:my_var = &#39;Global variables with &quot;g:&quot; prefixed are available everywhere&#39;
+b:my_var = &#39;Buffer variables (&quot;b:&quot;) are only visible within a buffer&#39;
+echo $&quot;{my_var}\n{g:my_var}\n{b:my_var}\n&quot;
+echo v:version  # Vim variable for a Vim instance&#39;s major version (901 == 9.1)
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Registers</h3>
+<div class="highlight"><pre>vim9script
+# REGISTERS
 
 # Registers are a form of variable used to store string values of many
-# pre-defined or user-defined items.  When used in a Vim9 script, they are
+# pre-defined and user-defined items.  When used in a Vim9 script, they are
 # prefixed with `@`.
-echo @:  # (echos the last command entered by the user)
-echo @/  # (echos the last search performed by the user)
-echo @1  # (echos the penultimate yanked or deleted text)
-echo @%  # (echos the current file path)
-@z = &#39;There are 26 named registers, a to z&#39;
-echo @z
 
-# Other builtin variables.
-echo $MYVIMRC  # (location of your .vimrc, or _vimrc using Windows, file)
-echo $VIMRUNTIME  # (the Vim directory of the current Vim executable)
-echo $PATH  # (references the environment variable, PATH)
+echo &#39;Current register values:&#39;
+echo &quot;- Last command (:)\t&quot; .. @:
+echo &quot;- Last search (/) \t&quot; .. @/
+echo &quot;- Current file (%)\t&quot; .. @%
+@a = &#39;There are 26 named registers &quot;a to &quot;z and &quot;A to &quot;Z.&#39;
+echo $&quot;- Register a equals\t{@a}&quot;
 
-# Vim has many settings, which are also variables.  They may be local or
-# global scoped.
-echo &amp;textwidth # (echos the buffer-local value of the textwidth option)
-echo &amp;wildmenu # (echos the boolean value of command-line wildcard expansion)
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Builtin Variables and Settings</h3>
+<div class="highlight"><pre>vim9script
+# BUILTIN VARIABLES AND SETTINGS
 
+echo $MYVIMRC       # (location of your .vimrc or, using Windows, _vimrc file)
+echo $VIMRUNTIME    # (the Vim directory of the current Vim executable)
 
-####################################################
-## 3. Control Flow
-####################################################
+# Vim has many settings variables.  Some are global in scope, some are local,
+# and others are both
+echo &amp;fileencoding  # (buffer-local: the character encoding, e.g., utf-8)
+echo &amp;equalalways   # (global: do/don&#39;t make newly split windows the same size)
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<h2>3. Control Flow</h2>
+<h3>Conditionals and Loops</h3>
+<div class="highlight"><pre>vim9script
+# CONDITIONALS AND LOOPS
+
+const INT: number = 5
 
 # If / Else
-if count &gt; 5
+if INT &gt; 5
   echo &#39;big&#39;
-elseif count == 5
+elseif INT == 5
   echo &#39;medium&#39;
 else
   echo &#39;small&#39;
 endif
 
-# For loop
-for j in range(3)
+# For loop (using builtin function range() for INT times, 0 indexed)
+for j in INT-&gt;range()
   echo j
 endfor
 
-# While loop
-var k = 0
-while k &lt; 3
-  echo k
+# While loop (using builtin function add() to add values to the list l)
+var k: number
+var l: list&lt;number&gt;
+while k &lt; INT
+  l-&gt;add(k)
   k += 1
 endwhile
+echo l
 
-# Loop control
-for x in [1, 2, 3]
+# Loop control using a tuple literal
+for x in (1, 2, 3)
   if x == 2
     continue
-  endif
-  if x == 3
+  elseif x == 3
+    echo $&#39;Stopping at {x}&#39;
     break
   endif
   echo x
 endfor
 
-# Exceptions
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Exceptions</h3>
+<div class="highlight"><pre>vim9script
+# EXCEPTIONS
+
 try
   DoesNotExist()  # This fails
 catch
@@ -324,8 +395,8 @@ endtry
 
 try
   var lines = readfile(&#39;nofile.txt&#39;)
-catch /E484:/
-  echo &#39;File not found&#39;
+catch
+  echo v:exception
 finally
   echo &#39;Done&#39;
 endtry
@@ -344,67 +415,114 @@ catch /MyError/
   echo &#39;File not found&#39;
 endtry
 
+# ----------------------------------------------------------------------------
+</pre></div>
+<h2>4. Functions, Lambdas, and Closures</h2>
+<h3>Function Basics</h3>
+<div class="highlight"><pre>vim9script
+# FUNCTION BASICS
 
-####################################################
-## 4. Functions and Lambdas
-####################################################
-
-# Basic function
-def Add(x: number, y: number): number
-  return x + y
+# :def functions have 0+ arguments and a return type, which may be `void`
+def Add(x: number, y: number): void
+  echo x + y
 enddef
 
-echo Add(3, 4)
+Add(3, 4)                # Echos 7
 
-# Default arguments
+# Arguments may be defaulted
 def Power(base: number, exp: number = 2): number
   return float2nr(pow(base, exp))
 enddef
 
-# Variable arguments
-def Sum(...args: list&lt;number&gt;): number
-  return reduce(args, (x, y) =&gt; x + y)
+echo Power(8)            # Echos 64 because `exp` defaults to 2
+
+# There may be a variable number of arguments
+def MinMax(...args: list&lt;number&gt;): tuple&lt;number, number&gt;
+  return (args-&gt;min(), args-&gt;max())
 enddef
 
-# Define a function that returns a closure capturing a local variable
-def MakeAdder(x: number): func
-  # Return a reference to the inner function
-  return (y: number) =&gt; x + y
+echo MinMax(8, 9, 2, 4)  # Echoes (2, 9)
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Generic Functions</h3>
+<div class="highlight"><pre>vim9script
+# GENERIC FUNCTIONS
+
+# Return the maximum value of a list or, if it&#39;s empty, a default value
+def MaxOrDefault&lt;T, U&gt;(lst: list&lt;T&gt;, default: U): any
+  return lst-&gt;len() &gt; 0 ? lst-&gt;max() : default
 enddef
+echo MaxOrDefault&lt;number, number&gt;([1, 2], 0)    # Echos 2
+echo MaxOrDefault&lt;number, number&gt;([], 0)        # Echos 0
+echo MaxOrDefault&lt;number, string&gt;([], &#39;empty&#39;)  # Echos empty
 
-# Create a closure that adds 5
-var Add5 = MakeAdder(5)
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Lambdas</h3>
+<div class="highlight"><pre>vim9script
+# LAMBDAS
 
-# Call the closure with 3; result is 8
-echo Add5(3)
-
-# Lambdas in Vim9Script use `(args) =&gt; expr` syntax:
+# Syntax is `(args) =&gt; expr`
 var Divide = (val: number, by: number): number =&gt; val / by
-echo Divide(420, 10)  # 42
+echo Divide(420, 10)  # Echos 42
 
-# Sample list
+# Sample list used in the following lambda examples
 var nums = [1, 2, 3, 4, 5, 6]
 
-# map(): Square each number
-var squares = map(copy(nums), (i, v) =&gt; v * v)
-echo squares  # [1, 4, 9, 16, 25, 36]
+# Using builtin function filter() to keep only the even numbers in nums list.
+# This example uses the `_` argument, which ignores an argument.  It is useful
+# in callbacks where the argument is not needed in the expression, but an
+# argument must be provided to match the called function.  (Using the builtin
+# function, `copy()`, avoids mutating the original list.)
+var evens: list&lt;number&gt; = filter(copy(nums), (_, v) =&gt; v % 2 == 0)
+echo evens            # Echos [2, 4, 6]
 
-# filter(): Keep even numbers
-var evens = filter(copy(nums), (i, v) =&gt; v % 2 == 0)
-echo evens  # [2, 4, 6]
+# Using builtin function map() to square each number in the nums list.
+# This example also uses method chaining and the argument &quot;_&quot;.
+var squares: list&lt;number&gt; = nums-&gt;copy()-&gt;map((_, v) =&gt; v * v)
+echo squares          # Echos [1, 4, 9, 16, 25, 36]
 
-# reduce(): Sum all numbers
-var sum = reduce(copy(nums), (acc, v) =&gt; acc + v, 0)
-echo sum  # 21
+# Using builtin function `reduce()` to sum all the numbers in the nums
+# list - it is called with two arguments:
+#   1) the result so far (acc), and
+#   2) the current item (v).
+var sum: number = nums-&gt;copy()-&gt;reduce((acc, v) =&gt; acc + v, 0)
+echo sum              # Echos 21
 
-# sort(): Sort descending using lambda
-# Use `copy()` to avoid mutating the original list.
-var sorted = sort(copy(nums), (a, b) =&gt; b - a)
-echo sorted  # [6, 5, 4, 3, 2, 1]
+# Descending sort using a lambda
+var sorted: list&lt;number&gt; = sort(copy(nums), (a, b) =&gt; b - a)
+echo sorted           # Echos [6, 5, 4, 3, 2, 1]
 
-####################################################
-## 5. Classes and enums
-####################################################
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Closures</h3>
+<div class="highlight"><pre>vim9script
+# CLOSURES
+
+def Outer(): func
+  var x: number = 2      # Initial value captured by closure
+  def Inner(): number
+    x = x * 2            # Modifies the captured x
+    return x             # Returns the new value
+  enddef
+  return Inner           # Returns the closure (function + captured x)
+enddef
+
+var Double = Outer()     # Creates a closure (with its own x = 2)
+
+# Calling the closure
+echo Double()            # Echos 4
+echo Double()            # Echos 8
+echo Double()            # Echos 16
+echo Double()            # Echos 32
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<h2>5. Classes and Enums</h2>
+<h3>A Class Example</h3>
+<div class="highlight"><pre>vim9script
+# A CLASS EXAMPLE
 
 # Class
 class Point
@@ -426,185 +544,318 @@ class Point
   enddef
 endclass
 
-var p = Point.new(1, 2)
+var p: Point = Point.new(1, 2)
 p.Move(3, 4)
 echo p.ToString()  # =&gt; (4, 6)
 
-# Enum
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>An Enum Example</h3>
+<div class="highlight"><pre>vim9script
+# AN ENUM EXAMPLE
+
 enum Quad
   Square(&#39;four&#39;, true),
-  Rectangle(&#39;opposite&#39;, true),
   Rhombus(&#39;opposite&#39;, false)
   var es: string
   var ra: bool
-  def QuadProps(): list&lt;any&gt;
-    return [this.es, this.ra]
+  def QuadAbout(): string
+    return $&quot;A {tolower(this.name)} has {this.es} sides of equal length; it&quot; ..
+      (this.ra ? &#39; has only right angles&#39; : &#39; has no right angles&#39;)
   enddef
 endenum
 var q: Quad = Quad.Square
-# result using string interpolation and showing multiple lines without `\`,
-# which is required in vimscript but not in Vim9 script.
-var result = $&quot;A {tolower(q.name)} has {q.QuadProps()[0]} sides of equal &quot; ..
-  &quot;length and &quot; ..
-  (q.QuadProps()[1] ? &#39;has only right angles&#39; : &#39;has no right angle&#39;)
-echo result
+echo q.QuadAbout()
+q = Quad.Rhombus
+echo q.QuadAbout()
 
+# ----------------------------------------------------------------------------
+</pre></div>
+<h2>6. Sourcing Scripts, Modules, and Importing</h2>
+<h3>Sourcing Another Script</h3>
+<div class="highlight"><pre>vim9script
+# SOURCING ANOTHER SCRIPT
 
-####################################################
-## 6. Modules and Imports
-####################################################
+# Source the optional helptoc plugin, distributed with Vim
+source $VIMRUNTIME/pack/dist/opt/helptoc/plugin/helptoc.vim
 
-# Sourcing another script file.
-# In this case, sourcing the optional matchit plugin, distributed with Vim.
-source $VIMRUNTIME/pack/dist/opt/matchit/plugin/matchit.vim
-# That&#39;s not an ideal way though.  It&#39;s better to use `packadd`.
+# It’s better to use `packadd` for this, though
 packadd helptoc
-# Using `runtime` is another way (which can be used with wildcards)
-runtime pack/**/**/**/comment.vim
 
-# Importing functions from other files is achieved with `export` in the script
-# file exporting the function/constant/variable and `import` in the
-# script using the exported function/constant/variable.
-# If this is in file, `MyFile.vim` in the same directory as the script file.
-export const THEEND: string = &#39;The end.&#39;
-# The script importing THEEND would include (try used here to prevent error)
+# Using `runtime` is another way (`*` or `**` wildcards can be used)
+runtime pack/**/helptoc.vim
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Exporting and Importing</h3>
+<p>Vim9 script provides a modular, efficient import/export system.
+Explicitly exported functions, constants, and variables declared
+with <code>export</code> are accessible from other scripts which <code>import</code> them.
+An example...</p>
+<p>In file <code>MyModule.vim</code>:</p>
+<div class="highlight"><pre>vim9script
+# EXPORT-IMPORT EXAMPLE: `MyModule.vim`
+
+# Without `export`, this constant is visible only within MyModule.vim
+const LOCAL: string = &#39;Not exported&#39;
+
+# This exported constant will be available from scripts importing MyModule.vim
+export const GREETING: string = &#39;Hello from MyModule&#39;
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<p>In another script file (presuming it is in the same directory):</p>
+<div class="highlight"><pre>vim9script
+# EXPORT-IMPORT EXAMPLE (THE SCRIPT DOING THE IMPORT)
+
+import &quot;./MyModule.vim&quot;
+
+# Using the constant from MyModule.vim
+echo MyModule.GREETING
+
+# Trying to use MyModule.LOCAL fails because it&#39;s not exported
 try
-  import &quot;MyFile.vim&quot;
+  echo MyModule.LOCAL
 catch
-  # Do something if the import fails
-endtry
-# And using the constant would be (try again used to prevent error)
-try
-  echo MyFile.THEEND
-catch
-  echo &quot;THE END&quot;
+  echo v:exception
 endtry
 
-####################################################
-## 7. Vim Idioms
-####################################################
+# ----------------------------------------------------------------------------
+</pre></div>
+<h2>7. Vim Idioms</h2>
+<h3>Plugin Development</h3>
+<div class="highlight"><pre>vim9script
+# PLUGIN DEVELOPMENT
 
-# Source guard (plugin pattern)
-if exists(&#39;g:loaded_myplugin&#39;) | finish | endif
-# Set to true to avoid sourcing the following code multiple times.
+# These are some of the patterns used when creating well-behaved plugins
+# (which enable others to easily use your Vim9 scripts).
+
+# Source guard (plugin pattern), which prevents duplicate loading of plugins
+if exists(&#39;g:loaded_myplugin&#39;)
+  finish
+endif
+# This would be put in the myplugin script (NB: intentionally commented here)
 # g:loaded_myplugin = true
 
-# Default value
-var greeting = get(g:, &#39;myplugin_greeting&#39;, &#39;Hello&#39;)
+# Getting a global variable or, where it does not exist, a default value
+var greeting: string = get(g:, &#39;myplugin_greeting&#39;, &#39;Hello&#39;)
 
-# Command definition
-command! Hello echo &#39;Hello Vim9&#39;
-# You can specify attributes like `-nargs`, `-range`, `-complete`;
-# see https://vimhelp.org/usr_40.txt.html#40.2
-command! -nargs=1 -complete=file MyCmd edit &lt;args&gt;
-# Toggle a boolean setting
+# Toggling boolean settings is a common user interface pattern
 def ToggleFeature()
   g:myplugin_enabled = !get(g:, &#39;myplugin_enabled&#39;, false)
   echo g:myplugin_enabled ? &#39;Enabled&#39; : &#39;Disabled&#39;
 enddef
 command! ToggleMyPlugin ToggleFeature()
 
-# Define a script-local function and map it via &lt;Plug&gt;
+# (After sourcing this script, try :ToggleMyPlugin a few times)
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Command and Mapping Definitions</h3>
+<div class="highlight"><pre>vim9script
+# COMMAND AND MAPPING DEFINITIONS
+
+# Commands and mappings provide the primary user interface for plugins -
+# see https://vimhelp.org/usr_05.txt.html#plugin - and custom functionality.
+
+# Basic command definition
+command! Hello echo &#39;Hello Vim9&#39;
+execute &#39;:Hello&#39;
+
+# Script-local function mapping via &lt;Plug&gt; - recommended plugin mapping pattern
 def DoSomething()
   echo &#39;Action triggered&#39;
 enddef
 
+# Map function to unique &lt;Plug&gt; identifier, then to user keys
 nnoremap &lt;silent&gt; &lt;Plug&gt;(MyPluginAction) &lt;ScriptCmd&gt;DoSomething()&lt;CR&gt;
 nmap &lt;silent&gt; &lt;Leader&gt;a &lt;Plug&gt;(MyPluginAction)
 
-# Group autocommands to manage them systematically
-# to prevent duplicate autocommands on re-sourcing.
+# Command with arguments and completion
+command! -nargs=1 -complete=file MyCmd edit &lt;args&gt;
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Event Handling</h3>
+<div class="highlight"><pre>vim9script
+# EVENT HANDLING
+
+# Autocommand groups provide systematic event management and prevent
+# duplicates on re-sourcing
 augroup AutoReload
   autocmd!
   autocmd BufWritePost $MYVIMRC source $MYVIMRC
   autocmd BufReadPost *.txt echo &#39;Hello text file&#39;
 augroup END
 
-# You can run normal commands from Vim9Script:
-# This executes like pressing `ggddGp` in normal mode.
-normal! ggddGp
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Executing Normal Mode Commands</h3>
+<div class="highlight"><pre>vim9script
+# EXECUTING NORMAL MODE COMMANDS
 
-# `exists({name})` checks if a variable, function, or command is defined.
-echo exists(&#39;:myVariable&#39;) == 2
-# `has({feature})` checks if Vim has a specific feature (e.g. `has(&#39;unix&#39;)`).
-echo has(&#39;unix&#39;)
-if has(&#39;nvim&#39;)
-  echo &#39;Running in Neovim&#39;
-endif
-# `expand({expr})` expands filenames, `&lt;cword&gt;`, etc.
-echo expand(&#39;%:p&#39;)
-# `printf({fmt}, ...)` formats strings.
-echo printf(&#39;Hello, %s!&#39;, &#39;world&#39;)
-# `type()`, along with `v:t_*` constants, indicates object types.
-echo type(123) == v:t_number
+# Yank eight lines into register a
+normal! &quot;a8Y
 
+# Echo register a
+echo @a
 
-####################################################
-## 8. External Commands
-####################################################
+# (Sourcing this script as a visual selection echos the script itself)
 
-# Run a shell command and capture output
-silent result = system(&#39;ls&#39;)
-echo result
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Feature Detection and Utility Functions</h3>
+<div class="highlight"><pre>vim9script
+# FEATURE DETECTION AND UTILITY FUNCTIONS
 
-# Run and split into lines
-silent var lines = systemlist(&#39;ls&#39;)
+# Feature and existence checking
+echo has(&#39;clipboard&#39;)           # Check for a feature - 1 means it is present
+echo exists(&#39;myVariable&#39;)       # Check whether a script local variable exists
+
+# Path and expression expansion
+echo expand(&#39;%:p&#39;)                          # Full filepath of the current file
+
+# Type checking with Vim `v:t_*` constants or more granularly with type names
+echo type(123) == v:t_number                # true
+echo typename([1, 2, 3]) == &#39;list&lt;number&gt;&#39;  # true
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<h2>8. External Commands</h2>
+<h3>Direct Shell Command Execution</h3>
+<div class="highlight"><pre>vim9script
+# DIRECT SHELL COMMAND EXECUTION
+
+# This example should work in Linux, PowerShell, and Windows cmd.exe:
+
+# output user info: (a) to non-interactive shell.
+:!whoami
+
+# Examples (b) and (c) would modify this buffer, so they&#39;re shown in
+# a function, preventing execution.
+def MoreExamples(): void
+  # (b) to current line in the current buffer, replacing its contents
+  :.!whoami
+  # (c) to the same buffer, appending at cursor position
+  :.read! whoami
+enddef
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Capturing shell command output with <code>system()</code></h3>
+<div class="highlight"><pre>vim9script
+# CAPTURING SHELL COMMAND OUTPUT WITH `system()`
+
+# This script creates a 4-second popup of the date, removing any line feed
+# characters (U+000A), which would otherwise appear as &quot;^@&quot; in the popup.
+
+silent var result = system(&#39;date&#39;)
+popup_notification(result-&gt;substitute(&#39;[\xA]&#39;, &#39;&#39;, &#39;g&#39;), {time: 4000})
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Processing Command Output as Lines with <code>systemlist()</code></h3>
+<div class="highlight"><pre>vim9script
+# PROCESSING COMMAND OUTPUT AS LINES WITH `systemlist()`
+
+silent var lines = systemlist(&#39;ls *.vim&#39;)
+
 for line in lines
   echo line
 endfor
 
-# output files in folder of current file
-# ... to non-interactive shell
-!ls %:h:S
-# ... to current buffer, replacing its contents
-:%!ls %:h:S
-# ... to the same buffer, appending at cursor position
-:.read! ls %:h:S
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Asynchronous Command Execution with Jobs</h3>
+<div class="highlight"><pre>vim9script
+# ASYNCHRONOUS COMMAND EXECUTION WITH JOBS
 
-# Using job_start() callback
-var shell_job: job
-def GotOutput(channel: channel, msg: string)
-  echo msg
+# Jobs - see https://vimhelp.org/channel.txt.html#job%5Fstart%28%29 - execute
+# commands asynchronously (unlike `system()` or `systemlist()`)
+
+var mydate: list&lt;string&gt;
+
+def Date(channel: channel, msg: string): void
+    mydate-&gt;add(msg)
 enddef
-# Start a shell in the background.
-shell_job = job_start([&quot;/bin/sh&quot;, &quot;-c&quot;, &quot;ls&quot;], {
-				out_cb: GotOutput,
-				err_cb: GotOutput
-				})
-# Check exit status
+
+var myjob = job_start([&amp;shell, &amp;shellcmdflag, &#39;date&#39;], {out_cb: Date})
+
+echo [myjob, myjob-&gt;job_status()]
+sleep 1
+echo $&quot;The date and time is {mydate-&gt;join(&#39;&#39;)}&quot;
+echo [myjob, myjob-&gt;job_status()]
+
+# Check exit status of the most recent shell command
 echo v:shell_error
 
-# Create a quickfix list from Git diff
+# Clear the variable; release the job&#39;s resources
+myjob = null_job
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>A More Advanced Example: Git Integration</h3>
+<div class="highlight"><pre>vim9script
+# A MORE ADVANCED EXAMPLE: GIT INTEGRATION
+
+# The following script populates Vim’s quickfix list with files modified in
+# the current Git repository when `:GitDiffQF` is executed after sourcing
+# the script
+
 def GitDiffQuickfix()
-  var diff_lines = systemlist(&#39;git diff --name-only&#39;)
+  var diff_lines: list&lt;string&gt; = systemlist(&#39;git diff --name-only&#39;)
   if v:shell_error != 0
     echo &#39;Git not available or not a repo&#39;
     return
   endif
 
-  var qf_list = []
+  var qf_list: list&lt;any&gt;
   for file in diff_lines
     add(qf_list, {&#39;filename&#39;: file, &#39;lnum&#39;: 1, &#39;text&#39;: &#39;Modified file&#39;})
   endfor
 
-  call setqflist(qf_list, &#39;r&#39;)
+  setqflist(qf_list, &#39;r&#39;)
   copen
 enddef
-command! GitDiffQF call GitDiffQuickfix()
 
-############################################################
-## 9. Testing, Debugging, Compiling and Inspecting Bytecode
-############################################################
+command! GitDiffQF GitDiffQuickfix()
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<h2>9. Testing, Debugging, and Inspecting Bytecode</h2>
+<h3>Assertions</h3>
+<div class="highlight"><pre>vim9script
+# ASSERTIONS
+
+# The predefined Vim variable, `v:errors`, is populated when errors occur
+# in builtin `assert_*` functions, like the three in this example
 
 v:errors = []
 
-assert_equal(4, 2 + 2)
-assert_false(2 &lt; 1)
-assert_notmatch(&#39;\d\+&#39;, &#39;abc&#39;)
+assert_equal(4, 2 + 1)             # Expected 4 but got 3
+assert_false(1 &lt; 2)                # Expected False but got true
+assert_notmatch(&#39;\d\+&#39;, &#39;123&#39;)     # Pattern &#39;\\d\\+&#39; does match &#39;123&#39;
 
 if !empty(v:errors)
-  echo $&quot;Test failures: {v:errors}&quot;
+  echo &quot;Test failures:\n&quot; .. $&#39;{v:errors-&gt;join(&quot;\n&quot;)}&#39;
 endif
+
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Breakpoints</h3>
+<div class="highlight"><pre>vim9script
+# BREAKPOINTS
+
+# Sourcing the following script runs the function in debug mode:
+# - https://vimhelp.org/repeat.txt.html#%3Adebug
+# While debugging, use commands like these (at the `&gt;` command prompt):
+# - &quot;step&quot; to execute the command and come back to debug mode for the
+#    next command
+# - &quot;echo&quot; to inspect variables
+# - &quot;cont&quot; to continue execution until the next breakpoint is hit
+# - &quot;finish&quot; to finish the current user function (or script)
+
+breakdel *                  # clears all breakpoints
 
 def MyFunc()
   var x = 10
@@ -612,31 +863,28 @@ def MyFunc()
   echo y
 enddef
 
-# To debug this function:
-# Add a breakpoint at line 3 of the function (line numbers are relative to the function)
-# :breakadd func MyFunc 3
+breakadd func 3 MyFunc      # sets a breakpoint at line 3 of MyFunc
 
-# Then run the function in debug mode
-# :debug call MyFunc()
+debug MyFunc()              # call MyFunc() with debugging on
 
-# While debugging, use commands like:
-# - :step to step into
-# - :next to step over
-# - :finish to run to end
-# - :cont to continue
-# - :echo to inspect variables
+# ----------------------------------------------------------------------------
+</pre></div>
+<h3>Listing Instructions / Bytecode of a Function</h3>
+<div class="highlight"><pre>vim9script
+# LISTING INSTRUCTIONS / BYTECODE OF A FUNCTION
 
-## Listing Bytecode of a Function,
-## Useful to understand how Vim optimizes Vim9Script functions
+# This can help understand how Vim optimizes a Vim9 script function,
+# showing the instructions / bytecode generated by the function
 
 def MyMultiply(a: number, b: number): number
   return a * b
 enddef
 
 # To compile and check for syntax/type errors:
-# Use :func MyMultiply to view the function definition
+# - Using `func MyMultiply` reveals the function definition
+func MyMultiply
 
-# To inspect the compiled bytecode:
+# - Using `disassemble` shows the instructions generated for MyMultiply
 disassemble MyMultiply
 
 # Example output:
@@ -646,12 +894,21 @@ disassemble MyMultiply
 #    1 LOAD arg[-1]
 #    2 OPNR *
 #    3 RETURN
+
+# ----------------------------------------------------------------------------
 </pre></div>
-<h3>Additional Resources</h3>
+<h2>Additional Resources</h2>
 <ul>
-<li><a href="https://vimhelp.org/vim9.txt.html">Vim9 Script Reference</a></li>
-<li><a href="https://github.com/yegappan/Vim9ScriptForPythonDevelopers">Yegappan's Vim9 for Python Developers</a></li>
+<li><a href="https://vimhelp.org/vim9.txt.html">Vim9 script help</a>: An online
+version of Vim’s help pages (<code>:h vim9</code> within Vim itself), kept
+up-to-date automatically from the Vim source repository</li>
+<li><a href="https://github.com/yegappan/Vim9ScriptForPythonDevelopers">Yegappan's Vim9 for Python Developers</a>:
+A guide focusing only on programming constructs that are common to both
+Python and Vim9 (and not constructs unique to Vim)</li>
 <li><a href="https://github.com/jessepav/lacygoill-wiki-backup/blob/master/vim/vim9.md">Lacygoill's Vim9 Notes</a></li>
+<li><a href="https://github.com/ubaldot/vim9-conversion-aid">vim9-conversion-aid</a>:
+a starting point to convert legacy Vim script to Vim9 script</li>
+<li><a href="https://github.com/saccarosium/awesome-vim9">awesome-vim9 plugins</a></li>
 </ul>
 
         <hr>
@@ -667,8 +924,10 @@ disassemble MyMultiply
           <p>
             &copy; 2025
             <a href="http://hiphish.github.io/">Alejandro Sanchez</a>,
-            <a href="https://github.com/yegappan">Yegappan Lakshmanan</a>,
-            <a href="https://github.com/lacygoill">LacyGoill</a>
+            <a href="https://github.com/lacygoill">LacyGoill</a>,
+            <a href="https://github.com/kennypete">Peter Kenny</a>,
+            <a href="https://github.com/ubaldot">Ubaldo Tiberi</a>,
+            <a href="https://github.com/yegappan">Yegappan Lakshmanan</a>
           </p>
         </footer>
       </div>
