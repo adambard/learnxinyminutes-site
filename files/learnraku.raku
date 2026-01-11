@@ -735,7 +735,7 @@ fst(1);    # OUTPUT: «1␤»
 # `%hash-name (:key($variable-to-store-value-in))`.
 # The hash can stay anonymous if you only need the values you extracted.
 
-# In order to call the function, you must supply a hash wither created with
+# In order to call the function, you must supply a hash either created with
 # curly braces or with `%()` (recommended). Alternatively, you can pass
 # a variable that contains a hash.
 
@@ -1881,7 +1881,7 @@ say so 'a b c' ~~ / a  b  c /; #=> `False`, space is not significant here!
 say so 'a b c' ~~ /:s a b c /; #=> `True`, we added the modifier `:s` here.
 
 # If we use only one space between strings in a regex, Raku will warn us
-# about space being not signicant in the regex:
+# about space being not significant in the regex:
 say so 'a b c' ~~ / a b c /;   # OUTPUT: «False␤»
 say so 'a b c' ~~ / a  b  c /; # OUTPUT: «False»
 
@@ -1942,7 +1942,7 @@ say so 'aec' ~~ / a  b*  c /;    # OUTPUT: «False␤», "b"(s) are optional, no
 say so 'abc' ~~ / a  b**1  c /;         # OUTPUT: «True␤», exactly one time
 say so 'abc' ~~ / a  b**1..3  c /;      # OUTPUT: «True␤», one to three times
 say so 'abbbc' ~~ / a  b**1..3  c /;    # OUTPUT: «True␤»
-say so 'abbbbbbc' ~~ / a  b**1..3  c /; # OUTPUT: «Fals␤», too much
+say so 'abbbbbbc' ~~ / a  b**1..3  c /; # OUTPUT: «False␤», too much
 say so 'abbbbbbc' ~~ / a  b**3..*  c /; # OUTPUT: «True␤», infinite ranges are ok
 
 #

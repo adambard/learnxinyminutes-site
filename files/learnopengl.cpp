@@ -203,7 +203,7 @@ glDrawArrays(GL_QUADS, 0, 4);
 glBindVertexArray(0);
 window.display();
 // ...
-// Ofcource we have to delete the allocated memory for the VAO and VBO at
+// Of course we have to delete the allocated memory for the VAO and VBO at
 // the end of our application.
 // ...
 glDeleteBuffers(1, &vbo);
@@ -438,7 +438,7 @@ void main() {
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 color;
 layout(location = 2) in vec2 texCoords;
-// Create 2 4x4 matricies, 1 for the projection matrix
+// Create 2 4x4 matrices, 1 for the projection matrix
 // and 1 for the model matrix.
 // Because we draw in a static scene, we don't need a view matrix.
 uniform mat4 projection;
@@ -452,7 +452,7 @@ void main() {
     fTexCoords = texCoords;
     // Multiplay the position by the model matrix and then by the
     // projection matrix.
-    // Beware order of multiplication for matricies!
+    // Beware order of multiplication for matrices!
     gl_Position = projection * model * vec4(position, 1.0);
 }
 // The new vertex data, counter-clockwise declaration.
@@ -462,10 +462,10 @@ std::vector<float> vertexData {
     1.0f, 0.0f, 0.0f,   // bottom right
     1.0f, 1.0f, 0.0f    // top right
 };
-// Request the location of our matricies.
+// Request the location of our matrices.
 GLint projectionLocation = glGetUniformLocation(program, "projection");
 GLint modelLocation = glGetUniformLocation(program, "model");
-// Declaring the matricies.
+// Declaring the matrices.
 // Orthogonal matrix for a 1024x768 window.
 std::vector<float> projection {  
     0.001953f,       0.0f,  0.0f, 0.0f,
@@ -481,7 +481,7 @@ std::vector<float> model {
       0.0f,   0.0f, 1.0f, 0.0f,
      50.0f,  50.0f, 0.0f, 1.0f
 };
-// Now we can send our calculated matricies to the program.
+// Now we can send our calculated matrices to the program.
 glUseProgram(program);
 glUniformMatrix4fv(projectionLocation,   // location
                    1,                    // count
@@ -490,8 +490,8 @@ glUniformMatrix4fv(projectionLocation,   // location
 glUniformMatrix4fv(modelLocation, 1, GL_FALSE, model.data());
 glUseProgram(0);
 // The glUniform*() calls have to be done, while the program is bound.
-// There are many math librarys for OpenGL, which create
-// matricies and vectors, the most used in C++ is glm (OpenGL Mathematics).
+// There are many math libraries for OpenGL, which create
+// matrices and vectors, the most used in C++ is glm (OpenGL Mathematics).
 // Its a header only library.
 // The same code using glm would look like:
 glm::mat4 projection{ glm::ortho(0.0f, 1024.0f, 768.0f, 0.0f) };
