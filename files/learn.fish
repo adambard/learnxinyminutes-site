@@ -16,8 +16,8 @@
 ~/images/omegalul.jpg
 > echo sick egg, nadia. no u do really goofy shit.   | grep [udense]
 > echo This\ is\ text > file.txt
->echo This\ is\ a\ line >> file.txt
->echo This\ is\ a\ second\ line >> file.txt
+> echo This\ is\ a\ line >> file.txt
+> echo This\ is\ a\ second\ line >> file.txt
 > echo "My home is $HOME"
 My home is /home/myuser
 > echo 'My home is $HOME'
@@ -26,7 +26,7 @@ My home is $HOME
 > set var lol && echo $var
 > set var lol &&    # press Enter here
       echo $var
-whoami \    # press Enter here
+> whoami \    # press Enter here
     --version
 > if not echo It's very late I should not waste my time with this
       echo Nobody heard you
@@ -124,10 +124,10 @@ set myvar "The files" (ls -a) " are in the directory $PWD"
 # Passing the output of a command to another command that only accepts files can
 # be done using process substitution.
 # In bash, you use <(command):
-# diff <(ls dir1) <(ls dir2)
+# diff <(sort file1) <(sort file2)
 
 # fish uses (command | psub) for that:
-diff (ls dir1 | psub) (ls dir2 | psub)
+diff (sort file1 | psub) (sort file2 | psub)
 
 # There's also if, else if, else
 if grep -q fish /etc/shells
