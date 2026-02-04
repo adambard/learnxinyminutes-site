@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="en">
+    <title>Learn Agda in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/agda/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1><a href="/">Learn X in Y minutes</a></h1>
+      <h2>Where X=Agda</h2>
+
+      <p class="filelink">
+        Get the code:
+        <a href="/files/learnagda.agda">learnagda.agda</a>
+      </p>
+      <div id="doc">
+<p>Agda is a dependently typed functional programming language. It is an
+extension of Martin-Löf's Type Theory. In Agda, programs and proofs are
+written in the same language. In Agda, there is no separation between types
+and values: types can depend on values, and values can act as types. This
+allows you to encode logical invariants (like the length of a vector)
+directly into the type system, making Agda a powerful tool for both
+programming and theorem proving.</p>
+<p>Agda is heavily reliant on Unicode characters. Most editors (like Emacs or VS Code) support entering these via LaTeX-like abbreviations (e.g., <code>\to</code> for <code>→</code>, <code>\all</code> for <code>∀</code>, <code>\bN</code> for <code>ℕ</code>).</p>
+<p>To install Agda, you typically use Haskell's cabal or stack. See the <a href="https://wiki.portal.chalmers.se/agda/pmwiki.php">wiki</a> for details.</p>
+<div class="highlight"><pre lang="agda"><span class="c1">-- A module must have the same name as the file (excluding .agda)</span>
+<span class="kr">module</span><span class="w"> </span><span class="n">learnagda</span><span class="w"> </span><span class="kr">where</span>
+
+<span class="c1">-- We can import other modules.</span>
+<span class="c1">-- Agda&#39;s standard library is commonly used, but here we will define</span>
+<span class="c1">-- the basics from scratch for educational purposes.</span>
+
+<span class="c1">-- Agda is a dependently typed functional programming language.</span>
+<span class="c1">-- It is strictly total:</span>
+<span class="c1">--   all programs must terminate, and all patterns must be matched.</span>
+<span class="c1">-- Agda logic relies heavily on the Curry-Howard correspondence:</span>
+<span class="c1">--   Propositions are Types</span>
+<span class="c1">--   Proofs are Programs</span>
+
+<span class="c1">-- Comments use double dashes for single lines.</span>
+<span class="cm">{- Multi-line comments are enclosed in braces and hyphens. -}</span>
+
+<span class="c1">-- Agda uses Unicode extensively.</span>
+<span class="c1">-- In the Emacs mode (or VS Code), you type these using LaTeX-like shortcuts:</span>
+<span class="c1">-- \to      →</span>
+<span class="c1">-- \bN      ℕ</span>
+<span class="c1">-- \==      ≡</span>
+<span class="c1">-- \all     ∀</span>
+<span class="c1">-- \::      ∷</span>
+
+<span class="c1">--------------------------------------------------------------------------------</span>
+<span class="c1">-- Datatypes and Pattern Matching</span>
+<span class="c1">--------------------------------------------------------------------------------</span>
+
+<span class="c1">-- &#39;Set&#39; is the type of types (similar to &#39;Type&#39; in other languages).</span>
+<span class="c1">-- We define Booleans as an inductive data type.</span>
+<span class="kr">data</span><span class="w"> </span>Bool<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="nf">true</span><span class="w">  </span><span class="ow">:</span><span class="w"> </span>Bool
+<span class="w">  </span><span class="nf">false</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>Bool
+
+<span class="c1">-- We can define functions using pattern matching.</span>
+<span class="c1">-- &#39;not&#39; takes a Bool and returns a Bool.</span>
+<span class="nf">not</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>Bool<span class="w"> </span><span class="ow">→</span><span class="w"> </span>Bool<span class="w">  </span><span class="c1">-- The type signature is mandatory.</span>
+not<span class="w"> </span>true<span class="w">  </span><span class="ow">=</span><span class="w"> </span>false
+not<span class="w"> </span>false<span class="w"> </span><span class="ow">=</span><span class="w"> </span>true
+
+<span class="c1">-- Natural numbers (Peano encoding).</span>
+<span class="c1">-- This defines an infinite set of terms: zero, suc zero,</span>
+<span class="c1">-- suc (suc zero), ...</span>
+<span class="kr">data</span><span class="w"> </span>ℕ<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="nf">zero</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>ℕ
+<span class="w">  </span><span class="nf">suc</span><span class="w">  </span><span class="ow">:</span><span class="w"> </span>ℕ<span class="w"> </span><span class="ow">→</span><span class="w"> </span>ℕ
+
+<span class="c1">-- We can tell Agda to treat ℕ as normal numbers for literals</span>
+<span class="c1">-- by using a pragma.</span>
+<span class="cm">{-# BUILTIN NATURAL ℕ #-}</span>
+
+<span class="c1">-- Addition defined recursively.</span>
+<span class="c1">-- Underscores denote where the arguments go for infix operators.</span>
+<span class="c1">-- This is Agda&#39;s &quot;Mixfix&quot; notation. You can put underscores anywhere!</span>
+<span class="nf">_+_</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>ℕ<span class="w"> </span><span class="ow">→</span><span class="w"> </span>ℕ<span class="w"> </span><span class="ow">→</span><span class="w"> </span>ℕ
+zero<span class="w">  </span>+<span class="w"> </span>n<span class="w"> </span><span class="ow">=</span><span class="w"> </span>n
+suc<span class="w"> </span>m<span class="w"> </span>+<span class="w"> </span>n<span class="w"> </span><span class="ow">=</span><span class="w"> </span>suc<span class="w"> </span><span class="o">(</span>m<span class="w"> </span>+<span class="w"> </span>n<span class="o">)</span>
+
+<span class="c1">-- We can define precedence for operators.</span>
+<span class="kr">infixl</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span>_+_
+
+<span class="c1">-- Example evaluation:</span>
+<span class="c1">-- 2 + 3 = 5</span>
+<span class="c1">-- To verify this in an editor:</span>
+<span class="c1">-- Type &quot;2 + 3&quot;, select it, and press C-c C-n (Compute Normal Form).</span>
+
+<span class="c1">-- Mixfix examples:</span>
+<span class="c1">-- if_then_else_ : Bool → A → A → A</span>
+<span class="c1">-- if true then x else y</span>
+
+<span class="c1">--------------------------------------------------------------------------------</span>
+<span class="c1">-- Interaction and Holes</span>
+<span class="c1">--------------------------------------------------------------------------------</span>
+
+<span class="c1">-- Before introducing other concepts, we need to introduce &#39;holes&#39;.</span>
+
+<span class="c1">-- Agda development is interactive.</span>
+<span class="c1">-- You write types, and the system helps fill terms.</span>
+<span class="c1">-- A question mark ? or {! !} creates a &quot;hole&quot;.</span>
+
+<span class="c1">-- example : 2 + 2 ≡ 4</span>
+<span class="c1">-- example = ?</span>
+
+<span class="c1">-- While in Emacs/VS Code:</span>
+<span class="c1">-- C-c C-l : Load file (type checks).</span>
+<span class="c1">-- C-c C-space : Given a hole, ask Agda to fill it (Auto).</span>
+<span class="c1">-- C-c C-r : Refine. If the hole is for a data type,</span>
+<span class="c1">-- splits constructors.</span>
+<span class="c1">-- C-c C-, : Goal type and context. Tells you what you need to prove.</span>
+
+<span class="c1">-- POP QUIZ: Define multiplication for natural numbers.</span>
+<span class="c1">-- Hint: split cases, and then do induction.</span>
+<span class="nf">_*_</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>ℕ<span class="w"> </span><span class="ow">→</span><span class="w"> </span>ℕ<span class="w"> </span><span class="ow">→</span><span class="w"> </span>ℕ
+x<span class="w"> </span>*<span class="w"> </span>y<span class="w"> </span><span class="ow">=</span><span class="w"> </span>?
+
+<span class="c1">--------------------------------------------------------------------------------</span>
+<span class="c1">-- Polymorphism and Variables</span>
+<span class="c1">--------------------------------------------------------------------------------</span>
+
+<span class="c1">-- In modern Agda, we can declare generalizable variables to avoid</span>
+<span class="c1">-- repetitive `forall` syntax in type signatures.</span>
+<span class="kr">variable</span>
+<span class="w">  </span>A<span class="w"> </span>B<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span>
+<span class="w">  </span>n<span class="w"> </span>m<span class="w"> </span><span class="ow">:</span><span class="w"> </span>ℕ
+
+<span class="c1">-- Lists are parameterized by a type A.</span>
+<span class="kr">infixr</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span>_::_
+<span class="kr">data</span><span class="w"> </span>List<span class="w"> </span><span class="o">(</span>A<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="o">)</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="nf">[]</span><span class="w">   </span><span class="ow">:</span><span class="w"> </span>List<span class="w"> </span>A<span class="w">                </span><span class="c1">-- Empty list</span>
+<span class="w">  </span><span class="nf">_::_</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>A<span class="w"> </span><span class="ow">→</span><span class="w"> </span>List<span class="w"> </span>A<span class="w"> </span><span class="ow">→</span><span class="w"> </span>List<span class="w"> </span>A<span class="w">   </span><span class="c1">-- Cons constructor</span>
+
+<span class="c1">-- A list of numbers: 1 :: 2 :: 3 :: []</span>
+<span class="nf">nums</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>List<span class="w"> </span>ℕ
+nums<span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span>[]
+
+<span class="c1">-- Map function showing explicit universe polymorphism (optional)</span>
+<span class="c1">-- Here we use implicit arguments (denoted by { }).</span>
+<span class="c1">-- Agda infers them from context.</span>
+<span class="c1">-- ∀ {A B} makes A and B implicit type variables.</span>
+<span class="nf">map</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">{</span>A<span class="w"> </span>B<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="o">}</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span><span class="o">(</span>A<span class="w"> </span><span class="ow">→</span><span class="w"> </span>B<span class="o">)</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>List<span class="w"> </span>A<span class="w"> </span><span class="ow">→</span><span class="w"> </span>List<span class="w"> </span>B
+map<span class="w"> </span>f<span class="w"> </span>[]<span class="w">        </span><span class="ow">=</span><span class="w"> </span>[]
+map<span class="w"> </span>f<span class="w"> </span><span class="o">(</span>x<span class="w"> </span><span class="ow">::</span><span class="w"> </span>xs<span class="o">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span>f<span class="w"> </span>x<span class="w"> </span><span class="ow">::</span><span class="w"> </span>map<span class="w"> </span>f<span class="w"> </span>xs
+
+<span class="c1">-- Anonymous functions (lambdas)</span>
+<span class="c1">-- We can write `λ x → x + 1`</span>
+<span class="nf">plus1</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>ℕ<span class="w"> </span><span class="ow">→</span><span class="w"> </span>ℕ
+plus1<span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="ow">λ</span><span class="w"> </span>x<span class="w"> </span><span class="ow">→</span><span class="w"> </span>x<span class="w"> </span>+<span class="w"> </span><span class="mi">1</span>
+
+<span class="c1">--------------------------------------------------------------------------------</span>
+<span class="c1">-- Dependent Types</span>
+<span class="c1">--------------------------------------------------------------------------------</span>
+
+<span class="c1">-- Dependent types allow types to depend on values.</span>
+<span class="c1">-- A classic example is a Vector: a list with a fixed length</span>
+<span class="c1">-- encoded in its type.</span>
+
+<span class="kr">data</span><span class="w"> </span>Vec<span class="w"> </span><span class="o">(</span>A<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="o">)</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>ℕ<span class="w"> </span><span class="ow">→</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="nf">[]</span><span class="w">   </span><span class="ow">:</span><span class="w"> </span>Vec<span class="w"> </span>A<span class="w"> </span>zero
+<span class="w">  </span><span class="nf">_::_</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">{</span>n<span class="o">}</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>A<span class="w"> </span><span class="ow">→</span><span class="w"> </span>Vec<span class="w"> </span>A<span class="w"> </span>n<span class="w"> </span><span class="ow">→</span><span class="w"> </span>Vec<span class="w"> </span>A<span class="w"> </span><span class="o">(</span>suc<span class="w"> </span>n<span class="o">)</span>
+
+<span class="c1">-- If we try to create a vector with the wrong length, it&#39;s a type error.</span>
+<span class="nf">vec3</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>Vec<span class="w"> </span>ℕ<span class="w"> </span><span class="mi">3</span>
+vec3<span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span>[]
+
+<span class="c1">-- Because the length is known, we can define &#39;safe&#39; operations.</span>
+<span class="c1">-- This function cannot be called on an empty vector.</span>
+<span class="nf">head</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>Vec<span class="w"> </span>A<span class="w"> </span><span class="o">(</span>suc<span class="w"> </span>n<span class="o">)</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>A
+head<span class="w"> </span><span class="o">(</span>x<span class="w"> </span><span class="ow">::</span><span class="w"> </span>xs<span class="o">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span>x
+
+<span class="c1">-- We can calculate the exact type of a concatenation.</span>
+<span class="nf">_++_</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>Vec<span class="w"> </span>A<span class="w"> </span>n<span class="w"> </span><span class="ow">→</span><span class="w"> </span>Vec<span class="w"> </span>A<span class="w"> </span>m<span class="w"> </span><span class="ow">→</span><span class="w"> </span>Vec<span class="w"> </span>A<span class="w"> </span><span class="o">(</span>n<span class="w"> </span>+<span class="w"> </span>m<span class="o">)</span>
+[]<span class="w">       </span>++<span class="w"> </span>ys<span class="w"> </span><span class="ow">=</span><span class="w"> </span>ys
+<span class="o">(</span>x<span class="w"> </span><span class="ow">::</span><span class="w"> </span>xs<span class="o">)</span><span class="w"> </span>++<span class="w"> </span>ys<span class="w"> </span><span class="ow">=</span><span class="w"> </span>x<span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="o">(</span>xs<span class="w"> </span>++<span class="w"> </span>ys<span class="o">)</span>
+
+<span class="c1">--------------------------------------------------------------------------------</span>
+<span class="c1">-- Equality and Proofs</span>
+<span class="c1">--------------------------------------------------------------------------------</span>
+
+<span class="c1">-- The identity type (equality) is the heart of proving in Agda.</span>
+<span class="c1">-- x ≡ y is a type that has a value only if x and y are the same normal form.</span>
+<span class="kr">infix</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span>_≡_
+<span class="kr">data</span><span class="w"> </span>_≡_<span class="w"> </span><span class="o">{</span>A<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="o">}</span><span class="w"> </span><span class="o">(</span>x<span class="w"> </span><span class="ow">:</span><span class="w"> </span>A<span class="o">)</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>A<span class="w"> </span><span class="ow">→</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="nf">refl</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>x<span class="w"> </span>≡<span class="w"> </span>x
+<span class="cm">{-# BUILTIN EQUALITY _≡_ #-}</span>
+
+<span class="c1">-- PROOFS ARE PROGRAMS</span>
+<span class="c1">-- To prove a property, we write a function that produces a value of that type.</span>
+
+<span class="c1">-- Proving 1 + 1 equals 2.</span>
+<span class="nf">1+1≡2</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span>+<span class="w"> </span><span class="mi">1</span><span class="w"> </span>≡<span class="w"> </span><span class="mi">2</span>
+<span class="mi">1</span>+1≡2<span class="w"> </span><span class="ow">=</span><span class="w"> </span>refl
+
+<span class="c1">-- Congruence: applying a function to equal values yields equal results.</span>
+<span class="nf">cong</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">{</span>A<span class="w"> </span>B<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="o">}</span><span class="w"> </span><span class="o">(</span>f<span class="w"> </span><span class="ow">:</span><span class="w"> </span>A<span class="w"> </span><span class="ow">→</span><span class="w"> </span>B<span class="o">)</span><span class="w"> </span><span class="o">{</span>x<span class="w"> </span>y<span class="w"> </span><span class="ow">:</span><span class="w"> </span>A<span class="o">}</span>
+<span class="w">  </span><span class="ow">→</span><span class="w"> </span>x<span class="w"> </span>≡<span class="w"> </span>y<span class="w"> </span><span class="ow">→</span><span class="w"> </span>f<span class="w"> </span>x<span class="w"> </span>≡<span class="w"> </span>f<span class="w"> </span>y
+cong<span class="w"> </span>f<span class="w"> </span>refl<span class="w"> </span><span class="ow">=</span><span class="w"> </span>refl
+
+<span class="c1">-- Symmetry</span>
+<span class="nf">sym</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">{</span>A<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="o">}</span><span class="w"> </span><span class="o">{</span>x<span class="w"> </span>y<span class="w"> </span><span class="ow">:</span><span class="w"> </span>A<span class="o">}</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>x<span class="w"> </span>≡<span class="w"> </span>y<span class="w"> </span><span class="ow">→</span><span class="w"> </span>y<span class="w"> </span>≡<span class="w"> </span>x
+sym<span class="w"> </span>refl<span class="w"> </span><span class="ow">=</span><span class="w"> </span>refl
+
+<span class="c1">-- Transitivity</span>
+<span class="nf">trans</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">{</span>A<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="o">}</span><span class="w"> </span><span class="o">{</span>x<span class="w"> </span>y<span class="w"> </span>z<span class="w"> </span><span class="ow">:</span><span class="w"> </span>A<span class="o">}</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>x<span class="w"> </span>≡<span class="w"> </span>y<span class="w"> </span><span class="ow">→</span><span class="w"> </span>y<span class="w"> </span>≡<span class="w"> </span>z<span class="w"> </span><span class="ow">→</span><span class="w"> </span>x<span class="w"> </span>≡<span class="w"> </span>z
+trans<span class="w"> </span>refl<span class="w"> </span>refl<span class="w"> </span><span class="ow">=</span><span class="w"> </span>refl
+
+<span class="c1">-- Proving associativity of addition.</span>
+<span class="c1">-- This requires induction on x.</span>
+<span class="c1">-- We split cases on x.</span>
+<span class="c1">-- If x is zero: zero + (y + z) ≡ zero + y + z</span>
+<span class="c1">-- reduces to y + z ≡ y + z.</span>
+<span class="c1">-- If x is suc x: we use the inductive hypothesis (recursion).</span>
+<span class="nf">+-assoc</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">(</span>x<span class="w"> </span>y<span class="w"> </span>z<span class="w"> </span><span class="ow">:</span><span class="w"> </span>ℕ<span class="o">)</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span><span class="o">(</span>x<span class="w"> </span>+<span class="w"> </span>y<span class="o">)</span><span class="w"> </span>+<span class="w"> </span>z<span class="w"> </span>≡<span class="w"> </span>x<span class="w"> </span>+<span class="w"> </span><span class="o">(</span>y<span class="w"> </span>+<span class="w"> </span>z<span class="o">)</span>
++-assoc<span class="w"> </span>zero<span class="w">    </span>y<span class="w"> </span>z<span class="w"> </span><span class="ow">=</span><span class="w"> </span>refl
++-assoc<span class="w"> </span><span class="o">(</span>suc<span class="w"> </span>x<span class="o">)</span><span class="w"> </span>y<span class="w"> </span>z<span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span><span class="kr">let</span>
+<span class="w">    </span><span class="c1">-- The inductive hypothesis</span>
+<span class="w">    </span>ih<span class="w"> </span><span class="ow">=</span><span class="w"> </span>+-assoc<span class="w"> </span>x<span class="w"> </span>y<span class="w"> </span>z
+<span class="w">  </span><span class="kr">in</span>
+<span class="w">    </span><span class="c1">-- We need to prove: suc (x + y) + z ≡ suc (x + (y + z))</span>
+<span class="w">    </span><span class="c1">-- Using congruence on the IH gives us exactly that.</span>
+<span class="w">    </span>cong<span class="w"> </span>suc<span class="w"> </span>ih
+
+<span class="c1">-- Agda provides a &#39;rewrite&#39; keyword to simplify this.</span>
+<span class="c1">-- It pattern matches on the equality proof effectively replacing x with y.</span>
+<span class="nf">+-identity</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="o">(</span>n<span class="w"> </span><span class="ow">:</span><span class="w"> </span>ℕ<span class="o">)</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>n<span class="w"> </span>+<span class="w"> </span>zero<span class="w"> </span>≡<span class="w"> </span>n
++-identity<span class="w"> </span>zero<span class="w">    </span><span class="ow">=</span><span class="w"> </span>refl
++-identity<span class="w"> </span><span class="o">(</span>suc<span class="w"> </span>n<span class="o">)</span><span class="w"> </span><span class="kr">rewrite</span><span class="w"> </span>+-identity<span class="w"> </span>n<span class="w"> </span><span class="ow">=</span><span class="w"> </span>refl
+
+<span class="c1">--------------------------------------------------------------------------------</span>
+<span class="c1">-- Equational Reasoning</span>
+<span class="c1">--------------------------------------------------------------------------------</span>
+
+<span class="c1">-- Agda allows defining custom syntax to write proofs</span>
+<span class="c1">-- that look like calculations.</span>
+<span class="c1">-- This is similar to Lean&#39;s `calc` mode but defined within the language.</span>
+
+<span class="kr">module</span><span class="w"> </span><span class="n">Reasoning</span><span class="w"> </span><span class="o">{</span>A<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="o">}</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="kr">infix</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span>begin_
+<span class="w">  </span><span class="kr">infixr</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span>_≡⟨⟩_<span class="w"> </span>_≡⟨_⟩_
+<span class="w">  </span><span class="kr">infix</span><span class="w">  </span><span class="mi">3</span><span class="w"> </span>_∎
+
+<span class="w">  </span><span class="nf">begin_</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">{</span>x<span class="w"> </span>y<span class="w"> </span><span class="ow">:</span><span class="w"> </span>A<span class="o">}</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>x<span class="w"> </span>≡<span class="w"> </span>y<span class="w"> </span><span class="ow">→</span><span class="w"> </span>x<span class="w"> </span>≡<span class="w"> </span>y
+<span class="w">  </span>begin<span class="w"> </span>p<span class="w"> </span><span class="ow">=</span><span class="w"> </span>p
+
+<span class="w">  </span><span class="nf">_≡⟨⟩_</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">(</span>x<span class="w"> </span><span class="ow">:</span><span class="w"> </span>A<span class="o">)</span><span class="w"> </span><span class="o">{</span>y<span class="w"> </span><span class="ow">:</span><span class="w"> </span>A<span class="o">}</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>x<span class="w"> </span>≡<span class="w"> </span>y<span class="w"> </span><span class="ow">→</span><span class="w"> </span>x<span class="w"> </span>≡<span class="w"> </span>y
+<span class="w">  </span>x<span class="w"> </span>≡⟨⟩<span class="w"> </span>p<span class="w"> </span><span class="ow">=</span><span class="w"> </span>p
+
+<span class="w">  </span><span class="nf">_≡⟨_⟩_</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">(</span>x<span class="w"> </span><span class="ow">:</span><span class="w"> </span>A<span class="o">)</span><span class="w"> </span><span class="o">{</span>y<span class="w"> </span>z<span class="w"> </span><span class="ow">:</span><span class="w"> </span>A<span class="o">}</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>x<span class="w"> </span>≡<span class="w"> </span>y<span class="w"> </span><span class="ow">→</span><span class="w"> </span>y<span class="w"> </span>≡<span class="w"> </span>z<span class="w"> </span><span class="ow">→</span><span class="w"> </span>x<span class="w"> </span>≡<span class="w"> </span>z
+<span class="w">  </span>x<span class="w"> </span>≡⟨<span class="w"> </span>x≡y<span class="w"> </span>⟩<span class="w"> </span>y≡z<span class="w"> </span><span class="ow">=</span><span class="w"> </span>trans<span class="w"> </span>x≡y<span class="w"> </span>y≡z
+
+<span class="w">  </span><span class="nf">_∎</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">(</span>x<span class="w"> </span><span class="ow">:</span><span class="w"> </span>A<span class="o">)</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>x<span class="w"> </span>≡<span class="w"> </span>x
+<span class="w">  </span>x<span class="w"> </span>∎<span class="w"> </span><span class="ow">=</span><span class="w"> </span>refl
+
+<span class="kr">open</span><span class="w"> </span>Reasoning
+
+<span class="c1">-- Proof of associativity using reasoning syntax</span>
+<span class="nf">+-assoc&#39;</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">(</span>x<span class="w"> </span>y<span class="w"> </span>z<span class="w"> </span><span class="ow">:</span><span class="w"> </span>ℕ<span class="o">)</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span><span class="o">(</span>x<span class="w"> </span>+<span class="w"> </span>y<span class="o">)</span><span class="w"> </span>+<span class="w"> </span>z<span class="w"> </span>≡<span class="w"> </span>x<span class="w"> </span>+<span class="w"> </span><span class="o">(</span>y<span class="w"> </span>+<span class="w"> </span>z<span class="o">)</span>
++-assoc&#39;<span class="w"> </span>zero<span class="w">    </span>y<span class="w"> </span>z<span class="w"> </span><span class="ow">=</span><span class="w"> </span>refl
++-assoc&#39;<span class="w"> </span><span class="o">(</span>suc<span class="w"> </span>x<span class="o">)</span><span class="w"> </span>y<span class="w"> </span>z<span class="w"> </span><span class="ow">=</span>
+<span class="w">  </span>begin
+<span class="w">    </span><span class="o">(</span>suc<span class="w"> </span>x<span class="w"> </span>+<span class="w"> </span>y<span class="o">)</span><span class="w"> </span>+<span class="w"> </span>z
+<span class="w">  </span>≡⟨⟩<span class="w">               </span><span class="c1">-- Definition of +</span>
+<span class="w">    </span>suc<span class="w"> </span><span class="o">(</span>x<span class="w"> </span>+<span class="w"> </span>y<span class="o">)</span><span class="w"> </span>+<span class="w"> </span>z
+<span class="w">  </span>≡⟨⟩<span class="w">               </span><span class="c1">-- Definition of +</span>
+<span class="w">    </span>suc<span class="w"> </span><span class="o">((</span>x<span class="w"> </span>+<span class="w"> </span>y<span class="o">)</span><span class="w"> </span>+<span class="w"> </span>z<span class="o">)</span>
+<span class="w">  </span>≡⟨<span class="w"> </span>cong<span class="w"> </span>suc<span class="w"> </span><span class="o">(</span>+-assoc&#39;<span class="w"> </span>x<span class="w"> </span>y<span class="w"> </span>z<span class="o">)</span><span class="w"> </span>⟩
+<span class="w">    </span>suc<span class="w"> </span><span class="o">(</span>x<span class="w"> </span>+<span class="w"> </span><span class="o">(</span>y<span class="w"> </span>+<span class="w"> </span>z<span class="o">))</span>
+<span class="w">  </span>≡⟨⟩
+<span class="w">    </span>suc<span class="w"> </span>x<span class="w"> </span>+<span class="w"> </span><span class="o">(</span>y<span class="w"> </span>+<span class="w"> </span>z<span class="o">)</span>
+<span class="w">  </span>∎
+
+<span class="c1">--------------------------------------------------------------------------------</span>
+<span class="c1">-- Inductive Relations</span>
+<span class="c1">--------------------------------------------------------------------------------</span>
+
+<span class="c1">-- Relations can also be defined as inductive types.</span>
+<span class="c1">-- Here we define &quot;less than or equal to&quot; for natural numbers.</span>
+
+<span class="kr">data</span><span class="w"> </span>_≤_<span class="w"> </span><span class="ow">:</span><span class="w"> </span>ℕ<span class="w"> </span><span class="ow">→</span><span class="w"> </span>ℕ<span class="w"> </span><span class="ow">→</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="nf">z≤n</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">{</span>n<span class="o">}</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>zero<span class="w"> </span>≤<span class="w"> </span>n
+<span class="w">  </span><span class="nf">s≤s</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">{</span>m<span class="w"> </span>n<span class="o">}</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>m<span class="w"> </span>≤<span class="w"> </span>n<span class="w"> </span><span class="ow">→</span><span class="w"> </span>suc<span class="w"> </span>m<span class="w"> </span>≤<span class="w"> </span>suc<span class="w"> </span>n
+
+<span class="c1">-- Proof that 2 ≤ 4</span>
+<span class="nf">2≤4</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span>≤<span class="w"> </span><span class="mi">4</span>
+<span class="mi">2</span>≤4<span class="w"> </span><span class="ow">=</span><span class="w"> </span>s≤s<span class="w"> </span><span class="o">(</span>s≤s<span class="w"> </span>z≤n<span class="o">)</span>
+
+<span class="c1">--------------------------------------------------------------------------------</span>
+<span class="c1">-- Mutual Recursion: Even and Odd</span>
+<span class="c1">--------------------------------------------------------------------------------</span>
+
+<span class="c1">-- We can define types that depend on each other using `mutual`.</span>
+
+<span class="kr">mutual</span>
+<span class="w">  </span><span class="kr">data</span><span class="w"> </span>Even<span class="w"> </span><span class="ow">:</span><span class="w"> </span>ℕ<span class="w"> </span><span class="ow">→</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">    </span><span class="nf">zero</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>Even<span class="w"> </span>zero
+<span class="w">    </span><span class="nf">suc</span><span class="w">  </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">{</span>n<span class="o">}</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>Odd<span class="w"> </span>n<span class="w"> </span><span class="ow">→</span><span class="w"> </span>Even<span class="w"> </span><span class="o">(</span>suc<span class="w"> </span>n<span class="o">)</span>
+
+<span class="w">  </span><span class="kr">data</span><span class="w"> </span>Odd<span class="w"> </span><span class="ow">:</span><span class="w"> </span>ℕ<span class="w"> </span><span class="ow">→</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">    </span><span class="nf">suc</span><span class="w">  </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">{</span>n<span class="o">}</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>Even<span class="w"> </span>n<span class="w"> </span><span class="ow">→</span><span class="w"> </span>Odd<span class="w"> </span><span class="o">(</span>suc<span class="w"> </span>n<span class="o">)</span>
+
+<span class="kr">mutual</span>
+<span class="w">  </span><span class="nf">e+e≡e</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">{</span>m<span class="w"> </span>n<span class="o">}</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>Even<span class="w"> </span>m<span class="w"> </span><span class="ow">→</span><span class="w"> </span>Even<span class="w"> </span>n<span class="w"> </span><span class="ow">→</span><span class="w"> </span>Even<span class="w"> </span><span class="o">(</span>m<span class="w"> </span>+<span class="w"> </span>n<span class="o">)</span>
+<span class="w">  </span>e+e≡e<span class="w"> </span>zero<span class="w">    </span>en<span class="w"> </span><span class="ow">=</span><span class="w"> </span>en
+<span class="w">  </span>e+e≡e<span class="w"> </span><span class="o">(</span>suc<span class="w"> </span>om<span class="o">)</span><span class="w"> </span>en<span class="w"> </span><span class="ow">=</span><span class="w"> </span>suc<span class="w"> </span><span class="o">(</span>o+e≡o<span class="w"> </span>om<span class="w"> </span>en<span class="o">)</span>
+
+<span class="w">  </span><span class="nf">o+e≡o</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">{</span>m<span class="w"> </span>n<span class="o">}</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>Odd<span class="w"> </span>m<span class="w"> </span><span class="ow">→</span><span class="w"> </span>Even<span class="w"> </span>n<span class="w"> </span><span class="ow">→</span><span class="w"> </span>Odd<span class="w"> </span><span class="o">(</span>m<span class="w"> </span>+<span class="w"> </span>n<span class="o">)</span>
+<span class="w">  </span>o+e≡o<span class="w"> </span><span class="o">(</span>suc<span class="w"> </span>em<span class="o">)</span><span class="w"> </span>en<span class="w"> </span><span class="ow">=</span><span class="w"> </span>suc<span class="w"> </span><span class="o">(</span>e+e≡e<span class="w"> </span>em<span class="w"> </span>en<span class="o">)</span>
+
+<span class="c1">--------------------------------------------------------------------------------</span>
+<span class="c1">-- Records and Type Classes</span>
+<span class="c1">--------------------------------------------------------------------------------</span>
+
+<span class="c1">-- Records are similar to structs.</span>
+<span class="kr">record</span><span class="w"> </span>Isomorphism<span class="w"> </span><span class="o">(</span>A<span class="w"> </span>B<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="o">)</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="kr">field</span>
+<span class="w">    </span><span class="nf">to</span><span class="w">   </span><span class="ow">:</span><span class="w"> </span>A<span class="w"> </span><span class="ow">→</span><span class="w"> </span>B
+<span class="w">    </span><span class="nf">from</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>B<span class="w"> </span><span class="ow">→</span><span class="w"> </span>A
+<span class="w">    </span><span class="nf">from∘to</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">(</span>x<span class="w"> </span><span class="ow">:</span><span class="w"> </span>A<span class="o">)</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>from<span class="w"> </span><span class="o">(</span>to<span class="w"> </span>x<span class="o">)</span><span class="w"> </span>≡<span class="w"> </span>x
+<span class="w">    </span><span class="nf">to∘from</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">(</span>y<span class="w"> </span><span class="ow">:</span><span class="w"> </span>B<span class="o">)</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>to<span class="w"> </span><span class="o">(</span>from<span class="w"> </span>y<span class="o">)</span><span class="w"> </span>≡<span class="w"> </span>y
+
+<span class="c1">-- Agda supports &quot;Instance Arguments&quot; via {{ }}.</span>
+<span class="c1">-- This works like Type Classes in Haskell or Lean.</span>
+
+<span class="kr">record</span><span class="w"> </span>Monoid<span class="w"> </span><span class="o">(</span>A<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="o">)</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="kr">field</span>
+<span class="w">    </span><span class="nf">mempty</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>A
+<span class="w">    </span><span class="nf">_&lt;&gt;_</span><span class="w">   </span><span class="ow">:</span><span class="w"> </span>A<span class="w"> </span><span class="ow">→</span><span class="w"> </span>A<span class="w"> </span><span class="ow">→</span><span class="w"> </span>A
+
+<span class="c1">-- A function using the type class</span>
+<span class="nf">concat</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">{</span>A<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="o">}</span><span class="w"> </span><span class="o">{{</span>m<span class="w"> </span><span class="ow">:</span><span class="w"> </span>Monoid<span class="w"> </span>A<span class="o">}}</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>List<span class="w"> </span>A<span class="w"> </span><span class="ow">→</span><span class="w"> </span>A
+concat<span class="w"> </span><span class="o">{{</span>m<span class="o">}}</span><span class="w"> </span>[]<span class="w"> </span><span class="ow">=</span><span class="w"> </span>Monoid.mempty<span class="w"> </span>m
+concat<span class="w"> </span><span class="o">{{</span>m<span class="o">}}</span><span class="w"> </span><span class="o">(</span>x<span class="w"> </span><span class="ow">::</span><span class="w"> </span>xs<span class="o">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span>Monoid._&lt;&gt;_<span class="w"> </span>m<span class="w"> </span>x<span class="w"> </span><span class="o">(</span>concat<span class="w"> </span><span class="o">{{</span>m<span class="o">}}</span><span class="w"> </span>xs<span class="o">)</span>
+
+<span class="c1">-- Instances are defined like normal values but marked &#39;instance&#39;</span>
+<span class="kr">instance</span>
+<span class="w">  </span><span class="nf">natPlusMonoid</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>Monoid<span class="w"> </span>ℕ
+<span class="w">  </span>natPlusMonoid<span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kr">record</span><span class="w"> </span><span class="o">{</span><span class="w"> </span>mempty<span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span>;<span class="w"> </span>_&lt;&gt;_<span class="w"> </span><span class="ow">=</span><span class="w"> </span>_+_<span class="w"> </span><span class="o">}</span>
+
+<span class="c1">-- Now we can use it implicitly</span>
+<span class="nf">sumList</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>ℕ
+sumList<span class="w"> </span><span class="ow">=</span><span class="w"> </span>concat<span class="w"> </span><span class="o">(</span><span class="mi">1</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span>[]<span class="o">)</span><span class="w"> </span><span class="c1">-- Result: 6</span>
+
+<span class="c1">--------------------------------------------------------------------------------</span>
+<span class="c1">-- Propositions as Types</span>
+<span class="c1">--------------------------------------------------------------------------------</span>
+
+<span class="kr">data</span><span class="w"> </span>_×_<span class="w"> </span><span class="o">(</span>A<span class="w"> </span>B<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="o">)</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="kr">where</span><span class="w">   </span><span class="c1">-- AND</span>
+<span class="w">  </span><span class="nf">_,_</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>A<span class="w"> </span><span class="ow">→</span><span class="w"> </span>B<span class="w"> </span><span class="ow">→</span><span class="w"> </span>A<span class="w"> </span>×<span class="w"> </span>B
+
+<span class="kr">data</span><span class="w"> </span>_⊎_<span class="w"> </span><span class="o">(</span>A<span class="w"> </span>B<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="o">)</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="kr">where</span><span class="w">   </span><span class="c1">-- OR</span>
+<span class="w">  </span><span class="nf">inj₁</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>A<span class="w"> </span><span class="ow">→</span><span class="w"> </span>A<span class="w"> </span>⊎<span class="w"> </span>B
+<span class="w">  </span><span class="nf">inj₂</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>B<span class="w"> </span><span class="ow">→</span><span class="w"> </span>A<span class="w"> </span>⊎<span class="w"> </span>B
+
+<span class="kr">data</span><span class="w"> </span>⊥<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="kr">where</span><span class="w">                 </span><span class="c1">-- FALSE</span>
+<span class="w">  </span><span class="c1">-- No constructors</span>
+
+<span class="c1">-- Ex Falso Quodlibet: From falsehood, anything follows.</span>
+<span class="c1">-- We use an absurd pattern () to indicate this case is impossible.</span>
+<span class="nf">⊥-elim</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="ow">∀</span><span class="w"> </span><span class="o">{</span>A<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="o">}</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>⊥<span class="w"> </span><span class="ow">→</span><span class="w"> </span>A
+⊥-elim<span class="w"> </span><span class="o">()</span>
+
+<span class="c1">-- Negation is defined as &quot;implies False&quot;.</span>
+<span class="nf">¬_</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span><span class="kt">Set</span>
+¬<span class="w"> </span>A<span class="w"> </span><span class="ow">=</span><span class="w"> </span>A<span class="w"> </span><span class="ow">→</span><span class="w"> </span>⊥
+
+<span class="c1">-- Example: Proving 1 is not equal to 0.</span>
+<span class="c1">-- We assume 1 ≡ 0 is true (argument eq), and show it leads to</span>
+<span class="c1">-- a contradiction.</span>
+<span class="nf">1≢0</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>¬<span class="w"> </span><span class="o">(</span><span class="mi">1</span><span class="w"> </span>≡<span class="w"> </span><span class="mi">0</span><span class="o">)</span>
+<span class="mi">1</span>≢0<span class="w"> </span><span class="o">()</span>
+<span class="c1">-- The pattern () automatically realizes that 1 ≡ 0 is an impossible match</span>
+<span class="c1">-- because the constructors &#39;suc&#39; and &#39;zero&#39; do not clash</span>
+<span class="c1">-- in the definition of ≡.</span>
+
+<span class="c1">-- Decidable Propositions</span>
+<span class="c1">-- A property P is decidable if we can compute whether it holds</span>
+<span class="c1">-- or not.</span>
+<span class="kr">data</span><span class="w"> </span>Dec<span class="w"> </span><span class="o">(</span>P<span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="o">)</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">Set</span><span class="w"> </span><span class="kr">where</span>
+<span class="w">  </span><span class="nf">yes</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span>P<span class="w"> </span><span class="ow">→</span><span class="w"> </span>Dec<span class="w"> </span>P
+<span class="w">  </span><span class="nf">no</span><span class="w">  </span><span class="ow">:</span><span class="w"> </span><span class="o">(</span>P<span class="w"> </span><span class="ow">→</span><span class="w"> </span>⊥<span class="o">)</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>Dec<span class="w"> </span>P
+
+<span class="c1">-- Computable equality for Naturals</span>
+<span class="nf">_==_</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="o">(</span>n<span class="w"> </span>m<span class="w"> </span><span class="ow">:</span><span class="w"> </span>ℕ<span class="o">)</span><span class="w"> </span><span class="ow">→</span><span class="w"> </span>Dec<span class="w"> </span><span class="o">(</span>n<span class="w"> </span>≡<span class="w"> </span>m<span class="o">)</span>
+zero<span class="w">  </span><span class="ow">==</span><span class="w"> </span>zero<span class="w">  </span><span class="ow">=</span><span class="w"> </span>yes<span class="w"> </span>refl
+zero<span class="w">  </span><span class="ow">==</span><span class="w"> </span>suc<span class="w"> </span>m<span class="w"> </span><span class="ow">=</span><span class="w"> </span>no<span class="w"> </span><span class="ow">λ</span><span class="o">()</span>
+suc<span class="w"> </span>n<span class="w"> </span><span class="ow">==</span><span class="w"> </span>zero<span class="w">  </span><span class="ow">=</span><span class="w"> </span>no<span class="w"> </span><span class="ow">λ</span><span class="o">()</span>
+suc<span class="w"> </span>n<span class="w"> </span><span class="ow">==</span><span class="w"> </span>suc<span class="w"> </span>m<span class="w"> </span><span class="kr">with</span><span class="w"> </span>n<span class="w"> </span><span class="ow">==</span><span class="w"> </span>m
+<span class="ow">...</span><span class="w"> </span><span class="ow">|</span><span class="w"> </span>yes<span class="w"> </span>p<span class="w"> </span><span class="ow">=</span><span class="w"> </span>yes<span class="w"> </span><span class="o">(</span>cong<span class="w"> </span>suc<span class="w"> </span>p<span class="o">)</span>
+<span class="ow">...</span><span class="w"> </span><span class="ow">|</span><span class="w"> </span>no<span class="w"> </span>¬p<span class="w"> </span><span class="ow">=</span><span class="w"> </span>no<span class="w"> </span><span class="o">(</span><span class="ow">λ</span><span class="w"> </span><span class="o">{</span><span class="w"> </span>refl<span class="w"> </span><span class="ow">→</span><span class="w"> </span>¬p<span class="w"> </span>refl<span class="w"> </span><span class="o">})</span>
+</pre></div>
+<h2>Further Reading</h2>
+<ul>
+<li><a href="https://plfa.github.io/">PLFA (Programming Language Foundations in Agda)</a> - Highly recommended deep dive.</li>
+<li><a href="https://wiki.portal.chalmers.se/agda/pmwiki.php">The Agda Wiki</a></li>
+<li><a href="https://agda.readthedocs.io/en/latest/">Agda Documentation</a></li>
+<li><a href="https://github.com/agda/agda-stdlib">Standard Library</a> - The official standard library.</li>
+</ul>
+
+        <hr>
+        <p>
+          Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the GitHub Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/agda.md">pull request</a> yourself!
+        </p>
+        <p class="contributed">
+          Originally contributed by pe200012, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/agda.md">1 contributor</a>.
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 80px; height: 28px; padding-bottom: 5px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2026
+            <a href="https://github.com/pe200012">pe200012</a>
+          </p>
+        </footer>
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const langSelect = document.getElementById('lang-select');
+          langSelect?.addEventListener('change', () => {
+            const selectedOption = langSelect.options[langSelect.selectedIndex];
+            const url = selectedOption?.getAttribute('data-url');
+            if (url) {
+              window.location.href = url;
+            }
+          });
+        });
+      </script>
+    </div>
+  </body>
+</html>
