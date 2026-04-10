@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="en">
+    <title>Learn MakrellPy in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/makrellpy/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1><a href="/">Learn X in Y minutes</a></h1>
+      <h2>Where X=MakrellPy</h2>
+
+      <p class="filelink">
+        Get the code:
+        <a href="/files/learn-makrellpy.mrpy">learn-makrellpy.mrpy</a>
+      </p>
+      <div id="doc">
+<p>MakrellPy is the Python-hosted member of the Makrell language family. It
+compiles to Python AST and runs on CPython, so every Python library is
+available. The syntax is compact and expression-oriented, built on a shared
+structural foundation called MBF that also powers the family's data and
+markup formats.</p>
+<div class="highlight"><pre>####################################################
+## 1. Primitives
+####################################################
+
+# Numbers
+42              # =&gt; 42
+3.14            # =&gt; 3.14
+-5.7e-3         # =&gt; -0.0057
+
+# Number suffixes — scale or convert inline
+2.5M            # =&gt; 2500000        multiply by 10^6
+100k            # =&gt; 100000         multiply by 10^3
+2pi             # =&gt; 6.283185...    multiply by pi
+90deg           # =&gt; 1.570796...    degrees to radians
+3i              # =&gt; 3j             Python complex
+
+# Booleans and null
+true            # =&gt; True
+false           # =&gt; False
+null            # =&gt; None
+
+# Strings with optional suffixes
+&quot;hello&quot;                 # =&gt; &quot;hello&quot;
+&quot;2026-04-01&quot;dt          # =&gt; datetime(2026, 4, 1)
+&quot;ff&quot;hex                 # =&gt; 255
+&quot;[a-z]+&quot;regex           # =&gt; re.compile(&quot;[a-z]+&quot;)
+
+# E-strings interpolate {expr} segments
+name = &quot;world&quot;
+&quot;Hello {name}!&quot;e        # =&gt; &quot;Hello world!&quot;
+
+# Collections
+[1 2 3]         # list  =&gt; [1, 2, 3]
+(1 2 3)         # tuple =&gt; (1, 2, 3)
+[]              # =&gt; []
+()              # =&gt; ()
+
+
+####################################################
+## 2. Operators
+####################################################
+
+# Arithmetic
+2 + 3           # =&gt; 5
+10 / 3          # =&gt; 3.333...
+2 ** 8          # =&gt; 256
+
+# Comparison and logic
+3 == 3          # =&gt; True
+3 != 4          # =&gt; True
+true &amp;&amp; false   # =&gt; False
+true || false   # =&gt; True
+
+# + coerces to string when either side is a string
+&quot;age: &quot; + 25    # =&gt; &quot;age: 25&quot;
+
+# Assignment (right-associative, lowest precedence)
+x = y = 10
+
+# @ indexes into collections (high precedence)
+items = [10 20 30]
+items @ 0       # =&gt; 10
+items @ 2       # =&gt; 30
+
+# . accesses members (highest precedence)
+&quot;hello&quot;.upper   # =&gt; &lt;method&gt;
+
+# .. creates a range/slice
+1 .. 5          # =&gt; slice(1, 5)
+
+
+####################################################
+## 3. Calling Functions
+####################################################
+
+# Curly brackets call functions: {f arg1 arg2}
+{print &quot;hello&quot;}               # prints: hello
+{len [1 2 3]}                 # =&gt; 3
+{max 10 20}                   # =&gt; 20
+
+# Nested calls work as you&#39;d expect
+{print {len &quot;Makrell&quot;}}       # prints: 7
+
+
+####################################################
+## 4. Defining Functions
+####################################################
+
+# Named function
+{fun greet [who]
+    &quot;Hello, &quot; + who + &quot;!&quot;}
+
+{greet &quot;Makrell&quot;}   # =&gt; &quot;Hello, Makrell!&quot;
+
+# Anonymous function
+double = {fun [x] x * 2}
+{double 5}          # =&gt; 10
+
+# Lambda with the arrow operator -&gt;
+triple = x -&gt; x * 3
+{triple 4}          # =&gt; 12
+
+# Multi-arg lambda
+hyp = [x y] -&gt; {Math.sqrt x ** 2 + y ** 2}
+
+# No-arg lambda
+dice = [] -&gt; {random.randint 1 6}
+
+# Partial application: _ becomes a parameter
+add = {fun [a b] a + b}
+add5 = {add 5 _}        # =&gt; a function that adds 5
+{add5 10}                # =&gt; 15
+
+inc = {add _ 1}
+{inc 99}                 # =&gt; 100
+
+
+####################################################
+## 5. Pipes and Composition
+####################################################
+
+# | threads a value left-to-right:  a | f  =&gt;  {f a}
+5 | double               # =&gt; 10
+5 | double | triple      # =&gt; 30
+
+# Combine with partial application for expressive chains
+[1 2 3 4 5]
+    | {filter {&lt; _ 4}}       # keep items &lt; 4 =&gt; [1, 2, 3]
+    | {map {* _ 2}}           # double them   =&gt; [2, 4, 6]
+    | sum                     # sum           =&gt; 12
+
+# |* maps a function over each element
+[1 2 3] |* double        # =&gt; [2, 4, 6]
+
+# \ is the reverse pipe:  f \ a  =&gt;  {f a}
+double \ 5              # =&gt; 10
+
+# -&gt; binds tighter than |, so lambdas compose naturally
+[1 2 3] | {map x -&gt; x + 10}   # =&gt; [11, 12, 13]
+
+
+####################################################
+## 6. Control Flow
+####################################################
+
+# if is an expression — it returns a value
+x = 7
+{if x &gt; 0 &quot;positive&quot; &quot;non-positive&quot;}   # =&gt; &quot;positive&quot;
+
+# Chained conditions
+{if x &gt; 100 &quot;high&quot;
+    x &gt; 50  &quot;medium&quot;
+            &quot;low&quot;}                       # =&gt; &quot;low&quot;
+
+# when — like if with null as the implicit else
+{when x &gt; 0 {print &quot;positive&quot;}}
+
+# Loops
+{while i &lt; 3
+    {print i}
+    i = i + 1}
+
+{for item [10 20 30]
+    {print item}}
+
+# do block — introduces a scope, returns the last expression
+result = {do
+    a = 10
+    b = 20
+    a + b}
+# result =&gt; 30
+
+
+####################################################
+## 7. Pattern Matching
+####################################################
+
+# Match tests a value against pattern-result pairs
+{match 42
+    0     &quot;zero&quot;
+    42    &quot;the answer&quot;
+    _     &quot;other&quot;}
+# =&gt; &quot;the answer&quot;
+
+# _ is the wildcard — matches anything
+
+# Alternatives with |
+{match 5
+    2 | 3 | 5   &quot;small prime&quot;
+    _            &quot;other&quot;}
+# =&gt; &quot;small prime&quot;
+
+# List patterns
+{match [1 2 3]
+    [1 _ _]   &quot;starts with 1&quot;
+    [_ _ _]   &quot;three items&quot;
+    _         &quot;other&quot;}
+
+# Binding with =
+{match [10 20]
+    [a=_ b=_]   a + b
+    _            0}
+# =&gt; 30
+
+# Type patterns
+{match 42
+    _:str   &quot;string&quot;
+    _:int   &quot;integer&quot;
+    _       &quot;other&quot;}
+# =&gt; &quot;integer&quot;
+
+# Constructor / dataclass patterns
+{dataclass Point
+    x:float
+    y:float}
+
+{match {Point 3.0 4.0}
+    {$type Point [0.0 0.0]}   &quot;origin&quot;
+    {$type Point [x y]}       &quot;({x}, {y})&quot;e}
+# =&gt; &quot;(3.0, 4.0)&quot;
+
+# Regular sequence patterns — regex-like matching on lists
+{match [1 2 2 2 3]
+    [$r 1 (some 2) 3]   &quot;one, twos, then three&quot;
+    _                    &quot;other&quot;}
+# =&gt; &quot;one, twos, then three&quot;
+# Quantifiers: maybe (0-1), some (1+), any (0+), 3* (exact), (2..5)* (range)
+
+# Boolean pattern operators
+[1 2 3] ~= [_ _ _]     # =&gt; True   (matches?)
+[1 2] !~= [_ _ _]      # =&gt; True   (doesn&#39;t match?)
+
+
+####################################################
+## 8. Classes
+####################################################
+
+{class Animal
+    {fun __init__ [self name sound]
+        self.name = name
+        self.sound = sound}
+    {fun speak [self]
+        self.name + &quot; says &quot; + self.sound}}
+
+a = {Animal &quot;Cat&quot; &quot;meow&quot;}
+{a.speak}       # =&gt; &quot;Cat says meow&quot;
+
+# Inheritance
+{class Dog [Animal]
+    {fun __init__ [self name]
+        {{super}.__init__ name &quot;woof&quot;}}
+    {fun fetch [self item]
+        self.name + &quot; fetches &quot; + item}}
+
+d = {Dog &quot;Rex&quot;}
+{d.speak}        # =&gt; &quot;Rex says woof&quot;
+{d.fetch &quot;ball&quot;} # =&gt; &quot;Rex fetches ball&quot;
+
+# Dataclasses — auto-generate __init__, __repr__, etc.
+{dataclass User
+    name:str
+    age:int
+    email:str}
+
+u = {User &quot;Alice&quot; 30 &quot;alice@example.com&quot;}
+u.name          # =&gt; &quot;Alice&quot;
+
+
+####################################################
+## 9. Exception Handling
+####################################################
+
+{try
+    x = 1 / 0
+    {catch e:ZeroDivisionError
+        {print &quot;caught:&quot; e}}
+    {finally
+        {print &quot;done&quot;}}}
+# prints: caught: division by zero
+#         done
+
+# {else} runs when no exception was raised
+{try
+    result = {int &quot;42&quot;}
+    {catch ValueError {print &quot;bad&quot;}}
+    {else {print &quot;ok:&quot; result}}}
+# prints: ok: 42
+
+
+####################################################
+## 10. Python Interop
+####################################################
+
+# Import any Python module — interop is seamless because
+# Makrell compiles to Python AST directly
+{import json}
+{json.loads &quot;[1, 2, 3]&quot;}    # =&gt; [1, 2, 3]
+
+{import os.path}
+{os.path.exists &quot;/tmp&quot;}     # =&gt; True or False
+
+# Every pip package works.
+# {import pandas}
+# df = {pandas.read_csv &quot;data.csv&quot;}
+
+
+####################################################
+## 11. Async/Await
+####################################################
+
+{async fun fetch_data [url]
+    response = {await {aiohttp.get url}}
+    {await {response.text}}}
+
+{async for item async_iter
+    {await {process item}}}
+
+{async with {aiohttp.ClientSession} session
+    {await {session.get url}}}
+
+
+####################################################
+## 12. Metaprogramming
+####################################################
+
+# Quote captures syntax as data (AST nodes, not values)
+q = {quote [a b c]}         # =&gt; a SquareBrackets node
+
+# Unquote splices values into quoted forms
+x = 42
+q = {quote {unquote x}}     # splice x&#39;s value into the form
+
+# Meta blocks run at compile time
+{meta greeting = &quot;hello from compile time&quot;}
+
+# Macros transform syntax before compilation
+{def macro twice [ns]
+    ns = {regular ns}
+    expr = ns@0
+    {quote [{unquote expr} {unquote expr}]}}
+
+{twice 5}       # =&gt; [5, 5]
+
+# User-defined suffixes
+{def strsuffix upper [s] {s.upper}}
+&quot;hello&quot;upper    # =&gt; &quot;HELLO&quot;
+
+{def floatsuffix pct [s] {float s} / 100}
+50pct           # =&gt; 0.5
+
+# User-defined operators
+{def operator &lt;=&gt; 50 left}
+
+
+####################################################
+## 13. A Complete Example
+####################################################
+
+{import collections}
+
+{fun word_freq [text n]
+    text
+    | {str.lower _}
+    | {str.split _}
+    | {collections.Counter _}
+    | {_.most_common n}}
+
+{word_freq &quot;one fish two fish red fish blue fish&quot; 3}
+# =&gt; [(&#39;fish&#39;, 4), (&#39;one&#39;, 1), (&#39;two&#39;, 1)]
+</pre></div>
+<h2>Want to know more?</h2>
+<ul>
+<li><strong><a href="https://makrell.dev/makrellpy/">MakrellPy documentation</a></strong> — full guide, cookbook, and reference for the Python track.</li>
+<li><strong><a href="https://makrell.dev/">Makrell family site</a></strong> — documentation for all languages and formats in the Makrell family.</li>
+<li><strong><a href="https://makrell.dev/playground/">MakrellTS playground</a></strong> — try Makrell in the browser. Note: the playground runs MakrellTS, so some Python-specific features (dataclasses, Python interop, async for/with) are not available there.</li>
+<li><strong><a href="https://makrell.dev/odds-and-ends/makrell-design-article.html">In-depth design article</a></strong> — a technical article covering the architecture, macro system, and design philosophy behind the Makrell family.</li>
+<li><strong><a href="https://github.com/hcholm/makrell-omni">Source on GitHub</a></strong> — the monorepo for all Makrell implementations, specifications, and tooling.</li>
+</ul>
+
+        <hr>
+        <p>
+          Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the GitHub Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/makrellpy.md">pull request</a> yourself!
+        </p>
+        <p class="contributed">
+          Originally contributed by Hans-Christian Holm, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/makrellpy.md">1 contributor</a>.
+        </p>
+
+        <footer>
+          <a style="float: left" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 80px; height: 28px; padding-bottom: 5px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2026
+            <a href="https://hch.no/">Hans-Christian Holm</a>
+          </p>
+        </footer>
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const langSelect = document.getElementById('lang-select');
+          langSelect?.addEventListener('change', () => {
+            const selectedOption = langSelect.options[langSelect.selectedIndex];
+            const url = selectedOption?.getAttribute('data-url');
+            if (url) {
+              window.location.href = url;
+            }
+          });
+        });
+      </script>
+    </div>
+  </body>
+</html>
