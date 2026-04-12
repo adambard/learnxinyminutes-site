@@ -58,6 +58,13 @@ def bcp47(lang):
     return lang
 
 
+RTL_LANGUAGES = {"ar", "fa", "he"}
+
+
+def text_direction(lang):
+    return "rtl" if lang.split("-", 1)[0] in RTL_LANGUAGES else "ltr"
+
+
 # Directories and paths
 source_dir = Path("source")
 output_dir = Path("build")
@@ -285,6 +292,7 @@ for language in articles:
             "filename": filename,
             "content": markdown_to_html(content),
             "lang": lang,
+            "text_direction": text_direction(lang),
             "langs": sorted(articles[language].keys()),
             "language": language,
             "contributors": metadata.get("contributors", []),
@@ -340,6 +348,7 @@ def render_language_index(lang):
             "categories": categories,
             "articles": articles,
             "lang": lang,
+            "text_direction": text_direction(lang),
             "langs": [l for l in all_langs if l != lang],
             "i18n": i18n_data["default"],
             "get_category_display_name": get_category_display_name,
