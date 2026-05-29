@@ -50,14 +50,19 @@
         <a href="/files/LearnPowershell.ps1">LearnPowershell.ps1</a>
       </p>
       <div id="doc">
-<p>PowerShell is the Windows scripting language and configuration management
-framework from Microsoft built on the .NET Framework. Windows 7 and up ship
-with PowerShell.<br />
-Nearly all examples below can be a part of a shell script or executed directly
+<p>PowerShell is a cross-platform task automation solution made up of a command-line
+shell, a scripting language, and a configuration management framework.
+PowerShell runs on Windows, macOS, and Linux.</p>
+<p>Windows PowerShell (v5.1) ships with Windows and runs on the .NET Framework.
+PowerShell 7.x is the modern, open-source edition built on .NET (currently .NET 9
+for PowerShell 7.5 and .NET 10 for the upcoming PowerShell 7.6).
+The executable was renamed from <code>powershell.exe</code> to <code>pwsh.exe</code> starting with
+PowerShell 6+.</p>
+<p>Nearly all examples below can be a part of a shell script or executed directly
 in the shell.</p>
 <p>A key difference with Bash is that it is mostly objects that you manipulate
 rather than plain text. After years of evolving, it resembles Python a bit.</p>
-<p><a href="https://docs.microsoft.com/powershell/scripting/overview">Read more here.</a></p>
+<p><a href="https://learn.microsoft.com/powershell/scripting/overview">Read more here.</a></p>
 <p>Powershell as a Language:</p>
 <div class="highlight"><pre lang="powershell"><span class="c"># Single line comments start with a number symbol.</span>
 
@@ -163,7 +168,7 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
 <span class="nv">$a</span> <span class="p">=</span> <span class="p">(</span><span class="n">1</span><span class="p">,</span><span class="n">2</span><span class="p">,</span><span class="n">3</span><span class="p">,</span><span class="n">4</span><span class="p">)</span>
 <span class="nv">$b</span> <span class="p">=</span> <span class="nv">$a</span>                                 <span class="c"># =&gt; Point b at what a is pointing to</span>
 <span class="nv">$b</span> <span class="o">-is</span> <span class="nv">$a</span><span class="p">.</span><span class="n">GetType</span><span class="p">()</span>                     <span class="c"># =&gt; True, a and b equal same type</span>
-<span class="nv">$b</span> <span class="o">-eq</span> <span class="nv">$a</span>                               <span class="c"># =&gt; None! See below</span>
+<span class="nv">$b</span> <span class="o">-eq</span> <span class="nv">$a</span>                               <span class="c"># =&gt; None/$null (when comparing arrays, -eq filters matching elements)</span>
 <span class="no">[System.Collections.Hashtable]</span><span class="nv">$b</span> <span class="p">=</span> <span class="p">@{}</span>  <span class="c"># =&gt; Point b at a new hash table</span>
 <span class="nv">$b</span> <span class="p">=</span> <span class="p">@{</span><span class="s1">&#39;one&#39;</span> <span class="p">=</span> <span class="n">1</span> 
        <span class="s1">&#39;two&#39;</span> <span class="p">=</span> <span class="n">2</span><span class="p">}</span>
@@ -212,7 +217,7 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
 <span class="p">`</span><span class="c">#Get-Process # =&gt; Fail: not a recognized cmdlet</span>
 
 <span class="c"># $null is not an object</span>
-<span class="nv">$null</span>  <span class="c"># =&gt; None</span>
+<span class="nv">$null</span>  <span class="c"># =&gt; None ($null)</span>
 
 <span class="c"># $null, 0, and empty strings and arrays all evaluate to False.</span>
 <span class="c"># All other values are True</span>
@@ -255,18 +260,66 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
 <span class="c"># Ternary Operators exist in Powershell 7 and up</span>
 <span class="n">0</span> <span class="p">?</span> <span class="s1">&#39;yes&#39;</span> <span class="p">:</span> <span class="s1">&#39;no&#39;</span>  <span class="c"># =&gt; no</span>
 
+<span class="c"># Null-coalescing operator ?? (PowerShell 7+)</span>
+<span class="c"># Returns left-hand operand if non-null, otherwise right-hand operand</span>
+<span class="nv">$x</span> <span class="p">=</span> <span class="nv">$null</span>
+<span class="nv">$x</span> <span class="p">??</span> <span class="n">100</span>         <span class="c"># =&gt; 100</span>
+<span class="s2">&quot;hello&quot;</span> <span class="p">??</span> <span class="s2">&quot;world&quot;</span> <span class="c"># =&gt; &quot;hello&quot;</span>
+
+<span class="c"># Null-coalescing assignment operator ??= (PowerShell 7+)</span>
+<span class="c"># Assigns the right-hand value only if the variable is $null</span>
+<span class="nv">$x</span> <span class="p">=</span> <span class="nv">$null</span>
+<span class="nv">$x</span> <span class="p">??=</span> <span class="n">100</span>
+<span class="nv">$x</span>              <span class="c"># =&gt; 100</span>
+<span class="nv">$x</span> <span class="p">??=</span> <span class="n">200</span>
+<span class="nv">$x</span>              <span class="c"># =&gt; 100 (unchanged, because $x is no longer $null)</span>
+
+<span class="c"># Null-conditional operators ?. and ?[] (PowerShell 7.1+)</span>
+<span class="c"># Access members/elements only if the operand is non-null</span>
+<span class="nv">$a</span> <span class="p">=</span> <span class="p">@{</span> <span class="n">PropName</span> <span class="p">=</span> <span class="n">100</span> <span class="p">}</span>
+<span class="p">${</span><span class="n">a</span><span class="p">}?.</span><span class="n">PropName</span>     <span class="c"># =&gt; 100</span>
+
+<span class="nv">$a</span> <span class="p">=</span> <span class="nv">$null</span>
+<span class="p">${</span><span class="n">a</span><span class="p">}?.</span><span class="n">PropName</span>     <span class="c"># =&gt; $null (no error)</span>
+
+<span class="nv">$arr</span> <span class="p">=</span> <span class="n">1</span><span class="p">..</span><span class="n">10</span>
+<span class="p">${</span><span class="n">arr</span><span class="p">}?[</span><span class="n">0</span><span class="p">]</span>         <span class="c"># =&gt; 1</span>
+
+<span class="nv">$arr</span> <span class="p">=</span> <span class="nv">$null</span>
+<span class="p">${</span><span class="n">arr</span><span class="p">}?[</span><span class="n">0</span><span class="p">]</span>         <span class="c"># =&gt; $null (no error)</span>
+
+<span class="c"># Pipeline chain operators &amp;&amp; and || (PowerShell 7+)</span>
+<span class="c"># &amp;&amp; executes the right-hand pipeline only if the left-hand succeeded</span>
+<span class="c"># || executes the right-hand pipeline only if the left-hand failed</span>
+<span class="nb">Write-Output</span> <span class="s1">&#39;Success&#39;</span> <span class="p">&amp;&amp;</span> <span class="nb">Write-Output</span> <span class="s1">&#39;Also runs&#39;</span>  <span class="c"># Both print</span>
+<span class="nb">Write-Output</span> <span class="s1">&#39;Success&#39;</span> <span class="p">||</span> <span class="nb">Write-Output</span> <span class="s1">&#39;Skipped&#39;</span>     <span class="c"># Only first prints</span>
+
+<span class="c"># Background operator &amp; (PowerShell 6+)</span>
+<span class="c"># Run a pipeline as a background job</span>
+<span class="nb">Get-Process</span> <span class="p">&amp;</span> <span class="c"># returns a Job object immediately</span>
+
 
 <span class="c"># The default array object in Powershell is an fixed length array.</span>
 <span class="nv">$defaultArray</span> <span class="p">=</span> <span class="s2">&quot;thing&quot;</span><span class="p">,</span><span class="s2">&quot;thing2&quot;</span><span class="p">,</span><span class="s2">&quot;thing3&quot;</span>
 <span class="c"># you can add objects with &#39;+=&#39;, but cannot remove objects.</span>
 <span class="nv">$defaultArray</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="s2">&quot;thing4&quot;</span><span class="p">)</span> <span class="c"># =&gt; Exception &quot;Collection was of a fixed size.&quot;</span>
 <span class="c"># To have a more workable array, you&#39;ll want the .NET [ArrayList] class</span>
+<span class="c"># or [System.Collections.Generic.List[T]] (preferred in modern PowerShell)</span>
 <span class="c"># It is also worth noting that ArrayLists are significantly faster</span>
+
+<span class="c"># Note: In PowerShell 7.5, the += operation for object arrays was heavily</span>
+<span class="c"># optimized and is now much faster than in previous versions.</span>
 
 <span class="c"># ArrayLists store sequences</span>
 <span class="no">[System.Collections.ArrayList]</span><span class="nv">$array</span> <span class="p">=</span> <span class="p">@()</span>
 <span class="c"># You can start with a prefilled ArrayList</span>
 <span class="no">[System.Collections.ArrayList]</span><span class="nv">$otherArray</span> <span class="p">=</span> <span class="p">@(</span><span class="n">5</span><span class="p">,</span> <span class="n">6</span><span class="p">,</span> <span class="n">7</span><span class="p">,</span> <span class="n">8</span><span class="p">)</span>
+
+<span class="c"># Modern alternative: use Generic List (preferred over ArrayList)</span>
+<span class="no">[System.Collections.Generic.List[int]]</span><span class="nv">$typedList</span> <span class="p">=</span> <span class="p">@()</span>
+<span class="nv">$typedList</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">42</span><span class="p">)</span>
+<span class="nv">$typedList</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">99</span><span class="p">)</span>
+<span class="nv">$typedList</span>  <span class="c"># =&gt; 42, 99</span>
 
 <span class="c"># Add to the end of a list with &#39;Add&#39; (Note: produces output, append to $null)</span>
 <span class="nv">$array</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">1</span><span class="p">)</span> <span class="p">&gt;</span> <span class="nv">$null</span>    <span class="c"># $array is now [1]</span>
@@ -324,8 +377,11 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
 <span class="c"># Tuples are like arrays but are immutable.</span>
 <span class="c"># To use Tuples in powershell, you must use the .NET tuple class.</span>
 <span class="nv">$tuple</span> <span class="p">=</span> <span class="no">[System.Tuple]</span><span class="p">::</span><span class="n">Create</span><span class="p">(</span><span class="n">1</span><span class="p">,</span> <span class="n">2</span><span class="p">,</span> <span class="n">3</span><span class="p">)</span>
-<span class="nv">$tuple</span><span class="p">.</span><span class="n">Item</span><span class="p">(</span><span class="n">0</span><span class="p">)</span>      <span class="c"># =&gt; 1</span>
-<span class="nv">$tuple</span><span class="p">.</span><span class="n">Item</span><span class="p">(</span><span class="n">0</span><span class="p">)</span> <span class="p">=</span> <span class="n">3</span>  <span class="c"># Raises a TypeError</span>
+<span class="nv">$tuple</span><span class="p">.</span><span class="n">Item</span><span class="p">(</span><span class="n">0</span><span class="p">)</span> <span class="c"># =&gt; 1</span>
+<span class="nv">$tuple</span><span class="p">.</span><span class="n">Item</span><span class="p">(</span><span class="n">0</span><span class="p">)</span> <span class="p">=</span> <span class="n">3</span>    <span class="c"># Raises an error (property is read-only)</span>
+<span class="c"># or </span>
+<span class="nv">$tuple</span><span class="p">.</span><span class="n">Item1</span>        <span class="c"># =&gt; 1</span>
+<span class="nv">$tuple</span><span class="p">.</span><span class="n">Item1</span> <span class="p">=</span> <span class="n">3</span>    <span class="c"># Raises an error (property is read-only)</span>
 
 <span class="c"># You can do some of the array methods on tuples, but they are limited.</span>
 <span class="nv">$tuple</span><span class="p">.</span><span class="n">Length</span>       <span class="c"># =&gt; 3</span>
@@ -447,7 +503,7 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
     <span class="k">throw</span> <span class="s2">&quot;This is an error&quot;</span>
 <span class="p">}</span>
 <span class="k">catch</span> <span class="p">{</span>
-    <span class="nb">Write-Output</span> <span class="nv">$Error</span><span class="p">.</span><span class="n">ExceptionMessage</span>
+    <span class="nb">Write-Output</span> <span class="nv">$_</span><span class="p">.</span><span class="n">Exception</span><span class="p">.</span><span class="n">Message</span>
 <span class="p">}</span>
 <span class="k">finally</span> <span class="p">{</span>
     <span class="nb">Write-Output</span> <span class="s2">&quot;We can clean up resources here&quot;</span>
@@ -514,6 +570,21 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
     <span class="k">END</span> <span class="p">{</span> <span class="nb">Write-Output</span> <span class="s1">&#39;Website(s) created&#39;</span> <span class="p">}</span>
 <span class="p">}</span>
 
+<span class="c"># Advanced functions support a Clean block (PowerShell 7.3+)</span>
+<span class="c"># The Clean block runs after all other blocks, useful for cleanup</span>
+<span class="k">function</span> <span class="nb">Get-Data</span> <span class="p">{</span>
+    <span class="p">[</span><span class="k">CmdletBinding</span><span class="p">()]</span>
+    <span class="k">param</span><span class="p">()</span>
+    <span class="k">begin</span>   <span class="p">{</span> <span class="nv">$resource</span> <span class="p">=</span> <span class="nb">Open-Something</span> <span class="p">}</span>
+    <span class="k">process</span> <span class="p">{</span> <span class="nv">$resource</span> <span class="p">|</span> <span class="k">Do</span><span class="n">-Something</span> <span class="p">}</span>
+    <span class="k">end</span>     <span class="p">{</span> <span class="p">}</span>
+    <span class="n">clean</span>   <span class="p">{</span> 
+        <span class="c"># Always runs, even if an error occurred. </span>
+        <span class="c"># Great for releasing unmanaged resources.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nv">$resource</span><span class="p">)</span> <span class="p">{</span> <span class="nv">$resource</span><span class="p">.</span><span class="n">Dispose</span><span class="p">()</span> <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
 
 <span class="c">####################################################</span>
 <span class="c">## 5. Modules</span>
@@ -521,7 +592,10 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
 
 <span class="c"># You can import modules and install modules</span>
 <span class="c"># The Install-Module is similar to pip or npm, pulls from Powershell Gallery</span>
-<span class="nb">Install-Module</span> <span class="n">dbaTools</span>
+<span class="c"># In PowerShell 7.4+, Microsoft.PowerShell.PSResourceGet is the modern</span>
+<span class="c"># replacement for PowerShellGet.</span>
+<span class="nb">Install-Module</span> <span class="n">dbaTools</span>           <span class="c"># Legacy (PowerShellGet)</span>
+<span class="nb">Install-PSResource</span> <span class="n">dbaTools</span>       <span class="c"># Modern (PSResourceGet, PS 7.4+)</span>
 <span class="nb">Import-Module</span> <span class="n">dbaTools</span>
 
 <span class="nv">$query</span> <span class="p">=</span> <span class="s2">&quot;SELECT * FROM dbo.sometable&quot;</span>
@@ -531,6 +605,8 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
     <span class="n">Query</span>       <span class="p">=</span> <span class="nv">$query</span>
 <span class="p">}</span>
 <span class="nb">Invoke-DbaQuery</span> <span class="nv">@queryParams</span>
+<span class="c"># Note: Use &#39;@&#39; instead of &#39;$&#39; to &quot;splat&quot; (unpack) the hash table into parameters.</span>
+<span class="c"># Why? Using &#39;$queryParams&#39; would incorrectly pass the whole table as a single object.</span>
 
 <span class="c"># You can get specific functions from a module</span>
 <span class="nb">Import-Module</span> <span class="n">-Function</span> <span class="nb">Invoke-DbaQuery</span>
@@ -547,7 +623,7 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
 
 
 <span class="c">####################################################</span>
-<span class="c">## 6. Classes</span>
+<span class="c">## 6. Classes and Enums</span>
 <span class="c">####################################################</span>
 
 <span class="c"># We use the &quot;class&quot; statement to create a class</span>
@@ -600,6 +676,32 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
 
 
 <span class="c">####################################################</span>
+<span class="c">## 6.2 Enums</span>
+<span class="c">####################################################</span>
+
+<span class="c"># Enums define a set of named constants</span>
+<span class="c"># Note: they enforce type-safety and restrict inputs to a predefined list,</span>
+<span class="n">enum</span> <span class="n">Color</span> <span class="p">{</span>
+    <span class="n">Red</span>
+    <span class="n">Green</span>
+    <span class="n">Blue</span>
+<span class="p">}</span>
+
+<span class="no">[Color]</span><span class="p">::</span><span class="n">Red</span>             <span class="c"># =&gt; Red</span>
+<span class="no">[Color]</span><span class="p">::</span><span class="n">Red</span><span class="p">.</span><span class="n">value__</span>     <span class="c"># =&gt; 0</span>
+<span class="no">[Color]</span><span class="s1">&#39;Green&#39;</span>           <span class="c"># =&gt; Green</span>
+
+<span class="c"># Flags enum - values can be combined</span>
+<span class="p">[</span><span class="n">Flags</span><span class="p">()]</span> <span class="n">enum</span> <span class="n">FilePermission</span> <span class="p">{</span>
+    <span class="n">Read</span>    <span class="p">=</span> <span class="n">1</span>
+    <span class="nb">Write </span>  <span class="p">=</span> <span class="n">2</span>
+    <span class="n">Execute</span> <span class="p">=</span> <span class="n">4</span>
+<span class="p">}</span>
+
+<span class="no">[FilePermission]</span><span class="p">::</span><span class="n">Read</span> <span class="o">-bor</span> <span class="no">[FilePermission]</span><span class="p">::</span><span class="nb">Write </span> <span class="c"># =&gt; Read, Write</span>
+
+
+<span class="c">####################################################</span>
 <span class="c">## 7. Advanced</span>
 <span class="c">####################################################</span>
 
@@ -619,6 +721,21 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
 <span class="c"># Useful pipeline examples are iteration and filtering.</span>
 <span class="n">1</span><span class="p">..</span><span class="n">10</span> <span class="p">|</span> <span class="k">ForEach</span><span class="n">-Object</span> <span class="p">{</span> <span class="s2">&quot;Loop number $PSITEM&quot;</span> <span class="p">}</span>
 <span class="n">1</span><span class="p">..</span><span class="n">10</span> <span class="p">|</span> <span class="nb">Where-Object</span> <span class="p">{</span> <span class="nv">$PSITEM</span> <span class="o">-gt</span> <span class="n">5</span> <span class="p">}</span> <span class="p">|</span> <span class="nb">ConvertTo-Json</span>
+
+<span class="c"># ForEach-Object -Parallel (PowerShell 7+)</span>
+<span class="c"># Runs script blocks in parallel across pipeline input items.</span>
+<span class="nv">$logNames</span> <span class="p">=</span> <span class="s1">&#39;Security&#39;</span><span class="p">,</span><span class="s1">&#39;Application&#39;</span><span class="p">,</span><span class="s1">&#39;System&#39;</span><span class="p">,</span><span class="s1">&#39;Windows PowerShell&#39;</span>
+<span class="nv">$logEntries</span> <span class="p">=</span> <span class="nv">$logNames</span> <span class="p">|</span> <span class="k">ForEach</span><span class="n">-Object</span> <span class="n">-Parallel</span> <span class="p">{</span>
+    <span class="nb">Get-WinEvent</span> <span class="n">-LogName</span> <span class="nv">$_</span> <span class="n">-MaxEvents</span> <span class="n">1000</span>
+<span class="p">}</span> <span class="n">-ThrottleLimit</span> <span class="n">4</span>     <span class="c"># Max 4 concurrent threads (default is 5)</span>
+
+<span class="nv">$logEntries</span><span class="p">.</span><span class="n">Count</span>
+
+<span class="c"># Use the $using: scope modifier to pass variables into parallel blocks</span>
+<span class="nv">$maxEvents</span> <span class="p">=</span> <span class="n">500</span>
+<span class="n">1</span><span class="p">..</span><span class="n">5</span> <span class="p">|</span> <span class="k">ForEach</span><span class="n">-Object</span> <span class="n">-Parallel</span> <span class="p">{</span>
+    <span class="s2">&quot;Processing item $_ with max $using:maxEvents&quot;</span>
+<span class="p">}</span>
 
 <span class="c"># A notable pitfall of the pipeline is its performance when</span>
 <span class="c"># compared with other options.</span>
@@ -706,6 +823,58 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
 <span class="p">}</span>
 
 <span class="nb">Format-Range</span> <span class="n">2</span> <span class="n">6</span> <span class="c"># =&gt; &#39;a&#39;,&#39;b&#39;,&#39;g&#39;,&#39;f&#39;,&#39;e&#39;,&#39;d&#39;,&#39;c&#39;,&#39;h&#39;,&#39;i&#39;,&#39;j&#39;,&#39;k&#39;,&#39;l&#39;,&#39;m&#39;</span>
+
+
+<span class="c">####################################################</span>
+<span class="c">## 8. New Cmdlets &amp; Features (PowerShell 6.x+)</span>
+<span class="c">####################################################</span>
+
+<span class="c"># Get-Error - detailed error view (PowerShell 7.0+)</span>
+<span class="c"># $ErrorView defaults to &#39;ConciseView&#39; for cleaner error messages</span>
+<span class="nv">$Error</span> <span class="p">|</span> <span class="nb">Get-Error</span>
+<span class="nb">Get-Error</span> <span class="n">-Newest</span> <span class="n">3</span>
+
+<span class="c"># Get-Uptime - time since last boot (PowerShell 6+)</span>
+<span class="nb">Get-Uptime</span>
+
+<span class="c"># Join-String - combine pipeline objects into a string (PowerShell 6.2+)</span>
+<span class="nv">$joinedString</span> <span class="p">=</span> <span class="s2">&quot;one&quot;</span><span class="p">,</span><span class="s2">&quot;two&quot;</span><span class="p">,</span><span class="s2">&quot;three&quot;</span> <span class="p">|</span> <span class="nb">Join-String</span> <span class="n">-Separator</span> <span class="s2">&quot;, &quot;</span>
+<span class="nv">$joinedString</span> <span class="c"># =&gt; &quot;one, two, three&quot;</span>
+<span class="nv">$splitString</span> <span class="p">=</span> <span class="nv">$joinedString</span><span class="p">.</span><span class="n">Split</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)</span> 
+<span class="nv">$splitString</span> <span class="c"># =&gt; one</span>
+<span class="c"># two</span>
+<span class="c"># three</span>
+
+<span class="c"># Test-Json - validate JSON strings (PowerShell 6.1+)</span>
+<span class="s1">&#39;{&quot;name&quot;: &quot;test&quot;}&#39;</span> <span class="p">|</span> <span class="nb">Test-Json</span>  <span class="c"># =&gt; True</span>
+
+<span class="c"># In PowerShell 7.5+, Test-Json supports -IgnoreComments and -AllowTrailingCommas</span>
+<span class="s1">&#39;{&quot;name&quot;: &quot;test&quot;, /* comment */ }&#39;</span> <span class="p">|</span> <span class="nb">Test-Json</span> <span class="n">-AllowTrailingCommas</span> <span class="n">-IgnoreComments</span>
+
+<span class="c"># ConvertTo-CliXml / ConvertFrom-CliXml (PowerShell 7.5+)</span>
+<span class="c"># Serialize/deserialize objects to/from CliXml strings (without files)</span>
+<span class="nv">$obj</span> <span class="p">=</span> <span class="no">[pscustomobject]</span><span class="p">@{</span> <span class="n">Name</span> <span class="p">=</span> <span class="s2">&quot;test&quot;</span><span class="p">;</span> <span class="n">Value</span> <span class="p">=</span> <span class="n">42</span> <span class="p">}</span>
+<span class="nv">$xml</span> <span class="p">=</span> <span class="nv">$obj</span> <span class="p">|</span> <span class="nb">ConvertTo-CliXml</span>
+<span class="nv">$xml</span> <span class="p">|</span> <span class="nb">ConvertFrom-CliXml</span>  <span class="c"># =&gt; recreated object</span>
+
+<span class="c"># ConvertFrom-Json -DateKind (PowerShell 7.5+)</span>
+<span class="c"># Control how date strings in JSON are parsed</span>
+<span class="s1">&#39;{&quot;dt&quot;: &quot;2024-01-15T10:30:00Z&quot;}&#39;</span> <span class="p">|</span> <span class="nb">ConvertFrom-Json</span> <span class="n">-DateKind</span> <span class="n">Utc</span>
+
+<span class="c"># Where-Object -Not (PowerShell 6+)</span>
+<span class="nb">Get-Service</span> <span class="p">|</span> <span class="nb">Where-Object</span> <span class="o">-Not</span> <span class="n">DependentServices</span>
+
+<span class="c"># Remove-Alias (PowerShell 6+)</span>
+<span class="nb">Remove-Alias</span> <span class="n">-Name</span> <span class="n">myAlias</span>
+
+<span class="c"># Markdown cmdlets (PowerShell 6.1+)</span>
+<span class="s2">&quot;**bold** and *italic*&quot;</span> <span class="p">|</span> <span class="nb">ConvertFrom-Markdown</span> <span class="p">|</span> <span class="nb">Show-Markdown</span>
+
+<span class="c"># Remove-Service (PowerShell 6+)</span>
+<span class="c"># Remove-Service -Name &quot;MyTestService&quot;</span>
+
+<span class="c"># Get-Process no longer needs admin for -IncludeUserName (PowerShell 7.5+)</span>
+<span class="nb">Get-Process</span> <span class="n">-IncludeUserName</span>
 </pre></div>
 <p>Powershell as a Tool:</p>
 <p>Getting Help:</p>
@@ -720,7 +889,7 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
 
 <span class="nb">Show-Command</span> <span class="nb">Get-WinEvent</span> <span class="c"># Display GUI to fill in the parameters</span>
 
-<span class="nb">Update-Help</span> <span class="c"># Run as admin</span>
+<span class="nb">Update-Help</span> <span class="c"># No longer requires admin in PowerShell 7+</span>
 </pre></div>
 <p>If you are uncertain about your environment:</p>
 <div class="highlight"><pre lang="powershell"><span class="nb">Get-ExecutionPolicy</span> <span class="n">-List</span>
@@ -734,6 +903,9 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
 
 <span class="c"># Current PowerShell version:</span>
 <span class="nv">$PSVersionTable</span>
+
+<span class="c"># Check which edition you&#39;re running:</span>
+<span class="nv">$PSVersionTable</span><span class="p">.</span><span class="n">PSEdition</span>  <span class="c"># =&gt; &quot;Core&quot; for PowerShell 7+, &quot;Desktop&quot; for 5.1</span>
 </pre></div>
 <div class="highlight"><pre lang="powershell"><span class="c"># Calling external commands, executables, </span>
 <span class="c"># and functions with the call operator.</span>
@@ -774,6 +946,9 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
 
 <span class="c"># Remoting into computers is easy.</span>
 <span class="nb">Enter-PSSession</span> <span class="n">-ComputerName</span> <span class="n">RemoteComputer</span>
+
+<span class="c"># PowerShell supports remoting over SSH on all platforms (PS 6+)</span>
+<span class="nb">Enter-PSSession</span> <span class="n">-HostName</span> <span class="n">user</span><span class="nv">@ssh</span><span class="p">.</span><span class="n">example</span><span class="p">.</span><span class="n">com</span><span class="p">:</span><span class="n">22</span>
 
 <span class="c"># Once remoted in, you can run commands as if you&#39;re local.</span>
 <span class="n">RemoteComputer</span><span class="p">\</span><span class="n">PS</span><span class="p">&gt;</span> <span class="nb">Get-Process</span> <span class="n">powershell</span>
@@ -829,16 +1004,17 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
 <span class="cm"> Now scale this up 100x as many servers :)</span>
 <span class="cm">#&gt;</span>
 </pre></div>
-<p>Interesting Projects</p>
+<p>Interesting Projects and Resources</p>
 <ul>
-<li><a href="https://channel9.msdn.com/Search?term=powershell%20pipeline#ch9Search&amp;lang-en=en">Channel9</a> PowerShell tutorials</li>
+<li><a href="https://learn.microsoft.com/powershell/">Microsoft Learn PowerShell Documentation</a> Official and up-to-date PowerShell docs</li>
+<li><a href="https://learn.microsoft.com/powershell/scripting/whats-new/what-s-new-in-powershell-75">What's New in PowerShell 7.5</a> Latest stable release notes</li>
+<li><a href="https://learn.microsoft.com/powershell/scripting/whats-new/differences-from-windows-powershell">Differences between Windows PowerShell 5.1 and PowerShell 7.x</a> Comprehensive comparison</li>
 <li><a href="https://powershellexplained.com/">KevinMarquette's Powershell Blog</a> Excellent blog that goes into great detail on Powershell</li>
-<li><a href="https://github.com/psget/psget">PSGet</a> NuGet for PowerShell</li>
-<li><a href="https://github.com/lzybkr/PSReadLine/">PSReadLine</a> A bash inspired readline implementation for PowerShell (So good that it now ships with Windows10 by default!)</li>
+<li><a href="https://github.com/lzybkr/PSReadLine/">PSReadLine</a> A bash inspired readline implementation for PowerShell (Ships with Windows 10+ and PowerShell 7)</li>
 <li><a href="https://github.com/dahlbyk/posh-git/">Posh-Git</a> Fancy Git Prompt (Recommended!)</li>
-<li><a href="https://github.com/JanDeDobbeleer/oh-my-posh">Oh-My-Posh</a> Shell customization similar to the popular Oh-My-Zsh on Mac</li>
-<li><a href="https://github.com/psake/psake">PSake</a> Build automation tool</li>
+<li><a href="https://github.com/JanDeDobbeleer/oh-my-posh">Oh-My-Posh</a> Shell customization similar to the popular Oh-My-Zsh on Mac/Linux</li>
 <li><a href="https://github.com/pester/Pester">Pester</a> BDD Testing Framework</li>
+<li><a href="https://github.com/psake/psake">PSake</a> Build automation tool</li>
 <li><a href="https://github.com/vors/ZLocation">ZLocation</a> Powershell <code>cd</code> that reads your mind</li>
 <li><a href="https://github.com/Pscx/Pscx">PowerShell Community Extensions</a></li>
 <li><a href="https://github.com/PowerShell/PowerShell/issues/1908">More on the Powershell Pipeline Issue</a></li>
@@ -849,7 +1025,7 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
           Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the GitHub Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/powershell.md">pull request</a> yourself!
         </p>
         <p class="contributed">
-          Originally contributed by Wouter Van Schandevijl, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/powershell.md">12 contributors</a>.
+          Originally contributed by Wouter Van Schandevijl, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/powershell.md">13 contributors</a>.
         </p>
 
         <footer>
@@ -857,7 +1033,8 @@ rather than plain text. After years of evolving, it resembles Python a bit.</p>
           <p>
             &copy; 2026
             <a href="https://github.com/laoujin">Wouter Van Schandevijl</a>,
-            <a href="https://github.com/AndrewDavis1191">Andrew Ryan Davis</a>
+            <a href="https://github.com/AndrewDavis1191">Andrew Ryan Davis</a>,
+            <a href="https://github.com/ily83">ilyas B.</a>
           </p>
         </footer>
       </div>
