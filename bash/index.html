@@ -67,6 +67,7 @@
       <div id="doc">
 <p>Bash is a name of the unix shell, which was also distributed as the shell
 for the GNU operating system and as the default shell on most Linux distros.
+This tutorial was tested on Bash v5.3.
 Nearly all examples below can be a part of a shell script
 or executed directly in the shell.</p>
 <div class="highlight"><pre lang="bash"><span class="ch">#!/usr/bin/env bash</span>
@@ -100,7 +101,7 @@ or executed directly in the shell.</p>
 <span class="c1"># Using the variable:</span>
 <span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$variable</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># =&gt; Some string</span>
 <span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;$variable&#39;</span><span class="w"> </span><span class="c1"># =&gt; $variable</span>
-<span class="c1"># When you use a variable itself — assign it, export it, or else — you write</span>
+<span class="c1"># When you use a variable itself, assign it, export it, or else, you write</span>
 <span class="c1"># its name without $. If you want to use the variable&#39;s value, you should use $.</span>
 <span class="c1"># Note that &#39; (single quote) won&#39;t expand variables!</span>
 <span class="c1"># You can write variables without surrounding double quotes but it&#39;s not</span>
@@ -168,6 +169,20 @@ or executed directly in the shell.</p>
 <span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Number of arguments passed to script: </span><span class="nv">$#</span><span class="s2">&quot;</span>
 <span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;All arguments passed to script: </span><span class="nv">$@</span><span class="s2">&quot;</span>
 <span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Script&#39;s arguments separated into different variables: </span><span class="nv">$1</span><span class="s2"> </span><span class="nv">$2</span><span class="s2">...&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Current script file: </span><span class="nv">$BASH_SOURCE</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Current function name: </span><span class="nv">$FUNCNAME</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Current line number: </span><span class="nv">$LINENO</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;A random number: </span><span class="nv">$RANDOM</span><span class="s2">&quot;</span><span class="w">             </span><span class="c1"># random int between 0–32767</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Seconds since shell started: </span><span class="nv">$SECONDS</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Unix epoch time: </span><span class="nv">$EPOCHSECONDS</span><span class="s2">&quot;</span><span class="w">       </span><span class="c1"># Bash 5+</span>
+
+<span class="c1"># $IFS, Internal Field Separator, controls word splitting (default: space/tab/newline)</span>
+<span class="nv">IFS</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-ra<span class="w"> </span>fields<span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span><span class="s2">&quot;a,b,c&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">fields</span><span class="p">[1]</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># =&gt; b</span>
+
+<span class="c1"># $PIPESTATUS, array of exit codes from the last pipeline</span>
+<span class="nb">false</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nb">false</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">PIPESTATUS</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># =&gt; 1 0 1</span>
 
 <span class="c1"># Brace Expansion {...}</span>
 <span class="c1"># used to generate arbitrary strings:</span>
@@ -261,7 +276,7 @@ sleep<span class="w"> </span><span class="m">30</span><span class="w"> </span><s
 <span class="c1"># Redefine command `ping` as alias to send only 5 packets</span>
 <span class="nb">alias</span><span class="w"> </span><span class="nv">ping</span><span class="o">=</span><span class="s1">&#39;ping -c 5&#39;</span>
 <span class="c1"># Escape the alias and use command with this name instead</span>
-<span class="se">\p</span>ing<span class="w"> </span><span class="m">192</span>.168.1.1
+<span class="se">\p</span>ing<span class="w"> </span>localhost<span class="w"> </span><span class="c1">#\ping 192.168.1.1 </span>
 <span class="c1"># Print all aliases</span>
 <span class="nb">alias</span><span class="w"> </span>-p
 
@@ -303,9 +318,10 @@ cat<span class="w"> </span>file.txt
 cp<span class="w"> </span>srcFile.txt<span class="w"> </span>clone.txt
 cp<span class="w"> </span>-r<span class="w"> </span>srcDirectory/<span class="w"> </span>dst/<span class="w"> </span><span class="c1"># recursively copy</span>
 
-<span class="c1"># Look into `scp` or `sftp` if you plan on exchanging files between computers.</span>
-<span class="c1"># `scp` behaves very similarly to `cp`.</span>
-<span class="c1"># `sftp` is more interactive.</span>
+<span class="c1"># Look into `rsync` or `sftp` if you plan on exchanging files between computers.</span>
+<span class="c1"># `rsync` is the modern standard for fast, resumable, delta-synced transfers.</span>
+<span class="c1"># `sftp` is more interactive (like an FTP session over SSH).</span>
+<span class="c1"># Note: `scp` still works but is deprecated by OpenSSH in favor of `sftp`.</span>
 
 <span class="c1"># Use `mv` to move files or directories from one place to another.</span>
 <span class="c1"># `mv` is similar to `cp`, but it deletes the source.</span>
@@ -343,7 +359,6 @@ mkdir<span class="w"> </span>-p<span class="w"> </span>myNewDir/with/intermediat
 <span class="c1"># between &quot;EOF&quot; (which are called a &quot;here document&quot;):</span>
 cat<span class="w"> </span>&gt;<span class="w"> </span>hello.py<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
 <span class="s">#!/usr/bin/env python</span>
-<span class="s">from __future__ import print_function</span>
 <span class="s">import sys</span>
 <span class="s">print(&quot;#stdout&quot;, file=sys.stdout)</span>
 <span class="s">print(&quot;#stderr&quot;, file=sys.stderr)</span>
@@ -351,6 +366,14 @@ cat<span class="w"> </span>&gt;<span class="w"> </span>hello.py<span class="w"> 
 <span class="s">    print(line, file=sys.stdout)</span>
 <span class="s">EOF</span>
 <span class="c1"># Variables will be expanded if the first &quot;EOF&quot; is not quoted</span>
+
+<span class="c1"># Use &lt;&lt;- to strip leading tabs (useful inside indented functions/if blocks):</span>
+<span class="k">if</span><span class="w"> </span>true<span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">	</span>cat<span class="w"> </span><span class="s">&lt;&lt;- EOF</span>
+<span class="s">	This text can be indented with tabs.</span>
+<span class="s">	The leading tabs will be stripped from the output.</span>
+<span class="s">	EOF</span>
+<span class="k">fi</span>
 
 <span class="c1"># Run the hello.py Python script with various stdin, stdout, and</span>
 <span class="c1"># stderr redirections:</span>
@@ -460,6 +483,25 @@ rm<span class="w"> </span>-r<span class="w"> </span>tempDir/<span class="w"> </s
 <span class="k">done</span>
 <span class="c1"># =&gt; loop body here...</span>
 
+<span class="nv">count</span><span class="o">=</span><span class="m">0</span>
+<span class="k">while</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="s2">&quot;count&quot;</span><span class="w"> </span>-lt<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;count is </span><span class="nv">$count</span><span class="s2">&quot;</span>
+<span class="w">    </span><span class="o">((</span>count++<span class="o">))</span>
+<span class="k">done</span>
+<span class="c1"># =&gt; count is 0</span>
+<span class="c1"># =&gt; count is 1</span>
+<span class="c1"># =&gt; count is 2</span>
+
+<span class="c1"># same with &quot;until loop&quot;, runs while the condition is FALSE (opposite of while):</span>
+<span class="nv">count</span><span class="o">=</span><span class="m">0</span>
+<span class="k">until</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$count</span><span class="s2">&quot;</span><span class="w"> </span>-ge<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;count is </span><span class="nv">$count</span><span class="s2">&quot;</span>
+<span class="w">    </span><span class="o">((</span><span class="w"> </span>count++<span class="w"> </span><span class="o">))</span>
+<span class="k">done</span>
+<span class="c1"># =&gt; count is 0</span>
+<span class="c1"># =&gt; count is 1</span>
+<span class="c1"># =&gt; count is 2</span>
+
 <span class="c1"># You can also define functions</span>
 <span class="c1"># Definition:</span>
 <span class="k">function</span><span class="w"> </span>foo<span class="w"> </span><span class="o">()</span>
@@ -490,6 +532,44 @@ bar<span class="w"> </span><span class="c1"># =&gt; Another way to declare funct
 
 <span class="c1"># Calling your function</span>
 foo<span class="w"> </span><span class="s2">&quot;My name is&quot;</span><span class="w"> </span><span class="nv">$Name</span>
+
+<span class="c1"># `local` makes a variable scoped to a function (otherwise it&#39;s global):</span>
+greet<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="nb">local</span><span class="w"> </span><span class="nv">greeting</span><span class="o">=</span><span class="s2">&quot;Hi&quot;</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$greeting</span><span class="s2">, </span><span class="nv">$1</span><span class="s2">!&quot;</span>
+<span class="o">}</span>
+greet<span class="w"> </span><span class="s2">&quot;World&quot;</span><span class="w">  </span><span class="c1"># =&gt; Hi, World!</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$greeting</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># =&gt; (empty, variable was local to the function)</span>
+
+<span class="c1"># `readonly` prevents a variable from being changed:</span>
+<span class="nb">readonly</span><span class="w"> </span><span class="nv">PI</span><span class="o">=</span><span class="m">3</span>.14159
+<span class="c1"># PI=3 # =&gt; error: PI: readonly variable</span>
+<span class="c1"># note: Avoid using readonly in the first place if the value might need to change.</span>
+
+<span class="c1"># `declare` lets you set variable attributes:</span>
+<span class="nb">declare</span><span class="w"> </span>-i<span class="w"> </span><span class="nv">num</span><span class="o">=</span><span class="m">42</span><span class="w">       </span><span class="c1"># integer, arithmetic is automatic</span>
+<span class="nv">num</span><span class="o">+=</span><span class="m">10</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$num</span><span class="s2">&quot;</span><span class="w">             </span><span class="c1"># =&gt; 52  (not &quot;4210&quot;)</span>
+
+<span class="nb">declare</span><span class="w"> </span>-l<span class="w"> </span><span class="nv">lower</span><span class="o">=</span><span class="s2">&quot;HELLO&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$lower</span><span class="s2">&quot;</span><span class="w">           </span><span class="c1"># =&gt; hello  (forced lowercase)</span>
+
+<span class="nb">declare</span><span class="w"> </span>-u<span class="w"> </span><span class="nv">upper</span><span class="o">=</span><span class="s2">&quot;hello&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$upper</span><span class="s2">&quot;</span><span class="w">           </span><span class="c1"># =&gt; HELLO  (forced uppercase)</span>
+
+<span class="nb">declare</span><span class="w"> </span>-r<span class="w"> </span><span class="nv">constant</span><span class="o">=</span><span class="s2">&quot;can&#39;t change me&quot;</span><span class="w">  </span><span class="c1"># same as readonly</span>
+
+<span class="c1"># Namerefs (Bash 4.3+), a variable that references another variable by name:</span>
+<span class="nb">declare</span><span class="w"> </span>-n<span class="w"> </span><span class="nv">ref</span><span class="o">=</span>variable
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$ref</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># =&gt; Some string (the value of $variable)</span>
+<span class="nv">ref</span><span class="o">=</span><span class="s2">&quot;New value&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$variable</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># =&gt; New value (the original variable was changed)</span>
+
+<span class="c1"># mapfile / readarray, read lines into an indexed array:</span>
+mapfile<span class="w"> </span>-t<span class="w"> </span>lines<span class="w"> </span>&lt;<span class="w"> </span>file.txt
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">lines</span><span class="p">[0]</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># first line</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${#</span><span class="nv">lines</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># total number of lines</span>
+<span class="c1"># -t strips trailing newlines from each element</span>
 
 <span class="c1"># There are a lot of useful commands you should learn:</span>
 <span class="c1"># prints last 10 lines of file.txt</span>
@@ -529,8 +609,8 @@ grep<span class="w"> </span>-rI<span class="w"> </span><span class="s2">&quot;^f
 grep<span class="w"> </span><span class="s2">&quot;^foo.*bar</span>$<span class="s2">&quot;</span><span class="w"> </span>file.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;baz&quot;</span>
 
 <span class="c1"># if you literally want to search for the string,</span>
-<span class="c1"># and not the regex, use `fgrep` (or `grep -F`)</span>
-fgrep<span class="w"> </span><span class="s2">&quot;foobar&quot;</span><span class="w"> </span>file.txt
+<span class="c1"># and not the regex, use `grep -F` (or the deprecated `fgrep`)</span>
+grep<span class="w"> </span>-F<span class="w"> </span><span class="s2">&quot;foobar&quot;</span><span class="w"> </span>file.txt
 
 <span class="c1"># The `trap` command allows you to execute a command whenever your script</span>
 <span class="c1"># receives a signal. Here, `trap` will execute `rm` if it receives any of the</span>
@@ -567,6 +647,487 @@ info<span class="w"> </span>bash
 info<span class="w"> </span>bash<span class="w"> </span><span class="s1">&#39;Bash Features&#39;</span>
 info<span class="w"> </span>bash<span class="w"> </span><span class="m">6</span>
 info<span class="w"> </span>--apropos<span class="w"> </span>bash
+
+
+<span class="c1"># SAFER SCRIPTING WITH SET OPTIONS</span>
+
+
+<span class="c1"># Exit immediately if a command fails</span>
+<span class="nb">set</span><span class="w"> </span>-e
+
+<span class="c1"># Treat unset variables as errors</span>
+<span class="nb">set</span><span class="w"> </span>-u
+
+<span class="c1"># If any command in a pipeline fails, the whole pipeline fails</span>
+<span class="c1"># (without this, only the last command&#39;s exit code matters)</span>
+<span class="nb">set</span><span class="w"> </span>-o<span class="w"> </span>pipefail
+
+<span class="c1"># You&#39;ll often see all three combined at the top of robust scripts:</span>
+<span class="nb">set</span><span class="w"> </span>-euo<span class="w"> </span>pipefail
+
+<span class="c1"># To undo any of them, use +</span>
+<span class="nb">set</span><span class="w"> </span>+e<span class="w">  </span><span class="c1"># disable exit-on-error</span>
+
+<span class="c1"># Print each command before executing it, useful for debugging</span>
+<span class="nb">set</span><span class="w"> </span>-x
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;this will be printed with a + prefix before running&quot;</span>
+<span class="nb">set</span><span class="w"> </span>+x<span class="w">  </span><span class="c1"># turn it off again</span>
+
+
+<span class="c1"># FILE TEST OPERATORS</span>
+
+<span class="nv">file</span><span class="o">=</span><span class="s2">&quot;example.txt&quot;</span>
+
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;exists&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">fi</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;is a regular file&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">fi</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;is a directory&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">fi</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;is readable&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">fi</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;is writable&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">fi</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-x<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;is executable&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">fi</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;is non-empty&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">fi</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-L<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;is a symbolic link&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">fi</span>
+
+<span class="c1"># Compare two files</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="s2">&quot;file1.txt&quot;</span><span class="w"> </span>-nt<span class="w"> </span><span class="s2">&quot;file2.txt&quot;</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;file1 is newer&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">fi</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="s2">&quot;file1.txt&quot;</span><span class="w"> </span>-ot<span class="w"> </span><span class="s2">&quot;file2.txt&quot;</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;file1 is older&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">fi</span>
+
+
+<span class="c1"># ADVANCED STRING MANIPULATION</span>
+
+<span class="nv">var</span><span class="o">=</span><span class="s2">&quot;Hello, World!&quot;</span>
+
+<span class="c1"># Uppercase / lowercase (Bash 4+)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">var</span><span class="p">^^</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># =&gt; HELLO, WORLD!</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">var</span><span class="p">,,</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># =&gt; hello, world!</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">var</span><span class="p">^</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">    </span><span class="c1"># =&gt; Hello, World! (capitalize first letter only)</span>
+
+<span class="c1"># Remove prefix (shortest match)</span>
+<span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/usr/local/bin/script.sh&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">path</span><span class="p">#/usr/</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">         </span><span class="c1"># =&gt; local/bin/script.sh</span>
+
+<span class="c1"># Remove prefix (longest match)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">path</span><span class="p">##*/</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">           </span><span class="c1"># =&gt; script.sh  (like `basename`)</span>
+
+<span class="c1"># Remove suffix (shortest match)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">path</span><span class="p">%.sh</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">           </span><span class="c1"># =&gt; /usr/local/bin/script</span>
+
+<span class="c1"># Remove suffix (longest match)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">path</span><span class="p">%%/*</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">           </span><span class="c1"># =&gt; (empty, longest prefix from the left)</span>
+
+<span class="c1"># Practical example, get directory from a path (like `dirname`):</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">path</span><span class="p">%/*</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">            </span><span class="c1"># =&gt; /usr/local/bin</span>
+
+<span class="c1"># Replace first occurrence</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">var</span><span class="p">/World/Bash</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">     </span><span class="c1"># =&gt; Hello, Bash!</span>
+
+<span class="c1"># Replace all occurrences</span>
+<span class="nv">sentence</span><span class="o">=</span><span class="s2">&quot;one two one three one&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">sentence</span><span class="p">//one/1</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">    </span><span class="c1"># =&gt; 1 two 1 three 1</span>
+
+<span class="c1"># Slice: ${var:offset:length}</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">var</span><span class="p">:</span><span class="nv">7</span><span class="p">:</span><span class="nv">5</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">            </span><span class="c1"># =&gt; World</span>
+
+<span class="c1"># String length</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${#</span><span class="nv">var</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">               </span><span class="c1"># =&gt; 13</span>
+
+<span class="c1"># HERE STRINGS</span>
+
+<span class="c1"># Feed a string directly to a command&#39;s stdin with &lt;&lt;&lt;</span>
+<span class="c1"># (a lighter alternative to echo &quot;...&quot; | command)</span>
+grep<span class="w"> </span><span class="s2">&quot;World&quot;</span><span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span><span class="s2">&quot;Hello, World!&quot;</span>
+<span class="c1"># =&gt; Hello, World!</span>
+
+<span class="c1"># Useful with read to parse a string into variables</span>
+<span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>first<span class="w"> </span>second<span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span><span class="s2">&quot;foo bar&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$first</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># =&gt; foo</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$second</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># =&gt; bar</span>
+
+<span class="c1"># ASSOCIATIVE ARRAYS (dictionaries)</span>
+
+<span class="nb">declare</span><span class="w"> </span>-A<span class="w"> </span>person
+
+person<span class="o">[</span><span class="s2">&quot;name&quot;</span><span class="o">]=</span><span class="s2">&quot;Alice&quot;</span>
+person<span class="o">[</span><span class="s2">&quot;age&quot;</span><span class="o">]=</span><span class="m">30</span>
+person<span class="o">[</span><span class="s2">&quot;city&quot;</span><span class="o">]=</span><span class="s2">&quot;Zurich&quot;</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">person</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># =&gt; Alice</span>
+
+<span class="c1"># Iterate over keys</span>
+<span class="k">for</span><span class="w"> </span>key<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="p">!person[@]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$key</span><span class="s2"> = </span><span class="si">${</span><span class="nv">person</span><span class="p">[</span><span class="nv">$key</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="k">done</span>
+
+<span class="c1"># Check if a key exists</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-v<span class="w"> </span>person<span class="o">[</span><span class="s2">&quot;name&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;name key exists&quot;</span>
+<span class="k">fi</span>
+
+<span class="c1"># Delete a key</span>
+<span class="nb">unset</span><span class="w"> </span><span class="s1">&#39;person[&quot;city&quot;]&#39;</span>
+
+<span class="c1"># All keys / all values</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="p">!person[@]</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># =&gt; name age</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">person</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># =&gt; Alice 30</span>
+
+<span class="c1"># ARITHMETIC</span>
+
+<span class="nv">a</span><span class="o">=</span><span class="m">5</span>
+<span class="nv">b</span><span class="o">=</span><span class="m">3</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="k">$((</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">b</span><span class="w"> </span><span class="k">))</span><span class="w">   </span><span class="c1"># =&gt; 8</span>
+<span class="nb">echo</span><span class="w"> </span><span class="k">$((</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="nv">b</span><span class="w"> </span><span class="k">))</span><span class="w">  </span><span class="c1"># =&gt; 125  (exponentiation)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="k">$((</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="nv">b</span><span class="w"> </span><span class="k">))</span><span class="w">   </span><span class="c1"># =&gt; 2    (modulo)</span>
+
+<span class="c1"># Use as a conditional, (( )) returns true if non-zero</span>
+<span class="k">if</span><span class="w"> </span><span class="o">((</span><span class="w"> </span>a<span class="w"> </span>&gt;<span class="w"> </span>b<span class="w"> </span><span class="o">))</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$a</span><span class="s2"> is greater&quot;</span>
+<span class="k">fi</span>
+
+<span class="c1"># Increment / decrement</span>
+<span class="o">((</span><span class="w"> </span>a++<span class="w"> </span><span class="o">))</span>
+<span class="o">((</span><span class="w"> </span>b<span class="w"> </span>-<span class="o">=</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="o">))</span>
+
+<span class="c1"># `let` is an older alternative</span>
+<span class="nb">let</span><span class="w"> </span><span class="nv">result</span><span class="o">=</span>a*b
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$result</span><span class="s2">&quot;</span>
+
+<span class="c1"># Bash only does integers. For floating point, use bc:</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;scale=4; 10 / 3&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>bc<span class="w">   </span><span class="c1"># =&gt; 3.3333</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;scale=2; sqrt(2)&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>bc<span class="w"> </span>-l<span class="w">  </span><span class="c1"># =&gt; 1.41</span>
+
+<span class="c1"># PRINTF (more reliable than echo)</span>
+
+<span class="c1"># echo has inconsistent behavior across systems (-e, -n flags vary).</span>
+<span class="c1"># printf is portable and predictable.</span>
+
+<span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;Hello, %s!\n&quot;</span><span class="w"> </span><span class="s2">&quot;World&quot;</span><span class="w">               </span><span class="c1"># =&gt; Hello, World!</span>
+<span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;Pi is approximately %.4f\n&quot;</span><span class="w"> </span><span class="m">3</span>.14159<span class="w">  </span><span class="c1"># =&gt; Pi is approximately 3.1416</span>
+<span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%05d\n&quot;</span><span class="w"> </span><span class="m">42</span><span class="w">                           </span><span class="c1"># =&gt; 00042  (zero-padded)</span>
+<span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%-10s | %s\n&quot;</span><span class="w"> </span><span class="s2">&quot;left&quot;</span><span class="w"> </span><span class="s2">&quot;right&quot;</span><span class="w">         </span><span class="c1"># left-aligned column</span>
+
+<span class="c1"># printf does not add a newline by default, you control it with \n</span>
+
+
+<span class="c1"># ENVIRONMENT VARIABLES</span>
+
+<span class="c1"># export makes a variable available to child processes</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">MY_VAR</span><span class="o">=</span><span class="s2">&quot;hello&quot;</span>
+
+<span class="c1"># View all environment variables</span>
+env
+printenv
+
+<span class="c1"># View a single one</span>
+printenv<span class="w"> </span>HOME
+
+<span class="c1"># Unset a variable</span>
+<span class="nb">unset</span><span class="w"> </span>MY_VAR
+
+<span class="c1"># Temporarily set an env variable for a single command only</span>
+<span class="nv">MY_VAR</span><span class="o">=</span><span class="s2">&quot;temp&quot;</span><span class="w"> </span>some_command<span class="w">   </span><span class="c1"># MY_VAR is not changed in the current shell</span>
+
+
+
+<span class="c1"># SOURCE / DOT OPERATOR</span>
+
+
+<span class="c1"># `source` (or `.`) runs a script in the CURRENT shell, changes affect your session.</span>
+<span class="c1"># Unlike `bash script.sh` which runs in a subshell and changes are lost.</span>
+<span class="nb">source</span><span class="w"> </span>~/.bashrc
+.<span class="w"> </span>~/.bashrc<span class="w">  </span><span class="c1"># identical, dot is the POSIX version</span>
+
+<span class="c1"># Common use: load shared functions or config from another file</span>
+<span class="nb">source</span><span class="w"> </span>./lib/helpers.sh
+
+<span class="c1"># PARSING ARGUMENTS WITH GETOPTS</span>
+
+<span class="c1"># getopts is the standard built-in for handling flags like -v, -f filename</span>
+<span class="c1"># A colon after a letter means it expects an argument</span>
+
+usage<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Usage: </span><span class="nv">$0</span><span class="s2"> [-v] [-f filename]&quot;</span>
+<span class="w">    </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
+<span class="o">}</span>
+
+<span class="nv">verbose</span><span class="o">=</span><span class="nb">false</span>
+<span class="nv">filename</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+<span class="k">while</span><span class="w"> </span><span class="nb">getopts</span><span class="w"> </span><span class="s2">&quot;:vf:&quot;</span><span class="w"> </span>opt<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nv">$opt</span><span class="w"> </span><span class="k">in</span>
+<span class="w">        </span>v<span class="o">)</span><span class="w"> </span><span class="nv">verbose</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>f<span class="o">)</span><span class="w"> </span><span class="nv">filename</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>:<span class="o">)</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Option -</span><span class="nv">$OPTARG</span><span class="s2"> requires an argument.&quot;</span><span class="p">;</span><span class="w"> </span>usage<span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span><span class="se">\?</span><span class="o">)</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Invalid option: -</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;</span><span class="w"> </span>usage<span class="w"> </span><span class="p">;;</span>
+<span class="w">    </span><span class="k">esac</span>
+<span class="k">done</span>
+
+<span class="c1"># Shift past the processed options so $1, $2... refer to remaining args</span>
+<span class="nb">shift</span><span class="w"> </span><span class="k">$((</span><span class="w"> </span><span class="nv">OPTIND</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="k">))</span>
+
+<span class="nv">$verbose</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Verbose mode on&quot;</span>
+<span class="o">[[</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$filename</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;File: </span><span class="nv">$filename</span><span class="s2">&quot;</span>
+
+<span class="c1"># SELECT, INTERACTIVE MENUS</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Pick a shell:&quot;</span>
+<span class="k">select</span><span class="w"> </span>shell<span class="w"> </span><span class="k">in</span><span class="w"> </span>bash<span class="w"> </span>zsh<span class="w"> </span>fish<span class="w"> </span>quit<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nv">$shell</span><span class="w"> </span><span class="k">in</span>
+<span class="w">        </span>quit<span class="o">)</span><span class="w"> </span><span class="k">break</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span><span class="s2">&quot;&quot;</span><span class="o">)</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Invalid choice&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">        </span>*<span class="o">)</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;You picked </span><span class="nv">$shell</span><span class="s2">&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">break</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">    </span><span class="k">esac</span>
+<span class="k">done</span>
+
+<span class="c1"># PROCESS SUBSTITUTION</span>
+
+<span class="c1"># &lt;(command) treats the output of a command as if it were a file.</span>
+<span class="c1"># Useful when a command requires a filename, not stdin.</span>
+
+<span class="c1"># Compare output of two commands without creating temp files:</span>
+diff<span class="w"> </span>&lt;<span class="o">(</span>ls<span class="w"> </span>dir1/<span class="o">)</span><span class="w"> </span>&lt;<span class="o">(</span>ls<span class="w"> </span>dir2/<span class="o">)</span>
+
+<span class="c1"># Loop over command output without a subshell (variables persist after the loop)</span>
+<span class="k">while</span><span class="w"> </span><span class="nv">IFS</span><span class="o">=</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>line<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Got: </span><span class="nv">$line</span><span class="s2">&quot;</span>
+<span class="k">done</span><span class="w"> </span>&lt;<span class="w"> </span>&lt;<span class="o">(</span>ls<span class="w"> </span>-1<span class="o">)</span>
+
+<span class="c1"># ROBUST ERROR HANDLING WITH TRAP</span>
+
+<span class="c1"># Clean up temp files no matter how the script exits</span>
+<span class="nv">TEMP_FILE</span><span class="o">=</span><span class="k">$(</span>mktemp<span class="k">)</span>
+
+cleanup<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Cleaning up...&quot;</span>
+<span class="w">    </span>rm<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TEMP_FILE</span><span class="s2">&quot;</span>
+<span class="o">}</span>
+
+<span class="c1"># ERR fires on any error, EXIT fires when the script ends (for any reason)</span>
+<span class="nb">trap</span><span class="w"> </span>cleanup<span class="w"> </span>EXIT
+<span class="nb">trap</span><span class="w"> </span><span class="s1">&#39;echo &quot;Error on line $LINENO&quot;&#39;</span><span class="w"> </span>ERR
+
+<span class="c1"># Trap specific signals</span>
+<span class="nb">trap</span><span class="w"> </span><span class="s1">&#39;echo &quot;Interrupted!&quot;; exit 1&#39;</span><span class="w"> </span>SIGINT<span class="w"> </span>SIGTERM
+
+<span class="c1"># SHELL OPTIONS WITH SHOPT</span>
+
+<span class="c1"># Enable case-insensitive globbing</span>
+<span class="nb">shopt</span><span class="w"> </span>-s<span class="w"> </span>nocaseglob
+
+<span class="c1"># Make ** match files recursively (Bash 4+)</span>
+<span class="nb">shopt</span><span class="w"> </span>-s<span class="w"> </span>globstar
+<span class="k">for</span><span class="w"> </span>file<span class="w"> </span><span class="k">in</span><span class="w"> </span>**/*.sh<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span>
+<span class="k">done</span>
+
+<span class="c1"># nullglob: if a glob matches nothing, expand to nothing instead of the literal pattern</span>
+<span class="nb">shopt</span><span class="w"> </span>-s<span class="w"> </span>nullglob
+<span class="k">for</span><span class="w"> </span>f<span class="w"> </span><span class="k">in</span><span class="w"> </span>./*.nonexistent<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$f</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># this loop body never runs if there are no matches</span>
+<span class="k">done</span>
+<span class="nb">shopt</span><span class="w"> </span>-u<span class="w"> </span>nullglob<span class="w">  </span><span class="c1"># turn it off again</span>
+
+<span class="c1"># extglob: enables extended pattern matching operators</span>
+<span class="nb">shopt</span><span class="w"> </span>-s<span class="w"> </span>extglob
+<span class="c1"># ?(pattern) , zero or one match</span>
+<span class="c1"># *(pattern) , zero or more matches</span>
+<span class="c1"># +(pattern) , one or more matches</span>
+<span class="c1"># @(pattern) , exactly one match</span>
+<span class="c1"># !(pattern) , anything that does NOT match</span>
+<span class="nv">files</span><span class="o">=(</span>report_2023.txt<span class="w"> </span>report_2024.txt<span class="w"> </span>notes.txt<span class="o">)</span>
+<span class="k">for</span><span class="w"> </span>f<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">files</span><span class="p">[@]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$f</span><span class="s2">&quot;</span><span class="w"> </span><span class="k">in</span>
+<span class="w">        </span>!<span class="o">(</span>report_*<span class="o">))</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Not a report: </span><span class="nv">$f</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">;;</span>
+<span class="w">    </span><span class="k">esac</span>
+<span class="k">done</span>
+
+<span class="c1"># EXEC</span>
+
+<span class="c1"># exec replaces the current shell process with a new command.</span>
+<span class="c1"># No new process is forked, the shell IS the command from that point on.</span>
+<span class="c1"># Anything after exec in the script won&#39;t run.</span>
+
+<span class="c1"># Common use: redirect all script output to a log file from within the script itself</span>
+<span class="nb">exec</span><span class="w"> </span>&gt;<span class="w"> </span>script.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;This goes to script.log, not the terminal&quot;</span>
+
+<span class="c1"># Or replace the shell with another program entirely</span>
+<span class="c1"># exec /bin/sh   # uncomment to actually do this</span>
+
+
+<span class="c1"># COPROCESSES</span>
+
+<span class="c1"># coproc runs a command in the background with two-way pipes connected to it.</span>
+<span class="c1"># You can write to its stdin and read from its stdout.</span>
+coproc<span class="w"> </span>myproc<span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>line<span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;echo: </span><span class="nv">$line</span><span class="s2">&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">done</span><span class="p">;</span><span class="w"> </span><span class="o">}</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;hello&quot;</span><span class="w"> </span>&gt;<span class="p">&amp;</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">myproc</span><span class="p">[1]</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">    </span><span class="c1"># write to the coproc&#39;s stdin</span>
+<span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>reply<span class="w"> </span>&lt;<span class="p">&amp;</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">myproc</span><span class="p">[0]</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># read from the coproc&#39;s stdout</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$reply</span><span class="s2">&quot;</span><span class="w">                    </span><span class="c1"># =&gt; echo: hello</span>
+
+<span class="c1"># Kill the coproc when done</span>
+<span class="nb">kill</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$myproc_PID</span><span class="s2">&quot;</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null
+
+<span class="c1"># XARGS</span>
+
+<span class="c1"># xargs builds and runs commands from stdin, great for piping to commands</span>
+<span class="c1"># that don&#39;t accept stdin directly</span>
+
+<span class="c1"># Delete all .tmp files found by find</span>
+find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.tmp&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>rm<span class="w"> </span>-f
+
+<span class="c1"># -I {} lets you place the argument wherever you want in the command</span>
+find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.txt&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>-I<span class="w"> </span><span class="o">{}</span><span class="w"> </span>cp<span class="w"> </span><span class="o">{}</span><span class="w"> </span>/backup/
+
+<span class="c1"># Run at most 4 parallel jobs with -P</span>
+find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.log&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>-P<span class="w"> </span><span class="m">4</span><span class="w"> </span>-I<span class="w"> </span><span class="o">{}</span><span class="w"> </span>gzip<span class="w"> </span><span class="o">{}</span>
+
+<span class="c1"># Safely handle filenames with spaces using null delimiter</span>
+find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.txt&quot;</span><span class="w"> </span>-print0<span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>-0<span class="w"> </span>rm<span class="w"> </span>-f
+
+<span class="c1"># AWK, FIELD PROCESSING</span>
+
+<span class="c1"># awk processes text line by line, splitting each into fields ($1, $2, ...)</span>
+<span class="c1"># Default field separator is whitespace</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Alice 30 New York&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{ print $1, &quot;is&quot;, $2, &quot;years old&quot; }&#39;</span>
+<span class="c1"># =&gt; Alice is 30 years old</span>
+
+<span class="c1"># Use a custom delimiter with -F</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;name,age,city&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span>-F<span class="s1">&#39;,&#39;</span><span class="w"> </span><span class="s1">&#39;{ print $3 }&#39;</span>
+<span class="c1"># =&gt; city</span>
+
+<span class="c1"># Print lines where the second field is greater than 25</span>
+awk<span class="w"> </span>-F<span class="s1">&#39;,&#39;</span><span class="w"> </span><span class="s1">&#39;$2 &gt; 25 { print $1 }&#39;</span><span class="w"> </span>people.csv
+
+<span class="c1"># Sum a column</span>
+awk<span class="w"> </span>-F<span class="s1">&#39;,&#39;</span><span class="w"> </span><span class="s1">&#39;{ sum += $2 } END { print &quot;Total:&quot;, sum }&#39;</span><span class="w"> </span>data.csv
+
+<span class="c1"># Print total line count (like wc -l)</span>
+awk<span class="w"> </span><span class="s1">&#39;END { print NR }&#39;</span><span class="w"> </span>file.txt
+
+
+<span class="c1"># SED, STREAM EDITING (beyond the basics)</span>
+
+<span class="c1"># Substitute with flags:</span>
+sed<span class="w"> </span><span class="s1">&#39;s/foo/bar/&#39;</span><span class="w">        </span>file.txt<span class="w">   </span><span class="c1"># first occurrence per line</span>
+sed<span class="w"> </span><span class="s1">&#39;s/foo/bar/g&#39;</span><span class="w">       </span>file.txt<span class="w">   </span><span class="c1"># all occurrences</span>
+sed<span class="w"> </span><span class="s1">&#39;s/foo/bar/2&#39;</span><span class="w">       </span>file.txt<span class="w">   </span><span class="c1"># second occurrence only</span>
+sed<span class="w"> </span><span class="s1">&#39;s/foo/bar/gi&#39;</span><span class="w">      </span>file.txt<span class="w">   </span><span class="c1"># case-insensitive, all occurrences</span>
+
+<span class="c1"># Delete lines matching a pattern</span>
+sed<span class="w"> </span><span class="s1">&#39;/^#/d&#39;</span><span class="w"> </span>file.txt<span class="w">    </span><span class="c1"># remove comment lines</span>
+
+<span class="c1"># Print only matching lines (like grep)</span>
+sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;/pattern/p&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Edit in place and keep a backup</span>
+sed<span class="w"> </span>-i.bak<span class="w"> </span><span class="s1">&#39;s/old/new/g&#39;</span><span class="w"> </span>file.txt<span class="w">  </span><span class="c1"># original saved as file.txt.bak</span>
+
+<span class="c1"># Address ranges, act only on lines 5 to 10</span>
+sed<span class="w"> </span><span class="s1">&#39;5,10s/foo/bar/g&#39;</span><span class="w"> </span>file.txt
+
+<span class="c1"># Insert a line before/after a match</span>
+sed<span class="w"> </span><span class="s1">&#39;/pattern/i\New line before&#39;</span><span class="w"> </span>file.txt
+sed<span class="w"> </span><span class="s1">&#39;/pattern/a\New line after&#39;</span><span class="w">  </span>file.txt
+
+<span class="c1"># MISC SEFUL PATTERNS</span>
+
+<span class="c1"># Assign a default only if variable is unset or empty (and persist it)</span>
+:<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">NAME</span><span class="p">:=DefaultName</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$NAME</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># =&gt; DefaultName if NAME was previously unset</span>
+
+<span class="c1"># Exit with an error message if a required variable is unset</span>
+:<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">REQUIRED_VAR</span><span class="p">:?</span><span class="s1">&#39;REQUIRED_VAR must be set&#39;</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="c1"># Check if a command exists before using it</span>
+<span class="k">if</span><span class="w"> </span><span class="nb">command</span><span class="w"> </span>-v<span class="w"> </span>jq<span class="w"> </span><span class="p">&amp;</span>&gt;/dev/null<span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;jq is installed&quot;</span>
+<span class="k">fi</span>
+
+<span class="c1"># Time how long a command takes</span>
+<span class="nb">time</span><span class="w"> </span>sleep<span class="w"> </span><span class="m">1</span>
+
+<span class="c1"># Quickly make a backup copy of a file using brace expansion</span>
+cp<span class="w"> </span>config.yaml<span class="o">{</span>,.bak<span class="o">}</span><span class="w">   </span><span class="c1"># expands to: cp config.yaml config.yaml.bak</span>
+
+<span class="c1"># Create a whole project directory tree in one line</span>
+mkdir<span class="w"> </span>-p<span class="w"> </span>project/<span class="o">{</span>src,tests,docs,scripts<span class="o">}</span>
+
+<span class="c1"># Read a file line by line safely</span>
+<span class="c1"># (IFS= preserves whitespace; || handles missing trailing newline)</span>
+<span class="k">while</span><span class="w"> </span><span class="nv">IFS</span><span class="o">=</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>line<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$line</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Line: </span><span class="nv">$line</span><span class="s2">&quot;</span>
+<span class="k">done</span><span class="w"> </span>&lt;<span class="w"> </span>file.txt
+
+<span class="c1"># Fail loudly if a command errors, with a message, without relying on set -e</span>
+some_command<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;some_command failed&quot;</span><span class="p">;</span><span class="w"> </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span><span class="p">;</span><span class="w"> </span><span class="o">}</span>
+
+<span class="c1"># Capture a multiline string into a variable with a here-doc</span>
+<span class="c1"># (Quoting &#39;EOF&#39; prevents variable expansion inside the block)</span>
+<span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span>BLOCK<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+<span class="s">This is</span>
+<span class="s">a multiline</span>
+<span class="s">string</span>
+<span class="s">EOF</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BLOCK</span><span class="s2">&quot;</span>
+
+<span class="c1"># THE WAIT BUILT-IN</span>
+
+<span class="c1"># `wait` pauses until background jobs finish</span>
+sleep<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="nv">pid</span><span class="o">=</span><span class="nv">$!</span>
+<span class="nb">wait</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$pid</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># wait for a specific PID</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Process </span><span class="nv">$pid</span><span class="s2"> finished with exit code </span><span class="nv">$?</span><span class="s2">&quot;</span>
+
+<span class="c1"># wait -n (Bash 4.3+), wait for ANY one background job to finish</span>
+sleep<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="p">&amp;</span>
+sleep<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="nb">wait</span><span class="w"> </span>-n
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;First job done&quot;</span>
+
+
+<span class="c1"># BASH 5.3+ FEATURES</span>
+
+<span class="c1"># 1. Forkless command substitution, runs in the current shell, no subshell fork.</span>
+<span class="c1">#    ${ command; } captures stdout like $(), but without forking:</span>
+<span class="nv">result</span><span class="o">=</span><span class="si">${</span><span class="p"> echo </span><span class="s2">&quot;no fork&quot;</span><span class="p">; </span><span class="si">}</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$result</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># =&gt; no fork</span>
+
+<span class="c1">#    ${| command; } runs in the current shell and expects the result in REPLY:</span>
+<span class="si">${</span><span class="p">| REPLY=</span><span class="s2">&quot;computed value&quot;</span><span class="p">; </span><span class="si">}</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REPLY</span><span class="s2">&quot;</span><span class="w">   </span><span class="c1"># =&gt; computed value</span>
+<span class="c1"># This is much faster in tight loops since it avoids fork+pipe overhead.</span>
+
+<span class="c1"># 2. GLOBSORT, control how pathname expansion results are sorted.</span>
+<span class="c1">#    Options: name, size, blocks, mtime, atime, ctime, numeric, none</span>
+<span class="c1">#    Prefix with - for descending order.</span>
+<span class="nv">GLOBSORT</span><span class="o">=</span>mtime<span class="w">           </span><span class="c1"># sort globs by modification time (ascending)</span>
+ls<span class="w"> </span>*.txt
+<span class="nv">GLOBSORT</span><span class="o">=</span>-size<span class="w">            </span><span class="c1"># sort by size, largest first</span>
+<span class="nv">GLOBSORT</span><span class="o">=</span>none<span class="w">             </span><span class="c1"># no sorting (filesystem order)</span>
+
+<span class="c1"># 3. BASH_MONOSECONDS, monotonic clock, not affected by system time changes.</span>
+<span class="c1">#    Useful for measuring elapsed time reliably.</span>
+<span class="nv">start</span><span class="o">=</span><span class="nv">$BASH_MONOSECONDS</span>
+sleep<span class="w"> </span><span class="m">1</span>
+<span class="nv">elapsed</span><span class="o">=</span><span class="k">$((</span><span class="w"> </span><span class="nv">BASH_MONOSECONDS</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">start</span><span class="w"> </span><span class="k">))</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Elapsed: </span><span class="si">${</span><span class="nv">elapsed</span><span class="si">}</span><span class="s2">s&quot;</span>
+
+<span class="c1"># 4. EPOCHSECONDS and EPOCHREALTIME (Bash 5.0+, but worth knowing).</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$EPOCHSECONDS</span><span class="s2">&quot;</span><span class="w">     </span><span class="c1"># =&gt; 1747500000  (Unix timestamp, integer)</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$EPOCHREALTIME</span><span class="s2">&quot;</span><span class="w">    </span><span class="c1"># =&gt; 1747500000.123456  (microsecond precision)</span>
+
+<span class="c1"># 5. source -p PATH, specify where to look for the sourced file</span>
+<span class="c1">#    instead of using $PATH.</span>
+<span class="nb">source</span><span class="w"> </span>-p<span class="w"> </span>/opt/scripts<span class="w"> </span>helper.sh
+
+<span class="c1"># 6. read -E, enables Readline tab completion during interactive read.</span>
+<span class="c1"># read -E -p &quot;Enter a filename: &quot; fname</span>
+
+<span class="c1"># 7. New loadable builtins:</span>
+<span class="c1">#    kv      , generate associative arrays from key-value data</span>
+<span class="c1">#    strptime, convert date strings to Unix timestamps</span>
+<span class="c1">#    fltexpr , floating-point arithmetic (like `let` but for floats)</span>
 </pre></div>
 <p>For more, see the <a href="https://www.gnu.org/software/bash/manual/bashref.html">Bash documentation</a>.</p>
 
@@ -598,7 +1159,8 @@ info<span class="w"> </span>--apropos<span class="w"> </span>bash
             <a href="https://github.com/harrymt">Harry Mumford-Turner</a>,
             <a href="https://github.com/mn113">Martin Nicholson</a>,
             <a href="https://github.com/MarkGrimwood">Mark Grimwood</a>,
-            <a href="https://github.com/EmilySeville7cfg">Emily Grace Seville</a>
+            <a href="https://github.com/EmilySeville7cfg">Emily Grace Seville</a>,
+            <a href="https://github.com/Ily83">Ilyas B.</a>
           </p>
         </footer>
       </div>
