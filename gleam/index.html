@@ -56,6 +56,18 @@ no exceptions, clear error messages, and a practical type system.</p>
 code in browser or any other JS-enabled runtime. When using this feature,
 TypeScript definitions get created, so you can interact with your Gleam code
 confidently, even from the outside.</p>
+<p>To run this code, first create a Gleam project:</p>
+<div class="highlight"><pre lang="sh">gleam<span class="w"> </span>new<span class="w"> </span>my_project
+<span class="nb">cd</span><span class="w"> </span>my_project
+</pre></div>
+<p>Replace the generated code with this example and run:</p>
+<div class="highlight"><pre lang="sh">gleam<span class="w"> </span>run
+</pre></div>
+<blockquote>
+<p><strong>Note:</strong> The <code>iterator</code> module was removed from the standard library in <a href="https://github.com/gleam-lang/stdlib/blob/main/CHANGELOG.md#:~:text=The%20gleam%2Fiterator%20module%20has%20been%20deprecated%20in%20favour%20of%20the%20gleam%5Fyielder%20package">v0.44.0</a> and moved to <code>gleam_yielder</code>:</p>
+<div class="highlight"><pre lang="sh">gleam<span class="w"> </span>add<span class="w"> </span>gleam_yielder
+</pre></div>
+</blockquote>
 <div class="highlight"><pre lang="gleam"><span class="sd">//// This comment with four slashes is a module-level.</span>
 <span class="sd">//// This kind of comments are used to describe the whole module.</span>
 
@@ -64,7 +76,7 @@ confidently, even from the outside.</p>
 <span class="k">import</span><span class="w"> </span><span class="n">gleam</span><span class="o">/</span><span class="n">int</span>
 <span class="k">import</span><span class="w"> </span><span class="n">gleam</span><span class="o">/</span><span class="n">float</span>
 <span class="k">import</span><span class="w"> </span><span class="n">gleam</span><span class="o">/</span><span class="n">list</span>
-<span class="k">import</span><span class="w"> </span><span class="n">gleam</span><span class="o">/</span><span class="n">iterator</span>
+<span class="k">import</span><span class="w"> </span><span class="n">gleam</span><span class="o">/</span><span class="n">yielder</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">iterator</span>
 <span class="k">import</span><span class="w"> </span><span class="n">gleam</span><span class="o">/</span><span class="k">option</span><span class="p">.{</span><span class="k">type</span><span class="w"> </span><span class="n">Option</span><span class="p">,</span><span class="w"> </span><span class="n">None</span><span class="p">,</span><span class="w"> </span><span class="n">Some</span><span class="p">}</span>
 <span class="k">import</span><span class="w"> </span><span class="n">gleam</span><span class="o">/</span><span class="n">result</span>
 <span class="k">import</span><span class="w"> </span><span class="n">gleam</span><span class="o">/</span><span class="n">string</span>
@@ -148,10 +160,10 @@ confidently, even from the outside.</p>
 <span class="w">  </span><span class="c1">// Standard library int functions</span>
 <span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="k">int</span><span class="p">.</span><span class="n">min</span><span class="p">(</span><span class="mi">142</span><span class="p">,</span><span class="w"> </span><span class="mi">137</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// 137</span>
-<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="k">int</span><span class="p">.</span><span class="n">clamp</span><span class="p">(</span><span class="o">-</span><span class="mi">80</span><span class="p">,</span><span class="w"> </span><span class="n">min</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">max</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="k">int</span><span class="p">.</span><span class="n">clamp</span><span class="p">(</span><span class="o">-</span><span class="mi">80</span><span class="p">,</span><span class="w"> </span><span class="n">min</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">max</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="c1">// clamp(value, min, max) specifies value to fall in given range</span>
 <span class="w">  </span><span class="c1">// 0</span>
-<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="k">int</span><span class="p">.</span><span class="n">base_parse</span><span class="p">(</span><span class="s">&quot;10&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
-<span class="w">  </span><span class="c1">// Ok(2)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="k">int</span><span class="p">.</span><span class="n">base_parse</span><span class="p">(</span><span class="s">&quot;10&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="c1">// parses binary string as base-2 integer. </span>
+<span class="w">  </span><span class="c1">// Ok(2) : 10 in binary equals to 2 in integer</span>
 
 <span class="w">  </span><span class="c1">// Binary, octal, and hex Int literals</span>
 <span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="mb">0b00001111</span>
@@ -257,9 +269,6 @@ confidently, even from the outside.</p>
 <span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="k">bool</span><span class="p">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">True</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// &quot;True&quot;</span>
 
-<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="k">bool</span><span class="p">.</span><span class="n">to_int</span><span class="p">(</span><span class="n">False</span><span class="p">)</span>
-<span class="w">  </span><span class="c1">// 0</span>
-
 <span class="w">  </span><span class="c1">// Assignments</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Original value&quot;</span>
 <span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">x</span>
@@ -326,7 +335,7 @@ confidently, even from the outside.</p>
 <span class="w">  </span><span class="c1">// documentation.</span>
 <span class="w">  </span><span class="c1">// Under the hood they are still values of the same type so operations</span>
 <span class="w">  </span><span class="c1">// still work</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">one</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">two</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">two</span>
 <span class="w">  </span><span class="c1">// 3</span>
 
 <span class="w">  </span><span class="c1">// Blocks: scoping and value</span>
@@ -334,26 +343,26 @@ confidently, even from the outside.</p>
 <span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">100.0</span>
 <span class="w">    </span><span class="n">value</span>
 <span class="w">  </span><span class="p">}</span>
-<span class="w">  </span><span class="c1">// io.debug(value) // &lt;- This will not compile because &quot;value&quot; is out of scope</span>
+<span class="w">  </span><span class="c1">// echo value // &lt;- This will not compile because &quot;value&quot; is out of scope</span>
 
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">area</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mf">3.14159</span><span class="w"> </span><span class="o">*.</span><span class="w"> </span><span class="n">radius</span><span class="w"> </span><span class="o">*.</span><span class="w"> </span><span class="n">radius</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">area</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">area</span>
 
 <span class="w">  </span><span class="c1">// Use blocks to group operations instead of parenthesis</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">n1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">5</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">n2</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">}</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">n1</span><span class="w"> </span><span class="p">!=</span><span class="w"> </span><span class="n">n2</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">n1</span><span class="w"> </span><span class="p">!=</span><span class="w"> </span><span class="n">n2</span>
 <span class="w">  </span><span class="c1">// True</span>
 
 <span class="w">  </span><span class="c1">// Lists</span>
 
 <span class="w">  </span><span class="c1">// Nephews of Scrooge McDuck</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">nephews</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;Huey&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Dewey&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Louie&quot;</span><span class="p">]</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">nephews</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">nephews</span>
 <span class="w">  </span><span class="c1">// [&quot;Huey&quot;, &quot;Dewey&quot;, &quot;Louie&quot;]</span>
 
 <span class="w">  </span><span class="c1">// Immutably prepend so the original list is not changed</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">([</span><span class="s">&quot;Donald&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">..</span><span class="n">nephews</span><span class="p">])</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;Donald&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">..</span><span class="n">nephews</span><span class="p">]</span>
 <span class="w">  </span><span class="c1">// [&quot;Donald&quot;, &quot;Huey&quot;, &quot;Dewey&quot;, &quot;Louie&quot;]</span>
 
 <span class="w">  </span><span class="c1">// Some standard library functions for lists</span>
@@ -363,7 +372,7 @@ confidently, even from the outside.</p>
 <span class="w">  </span><span class="c1">// Dewey</span>
 <span class="w">  </span><span class="c1">// Louie</span>
 
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="k">list</span><span class="p">.</span><span class="n">drop</span><span class="p">(</span><span class="n">nephews</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="k">list</span><span class="p">.</span><span class="n">drop</span><span class="p">(</span><span class="n">nephews</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// [&quot;Louie&quot;]</span>
 
 <span class="w">  </span><span class="n">more_examples</span><span class="p">()</span>
@@ -408,9 +417,9 @@ confidently, even from the outside.</p>
 <span class="k">fn</span><span class="w"> </span><span class="n">more_examples</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="c1">// Debug also returns a value so its output is the return value of</span>
 <span class="w">  </span><span class="c1">// this function</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">double</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">double</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// 20</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">is_leap_year</span><span class="p">(</span><span class="mi">2000</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">is_leap_year</span><span class="p">(</span><span class="mi">2000</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// True</span>
 <span class="p">}</span>
 
@@ -422,15 +431,15 @@ confidently, even from the outside.</p>
 <span class="p">}</span>
 
 <span class="k">fn</span><span class="w"> </span><span class="n">more_function_examples</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">Int</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">call_func_on_int</span><span class="p">(</span><span class="n">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">call_func_on_int</span><span class="p">(</span><span class="n">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// 4</span>
 
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">square</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">fn</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="n">Int</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">Int</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">}</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">square</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">square</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// 9</span>
 
 <span class="w">  </span><span class="c1">// Calling an anonymous function immediately after defining it</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="k">fn</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="n">Int</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">}(</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="k">fn</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="n">Int</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">}(</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="w">  </span><span class="c1">// Closure example</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">make_adder</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">fn</span><span class="p">(</span><span class="n">n</span><span class="p">:</span><span class="w"> </span><span class="n">Int</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="k">fn</span><span class="p">(</span><span class="n">Int</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">Int</span><span class="w"> </span><span class="p">{</span>
@@ -438,11 +447,11 @@ confidently, even from the outside.</p>
 <span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">adder_of_fives</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">make_adder</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">adder_of_fives</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">adder_of_fives</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// 15</span>
 
 <span class="w">  </span><span class="c1">// Anonymous functions can be used interchangeably with named functions.</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">call_func_on_int</span><span class="p">(</span><span class="k">fn</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="n">Int</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">Int</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="mi">900</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">call_func_on_int</span><span class="p">(</span><span class="k">fn</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="n">Int</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">Int</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="mi">900</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// 1000</span>
 
 <span class="w">  </span><span class="c1">// Let&#39;s create a function decorator</span>
@@ -450,17 +459,17 @@ confidently, even from the outside.</p>
 <span class="w">    </span><span class="k">fn</span><span class="p">(</span><span class="n">argument</span><span class="p">:</span><span class="w"> </span><span class="n">Int</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">Int</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">wrapped_func</span><span class="p">(</span><span class="n">wrapped_func</span><span class="p">(</span><span class="n">argument</span><span class="p">))</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">quadruple</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">twice</span><span class="p">(</span><span class="n">double</span><span class="p">)</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">quadruple</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">quadruple</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">quadruple_2</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">fn</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="w"> </span><span class="n">Int</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">Int</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">multiply</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">quadruple_2</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">quadruple_2</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// 8</span>
 
 <span class="w">  </span><span class="c1">// A function capture is a shorthand syntax for creating anonymous functions</span>
 <span class="w">  </span><span class="c1">// that takes one argument and immediately calls another function with that</span>
 <span class="w">  </span><span class="c1">// argument</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">quadruple_3</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">multiply</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">)</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">quadruple_3</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">quadruple_3</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// 16</span>
 <span class="p">}</span>
 
@@ -481,14 +490,14 @@ confidently, even from the outside.</p>
 <span class="k">fn</span><span class="w"> </span><span class="n">generic_typing_examples</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">double_integers</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">fn</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="w"> </span><span class="n">Int</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">Int</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">double_floats</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">fn</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="w"> </span><span class="n">Float</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">Float</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">*.</span><span class="w"> </span><span class="mf">2.0</span><span class="w"> </span><span class="p">}</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">generic_twice</span><span class="p">(</span><span class="n">double_integers</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">))</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">generic_twice</span><span class="p">(</span><span class="n">double_floats</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">generic_twice</span><span class="p">(</span><span class="n">double_integers</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">generic_twice</span><span class="p">(</span><span class="n">double_floats</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">)</span>
 
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">quadruple_integers</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">generic_twice_decorator</span><span class="p">(</span><span class="n">double_integers</span><span class="p">)</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">quadruple_floats</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">generic_twice_decorator</span><span class="p">(</span><span class="n">double_floats</span><span class="p">)</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">quadruple_integers</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">quadruple_integers</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// 4</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">quadruple_floats</span><span class="p">(</span><span class="mf">1.0</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">quadruple_floats</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// 4.0</span>
 <span class="p">}</span>
 
@@ -501,16 +510,15 @@ confidently, even from the outside.</p>
 <span class="w">  </span><span class="p">|&gt;</span><span class="w"> </span><span class="k">list</span><span class="p">.</span><span class="n">append</span><span class="p">([</span><span class="s">&quot;!&quot;</span><span class="p">])</span>
 <span class="w">  </span><span class="p">|&gt;</span><span class="w"> </span><span class="k">string</span><span class="p">.</span><span class="n">concat</span>
 <span class="w">  </span><span class="p">|&gt;</span><span class="w"> </span><span class="k">string</span><span class="p">.</span><span class="n">capitalise</span>
-<span class="w">  </span><span class="p">|&gt;</span><span class="w"> </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span>
+<span class="w">  </span><span class="p">|&gt;</span><span class="w"> </span><span class="k">echo</span>
 
-<span class="w">  </span><span class="c1">// Match cleaner than this right?</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span>
+<span class="w">  </span><span class="c1">// Much cleaner than this right?</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span>
 <span class="w">    </span><span class="k">string</span><span class="p">.</span><span class="n">capitalise</span><span class="p">(</span>
 <span class="w">      </span><span class="k">string</span><span class="p">.</span><span class="n">concat</span><span class="p">(</span>
 <span class="w">        </span><span class="k">list</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="k">list</span><span class="p">.</span><span class="n">intersperse</span><span class="p">([</span><span class="s">&quot;hello&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;world&quot;</span><span class="p">],</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="p">),</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;!&quot;</span><span class="p">]),</span>
 <span class="w">      </span><span class="p">),</span>
-<span class="w">    </span><span class="p">),</span>
-<span class="w">  </span><span class="p">)</span>
+<span class="w">    </span><span class="p">)</span>
 
 <span class="w">  </span><span class="c1">// Solution to the first problem of Project Euler:</span>
 <span class="w">  </span><span class="c1">// URL: https://projecteuler.net/problem=1</span>
@@ -523,7 +531,7 @@ confidently, even from the outside.</p>
 <span class="w">  </span><span class="p">|&gt;</span><span class="w"> </span><span class="k">fn</span><span class="p">(</span><span class="n">sum_as_text</span><span class="p">:</span><span class="w"> </span><span class="n">String</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="s">&quot;Solution to Project Euler&#39;s problem #1: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">sum_as_text</span>
 <span class="w">  </span><span class="p">}</span>
-<span class="w">  </span><span class="p">|&gt;</span><span class="w"> </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span>
+<span class="w">  </span><span class="p">|&gt;</span><span class="w"> </span><span class="k">echo</span>
 <span class="w">  </span><span class="c1">// Solution to Project Euler&#39;s problem #1: 233168</span>
 <span class="p">}</span>
 
@@ -547,13 +555,13 @@ confidently, even from the outside.</p>
 <span class="k">fn</span><span class="w"> </span><span class="n">labels_in_function_calls</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">Int</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="c1">// Since we are labelling the arguments we can switch the order</span>
 <span class="w">  </span><span class="c1">// if we want to</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">call_func_on_int_with_labels</span><span class="p">(</span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">func</span><span class="p">:</span><span class="w"> </span><span class="n">double</span><span class="p">))</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">add_one</span><span class="p">(</span><span class="n">number</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">call_func_on_int_with_labels</span><span class="p">(</span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">func</span><span class="p">:</span><span class="w"> </span><span class="n">double</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">add_one</span><span class="p">(</span><span class="n">number</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// 2</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="k">string</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">does</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;theme&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">contain</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;the&quot;</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="k">string</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">does</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;theme&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">contain</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;the&quot;</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// True</span>
 <span class="w">  </span><span class="c1">// Unlabeled arguments must go first</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">add_two_integers</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">second</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">add_two_integers</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">second</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// 4</span>
 <span class="p">}</span>
 
@@ -575,7 +583,7 @@ confidently, even from the outside.</p>
 <span class="w">      </span><span class="n">_</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="s">&quot;puppies&quot;</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
-<span class="w">  </span><span class="p">|&gt;</span><span class="w"> </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span>
+<span class="w">  </span><span class="p">|&gt;</span><span class="w"> </span><span class="k">echo</span>
 
 <span class="w">  </span><span class="c1">// Gleam allows patterns in case expressions to also assign variables.</span>
 <span class="w">  </span><span class="p">{</span>
@@ -586,7 +594,7 @@ confidently, even from the outside.</p>
 <span class="w">      </span><span class="n">other</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="s">&quot;As many as &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="k">int</span><span class="p">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s">&quot; puppies.&quot;</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
-<span class="w">  </span><span class="p">|&gt;</span><span class="w"> </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span>
+<span class="w">  </span><span class="p">|&gt;</span><span class="w"> </span><span class="k">echo</span>
 
 <span class="w">  </span><span class="c1">// Consider BEAM languages are functional in design and Gleam is no exception</span>
 <span class="w">  </span><span class="c1">// so there are no if, for or while constructs available.</span>
@@ -595,10 +603,10 @@ confidently, even from the outside.</p>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">answer</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">42</span>
 <span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="n">answer</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="mi">42</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">True</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;This is the answer to the universe.&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="k">echo</span><span class="w"> </span><span class="s">&quot;This is the answer to the universe.&quot;</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">    </span><span class="n">False</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;This is the answer to something else.&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="k">echo</span><span class="w"> </span><span class="s">&quot;This is the answer to something else.&quot;</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 
@@ -608,7 +616,7 @@ confidently, even from the outside.</p>
 
 <span class="c1">// Recursive function</span>
 <span class="k">fn</span><span class="w"> </span><span class="n">from_one_to_ten</span><span class="p">(</span><span class="n">n</span><span class="p">:</span><span class="w"> </span><span class="n">Int</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">n</span>
 <span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="mi">10</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">Nil</span>
 <span class="w">    </span><span class="n">_</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">from_one_to_ten</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
@@ -646,18 +654,18 @@ confidently, even from the outside.</p>
 <span class="p">}</span>
 
 <span class="k">fn</span><span class="w"> </span><span class="n">more_on_recursion</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">fib</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">fib</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// 55</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">reverse_list</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">]))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">reverse_list</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span>
 <span class="p">}</span>
 
 <span class="k">fn</span><span class="w"> </span><span class="n">more_on_pattern_matching</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="c1">// When pattern-matching on strings the &lt;&gt; operator match on strings</span>
 <span class="w">  </span><span class="c1">// with a specific prefix and assigns the reminder to a variable</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="k">case</span><span class="w"> </span><span class="s">&quot;Hello, Lucy&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="s">&quot;Hello, Lucy&quot;</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="s">&quot;Hello, &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="s">&quot;Greetings for &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">name</span>
 <span class="w">    </span><span class="n">_</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="s">&quot;Potentially no greetings&quot;</span>
-<span class="w">  </span><span class="p">})</span>
+<span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">// Alternative patterns are supported so the same clause is used</span>
 <span class="w">  </span><span class="c1">// for multiple values</span>
@@ -673,7 +681,7 @@ confidently, even from the outside.</p>
 <span class="w">    </span><span class="mi">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="mi">7</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="mi">31</span>
 <span class="w">    </span><span class="n">_</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="mi">0</span>
 <span class="w">  </span><span class="p">}</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;Number of days: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="k">int</span><span class="p">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">number_of_days</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="s">&quot;Number of days: &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="k">int</span><span class="p">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">number_of_days</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// 29</span>
 
 <span class="w">  </span><span class="c1">// Guards in pattern-matching:</span>
@@ -685,7 +693,7 @@ confidently, even from the outside.</p>
 <span class="w">      </span><span class="n">_</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">False</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">list_starts_with</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">],</span><span class="w"> </span><span class="mi">10</span><span class="p">))</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">list_starts_with</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">],</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// True</span>
 <span class="p">}</span>
 
@@ -715,45 +723,45 @@ confidently, even from the outside.</p>
 <span class="w">  </span><span class="c1">// - Their elements can be accessed by numeric indexes</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">tuple_01</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">#(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Ferris&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;rustacean&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">True</span><span class="p">)</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">tuple_02</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="p">#(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Lucy&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;starfish&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">True</span><span class="p">)</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">tuple_01</span><span class="p">)</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">tuple_01</span><span class="p">.</span><span class="mi">0</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">tuple_01</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">tuple_01</span><span class="p">.</span><span class="mi">0</span>
 <span class="w">  </span><span class="c1">// 1</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">tuple_02</span><span class="p">.</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">tuple_02</span><span class="p">.</span><span class="mi">1</span>
 <span class="w">  </span><span class="c1">// Lucy</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="p">#(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">species</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">tuple_01</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s">&quot; the &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">species</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s">&quot; the &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">species</span>
 
 <span class="w">  </span><span class="c1">// Pattern-matching with tuples including variable assignment</span>
 <span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="n">tuple_02</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="p">#(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">True</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s">&quot; is a mascot.&quot;</span><span class="p">)</span>
-<span class="w">    </span><span class="p">#(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">False</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s">&quot; is not a mascot.&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">#(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">True</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="k">echo</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s">&quot; is a mascot.&quot;</span>
+<span class="w">    </span><span class="p">#(</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">False</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="k">echo</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s">&quot; is not a mascot.&quot;</span>
 <span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">// Using a custom type with pattern-matching</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">gender</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Other</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="k">case</span><span class="w"> </span><span class="n">gender</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="n">gender</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">Male</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="s">&quot;Boy&quot;</span>
 <span class="w">    </span><span class="n">Female</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="s">&quot;Girl&quot;</span>
 <span class="w">    </span><span class="n">_</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="s">&quot;Undetermined&quot;</span>
-<span class="w">  </span><span class="p">})</span>
+<span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">// Using records</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">rectangle_1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Rectangle</span><span class="p">(</span><span class="n">base</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span><span class="w"> </span><span class="n">height</span><span class="p">:</span><span class="w"> </span><span class="mf">20.0</span><span class="p">)</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">rectangle_1</span><span class="p">.</span><span class="n">height</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">rectangle_1</span><span class="p">.</span><span class="n">height</span>
 <span class="w">  </span><span class="c1">// 10.3</span>
 
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">point_1</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="mf">3.2</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="mf">4.3</span><span class="p">)</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">point_1</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">point_1</span>
 
 <span class="w">  </span><span class="c1">// Updating a record</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">point_2</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Point</span><span class="p">(..</span><span class="n">point_1</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">:</span><span class="w"> </span><span class="mf">5.7</span><span class="p">)</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">point_2</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">point_2</span>
 
 <span class="w">  </span><span class="c1">// In Gleam, values are not nullable.</span>
 <span class="w">  </span><span class="c1">// Nil is the only value of its type.</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">some_var</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Nil</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">io</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">&quot;Hello!&quot;</span><span class="p">)</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">some_var</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="n">result</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">some_var</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="n">result</span>
 <span class="w">  </span><span class="c1">// True</span>
 <span class="p">}</span>
 
@@ -801,28 +809,28 @@ confidently, even from the outside.</p>
 <span class="k">fn</span><span class="w"> </span><span class="n">more_on_types</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">mineral_sample_01</span><span class="p">:</span><span class="w"> </span><span class="n">Purity</span><span class="p">(</span><span class="n">Mineral</span><span class="p">)</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Pure</span><span class="p">(</span><span class="n">Gold</span><span class="p">)</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">mineral_sample_02</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Impure</span><span class="p">(</span><span class="n">Silver</span><span class="p">)</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">mineral_sample_01</span><span class="p">)</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">mineral_sample_02</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">mineral_sample_01</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">mineral_sample_02</span>
 
 <span class="w">  </span><span class="c1">// A glass can be empty or not</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">glass_01</span><span class="p">:</span><span class="w"> </span><span class="n">Option</span><span class="p">(</span><span class="n">Beverage</span><span class="p">)</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Some</span><span class="p">(</span><span class="n">Water</span><span class="p">)</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">glass_02</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">None</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">glass_01</span><span class="p">)</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">glass_02</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">glass_01</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">glass_02</span>
 
 <span class="w">  </span><span class="c1">// A person can have a nickname or not</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">person_01</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Person</span><span class="p">(</span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;John&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">nickname</span><span class="p">:</span><span class="w"> </span><span class="n">Some</span><span class="p">(</span><span class="s">&quot;The Ripper&quot;</span><span class="p">))</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">person_02</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">Person</span><span class="p">(</span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Martin&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">nickname</span><span class="p">:</span><span class="w"> </span><span class="n">None</span><span class="p">)</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">person_01</span><span class="p">)</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">person_02</span><span class="p">)</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">person_01</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">person_02</span>
 
 <span class="w">  </span><span class="c1">// Working with functions that return values of type Result</span>
 <span class="w">  </span><span class="k">let</span><span class="w"> </span><span class="n">dice_01</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">5</span>
 <span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="n">checked_dice_value</span><span class="p">(</span><span class="n">dice_01</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">Ok</span><span class="p">(</span><span class="n">checked_value</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span>
-<span class="w">      </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;The value of &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="k">int</span><span class="p">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">checked_value</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s">&quot; is OK.&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="k">echo</span><span class="w"> </span><span class="s">&quot;The value of &quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="k">int</span><span class="p">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">checked_value</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s">&quot; is OK.&quot;</span>
 <span class="w">    </span><span class="n">Error</span><span class="p">(</span><span class="n">DiceValueOutOfRange</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span>
-<span class="w">      </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;The value of the dice is out of range&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="k">echo</span><span class="w"> </span><span class="s">&quot;The value of the dice is out of range&quot;</span>
 <span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">// Let&#39;s attempt to double the value if the resulting value is still</span>
@@ -869,8 +877,8 @@ confidently, even from the outside.</p>
 <span class="p">}</span>
 
 <span class="k">fn</span><span class="w"> </span><span class="n">more_on_callbacks</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">roll_two_dices_without_use</span><span class="p">())</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">roll_two_dices_with_use</span><span class="p">())</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">roll_two_dices_without_use</span><span class="p">()</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">roll_two_dices_with_use</span><span class="p">()</span>
 <span class="p">}</span>
 
 <span class="k">pub</span><span class="w"> </span><span class="k">type</span><span class="w"> </span><span class="n">DateTime</span>
@@ -880,7 +888,7 @@ confidently, even from the outside.</p>
 <span class="k">pub</span><span class="w"> </span><span class="k">fn</span><span class="w"> </span><span class="n">now</span><span class="p">()</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="n">DateTime</span>
 
 <span class="k">fn</span><span class="w"> </span><span class="n">showcase_externals</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">io</span><span class="p">.</span><span class="n">debug</span><span class="p">(</span><span class="n">now</span><span class="p">())</span>
+<span class="w">  </span><span class="k">echo</span><span class="w"> </span><span class="n">now</span><span class="p">()</span>
 <span class="w">  </span><span class="c1">// #(#(2024, 4, 6), #(14, 4, 16))</span>
 <span class="p">}</span>
 
@@ -922,7 +930,7 @@ confidently, even from the outside.</p>
           Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the GitHub Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/gleam.md">pull request</a> yourself!
         </p>
         <p class="contributed">
-          Originally contributed by Antonio Ognio, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/gleam.md">5 contributors</a>.
+          Originally contributed by Antonio Ognio, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/gleam.md">6 contributors</a>.
         </p>
 
         <footer>
