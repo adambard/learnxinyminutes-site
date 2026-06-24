@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="en">
+    <title>Learn Cangjie in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/cangjie/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1><a href="/">Learn X in Y minutes</a></h1>
+      <h2>Where X=Cangjie</h2>
+
+      <div class="lang-choice">
+        <label for="lang-select">Language:</label>
+        <select id="lang-select" name="lang-select">
+          <option value="en">English</option>
+          <option value="zh-cn" data-url="/zh-cn/cangjie/">中文 (简体)</option>
+        </select>
+      </div>
+      <p class="filelink">
+        Get the code:
+        <a href="/files/learncangjie.cj">learncangjie.cj</a>
+      </p>
+      <div id="doc">
+<p>Cangjie is a statically typed, general-purpose programming language.
+It combines a C-family surface syntax with type inference, expression-oriented
+control flow, algebraic enums, pattern matching, classes, interfaces,
+generics, properties, function values, and operator overloading.</p>
+<div class="highlight"><pre lang="text">// Source files begin with a package declaration.
+package learnxinyminutes
+
+// Imports come after the package declaration.
+import std.convert.*
+import std.math.*
+import std.random.*
+
+// With the Cangjie SDK, a single file can be compiled with:
+//     cjc learncangjie.cj
+// Larger projects normally use `cjpm` and a `cjpm.toml` manifest.
+
+// Single-line comments start with two slashes.
+/*
+Multi-line comments look like this.
+*/
+
+////////////////////////////////////////////////////////////
+// 1. Program entry, output, input, and variables
+////////////////////////////////////////////////////////////
+
+// `main` is the entry point of an executable program.
+main(): Int64 {
+    // `println` writes a line to standard output.
+    println(&quot;Hello, Cangjie!&quot;)
+
+    // `print` writes without appending a newline.
+    print(&quot;This prompt stays on the same line: &quot;)
+    println(&quot;done&quot;)
+
+    // `readln()` reads one line from standard input as a String.
+    // Keep this commented so the tour can run without waiting for input.
+    // let rawInput = readln()
+    // let parsedNumber = Int64.parse(rawInput)
+
+    // Create an immutable binding with `let`.
+    let language: String = &quot;Cangjie&quot;
+
+    // Create a mutable variable with `var`.
+    var releaseYear: Int64 = 2024
+    releaseYear += 1
+
+    // Type annotations are often optional for local variables.
+    let inferredInt = 42
+    let inferredFloat = 3.14159
+
+    println(&quot;${language} ${releaseYear}&quot;)
+    println(&quot;${inferredInt}, ${inferredFloat}&quot;)
+
+    learnBindings()
+    learnStringsAndNumbers()
+    learnControlFlow()
+    learnCollections()
+    learnFunctions()
+    learnStructsClassesAndInterfaces()
+    learnEnumsAndOptions()
+    learnStandardLibrary()
+
+    return 0
+}
+
+////////////////////////////////////////////////////////////
+// 2. Declarations used later in this tour
+////////////////////////////////////////////////////////////
+
+// Cangjie has `struct` for value-like records.
+struct Vec2 {
+    // A primary constructor can declare fields directly.
+    public Vec2(var x: Float64, var y: Float64) {}
+
+    public func length(): Float64 {
+        sqrt(x * x + y * y)
+    }
+
+    // `mut` marks a struct method that changes the receiver.
+    public mut func scale(k: Float64): Unit {
+        x *= k
+        y *= k
+    }
+
+    // Operators are functions too.
+    public operator func +(rhs: Vec2): Vec2 {
+        Vec2(x + rhs.x, y + rhs.y)
+    }
+
+    public func toString(): String {
+        &quot;(${x.format(&quot;.1&quot;)}, ${y.format(&quot;.1&quot;)})&quot;
+    }
+}
+
+// Interfaces describe behavior. Implementing types use `&lt;:`.
+interface Named {
+    prop label: String
+}
+
+// Classes are reference types and can carry fields, constructors, properties,
+// instance methods, static methods, and operator functions.
+class Person &lt;: Named {
+    let id: Int64
+    private let rawName: String
+
+    public init(id: Int64, name: String) {
+        this.id = id
+        this.rawName = name
+    }
+
+    // Properties use `get` and, for mutable properties, `set`.
+    public prop label: String {
+        get() {
+            &quot;${id}:${rawName}&quot;
+        }
+    }
+
+    public func greet(): Unit {
+        println(&quot;Hello, I am ${rawName}.&quot;)
+    }
+}
+
+// A compact class constructor can declare fields in the parameter list.
+class Box&lt;T&gt; {
+    public Box(var value: T) {}
+
+    public func map&lt;R&gt;(f: (T) -&gt; R): Box&lt;R&gt; {
+        Box&lt;R&gt;(f(value))
+    }
+}
+
+class Directory {
+    private let people: Array&lt;Person&gt;
+
+    public init(people: Array&lt;Person&gt;) {
+        this.people = people
+    }
+
+    // Overload `[]` to make a small lookup type.
+    public operator func [](id: Int64): ?Person {
+        for (person in people) {
+            if (person.id == id) {
+                return Some(person)
+            }
+        }
+        return None
+    }
+}
+
+// Enums are algebraic data types. Constructors can hold data.
+enum Command {
+    Quit |
+    Echo(String) |
+    Move(Vec2) |
+    Repeat(Int64, String)
+}
+
+// `Option&lt;T&gt;` is an enum with `Some(T)` and `None`.
+// `?T` is shorthand for `Option&lt;T&gt;`.
+func first&lt;T&gt;(items: Array&lt;T&gt;): ?T {
+    if (items.size == 0) {
+        return None
+    }
+    return Some(items[0])
+}
+
+func run(command: Command): Unit {
+    match (command) {
+        case Quit =&gt;
+            println(&quot;quit&quot;)
+        case Echo(text) =&gt;
+            println(text)
+        case Move(delta) =&gt;
+            println(&quot;move by ${delta.toString()}&quot;)
+        case Repeat(times, text) =&gt;
+            for (_ in 0..times) {
+                println(text)
+            }
+    }
+}
+
+func printNamed&lt;T&gt;(item: T): Unit where T &lt;: Named {
+    println(item.label)
+}
+
+// Overload functions by parameter types.
+func twice(x: Int64): Int64 { x * 2 }
+func twice(x: Float64): Float64 { x * 2.0 }
+
+////////////////////////////////////////////////////////////
+// 3. Bindings and basic types
+////////////////////////////////////////////////////////////
+
+func learnBindings(): Unit {
+    // Common primitive types.
+    let ok: Bool = true
+    let signed: Int64 = -42
+    let unsigned: UInt64 = 42
+    let f32: Float32 = 1.25
+    let f64: Float64 = 2.5
+
+    println(&quot;${ok}, ${signed}, ${unsigned}, ${f32}, ${f64}&quot;)
+
+    // Integer literals support familiar base prefixes.
+    let decimal: Int64 = 255
+    let binary: Int64 = 0b11111111
+    let octal: Int64 = 0o377
+    let hex: Int64 = 0xFF
+    println(&quot;${decimal}, ${binary}, ${octal}, ${hex}&quot;)
+
+    // Numeric conversions are explicit.
+    let count: Int64 = 3
+    let price: Float64 = 19.95
+    let total = Float64(count) * price
+    println(&quot;total: ${total.format(&quot;.2&quot;)}&quot;)
+}
+
+////////////////////////////////////////////////////////////
+// 4. Strings, characters, tuples, and interpolation
+////////////////////////////////////////////////////////////
+
+func learnStringsAndNumbers(): Unit {
+    let name = &quot;Ada&quot;
+    let score = 99.5
+
+    // String interpolation uses `${...}`.
+    println(&quot;${name} scored ${score.format(&quot;.1&quot;)}&quot;)
+
+    // `readln()` reads a String. Parse it before numeric work.
+    // let line = readln()
+    // let n = Int64.parse(line)
+
+    let csv = &quot;red,green,blue&quot;
+    let parts = csv.split(&quot;,&quot;)
+    println(parts[0])
+
+    // `Rune` represents a Unicode character.
+    let letter: Rune = Rune(UInt32(65))
+    let lineBreak: Rune = Rune(UInt32(10))
+    let generated: Rune = Rune(UInt32(65))
+    println(&quot;${letter}${lineBreak}${generated}&quot;)
+
+    // Tuples group a fixed number of values.
+    let pair: (String, Int64) = (&quot;answer&quot;, 42)
+    let (word, value) = pair
+    println(&quot;${word}: ${value}&quot;)
+}
+
+////////////////////////////////////////////////////////////
+// 5. Control flow is expression-oriented
+////////////////////////////////////////////////////////////
+
+func learnControlFlow(): Unit {
+    let temperature = 22.5
+
+    // `if` can be used for branching.
+    if (temperature &gt; 30.0) {
+        println(&quot;hot&quot;)
+    } else if (temperature &lt; 10.0) {
+        println(&quot;cold&quot;)
+    } else {
+        println(&quot;comfortable&quot;)
+    }
+
+    // `if` can also produce a value.
+    let status = if (temperature &gt; 18.0) {
+        &quot;open&quot;
+    } else {
+        &quot;closed&quot;
+    }
+    println(status)
+
+    // `a..b` is left-closed and right-open.
+    for (i in 0..3) {
+        print(&quot;${i} &quot;)
+    }
+    println()
+
+    // `a..=b` includes both ends.
+    var sum: Int64 = 0
+    for (i in 1..=100) {
+        sum += i
+    }
+    println(sum)
+
+    var x: Int64 = 4
+    while (x &gt; 0) {
+        x -= 1
+    }
+
+    // `do-while` runs its body at least once.
+    do {
+        x += 1
+    } while (x &lt; 2)
+
+    while (true) {
+        if (x &lt; 2) {
+            continue
+        }
+        break
+    }
+}
+
+////////////////////////////////////////////////////////////
+// 6. Arrays and ranges
+////////////////////////////////////////////////////////////
+
+func learnCollections(): Unit {
+    // Array literals infer their element type.
+    let primes = [2, 3, 5, 7, 11]
+    println(&quot;first prime: ${primes[0]}&quot;)
+
+    // Create a fixed-size Array with a repeated initial value.
+    var squares: Array&lt;Int64&gt; = Array(5, repeat: 0)
+    for (i in 0..squares.size) {
+        squares[i] = i * i
+    }
+
+    for (value in squares) {
+        print(&quot;${value} &quot;)
+    }
+    println()
+
+    let maybeFirst = first(squares)
+    if (maybeFirst.isSome()) {
+        println(&quot;first square: ${maybeFirst.getOrThrow()}&quot;)
+    }
+}
+
+////////////////////////////////////////////////////////////
+// 7. Functions, closures, and overloading
+////////////////////////////////////////////////////////////
+
+func learnFunctions(): Unit {
+    // Function types use arrows.
+    var op: (Int64, Int64) -&gt; Int64 = { a: Int64, b: Int64 =&gt; a + b }
+    println(op(2, 3))
+
+    op = { a: Int64, b: Int64 =&gt; a * b }
+    println(op(2, 3))
+
+    // Closures can capture local variables.
+    let offset = 10
+    let addOffset: (Int64) -&gt; Int64 = { n: Int64 =&gt; n + offset }
+    println(addOffset(5))
+
+    // Functions are values.
+    let f: (Int64) -&gt; Int64 = twice
+    println(f(21))
+
+    println(twice(21))
+    println(twice(21.0).format(&quot;.1&quot;))
+
+    let boxed = Box&lt;Int64&gt;(21)
+    let mapped = boxed.map({ n: Int64 =&gt; &quot;value=${n}&quot; })
+    println(mapped.value)
+}
+
+////////////////////////////////////////////////////////////
+// 8. Structs, classes, interfaces, properties, operators
+////////////////////////////////////////////////////////////
+
+func learnStructsClassesAndInterfaces(): Unit {
+    var a = Vec2(3.0, 4.0)
+    let b = Vec2(1.0, 2.0)
+    let c = a + b
+
+    println(a.length().format(&quot;.1&quot;))
+    println(c.toString())
+
+    a.scale(2.0)
+    println(a.toString())
+
+    let ada = Person(1, &quot;Ada&quot;)
+    ada.greet()
+
+    // `Person` implements `Named`, so it can be used by a generic function
+    // constrained with `where T &lt;: Named`.
+    printNamed&lt;Person&gt;(ada)
+
+    let directory = Directory([
+        Person(1, &quot;Ada&quot;),
+        Person(2, &quot;Grace&quot;),
+        Person(3, &quot;Edsger&quot;)
+    ])
+
+    // This calls Directory.operator[].
+    let maybePerson = directory[2]
+    if (maybePerson.isSome()) {
+        let person = maybePerson.getOrThrow()
+        println(&quot;found ${person.label}&quot;)
+    }
+}
+
+////////////////////////////////////////////////////////////
+// 9. Enums, match, and Option
+////////////////////////////////////////////////////////////
+
+func learnEnumsAndOptions(): Unit {
+    let commands: Array&lt;Command&gt; = [
+        Echo(&quot;ready&quot;),
+        Move(Vec2(5.0, -2.0)),
+        Repeat(2, &quot;again&quot;),
+        Quit
+    ]
+
+    for (command in commands) {
+        run(command)
+    }
+
+    let directory = Directory([Person(1, &quot;Ada&quot;)])
+    let missing = directory[99]
+
+    match (missing) {
+        case Some(person) =&gt;
+            println(person.label)
+        case None =&gt;
+            println(&quot;no person with that id&quot;)
+    }
+
+    // `if let` style conditions are concise for one successful pattern.
+    if (directory[1].isSome()) {
+        let person = directory[1].getOrThrow()
+        println(&quot;hello ${person.label}&quot;)
+    }
+}
+
+////////////////////////////////////////////////////////////
+// 10. A tiny bit of the standard library
+////////////////////////////////////////////////////////////
+
+func learnStandardLibrary(): Unit {
+    // `std.math.*`
+    println(sqrt(81.0))
+    println(abs(-12))
+
+    // `std.random.*`
+    let rng = Random()
+    let dice = rng.nextInt64(6) + 1
+    println(&quot;dice: ${dice}&quot;)
+
+    // `std.convert.*`
+    let n = Int64.parse(&quot;123&quot;)
+    let y = Float64.parse(&quot;3.5&quot;)
+    println(&quot;${n}, ${y.format(&quot;.2&quot;)}&quot;)
+
+    // Cangjie also has packages for collections, I/O, time, regex,
+    // concurrency, testing, reflection, macros, and C interoperability.
+}
+</pre></div>
+<p>The syntax above is intentionally compact, but it shows the parts that make
+Cangjie feel different from a plain C-family language: expressions have types,
+<code>Option</code> replaces many null-like cases, enums carry data, interfaces can
+constrain generic code, and operators and properties are regular declarations.</p>
+
+        <hr>
+        <p>
+          Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the GitHub Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/cangjie.md">pull request</a> yourself!
+        </p>
+        <p class="contributed">
+          Originally contributed by sam5440, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/cangjie.md">1 contributor</a>.
+        </p>
+
+        <footer>
+          <a class="cc-license" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 80px; height: 28px; padding-bottom: 5px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2026
+            sam5440
+          </p>
+        </footer>
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const langSelect = document.getElementById('lang-select');
+          langSelect?.addEventListener('change', () => {
+            const selectedOption = langSelect.options[langSelect.selectedIndex];
+            const url = selectedOption?.getAttribute('data-url');
+            if (url) {
+              window.location.href = url;
+            }
+          });
+        });
+      </script>
+    </div>
+  </body>
+</html>
