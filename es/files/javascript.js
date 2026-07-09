@@ -327,7 +327,7 @@ miObjeto = {
 miObjeto.miFuncion(); // = "¡Hola Mundo!"
 
 // Las funciones de un objeto deben ser llamadas dentro del contexto de ese objeto.
-var miFuncion = myObj.miFuncion;
+var miFuncion = miObjeto.miFuncion;
 miFuncion(); // = undefined
 
 // Una función puede ser asignada al objeto y ganar acceso a él gracias a esto,
@@ -335,7 +335,7 @@ miFuncion(); // = undefined
 var miOtraFuncion = function(){
     return this.miString.toUpperCase();
 }
-miObjeto.miOtraFuncion = myOtherFunc;
+miObjeto.miOtraFuncion = miOtraFuncion;
 miObjeto.miOtraFuncion(); // = "¡HOLA MUNDO!"
 
 // Podemos especificar el contexto en el que una función será llamada con los comandos
@@ -451,7 +451,7 @@ miNumero == miNumeroObjeto; // = true
 // No son exactamente iguales.
 typeof miNumero; // = 'number'
 typeof miNumeroObjeto; // = 'object'
-miNumero === miNumeroObjeyo; // = false
+miNumero === miNumeroObjeto; // = false
 if (0){
     // Este código no se ejecutará porque 0 es false.
 }
