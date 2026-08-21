@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="ru">
+    <title>Learn Active Oberon in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/ru/active-oberon/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1><a href="/">Изучите X за Y минут</a></h1>
+      <h2>Где X=Active Oberon</h2>
+
+      <div class="lang-choice">
+        <label for="lang-select">Язык:</label>
+        <select id="lang-select" name="lang-select">
+          <option value="ru">русский</option>
+          <option value="en" data-url="/active-oberon/">English</option>
+          <option value="uk" data-url="/uk/active-oberon/">українська</option>
+        </select>
+      </div>
+      <p class="filelink">
+        Получить исходный код:
+        <a href="/ru/files/LearnActiveOberon.Mod">LearnActiveOberon.Mod</a>
+      </p>
+      <div id="doc">
+<p><strong>Active Oberon</strong> — последний представитель семейства Pascal / Modula-2 /
+Oberon, созданный в ETH Zürich (1996-1998, группой вокруг Никлауса Вирта и
+Юрга Гуткнехта). Он сохраняет всё, чем известен Oberon — грамматику, которая
+умещается на одну страницу, модули с явным экспортом, строгую статическую
+типизацию и сборщик мусора — и добавляет то, от чего происходит его название:
+<strong>активные объекты</strong>.</p>
+<p>У объекта может быть собственный поток (<code>BEGIN {ACTIVE}</code>), любой блок можно
+объявить критической секцией (<code>BEGIN {EXCLUSIVE}</code>), а <code>AWAIT(условие)</code>
+заменяет условные переменные. Параллелизм — часть языка, а не библиотека.
+Кроме того, язык получил перегрузку операторов, перечисления, математические
+(тензорные) массивы с поэлементными операциями и ячейки (cells) для описания
+аппаратуры.</p>
+<p>Вся <a href="https://ru.wikipedia.org/wiki/A2_%28%D0%BE%D0%BF%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%BD%D0%B0%D1%8F_%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%29">операционная система
+A2</a> — ядро,
+драйверы, компилятор, сетевой стек и графический интерфейс — написана на
+Active Oberon, и именно A2 — естественное место, чтобы попробовать язык.</p>
+<p>Приведённый ниже код принимает текущий компилятор Fox из A2. Более старые
+тексты A2 / Bluebottle используют исторические имена типов (<code>LONGINT</code>,
+<code>LONGREAL</code>, <code>SHORTINT</code>) там, где современный код пишет <code>SIGNED32</code>, <code>FLOAT64</code>,
+<code>SIGNED8</code>.</p>
+<div class="highlight"><pre lang="componentpascal"><span class="cm">(*  Комментарии выглядят так, и (* они вкладываются *)</span><span class="p">.</span>  <span class="o">*</span><span class="p">)</span>
+<span class="cm">(** Комментарий с двумя звёздочками — это документация, её собирают</span>
+<span class="cm">  инструменты документирования. *)</span>
+
+<span class="cm">(* Единица компиляции — всегда MODULE. Ключевые слова пишутся заглавными</span>
+<span class="cm">   буквами, идентификаторы чувствительны к регистру, а имя модуля</span>
+<span class="cm">   повторяется после последнего END. Файл обычно называют так же, как</span>
+<span class="cm">   модуль. *)</span>
+<span class="kr">MODULE</span> <span class="n">LearnActiveOberon</span><span class="p">;</span>
+
+<span class="cm">(* Соглашение о регистре: сканер читает ключевые слова независимо от</span>
+<span class="cm">   регистра, а стиль файла задаётся его расширением. Файл X.Mod пишут</span>
+<span class="cm">   ЗАГЛАВНЫМИ буквами, файл x.mod — строчными, вместе с предобъявленными</span>
+<span class="cm">   типами и встроенными процедурами:</span>
+
+<span class="cm">     module HelloLower;</span>
+<span class="cm">     import KernelLog;</span>
+<span class="cm">     procedure Do*;</span>
+<span class="cm">     var i: signed32;</span>
+<span class="cm">     begin</span>
+<span class="cm">       KernelLog.String("hi"); KernelLog.Ln</span>
+<span class="cm">     end Do;</span>
+<span class="cm">     end HelloLower.</span>
+<span class="cm">*)</span>
+
+<span class="kr">IMPORT</span>
+  <span class="n">KernelLog</span><span class="p">,</span>            <span class="cm">(* вывод в системный журнал *)</span>
+  <span class="n">Streams</span><span class="p">,</span>              <span class="cm">(* абстракция Reader / Writer *)</span>
+  <span class="n">Commands</span><span class="p">,</span>             <span class="cm">(* контекст команды: ввод, вывод, аргументы *)</span>
+  <span class="n">Log</span> <span class="p">:</span><span class="o">=</span> <span class="n">KernelLog</span><span class="p">;</span>     <span class="cm">(* импорт можно переименовать *)</span>
+
+<span class="kr">CONST</span>
+  <span class="n">Max</span><span class="o">*</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>           <span class="cm">(* "*" экспортирует идентификатор *)</span>
+  <span class="n">Greeting</span> <span class="o">=</span> <span class="s">"Hello"</span><span class="p">;</span>   <span class="cm">(* без пометки: видно только в этом модуле *)</span>
+  <span class="n">EvenBits</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">};</span>                  <span class="cm">(* константа-множество *)</span>
+
+<span class="kr">TYPE</span>
+  <span class="n">Name</span><span class="o">*</span> <span class="o">=</span> <span class="kr">ARRAY</span> <span class="mi">32</span> <span class="kr">OF</span> <span class="kt">CHAR</span><span class="p">;</span>                 <span class="cm">(* строка, оканчивающаяся 0X *)</span>
+  <span class="n">Handler</span><span class="o">*</span> <span class="o">=</span> <span class="kr">PROCEDURE</span> <span class="p">{</span><span class="n">DELEGATE</span><span class="p">}</span> <span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">);</span>
+
+  <span class="n">Point</span><span class="o">*</span> <span class="o">=</span> <span class="kr">RECORD</span>
+    <span class="n">x</span><span class="o">*</span><span class="p">,</span> <span class="n">y</span><span class="o">*</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="n">Point3d</span><span class="o">*</span> <span class="o">=</span> <span class="kr">RECORD</span> <span class="p">(</span><span class="n">Point</span><span class="p">)</span>                 <span class="cm">(* расширение записи *)</span>
+    <span class="n">z</span><span class="o">*</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="n">Color</span><span class="o">*</span> <span class="o">=</span> <span class="n">ENUM</span> <span class="n">Red</span><span class="o">*</span><span class="p">,</span> <span class="n">Green</span><span class="o">*</span><span class="p">,</span> <span class="n">Blue</span><span class="o">*</span> <span class="kr">END</span><span class="p">;</span>    <span class="cm">(* перечислимый тип *)</span>
+
+  <span class="n">Vec2</span><span class="o">*</span> <span class="o">=</span> <span class="kr">RECORD</span> <span class="n">x</span><span class="o">*</span><span class="p">,</span> <span class="n">y</span><span class="o">*</span><span class="p">:</span> <span class="n">FLOAT64</span> <span class="kr">END</span><span class="p">;</span>
+
+<span class="kr">VAR</span>
+  <span class="n">counter</span><span class="o">-</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>   <span class="cm">(* "-" экспортирует только для чтения *)</span>
+  <span class="n">origin</span><span class="p">:</span> <span class="n">Point</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Типы, литералы и операции                                           *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Basics</span><span class="p">;</span>
+<span class="kr">VAR</span>
+  <span class="n">b</span><span class="p">:</span> <span class="kt">BOOLEAN</span><span class="p">;</span>
+  <span class="n">c</span><span class="p">:</span> <span class="kt">CHAR</span><span class="p">;</span>
+  <span class="n">i8</span><span class="p">:</span> <span class="n">SIGNED8</span><span class="p">;</span> <span class="n">i16</span><span class="p">:</span> <span class="n">SIGNED16</span><span class="p">;</span> <span class="n">i32</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span> <span class="n">i64</span><span class="p">:</span> <span class="n">SIGNED64</span><span class="p">;</span>
+  <span class="n">u32</span><span class="p">:</span> <span class="n">UNSIGNED32</span><span class="p">;</span>
+  <span class="n">f32</span><span class="p">:</span> <span class="n">FLOAT32</span><span class="p">;</span> <span class="n">f64</span><span class="p">:</span> <span class="n">FLOAT64</span><span class="p">;</span>
+  <span class="n">z</span><span class="p">:</span> <span class="n">COMPLEX64</span><span class="p">;</span>
+  <span class="n">s</span><span class="p">:</span> <span class="kt">SET</span><span class="p">;</span>                        <span class="cm">(* небольшое битовое множество *)</span>
+  <span class="n">adr</span><span class="p">:</span> <span class="n">ADDRESS</span><span class="p">;</span> <span class="n">size</span><span class="p">:</span> <span class="kr">SIZE</span><span class="p">;</span>      <span class="cm">(* целые размером с указатель *)</span>
+  <span class="n">any</span><span class="p">:</span> <span class="n">ANY</span><span class="p">;</span>                      <span class="cm">(* ссылка на любой объект *)</span>
+<span class="kr">BEGIN</span>
+  <span class="cm">(* INTEGER, REAL и SET — варианты ширины по умолчанию; код A2 обычно</span>
+<span class="cm">     указывает ширину явно: SIGNED32, FLOAT64, SET32, ... *)</span>
+  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">42</span><span class="p">;</span>  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mh">2AH</span><span class="p">;</span>  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="n">x2A</span><span class="p">;</span>  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="n">b101010</span><span class="p">;</span>
+  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span><span class="s">'000'</span><span class="mi">000</span><span class="p">;</span>              <span class="cm">(* разделители разрядов разрешены *)</span>
+  <span class="n">i8</span> <span class="p">:</span><span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="n">i16</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1000</span><span class="p">;</span> <span class="n">i64</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">u32</span> <span class="p">:</span><span class="o">=</span> <span class="mh">0FFFFFFFFH</span><span class="p">;</span>
+  <span class="n">c</span> <span class="p">:</span><span class="o">=</span> <span class="s">"A"</span><span class="p">;</span>  <span class="n">c</span> <span class="p">:</span><span class="o">=</span> <span class="mh">41X</span><span class="p">;</span>           <span class="cm">(* символ, шестнадцатеричный символ *)</span>
+  <span class="n">f32</span> <span class="p">:</span><span class="o">=</span> <span class="mf">1.5</span><span class="p">;</span>  <span class="n">f64</span> <span class="p">:</span><span class="o">=</span> <span class="mf">1.5E-3</span><span class="p">;</span>
+  <span class="n">z</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">IMAG</span><span class="p">;</span>               <span class="cm">(* IMAG — мнимая единица *)</span>
+  <span class="n">f64</span> <span class="p">:</span><span class="o">=</span> <span class="n">RE</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>  <span class="n">f64</span> <span class="p">:</span><span class="o">=</span> <span class="n">IM</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+
+  <span class="cm">(* Арифметика: + - * / DIV MOD, целочисленное деление — это DIV *)</span>
+  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">7</span> <span class="kr">DIV</span> <span class="mi">2</span><span class="p">;</span>  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">7</span> <span class="kr">MOD</span> <span class="mi">2</span><span class="p">;</span>  <span class="n">f64</span> <span class="p">:</span><span class="o">=</span> <span class="mi">7</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="kr">ABS</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">);</span>  <span class="kr">INC</span><span class="p">(</span><span class="n">i32</span><span class="p">);</span>  <span class="kr">DEC</span><span class="p">(</span><span class="n">i32</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+
+  <span class="cm">(* Отношения: = # &lt; &lt;= &gt; &gt;= IN IS. Логические: &amp; OR ~ (не) *)</span>
+  <span class="n">b</span> <span class="p">:</span><span class="o">=</span> <span class="p">(</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="kr">OR</span> <span class="p">(</span><span class="n">i32</span> <span class="o">#</span> <span class="mi">6</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="p">(</span><span class="n">i32</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">);</span>
+
+  <span class="cm">(* Множества *)</span>
+  <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">..</span><span class="mi">7</span><span class="p">};</span>  <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="p">{</span><span class="mi">1</span><span class="p">};</span>  <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="n">s</span> <span class="o">*</span> <span class="n">EvenBits</span><span class="p">;</span>  <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="n">s</span> <span class="o">-</span> <span class="p">{</span><span class="mi">3</span><span class="p">};</span>
+  <span class="n">b</span> <span class="p">:</span><span class="o">=</span> <span class="mi">3</span> <span class="kr">IN</span> <span class="n">s</span><span class="p">;</span>  <span class="kr">INCL</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span>  <span class="kr">EXCL</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+  <span class="cm">(* Преобразования типов всегда явные *)</span>
+  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="kr">ORD</span><span class="p">(</span><span class="s">"A"</span><span class="p">);</span>  <span class="n">c</span> <span class="p">:</span><span class="o">=</span> <span class="kr">CHR</span><span class="p">(</span><span class="mi">65</span><span class="p">);</span>  <span class="n">f64</span> <span class="p">:</span><span class="o">=</span> <span class="n">i32</span><span class="p">;</span>  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="kr">ENTIER</span><span class="p">(</span><span class="n">f64</span><span class="p">);</span>
+  <span class="n">adr</span> <span class="p">:</span><span class="o">=</span> <span class="n">ADDRESSOF</span><span class="p">(</span><span class="n">i32</span><span class="p">);</span>  <span class="n">size</span> <span class="p">:</span><span class="o">=</span> <span class="n">SIZEOF</span><span class="p">(</span><span class="n">Point</span><span class="p">);</span>
+
+  <span class="n">any</span> <span class="p">:</span><span class="o">=</span> <span class="kc">NIL</span><span class="p">;</span>
+  <span class="kr">ASSERT</span><span class="p">(</span><span class="n">i32</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">);</span>              <span class="cm">(* ловушка (trap), если условие ложно *)</span>
+<span class="kr">END</span> <span class="n">Basics</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Управление выполнением                                              *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">ControlFlow</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">):</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">i</span><span class="p">,</span> <span class="n">sum</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span> <span class="n">c</span><span class="p">:</span> <span class="kt">CHAR</span><span class="p">;</span> <span class="n">color</span><span class="p">:</span> <span class="n">Color</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">IF</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="kr">THEN</span>
+    <span class="n">n</span> <span class="p">:</span><span class="o">=</span> <span class="o">-</span><span class="n">n</span>
+  <span class="kr">ELSIF</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span> <span class="kr">THEN</span>
+    <span class="n">n</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span>
+  <span class="kr">ELSE</span>
+    <span class="cm">(* ничего *)</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="n">c</span> <span class="p">:</span><span class="o">=</span> <span class="s">"x"</span><span class="p">;</span>
+  <span class="kr">CASE</span> <span class="n">c</span> <span class="kr">OF</span>
+      <span class="s">"a"</span><span class="p">..</span><span class="s">"m"</span><span class="p">:</span> <span class="n">sum</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span>
+    <span class="p">|</span> <span class="s">"n"</span><span class="p">..</span><span class="s">"z"</span><span class="p">:</span> <span class="n">sum</span> <span class="p">:</span><span class="o">=</span> <span class="mi">2</span>
+  <span class="kr">ELSE</span>
+    <span class="n">sum</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="n">color</span> <span class="p">:</span><span class="o">=</span> <span class="n">Color</span><span class="p">.</span><span class="n">Green</span><span class="p">;</span>          <span class="cm">(* элементы перечисления квалифицированы *)</span>
+  <span class="kr">IF</span> <span class="n">color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">.</span><span class="n">Green</span> <span class="kr">THEN</span> <span class="n">sum</span> <span class="p">:</span><span class="o">=</span> <span class="n">sum</span> <span class="o">+</span> <span class="mi">1</span> <span class="kr">END</span><span class="p">;</span>
+
+  <span class="kr">WHILE</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="kr">DO</span> <span class="n">n</span> <span class="p">:</span><span class="o">=</span> <span class="n">n</span> <span class="kr">DIV</span> <span class="mi">2</span> <span class="kr">END</span><span class="p">;</span>
+
+  <span class="kr">REPEAT</span> <span class="kr">INC</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="kr">UNTIL</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">;</span>
+
+  <span class="kr">FOR</span> <span class="n">i</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span> <span class="kr">TO</span> <span class="mi">10</span> <span class="kr">BY</span> <span class="mi">2</span> <span class="kr">DO</span> <span class="n">sum</span> <span class="p">:</span><span class="o">=</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">i</span> <span class="kr">END</span><span class="p">;</span>
+
+  <span class="kr">LOOP</span>
+    <span class="kr">INC</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+    <span class="kr">IF</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">100</span> <span class="kr">THEN</span> <span class="kr">EXIT</span> <span class="kr">END</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="kr">VAR</span> <span class="n">local</span> <span class="p">:</span><span class="o">=</span> <span class="n">sum</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>          <span class="cm">(* объявление VAR внутри блока *)</span>
+  <span class="kr">RETURN</span> <span class="n">local</span>
+<span class="kr">END</span> <span class="n">ControlFlow</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Массивы, строки, записи и указатели                                 *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">TYPE</span>
+  <span class="n">IntArray</span><span class="o">*</span> <span class="o">=</span> <span class="kr">POINTER</span> <span class="kr">TO</span> <span class="kr">ARRAY</span> <span class="kr">OF</span> <span class="n">SIGNED32</span><span class="p">;</span>    <span class="cm">(* динамический массив *)</span>
+  <span class="n">PointPtr</span><span class="o">*</span> <span class="o">=</span> <span class="kr">POINTER</span> <span class="kr">TO</span> <span class="n">Point</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Sum</span><span class="p">(</span><span class="kr">CONST</span> <span class="n">a</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="kr">OF</span> <span class="n">SIGNED32</span><span class="p">):</span> <span class="n">SIGNED32</span><span class="p">;</span>   <span class="cm">(* открытый массив *)</span>
+<span class="kr">VAR</span> <span class="n">i</span><span class="p">:</span> <span class="kr">SIZE</span><span class="p">;</span> <span class="n">s</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>                <span class="cm">(* LEN возвращает SIZE *)</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">FOR</span> <span class="n">i</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span> <span class="kr">TO</span> <span class="kr">LEN</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="kr">DO</span> <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="kr">END</span><span class="p">;</span>
+  <span class="kr">RETURN</span> <span class="n">s</span>
+<span class="kr">END</span> <span class="n">Sum</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Swap</span><span class="p">(</span><span class="kr">VAR</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">);</span>      <span class="cm">(* VAR = по ссылке *)</span>
+<span class="kr">VAR</span> <span class="n">t</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">BEGIN</span> <span class="n">t</span> <span class="p">:</span><span class="o">=</span> <span class="n">a</span><span class="p">;</span> <span class="n">a</span> <span class="p">:</span><span class="o">=</span> <span class="n">b</span><span class="p">;</span> <span class="n">b</span> <span class="p">:</span><span class="o">=</span> <span class="n">t</span>
+<span class="kr">END</span> <span class="n">Swap</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Aggregates</span><span class="p">;</span>
+<span class="kr">VAR</span>
+  <span class="n">fixed</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="mi">4</span> <span class="kr">OF</span> <span class="n">SIGNED32</span><span class="p">;</span>
+  <span class="n">matrix</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span> <span class="kr">OF</span> <span class="n">FLOAT64</span><span class="p">;</span>       <span class="cm">(* многомерный *)</span>
+  <span class="n">dyn</span><span class="p">:</span> <span class="n">IntArray</span><span class="p">;</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">Name</span><span class="p">;</span>
+  <span class="n">p</span><span class="p">:</span> <span class="n">Point3d</span><span class="p">;</span>
+  <span class="n">pp</span><span class="p">:</span> <span class="n">PointPtr</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">fixed</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">fixed</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="n">matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="mf">0.5</span><span class="p">;</span>
+  <span class="kr">NEW</span><span class="p">(</span><span class="n">dyn</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>                        <span class="cm">(* длина известна во время работы *)</span>
+  <span class="n">dyn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="n">Sum</span><span class="p">(</span><span class="n">fixed</span><span class="p">);</span>
+  <span class="n">Swap</span><span class="p">(</span><span class="n">fixed</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fixed</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+
+  <span class="n">COPY</span><span class="p">(</span><span class="n">Greeting</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>                <span class="cm">(* безопасное копирование строки *)</span>
+  <span class="n">Strings0</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
+
+  <span class="n">p</span><span class="p">.</span><span class="n">x</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">p</span><span class="p">.</span><span class="n">y</span> <span class="p">:</span><span class="o">=</span> <span class="mi">2</span><span class="p">;</span> <span class="n">p</span><span class="p">.</span><span class="n">z</span> <span class="p">:</span><span class="o">=</span> <span class="mi">3</span><span class="p">;</span>        <span class="cm">(* Point3d наследует x и y *)</span>
+  <span class="n">origin</span><span class="p">.</span><span class="n">x</span> <span class="p">:</span><span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">origin</span><span class="p">.</span><span class="n">y</span> <span class="p">:</span><span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+
+  <span class="kr">NEW</span><span class="p">(</span><span class="n">pp</span><span class="p">);</span>                             <span class="cm">(* сборка мусора, освобождать не надо *)</span>
+  <span class="n">pp</span><span class="p">.</span><span class="n">x</span> <span class="p">:</span><span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+  <span class="n">pp</span> <span class="p">:</span><span class="o">=</span> <span class="kc">NIL</span><span class="p">;</span>
+<span class="kr">END</span> <span class="n">Aggregates</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Strings0</span><span class="p">(</span><span class="kr">VAR</span> <span class="n">name</span><span class="p">:</span> <span class="n">Name</span><span class="p">);</span>
+<span class="kr">VAR</span> <span class="n">i</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">i</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="kr">WHILE</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">#</span> <span class="mh">0X</span> <span class="kr">DO</span> <span class="kr">INC</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="kr">END</span><span class="p">;</span>    <span class="cm">(* строки оканчиваются 0X *)</span>
+  <span class="n">Log</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">name</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>
+<span class="kr">END</span> <span class="n">Strings0</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Процедуры, делегаты и обработка ловушек                             *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Outer</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">):</span> <span class="n">SIGNED32</span><span class="p">;</span>
+
+  <span class="kr">PROCEDURE</span> <span class="n">Inner</span><span class="p">(</span><span class="n">k</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">):</span> <span class="n">SIGNED32</span><span class="p">;</span>   <span class="cm">(* вложенная, видит n *)</span>
+  <span class="kr">BEGIN</span> <span class="kr">RETURN</span> <span class="n">k</span> <span class="o">*</span> <span class="n">n</span>
+  <span class="kr">END</span> <span class="n">Inner</span><span class="p">;</span>
+
+<span class="kr">BEGIN</span>
+  <span class="kr">RETURN</span> <span class="n">Inner</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="kr">END</span> <span class="n">Outer</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Print</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">);</span>
+<span class="kr">BEGIN</span> <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>
+<span class="kr">END</span> <span class="n">Print</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">UseDelegate</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">h</span><span class="p">:</span> <span class="n">Handler</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">h</span> <span class="p">:</span><span class="o">=</span> <span class="n">Print</span><span class="p">;</span>                          <span class="cm">(* обычная процедура *)</span>
+  <span class="n">h</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+  <span class="cm">(* DELEGATE может хранить и метод вместе с его объектом. *)</span>
+<span class="kr">END</span> <span class="n">UseDelegate</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">MayTrap</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">):</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">result</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">result</span> <span class="p">:</span><span class="o">=</span> <span class="n">a</span> <span class="kr">DIV</span> <span class="n">b</span><span class="p">;</span>                   <span class="cm">(* ловушка, если b = 0 *)</span>
+  <span class="kr">RETURN</span> <span class="n">result</span>
+<span class="n">FINALLY</span>                                <span class="cm">(* выполняется и после ловушки *)</span>
+  <span class="kr">RETURN</span> <span class="mi">0</span>
+<span class="kr">END</span> <span class="n">MayTrap</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Перегрузка операторов                                               *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="n">OPERATOR</span> <span class="s">"+"</span><span class="o">*</span> <span class="p">(</span><span class="kr">CONST</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">Vec2</span><span class="p">):</span> <span class="n">Vec2</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">r</span><span class="p">:</span> <span class="n">Vec2</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">r</span><span class="p">.</span><span class="n">x</span> <span class="p">:</span><span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">b</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">r</span><span class="p">.</span><span class="n">y</span> <span class="p">:</span><span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">b</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+  <span class="kr">RETURN</span> <span class="n">r</span>
+<span class="kr">END</span> <span class="s">"+"</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Объекты: методы, конструктор, наследование                          *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">TYPE</span>
+  <span class="n">Shape</span><span class="o">*</span> <span class="o">=</span> <span class="n">OBJECT</span>
+  <span class="kr">VAR</span>
+    <span class="n">name</span><span class="o">-</span><span class="p">:</span> <span class="n">Name</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="o">&amp;</span><span class="n">Init</span><span class="o">*</span><span class="p">(</span><span class="kr">CONST</span> <span class="n">n</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="kr">OF</span> <span class="kt">CHAR</span><span class="p">);</span>   <span class="cm">(* конструктор *)</span>
+    <span class="kr">BEGIN</span>
+      <span class="n">COPY</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="kr">END</span> <span class="n">Init</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Area</span><span class="o">*</span><span class="p">():</span> <span class="n">FLOAT64</span><span class="p">;</span>                 <span class="cm">(* можно переопределить *)</span>
+    <span class="kr">BEGIN</span>
+      <span class="kr">RETURN</span> <span class="mi">0</span>
+    <span class="kr">END</span> <span class="n">Area</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Describe</span><span class="o">*</span><span class="p">;</span>
+    <span class="kr">BEGIN</span>
+      <span class="n">Log</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">name</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="s">" area="</span><span class="p">);</span>
+      <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="kr">ENTIER</span><span class="p">(</span><span class="n">SELF</span><span class="p">.</span><span class="n">Area</span><span class="p">()),</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>   <span class="cm">(* SELF — этот объект *)</span>
+    <span class="kr">END</span> <span class="n">Describe</span><span class="p">;</span>
+  <span class="kr">END</span> <span class="n">Shape</span><span class="p">;</span>
+
+  <span class="n">Circle</span><span class="o">*</span> <span class="o">=</span> <span class="n">OBJECT</span> <span class="p">(</span><span class="n">Shape</span><span class="p">)</span>                      <span class="cm">(* одиночное наследование *)</span>
+  <span class="kr">VAR</span> <span class="n">radius</span><span class="p">:</span> <span class="n">FLOAT64</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="o">&amp;</span><span class="n">InitCircle</span><span class="o">*</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n">FLOAT64</span><span class="p">);</span>
+    <span class="kr">BEGIN</span>
+      <span class="n">Init</span><span class="p">(</span><span class="s">"circle"</span><span class="p">);</span>                           <span class="cm">(* унаследованный метод *)</span>
+      <span class="n">radius</span> <span class="p">:</span><span class="o">=</span> <span class="n">r</span>
+    <span class="kr">END</span> <span class="n">InitCircle</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Area</span><span class="o">*</span><span class="p">():</span> <span class="n">FLOAT64</span><span class="p">;</span>                 <span class="cm">(* переопределение *)</span>
+    <span class="kr">BEGIN</span>
+      <span class="kr">RETURN</span> <span class="mf">3.14159</span> <span class="o">*</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">radius</span>
+    <span class="kr">END</span> <span class="n">Area</span><span class="p">;</span>
+  <span class="kr">END</span> <span class="n">Circle</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">UseObjects</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">s</span><span class="p">:</span> <span class="n">Shape</span><span class="p">;</span> <span class="n">c</span><span class="p">:</span> <span class="n">Circle</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">NEW</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">);</span>                <span class="cm">(* NEW передаёт аргументы конструктора *)</span>
+  <span class="n">c</span><span class="p">.</span><span class="n">Describe</span><span class="p">;</span>
+  <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="n">c</span><span class="p">;</span>                     <span class="cm">(* Circle является Shape *)</span>
+  <span class="n">s</span><span class="p">.</span><span class="n">Describe</span><span class="p">;</span>                 <span class="cm">(* динамическая диспетчеризация *)</span>
+
+  <span class="kr">IF</span> <span class="n">s</span> <span class="kr">IS</span> <span class="n">Circle</span> <span class="kr">THEN</span>         <span class="cm">(* проверка типа во время выполнения *)</span>
+    <span class="n">Log</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">s</span><span class="p">(</span><span class="n">Circle</span><span class="p">).</span><span class="n">name</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>    <span class="cm">(* охранник типа *)</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="kr">WITH</span> <span class="n">s</span><span class="p">:</span> <span class="n">Circle</span> <span class="kr">DO</span>           <span class="cm">(* охранник типа для целой области *)</span>
+    <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="kr">ENTIER</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">Area</span><span class="p">()),</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>
+  <span class="kr">END</span>
+<span class="kr">END</span> <span class="n">UseObjects</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Активные объекты — то, за что язык назван *Active* Oberon           *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">TYPE</span>
+  <span class="cm">(* Объект с телом BEGIN {ACTIVE} имеет собственный поток, который</span>
+<span class="cm">     стартует сразу после создания объекта. {EXCLUSIVE} превращает</span>
+<span class="cm">     объект в монитор: внутри такого блока одновременно выполняется</span>
+<span class="cm">     только одна активность, а AWAIT блокирует до истинности условия. *)</span>
+  <span class="n">Buffer</span><span class="o">*</span> <span class="o">=</span> <span class="n">OBJECT</span>
+  <span class="kr">VAR</span>
+    <span class="n">data</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="mi">16</span> <span class="kr">OF</span> <span class="n">SIGNED32</span><span class="p">;</span>
+    <span class="n">head</span><span class="p">,</span> <span class="n">tail</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+    <span class="n">alive</span><span class="p">:</span> <span class="kt">BOOLEAN</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="o">&amp;</span><span class="n">Init</span><span class="o">*</span><span class="p">;</span>
+    <span class="kr">BEGIN</span>
+      <span class="n">head</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">tail</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">count</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">alive</span> <span class="p">:</span><span class="o">=</span> <span class="kc">TRUE</span>
+    <span class="kr">END</span> <span class="n">Init</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Put</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">);</span>
+    <span class="kr">BEGIN</span> <span class="p">{</span><span class="n">EXCLUSIVE</span><span class="p">}</span>
+      <span class="n">AWAIT</span><span class="p">(</span><span class="n">count</span> <span class="o">&lt;</span> <span class="kr">LEN</span><span class="p">(</span><span class="n">data</span><span class="p">));</span>         <span class="cm">(* ждать, пока появится место *)</span>
+      <span class="n">data</span><span class="p">[</span><span class="n">tail</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="n">x</span><span class="p">;</span>
+      <span class="n">tail</span> <span class="p">:</span><span class="o">=</span> <span class="p">(</span><span class="n">tail</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="kr">MOD</span> <span class="kr">LEN</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+      <span class="kr">INC</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+    <span class="kr">END</span> <span class="n">Put</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Get</span><span class="o">*</span><span class="p">():</span> <span class="n">SIGNED32</span><span class="p">;</span>
+    <span class="kr">VAR</span> <span class="n">x</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+    <span class="kr">BEGIN</span> <span class="p">{</span><span class="n">EXCLUSIVE</span><span class="p">}</span>
+      <span class="n">AWAIT</span><span class="p">(</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">);</span>                 <span class="cm">(* ждать элемент *)</span>
+      <span class="n">x</span> <span class="p">:</span><span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">head</span><span class="p">];</span>
+      <span class="n">head</span> <span class="p">:</span><span class="o">=</span> <span class="p">(</span><span class="n">head</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="kr">MOD</span> <span class="kr">LEN</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+      <span class="kr">DEC</span><span class="p">(</span><span class="n">count</span><span class="p">);</span>
+      <span class="kr">RETURN</span> <span class="n">x</span>
+    <span class="kr">END</span> <span class="n">Get</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Close</span><span class="o">*</span><span class="p">;</span>
+    <span class="kr">BEGIN</span> <span class="p">{</span><span class="n">EXCLUSIVE</span><span class="p">}</span>
+      <span class="n">alive</span> <span class="p">:</span><span class="o">=</span> <span class="kc">FALSE</span>
+    <span class="kr">END</span> <span class="n">Close</span><span class="p">;</span>
+
+  <span class="kr">BEGIN</span> <span class="p">{</span><span class="n">ACTIVE</span><span class="p">}</span>                        <span class="cm">(* тело объекта — это поток *)</span>
+    <span class="kr">WHILE</span> <span class="n">alive</span> <span class="kr">DO</span>
+      <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="n">SELF</span><span class="p">.</span><span class="n">Get</span><span class="p">(),</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>
+    <span class="kr">END</span>
+  <span class="kr">END</span> <span class="n">Buffer</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Producer</span><span class="o">*</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">b</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">;</span> <span class="n">i</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">NEW</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>                               <span class="cm">(* здесь стартует поток *)</span>
+  <span class="kr">FOR</span> <span class="n">i</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span> <span class="kr">TO</span> <span class="mi">5</span> <span class="kr">DO</span> <span class="n">b</span><span class="p">.</span><span class="n">Put</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="kr">END</span><span class="p">;</span>
+  <span class="n">b</span><span class="p">.</span><span class="n">Close</span>
+<span class="kr">END</span> <span class="n">Producer</span><span class="p">;</span>
+
+<span class="cm">(* Критической секцией может быть целая процедура, а простой блок</span>
+<span class="cm">   BEGIN {EXCLUSIVE} ... END можно написать и внутри процедуры. *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Guarded</span><span class="p">(</span><span class="n">o</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">);</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">BEGIN</span> <span class="p">{</span><span class="n">EXCLUSIVE</span><span class="p">}</span>
+    <span class="kr">INC</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span>
+  <span class="kr">END</span>
+<span class="kr">END</span> <span class="n">Guarded</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Математические массивы с поэлементными операциями                   *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">MathArrays</span><span class="p">;</span>
+<span class="kr">VAR</span>
+  <span class="n">v</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="p">[</span><span class="o">*</span><span class="p">]</span> <span class="kr">OF</span> <span class="n">FLOAT64</span><span class="p">;</span>         <span class="cm">(* одномерный, открытый *)</span>
+  <span class="n">m</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="p">[</span><span class="o">*</span><span class="p">,</span> <span class="o">*</span><span class="p">]</span> <span class="kr">OF</span> <span class="n">FLOAT64</span><span class="p">;</span>      <span class="cm">(* двумерный *)</span>
+  <span class="n">t</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="p">[</span><span class="err">?</span><span class="p">]</span> <span class="kr">OF</span> <span class="n">FLOAT64</span><span class="p">;</span>         <span class="cm">(* тензор произвольного ранга *)</span>
+  <span class="n">w</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="kr">OF</span> <span class="n">FLOAT64</span><span class="p">;</span>         <span class="cm">(* фиксированная длина *)</span>
+  <span class="n">f</span><span class="p">:</span> <span class="n">FLOAT64</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">NEW</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span> <span class="kr">NEW</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+  <span class="n">v</span> <span class="p">:</span><span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">];</span>            <span class="cm">(* конструктор массива *)</span>
+  <span class="n">v</span> <span class="p">:</span><span class="o">=</span> <span class="n">v</span> <span class="p">.</span><span class="o">*</span> <span class="n">v</span><span class="p">;</span>                     <span class="cm">(* поэлементное произведение *)</span>
+  <span class="n">v</span> <span class="p">:</span><span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">v</span><span class="p">;</span>                      <span class="cm">(* скаляр распространяется на элементы *)</span>
+  <span class="n">m</span> <span class="p">:</span><span class="o">=</span> <span class="n">m</span> <span class="o">+</span> <span class="n">m</span><span class="p">;</span>
+  <span class="n">v</span> <span class="p">:</span><span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">v</span><span class="p">;</span>                      <span class="cm">(* произведение матрицы на вектор *)</span>
+  <span class="n">f</span> <span class="p">:</span><span class="o">=</span> <span class="n">SUM</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+  <span class="n">f</span> <span class="p">:</span><span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>  <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">..</span><span class="mi">1</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">..</span><span class="mi">2</span><span class="p">];</span>  <span class="cm">(* диапазоны и срезы *)</span>
+  <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="kr">LEN</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span><span class="p">;</span>   <span class="cm">(* длина нулевого измерения *)</span>
+  <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="n">DIM</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>       <span class="cm">(* количество измерений *)</span>
+<span class="kr">END</span> <span class="n">MathArrays</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Команды: процедуры, запускаемые из оболочки A2                      *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="cm">(* Экспортируемую процедуру без параметров или с параметром</span>
+<span class="cm">   Commands.Context можно запустить из командной строки или щелчком</span>
+<span class="cm">   по любому тексту в системе. *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Hello</span><span class="o">*</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">Commands</span><span class="p">.</span><span class="n">Context</span><span class="p">);</span>
+<span class="kr">VAR</span> <span class="n">name</span><span class="p">:</span> <span class="n">Name</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">arg</span><span class="p">.</span><span class="n">SkipWhitespace</span><span class="p">;</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">arg</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>                    <span class="cm">(* прочитать аргумент *)</span>
+  <span class="kr">IF</span> <span class="n">name</span> <span class="o">=</span> <span class="s">""</span> <span class="kr">THEN</span> <span class="n">COPY</span><span class="p">(</span><span class="s">"world"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="kr">END</span><span class="p">;</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">Greeting</span><span class="p">);</span> <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="s">", "</span><span class="p">);</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">name</span><span class="p">);</span> <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="s">"!"</span><span class="p">);</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">Ln</span><span class="p">;</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">Update</span>                           <span class="cm">(* вытолкнуть буфер *)</span>
+<span class="kr">END</span> <span class="n">Hello</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">WriteTo</span><span class="p">(</span><span class="n">w</span><span class="p">:</span> <span class="n">Streams</span><span class="p">.</span><span class="n">Writer</span><span class="p">);</span>
+<span class="kr">BEGIN</span>
+  <span class="n">w</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="s">"Streams.Writer works with files, network and screen"</span><span class="p">);</span>
+  <span class="n">w</span><span class="p">.</span><span class="n">Ln</span><span class="p">;</span> <span class="n">w</span><span class="p">.</span><span class="n">Update</span>
+<span class="kr">END</span> <span class="n">WriteTo</span><span class="p">;</span>
+
+<span class="cm">(* Тело модуля выполняется один раз, при загрузке модуля. *)</span>
+<span class="kr">BEGIN</span>
+  <span class="n">counter</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="n">KernelLog</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="s">"LearnActiveOberon loaded"</span><span class="p">);</span> <span class="n">KernelLog</span><span class="p">.</span><span class="n">Ln</span>
+<span class="kr">END</span> <span class="n">LearnActiveOberon</span><span class="p">.</span>
+
+<span class="cm">(* Текст после последней точки компилятор игнорирует, поэтому исходные</span>
+<span class="cm">   тексты A2 традиционно заканчиваются командами сборки и проверки</span>
+<span class="cm">   модуля. В A2 их выполняют щелчком средней кнопки мыши:</span>
+
+<span class="cm">Compiler.Compile LearnActiveOberon.Mod ~</span>
+<span class="cm">LearnActiveOberon.Hello Active Oberon ~</span>
+<span class="cm">LearnActiveOberon.Producer ~</span>
+<span class="cm">System.Free LearnActiveOberon ~</span>
+<span class="cm">*)</span>
+</pre></div>
+<h2>Модификаторы в фигурных скобках</h2>
+<p>Почти каждое объявление — процедура, тип, переменная, параметр, блок
+операторов, ячейка — может нести список флагов в фигурных скобках. Парсер
+принимает там любой идентификатор, а компилятор отвергает те, которых не
+знает.</p>
+<p>Параллелизм (тела объектов и блоки операторов):</p>
+<ul>
+<li><code>{ACTIVE}</code> — тело выполняется как собственная активность (поток), которая
+стартует при создании объекта.</li>
+<li><code>{EXCLUSIVE}</code> — блок является критической секцией: в любом эксклюзивном
+блоке объекта одновременно находится не более одной активности.</li>
+<li><code>{PRIORITY(n)}</code> — приоритет активного тела.</li>
+<li><code>{SAFE}</code> — активное тело перезапускается после ловушки и сопротивляется
+завершению.</li>
+<li><code>{REALTIME}</code> — тело является активностью реального времени и может
+использовать только операции, безопасные для реального времени.</li>
+<li><code>{UNCOOPERATIVE}</code> — блок не участвует в кооперативном планировании (ядро
+и низкоуровневый код).</li>
+</ul>
+<p>Объектная ориентация:</p>
+<ul>
+<li><code>{ABSTRACT}</code> — тип-запись / объект или метод без реализации.</li>
+<li><code>{FINAL}</code> — запись нельзя расширить, метод нельзя переопределить.</li>
+<li><code>{OVERRIDE}</code> — явно указывает, что метод переопределяет унаследованный
+(иначе компилятор выводит это сам).</li>
+<li><code>{DELEGATE}</code> — процедурный тип, значением которого может быть и метод
+вместе с его объектом.</li>
+<li><code>{DYNAMIC}</code> — оператор, диспетчеризуемый во время выполнения.</li>
+</ul>
+<p>Память и безопасность:</p>
+<ul>
+<li><code>{UNTRACED}</code> — переменную-указатель не отслеживает сборщик мусора.</li>
+<li><code>{UNTRACKED}</code> — локальные ссылки блока не отслеживаются.</li>
+<li><code>{UNSAFE}</code> — <code>POINTER {UNSAFE} TO ...</code> — сырой указатель: совместим с
+<code>ADDRESS</code>, без охранников типа и проверок.</li>
+<li><code>{UNCHECKED}</code> — блок компилируется без проверок NIL, границ и стека.</li>
+<li><code>{DISPOSABLE}</code> — указатель / объект освобождают через <code>DISPOSE</code>, а не
+сборщиком мусора.</li>
+<li><code>{ALIGNED(n)}</code> — выровнять символ по n байтам.</li>
+<li><code>{OFFSET(n)}</code> — разместить поле или переменную по фиксированному смещению.</li>
+<li><code>{MOVABLE}</code> — параметр типа <code>ADDRESS</code>, который может указывать на память,
+перемещаемую сборщиком мусора.</li>
+<li><code>{REGISTER}</code> — держать переменную или параметр в регистре, если возможно.</li>
+</ul>
+<p>Процедуры и компоновка:</p>
+<ul>
+<li><code>{WINAPI}</code>, <code>{C}</code>, <code>{PlatformCC}</code> — соглашение о вызове процедуры (типа).</li>
+<li><code>{INTERRUPT}</code> — процедура является обработчиком прерывания.</li>
+<li><code>{NORETURN}</code> — процедура никогда не возвращает управление.</li>
+<li><code>{PLAIN}</code> — без кадра активации, а значит без локальных переменных и
+параметров.</li>
+<li><code>{OPENING}</code> / <code>{CLOSING}</code> — компоновать процедуру перед всеми телами
+модулей / после них; оба флага подразумевают также <code>PLAIN</code>.</li>
+<li><code>{ALIGNSTACK}</code> — выровнять стек при входе в процедуру.</li>
+<li><code>{PCOFFSET(n)}</code> — смещение счётчика команд для процедурного типа
+(генератор кода).</li>
+<li><code>{Fingerprint=x}</code> — зафиксировать отпечаток символа вместо вычисленного.</li>
+<li><code>{TEST}</code> — помечает тестовую процедуру для опции компилятора <code>--test</code>.</li>
+</ul>
+<p>Active Cells (описание аппаратуры, генерация для FPGA) — свойства
+создаваемой ячейки или канала: <code>{DataMemorySize(n)}</code>, <code>{CodeMemorySize(n)}</code>,
+<code>{InstructionWidth(n)}</code>, <code>{ChannelWidth(n)}</code>, <code>{ChannelDepth(n)}</code>,
+<code>{Channels}</code>, <code>{Vector}</code>, <code>{FloatingPoint}</code>, <code>{NoMul}</code>,
+<code>{HasNonBlockingIO}</code>, <code>{FrequencyDivider(n)}</code>, <code>{Engine}</code>, <code>{TRM}</code>, <code>{TRMS}</code>,
+<code>{BaseMem}</code>, <code>{BaseDiv}</code>, <code>{Backend(s)}</code>, <code>{Runtime(s)}</code>.</p>
+<h2>Важные мелочи</h2>
+<ul>
+<li>Идентификаторы чувствительны к регистру. Ключевые слова читаются независимо
+от регистра, а стиль задаётся расширением файла: <code>X.Mod</code> пишут ЗАГЛАВНЫМИ
+буквами, <code>x.mod</code> — строчными.</li>
+<li><code>*</code> после имени экспортирует его, <code>-</code> экспортирует только для чтения.</li>
+<li>Нет <code>free</code>: система использует сборщик мусора.</li>
+<li>Любой модуль можно загрузить и выгрузить во время работы системы
+(<code>System.Free Module ~</code>) — именно так A2 разрабатывают, не перезапуская её.</li>
+<li><code>SYSTEM</code> даёт доступ к небезопасным операциям (<code>SYSTEM.GET</code>, <code>SYSTEM.PUT</code>,
+<code>SYSTEM.VAL</code>, <code>SYSTEM.MOVE</code>), а <code>CODE ... END</code> встраивает ассемблер.</li>
+<li>Условная компиляция: <code>#if ... #else ... #end</code> с символами, которые передают
+компилятору (<code>--define=UNIX,AMD64</code>).</li>
+</ul>
+<h2>Что читать дальше</h2>
+<ul>
+<li><a href="https://t.me/A2OperatingSystem">t.me/A2OperatingSystem</a> — основной канал
+сообщества. Он преимущественно русскоязычный, но на вопросы на английском
+тоже отвечают.</li>
+<li><a href="https://ru.wikipedia.org/wiki/Active_Oberon">Active Oberon</a> и
+<a href="https://ru.wikipedia.org/wiki/A2_%28%D0%BE%D0%BF%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%BD%D0%B0%D1%8F_%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%29">A2</a> в
+Википедии</li>
+<li><a href="http://cas.inf.ethz.ch/projects/a2">Страница проекта A2 в ETH Zürich</a></li>
+<li><a href="https://gitlab.inf.ethz.ch/felixf/oberon">Официальные тексты A2 (ETH GitLab)</a></li>
+<li><a href="https://gitlab.com/a25665725/a2oberon">a2oberon</a> — активно развиваемый
+форк, ветка <code>dev-andrii</code>, с полной историей, перенесённой из SVN; в
+каталоге <code>docs/</code> лежат Oberon Language Report, краткое руководство и
+статья о фреймворке параллелизма</li>
+<li><a href="https://github.com/active-oberon/minia2">minia2</a> — SDK в стиле Go:
+компилятор, языковой сервер и менеджер пакетов в одном образе Docker.
+Собирает самодостаточные консольные программы для Linux и Windows, так
+что писать на Active Oberon можно вообще без установки A2</li>
+<li><a href="https://active-oberon.github.io/a2-registry/">a2-registry</a> — описание
+модулей A2</li>
+<li><a href="https://oberon.org/en">oberon.org</a> — каталог ресурсов об Oberon</li>
+</ul>
+
+        <hr>
+        <p>
+          Хотите предложить свой перевод? Может быть, улучшение перевода? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Откройте Issue</a> в репозитории GitHub или сделайте <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/ru/active-oberon.md">pull request</a> сами!
+        </p>
+        <p class="contributed">
+          Первоначально предоставлено автором Andrii Puhachenko, и обновлено <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/ru/active-oberon.md">1 автором</a>.
+        </p>
+
+        <footer>
+          <a class="cc-license" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 80px; height: 28px; padding-bottom: 5px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2026
+            <a href="https://github.com/andrqxa">Andrii Puhachenko</a>
+          </p>
+        </footer>
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const langSelect = document.getElementById('lang-select');
+          langSelect?.addEventListener('change', () => {
+            const selectedOption = langSelect.options[langSelect.selectedIndex];
+            const url = selectedOption?.getAttribute('data-url');
+            if (url) {
+              window.location.href = url;
+            }
+          });
+        });
+      </script>
+    </div>
+  </body>
+</html>

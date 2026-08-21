@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="en">
+    <title>Learn Active Oberon in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/active-oberon/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1><a href="/">Learn X in Y minutes</a></h1>
+      <h2>Where X=Active Oberon</h2>
+
+      <div class="lang-choice">
+        <label for="lang-select">Language:</label>
+        <select id="lang-select" name="lang-select">
+          <option value="en">English</option>
+          <option value="ru" data-url="/ru/active-oberon/">русский</option>
+          <option value="uk" data-url="/uk/active-oberon/">українська</option>
+        </select>
+      </div>
+      <p class="filelink">
+        Get the code:
+        <a href="/files/LearnActiveOberon.Mod">LearnActiveOberon.Mod</a>
+      </p>
+      <div id="doc">
+<p><strong>Active Oberon</strong> is the last member of the Pascal / Modula-2 / Oberon family
+designed at ETH Zürich (1996-1998, by the group around Niklaus Wirth and
+Jürg Gutknecht). It keeps everything Oberon is known for — a grammar that fits
+on one page, modules with explicit exports, strong static typing and a garbage
+collector — and adds the feature it is named after: <strong>active objects</strong>.</p>
+<p>An object may carry its own thread (<code>BEGIN {ACTIVE}</code>), any block can be declared
+a critical section (<code>BEGIN {EXCLUSIVE}</code>), and <code>AWAIT(condition)</code> replaces
+condition variables. Concurrency is part of the language, not a library. On top
+of that the language grew operator overloading, enumerations, math (tensor)
+arrays with element-wise operators, and cells for hardware description.</p>
+<p>The whole <a href="https://en.wikipedia.org/wiki/A2_%28operating_system%29">A2 operating
+system</a> — kernel,
+drivers, compiler, network stack and GUI — is written in Active Oberon, and A2
+is the natural place to try the language.</p>
+<p>The code below is accepted by the current Fox compiler of A2. Older
+A2 / Bluebottle sources use the historic type names (<code>LONGINT</code>, <code>LONGREAL</code>,
+<code>SHORTINT</code>) where modern code writes <code>SIGNED32</code>, <code>FLOAT64</code>, <code>SIGNED8</code>.</p>
+<div class="highlight"><pre lang="componentpascal"><span class="cm">(*  Comments look like this, and (* they nest *)</span><span class="p">.</span>  <span class="o">*</span><span class="p">)</span>
+<span class="cm">(** A comment with two stars is documentation and is picked up by the</span>
+<span class="cm">  documentation tools. *)</span>
+
+<span class="cm">(* A compilation unit is always a MODULE. Keywords are written in upper</span>
+<span class="cm">   case, identifiers are case sensitive, and the module name is repeated</span>
+<span class="cm">   after the final END. The file is normally named after the module. *)</span>
+<span class="kr">MODULE</span> <span class="n">LearnActiveOberon</span><span class="p">;</span>
+
+<span class="cm">(* Case convention: the scanner reads keywords case insensitively, and the</span>
+<span class="cm">   extension of the file says which style is used. A file named X.Mod is</span>
+<span class="cm">   written with UPPER CASE keywords, a file named x.mod with lower case</span>
+<span class="cm">   ones, predeclared types and built-ins included:</span>
+
+<span class="cm">     module HelloLower;</span>
+<span class="cm">     import KernelLog;</span>
+<span class="cm">     procedure Do*;</span>
+<span class="cm">     var i: signed32;</span>
+<span class="cm">     begin</span>
+<span class="cm">       KernelLog.String("hi"); KernelLog.Ln</span>
+<span class="cm">     end Do;</span>
+<span class="cm">     end HelloLower.</span>
+<span class="cm">*)</span>
+
+<span class="kr">IMPORT</span>
+  <span class="n">KernelLog</span><span class="p">,</span>            <span class="cm">(* writes to the system log *)</span>
+  <span class="n">Streams</span><span class="p">,</span>              <span class="cm">(* Reader / Writer abstraction *)</span>
+  <span class="n">Commands</span><span class="p">,</span>             <span class="cm">(* command context: input, output, arguments *)</span>
+  <span class="n">Log</span> <span class="p">:</span><span class="o">=</span> <span class="n">KernelLog</span><span class="p">;</span>     <span class="cm">(* an import may be renamed *)</span>
+
+<span class="kr">CONST</span>
+  <span class="n">Max</span><span class="o">*</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>           <span class="cm">(* "*" exports the identifier *)</span>
+  <span class="n">Greeting</span> <span class="o">=</span> <span class="s">"Hello"</span><span class="p">;</span>   <span class="cm">(* no mark: visible inside this module only *)</span>
+  <span class="n">EvenBits</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">};</span>                     <span class="cm">(* a SET constant *)</span>
+
+<span class="kr">TYPE</span>
+  <span class="n">Name</span><span class="o">*</span> <span class="o">=</span> <span class="kr">ARRAY</span> <span class="mi">32</span> <span class="kr">OF</span> <span class="kt">CHAR</span><span class="p">;</span>                    <span class="cm">(* 0X terminated string *)</span>
+  <span class="n">Handler</span><span class="o">*</span> <span class="o">=</span> <span class="kr">PROCEDURE</span> <span class="p">{</span><span class="n">DELEGATE</span><span class="p">}</span> <span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">);</span>
+
+  <span class="n">Point</span><span class="o">*</span> <span class="o">=</span> <span class="kr">RECORD</span>
+    <span class="n">x</span><span class="o">*</span><span class="p">,</span> <span class="n">y</span><span class="o">*</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="n">Point3d</span><span class="o">*</span> <span class="o">=</span> <span class="kr">RECORD</span> <span class="p">(</span><span class="n">Point</span><span class="p">)</span>                    <span class="cm">(* record extension *)</span>
+    <span class="n">z</span><span class="o">*</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="n">Color</span><span class="o">*</span> <span class="o">=</span> <span class="n">ENUM</span> <span class="n">Red</span><span class="o">*</span><span class="p">,</span> <span class="n">Green</span><span class="o">*</span><span class="p">,</span> <span class="n">Blue</span><span class="o">*</span> <span class="kr">END</span><span class="p">;</span>       <span class="cm">(* enumeration type *)</span>
+
+  <span class="n">Vec2</span><span class="o">*</span> <span class="o">=</span> <span class="kr">RECORD</span> <span class="n">x</span><span class="o">*</span><span class="p">,</span> <span class="n">y</span><span class="o">*</span><span class="p">:</span> <span class="n">FLOAT64</span> <span class="kr">END</span><span class="p">;</span>
+
+<span class="kr">VAR</span>
+  <span class="n">counter</span><span class="o">-</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>   <span class="cm">(* "-" exports read-only: clients cannot assign *)</span>
+  <span class="n">origin</span><span class="p">:</span> <span class="n">Point</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Types, literals and operators                                       *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Basics</span><span class="p">;</span>
+<span class="kr">VAR</span>
+  <span class="n">b</span><span class="p">:</span> <span class="kt">BOOLEAN</span><span class="p">;</span>
+  <span class="n">c</span><span class="p">:</span> <span class="kt">CHAR</span><span class="p">;</span>
+  <span class="n">i8</span><span class="p">:</span> <span class="n">SIGNED8</span><span class="p">;</span> <span class="n">i16</span><span class="p">:</span> <span class="n">SIGNED16</span><span class="p">;</span> <span class="n">i32</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span> <span class="n">i64</span><span class="p">:</span> <span class="n">SIGNED64</span><span class="p">;</span>
+  <span class="n">u32</span><span class="p">:</span> <span class="n">UNSIGNED32</span><span class="p">;</span>
+  <span class="n">f32</span><span class="p">:</span> <span class="n">FLOAT32</span><span class="p">;</span> <span class="n">f64</span><span class="p">:</span> <span class="n">FLOAT64</span><span class="p">;</span>
+  <span class="n">z</span><span class="p">:</span> <span class="n">COMPLEX64</span><span class="p">;</span>
+  <span class="n">s</span><span class="p">:</span> <span class="kt">SET</span><span class="p">;</span>                        <span class="cm">(* small bit set *)</span>
+  <span class="n">adr</span><span class="p">:</span> <span class="n">ADDRESS</span><span class="p">;</span> <span class="n">size</span><span class="p">:</span> <span class="kr">SIZE</span><span class="p">;</span>      <span class="cm">(* pointer sized integers *)</span>
+  <span class="n">any</span><span class="p">:</span> <span class="n">ANY</span><span class="p">;</span>                      <span class="cm">(* reference to any object *)</span>
+<span class="kr">BEGIN</span>
+  <span class="cm">(* INTEGER, REAL and SET are the default width variants; A2 code</span>
+<span class="cm">     usually spells the width out: SIGNED32, FLOAT64, SET32, ... *)</span>
+  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">42</span><span class="p">;</span>  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mh">2AH</span><span class="p">;</span>  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="n">x2A</span><span class="p">;</span>  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="n">b101010</span><span class="p">;</span>
+  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span><span class="s">'000'</span><span class="mi">000</span><span class="p">;</span>              <span class="cm">(* digit separators are allowed *)</span>
+  <span class="n">i8</span> <span class="p">:</span><span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="n">i16</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1000</span><span class="p">;</span> <span class="n">i64</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">u32</span> <span class="p">:</span><span class="o">=</span> <span class="mh">0FFFFFFFFH</span><span class="p">;</span>
+  <span class="n">c</span> <span class="p">:</span><span class="o">=</span> <span class="s">"A"</span><span class="p">;</span>  <span class="n">c</span> <span class="p">:</span><span class="o">=</span> <span class="mh">41X</span><span class="p">;</span>           <span class="cm">(* character, hexadecimal character *)</span>
+  <span class="n">f32</span> <span class="p">:</span><span class="o">=</span> <span class="mf">1.5</span><span class="p">;</span>  <span class="n">f64</span> <span class="p">:</span><span class="o">=</span> <span class="mf">1.5E-3</span><span class="p">;</span>
+  <span class="n">z</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">IMAG</span><span class="p">;</span>               <span class="cm">(* IMAG is the imaginary unit *)</span>
+  <span class="n">f64</span> <span class="p">:</span><span class="o">=</span> <span class="n">RE</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>  <span class="n">f64</span> <span class="p">:</span><span class="o">=</span> <span class="n">IM</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+
+  <span class="cm">(* Arithmetic: + - * / DIV MOD, integer division is DIV *)</span>
+  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">7</span> <span class="kr">DIV</span> <span class="mi">2</span><span class="p">;</span>  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">7</span> <span class="kr">MOD</span> <span class="mi">2</span><span class="p">;</span>  <span class="n">f64</span> <span class="p">:</span><span class="o">=</span> <span class="mi">7</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="kr">ABS</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">);</span>  <span class="kr">INC</span><span class="p">(</span><span class="n">i32</span><span class="p">);</span>  <span class="kr">DEC</span><span class="p">(</span><span class="n">i32</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+
+  <span class="cm">(* Relations: = # &lt; &lt;= &gt; &gt;= IN IS. Booleans: &amp; OR ~ (not) *)</span>
+  <span class="n">b</span> <span class="p">:</span><span class="o">=</span> <span class="p">(</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="kr">OR</span> <span class="p">(</span><span class="n">i32</span> <span class="o">#</span> <span class="mi">6</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="p">(</span><span class="n">i32</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">);</span>
+
+  <span class="cm">(* Sets *)</span>
+  <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">..</span><span class="mi">7</span><span class="p">};</span>  <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="p">{</span><span class="mi">1</span><span class="p">};</span>  <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="n">s</span> <span class="o">*</span> <span class="n">EvenBits</span><span class="p">;</span>  <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="n">s</span> <span class="o">-</span> <span class="p">{</span><span class="mi">3</span><span class="p">};</span>
+  <span class="n">b</span> <span class="p">:</span><span class="o">=</span> <span class="mi">3</span> <span class="kr">IN</span> <span class="n">s</span><span class="p">;</span>  <span class="kr">INCL</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span>  <span class="kr">EXCL</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+  <span class="cm">(* Conversions are explicit *)</span>
+  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="kr">ORD</span><span class="p">(</span><span class="s">"A"</span><span class="p">);</span>  <span class="n">c</span> <span class="p">:</span><span class="o">=</span> <span class="kr">CHR</span><span class="p">(</span><span class="mi">65</span><span class="p">);</span>  <span class="n">f64</span> <span class="p">:</span><span class="o">=</span> <span class="n">i32</span><span class="p">;</span>  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="kr">ENTIER</span><span class="p">(</span><span class="n">f64</span><span class="p">);</span>
+  <span class="n">adr</span> <span class="p">:</span><span class="o">=</span> <span class="n">ADDRESSOF</span><span class="p">(</span><span class="n">i32</span><span class="p">);</span>  <span class="n">size</span> <span class="p">:</span><span class="o">=</span> <span class="n">SIZEOF</span><span class="p">(</span><span class="n">Point</span><span class="p">);</span>
+
+  <span class="n">any</span> <span class="p">:</span><span class="o">=</span> <span class="kc">NIL</span><span class="p">;</span>
+  <span class="kr">ASSERT</span><span class="p">(</span><span class="n">i32</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">);</span>              <span class="cm">(* traps if the condition is FALSE *)</span>
+<span class="kr">END</span> <span class="n">Basics</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Control flow                                                        *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">ControlFlow</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">):</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">i</span><span class="p">,</span> <span class="n">sum</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span> <span class="n">c</span><span class="p">:</span> <span class="kt">CHAR</span><span class="p">;</span> <span class="n">color</span><span class="p">:</span> <span class="n">Color</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">IF</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="kr">THEN</span>
+    <span class="n">n</span> <span class="p">:</span><span class="o">=</span> <span class="o">-</span><span class="n">n</span>
+  <span class="kr">ELSIF</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span> <span class="kr">THEN</span>
+    <span class="n">n</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span>
+  <span class="kr">ELSE</span>
+    <span class="cm">(* nothing *)</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="n">c</span> <span class="p">:</span><span class="o">=</span> <span class="s">"x"</span><span class="p">;</span>
+  <span class="kr">CASE</span> <span class="n">c</span> <span class="kr">OF</span>
+      <span class="s">"a"</span><span class="p">..</span><span class="s">"m"</span><span class="p">:</span> <span class="n">sum</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span>
+    <span class="p">|</span> <span class="s">"n"</span><span class="p">..</span><span class="s">"z"</span><span class="p">:</span> <span class="n">sum</span> <span class="p">:</span><span class="o">=</span> <span class="mi">2</span>
+  <span class="kr">ELSE</span>
+    <span class="n">sum</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="n">color</span> <span class="p">:</span><span class="o">=</span> <span class="n">Color</span><span class="p">.</span><span class="n">Green</span><span class="p">;</span>          <span class="cm">(* enumerators are qualified *)</span>
+  <span class="kr">IF</span> <span class="n">color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">.</span><span class="n">Green</span> <span class="kr">THEN</span> <span class="n">sum</span> <span class="p">:</span><span class="o">=</span> <span class="n">sum</span> <span class="o">+</span> <span class="mi">1</span> <span class="kr">END</span><span class="p">;</span>
+
+  <span class="kr">WHILE</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="kr">DO</span> <span class="n">n</span> <span class="p">:</span><span class="o">=</span> <span class="n">n</span> <span class="kr">DIV</span> <span class="mi">2</span> <span class="kr">END</span><span class="p">;</span>
+
+  <span class="kr">REPEAT</span> <span class="kr">INC</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="kr">UNTIL</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">;</span>
+
+  <span class="kr">FOR</span> <span class="n">i</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span> <span class="kr">TO</span> <span class="mi">10</span> <span class="kr">BY</span> <span class="mi">2</span> <span class="kr">DO</span> <span class="n">sum</span> <span class="p">:</span><span class="o">=</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">i</span> <span class="kr">END</span><span class="p">;</span>
+
+  <span class="kr">LOOP</span>
+    <span class="kr">INC</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+    <span class="kr">IF</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">100</span> <span class="kr">THEN</span> <span class="kr">EXIT</span> <span class="kr">END</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="kr">VAR</span> <span class="n">local</span> <span class="p">:</span><span class="o">=</span> <span class="n">sum</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>          <span class="cm">(* inline VAR declaration, type inferred *)</span>
+  <span class="kr">RETURN</span> <span class="n">local</span>
+<span class="kr">END</span> <span class="n">ControlFlow</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Arrays, strings, records and pointers                               *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">TYPE</span>
+  <span class="n">IntArray</span><span class="o">*</span> <span class="o">=</span> <span class="kr">POINTER</span> <span class="kr">TO</span> <span class="kr">ARRAY</span> <span class="kr">OF</span> <span class="n">SIGNED32</span><span class="p">;</span>    <span class="cm">(* dynamic array *)</span>
+  <span class="n">PointPtr</span><span class="o">*</span> <span class="o">=</span> <span class="kr">POINTER</span> <span class="kr">TO</span> <span class="n">Point</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Sum</span><span class="p">(</span><span class="kr">CONST</span> <span class="n">a</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="kr">OF</span> <span class="n">SIGNED32</span><span class="p">):</span> <span class="n">SIGNED32</span><span class="p">;</span>   <span class="cm">(* open array *)</span>
+<span class="kr">VAR</span> <span class="n">i</span><span class="p">:</span> <span class="kr">SIZE</span><span class="p">;</span> <span class="n">s</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>                <span class="cm">(* LEN returns a SIZE *)</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">FOR</span> <span class="n">i</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span> <span class="kr">TO</span> <span class="kr">LEN</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="kr">DO</span> <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="kr">END</span><span class="p">;</span>
+  <span class="kr">RETURN</span> <span class="n">s</span>
+<span class="kr">END</span> <span class="n">Sum</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Swap</span><span class="p">(</span><span class="kr">VAR</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">);</span>      <span class="cm">(* VAR = by reference *)</span>
+<span class="kr">VAR</span> <span class="n">t</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">BEGIN</span> <span class="n">t</span> <span class="p">:</span><span class="o">=</span> <span class="n">a</span><span class="p">;</span> <span class="n">a</span> <span class="p">:</span><span class="o">=</span> <span class="n">b</span><span class="p">;</span> <span class="n">b</span> <span class="p">:</span><span class="o">=</span> <span class="n">t</span>
+<span class="kr">END</span> <span class="n">Swap</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Aggregates</span><span class="p">;</span>
+<span class="kr">VAR</span>
+  <span class="n">fixed</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="mi">4</span> <span class="kr">OF</span> <span class="n">SIGNED32</span><span class="p">;</span>
+  <span class="n">matrix</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span> <span class="kr">OF</span> <span class="n">FLOAT64</span><span class="p">;</span>       <span class="cm">(* multidimensional *)</span>
+  <span class="n">dyn</span><span class="p">:</span> <span class="n">IntArray</span><span class="p">;</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">Name</span><span class="p">;</span>
+  <span class="n">p</span><span class="p">:</span> <span class="n">Point3d</span><span class="p">;</span>
+  <span class="n">pp</span><span class="p">:</span> <span class="n">PointPtr</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">fixed</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">fixed</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="n">matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="mf">0.5</span><span class="p">;</span>
+  <span class="kr">NEW</span><span class="p">(</span><span class="n">dyn</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>                        <span class="cm">(* length known at run time *)</span>
+  <span class="n">dyn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="n">Sum</span><span class="p">(</span><span class="n">fixed</span><span class="p">);</span>
+  <span class="n">Swap</span><span class="p">(</span><span class="n">fixed</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fixed</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+
+  <span class="n">COPY</span><span class="p">(</span><span class="n">Greeting</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>                <span class="cm">(* safe string copy *)</span>
+  <span class="n">Strings0</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
+
+  <span class="n">p</span><span class="p">.</span><span class="n">x</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">p</span><span class="p">.</span><span class="n">y</span> <span class="p">:</span><span class="o">=</span> <span class="mi">2</span><span class="p">;</span> <span class="n">p</span><span class="p">.</span><span class="n">z</span> <span class="p">:</span><span class="o">=</span> <span class="mi">3</span><span class="p">;</span>        <span class="cm">(* Point3d inherits x and y *)</span>
+  <span class="n">origin</span><span class="p">.</span><span class="n">x</span> <span class="p">:</span><span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">origin</span><span class="p">.</span><span class="n">y</span> <span class="p">:</span><span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+
+  <span class="kr">NEW</span><span class="p">(</span><span class="n">pp</span><span class="p">);</span>                             <span class="cm">(* garbage collected, no free *)</span>
+  <span class="n">pp</span><span class="p">.</span><span class="n">x</span> <span class="p">:</span><span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+  <span class="n">pp</span> <span class="p">:</span><span class="o">=</span> <span class="kc">NIL</span><span class="p">;</span>
+<span class="kr">END</span> <span class="n">Aggregates</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Strings0</span><span class="p">(</span><span class="kr">VAR</span> <span class="n">name</span><span class="p">:</span> <span class="n">Name</span><span class="p">);</span>
+<span class="kr">VAR</span> <span class="n">i</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">i</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="kr">WHILE</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">#</span> <span class="mh">0X</span> <span class="kr">DO</span> <span class="kr">INC</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="kr">END</span><span class="p">;</span>    <span class="cm">(* strings end with 0X *)</span>
+  <span class="n">Log</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">name</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>
+<span class="kr">END</span> <span class="n">Strings0</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Procedures, delegates and exception handling                        *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Outer</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">):</span> <span class="n">SIGNED32</span><span class="p">;</span>
+
+  <span class="kr">PROCEDURE</span> <span class="n">Inner</span><span class="p">(</span><span class="n">k</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">):</span> <span class="n">SIGNED32</span><span class="p">;</span>   <span class="cm">(* nested, sees n *)</span>
+  <span class="kr">BEGIN</span> <span class="kr">RETURN</span> <span class="n">k</span> <span class="o">*</span> <span class="n">n</span>
+  <span class="kr">END</span> <span class="n">Inner</span><span class="p">;</span>
+
+<span class="kr">BEGIN</span>
+  <span class="kr">RETURN</span> <span class="n">Inner</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="kr">END</span> <span class="n">Outer</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Print</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">);</span>
+<span class="kr">BEGIN</span> <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>
+<span class="kr">END</span> <span class="n">Print</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">UseDelegate</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">h</span><span class="p">:</span> <span class="n">Handler</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">h</span> <span class="p">:</span><span class="o">=</span> <span class="n">Print</span><span class="p">;</span>                          <span class="cm">(* plain procedure *)</span>
+  <span class="n">h</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+  <span class="cm">(* A DELEGATE may also hold a method together with its object. *)</span>
+<span class="kr">END</span> <span class="n">UseDelegate</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">MayTrap</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">):</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">result</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">result</span> <span class="p">:</span><span class="o">=</span> <span class="n">a</span> <span class="kr">DIV</span> <span class="n">b</span><span class="p">;</span>                   <span class="cm">(* traps if b = 0 *)</span>
+  <span class="kr">RETURN</span> <span class="n">result</span>
+<span class="n">FINALLY</span>                                  <span class="cm">(* runs on a trap as well *)</span>
+  <span class="kr">RETURN</span> <span class="mi">0</span>
+<span class="kr">END</span> <span class="n">MayTrap</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Operator overloading                                                *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="n">OPERATOR</span> <span class="s">"+"</span><span class="o">*</span> <span class="p">(</span><span class="kr">CONST</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">Vec2</span><span class="p">):</span> <span class="n">Vec2</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">r</span><span class="p">:</span> <span class="n">Vec2</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">r</span><span class="p">.</span><span class="n">x</span> <span class="p">:</span><span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">b</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">r</span><span class="p">.</span><span class="n">y</span> <span class="p">:</span><span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">b</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+  <span class="kr">RETURN</span> <span class="n">r</span>
+<span class="kr">END</span> <span class="s">"+"</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Objects: methods, constructor, inheritance                          *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">TYPE</span>
+  <span class="n">Shape</span><span class="o">*</span> <span class="o">=</span> <span class="n">OBJECT</span>
+  <span class="kr">VAR</span>
+    <span class="n">name</span><span class="o">-</span><span class="p">:</span> <span class="n">Name</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="o">&amp;</span><span class="n">Init</span><span class="o">*</span><span class="p">(</span><span class="kr">CONST</span> <span class="n">n</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="kr">OF</span> <span class="kt">CHAR</span><span class="p">);</span>   <span class="cm">(* constructor *)</span>
+    <span class="kr">BEGIN</span>
+      <span class="n">COPY</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="kr">END</span> <span class="n">Init</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Area</span><span class="o">*</span><span class="p">():</span> <span class="n">FLOAT64</span><span class="p">;</span>                 <span class="cm">(* overridable *)</span>
+    <span class="kr">BEGIN</span>
+      <span class="kr">RETURN</span> <span class="mi">0</span>
+    <span class="kr">END</span> <span class="n">Area</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Describe</span><span class="o">*</span><span class="p">;</span>
+    <span class="kr">BEGIN</span>
+      <span class="n">Log</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">name</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="s">" area="</span><span class="p">);</span>
+      <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="kr">ENTIER</span><span class="p">(</span><span class="n">SELF</span><span class="p">.</span><span class="n">Area</span><span class="p">()),</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>   <span class="cm">(* SELF = this *)</span>
+    <span class="kr">END</span> <span class="n">Describe</span><span class="p">;</span>
+  <span class="kr">END</span> <span class="n">Shape</span><span class="p">;</span>
+
+  <span class="n">Circle</span><span class="o">*</span> <span class="o">=</span> <span class="n">OBJECT</span> <span class="p">(</span><span class="n">Shape</span><span class="p">)</span>                        <span class="cm">(* single inheritance *)</span>
+  <span class="kr">VAR</span> <span class="n">radius</span><span class="p">:</span> <span class="n">FLOAT64</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="o">&amp;</span><span class="n">InitCircle</span><span class="o">*</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n">FLOAT64</span><span class="p">);</span>
+    <span class="kr">BEGIN</span>
+      <span class="n">Init</span><span class="p">(</span><span class="s">"circle"</span><span class="p">);</span>                         <span class="cm">(* call inherited method *)</span>
+      <span class="n">radius</span> <span class="p">:</span><span class="o">=</span> <span class="n">r</span>
+    <span class="kr">END</span> <span class="n">InitCircle</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Area</span><span class="o">*</span><span class="p">():</span> <span class="n">FLOAT64</span><span class="p">;</span>                 <span class="cm">(* override *)</span>
+    <span class="kr">BEGIN</span>
+      <span class="kr">RETURN</span> <span class="mf">3.14159</span> <span class="o">*</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">radius</span>
+    <span class="kr">END</span> <span class="n">Area</span><span class="p">;</span>
+  <span class="kr">END</span> <span class="n">Circle</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">UseObjects</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">s</span><span class="p">:</span> <span class="n">Shape</span><span class="p">;</span> <span class="n">c</span><span class="p">:</span> <span class="n">Circle</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">NEW</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">);</span>                <span class="cm">(* NEW passes the constructor arguments *)</span>
+  <span class="n">c</span><span class="p">.</span><span class="n">Describe</span><span class="p">;</span>
+  <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="n">c</span><span class="p">;</span>                     <span class="cm">(* a Circle is a Shape *)</span>
+  <span class="n">s</span><span class="p">.</span><span class="n">Describe</span><span class="p">;</span>                 <span class="cm">(* dynamic dispatch: prints the circle area *)</span>
+
+  <span class="kr">IF</span> <span class="n">s</span> <span class="kr">IS</span> <span class="n">Circle</span> <span class="kr">THEN</span>         <span class="cm">(* run time type test *)</span>
+    <span class="n">Log</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">s</span><span class="p">(</span><span class="n">Circle</span><span class="p">).</span><span class="n">name</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>    <span class="cm">(* type guard *)</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="kr">WITH</span> <span class="n">s</span><span class="p">:</span> <span class="n">Circle</span> <span class="kr">DO</span>           <span class="cm">(* regional type guard *)</span>
+    <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="kr">ENTIER</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">Area</span><span class="p">()),</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>
+  <span class="kr">END</span>
+<span class="kr">END</span> <span class="n">UseObjects</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Active objects: the reason the language is called *Active* Oberon   *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">TYPE</span>
+  <span class="cm">(* An object with a BEGIN {ACTIVE} body owns a thread that starts as</span>
+<span class="cm">     soon as the object is created. {EXCLUSIVE} turns an object into a</span>
+<span class="cm">     monitor: only one activity at a time may run inside such a block,</span>
+<span class="cm">     and AWAIT blocks until the condition becomes true. *)</span>
+  <span class="n">Buffer</span><span class="o">*</span> <span class="o">=</span> <span class="n">OBJECT</span>
+  <span class="kr">VAR</span>
+    <span class="n">data</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="mi">16</span> <span class="kr">OF</span> <span class="n">SIGNED32</span><span class="p">;</span>
+    <span class="n">head</span><span class="p">,</span> <span class="n">tail</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+    <span class="n">alive</span><span class="p">:</span> <span class="kt">BOOLEAN</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="o">&amp;</span><span class="n">Init</span><span class="o">*</span><span class="p">;</span>
+    <span class="kr">BEGIN</span>
+      <span class="n">head</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">tail</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">count</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">alive</span> <span class="p">:</span><span class="o">=</span> <span class="kc">TRUE</span>
+    <span class="kr">END</span> <span class="n">Init</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Put</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">);</span>
+    <span class="kr">BEGIN</span> <span class="p">{</span><span class="n">EXCLUSIVE</span><span class="p">}</span>
+      <span class="n">AWAIT</span><span class="p">(</span><span class="n">count</span> <span class="o">&lt;</span> <span class="kr">LEN</span><span class="p">(</span><span class="n">data</span><span class="p">));</span>         <span class="cm">(* wait until there is room *)</span>
+      <span class="n">data</span><span class="p">[</span><span class="n">tail</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="n">x</span><span class="p">;</span>
+      <span class="n">tail</span> <span class="p">:</span><span class="o">=</span> <span class="p">(</span><span class="n">tail</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="kr">MOD</span> <span class="kr">LEN</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+      <span class="kr">INC</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+    <span class="kr">END</span> <span class="n">Put</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Get</span><span class="o">*</span><span class="p">():</span> <span class="n">SIGNED32</span><span class="p">;</span>
+    <span class="kr">VAR</span> <span class="n">x</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+    <span class="kr">BEGIN</span> <span class="p">{</span><span class="n">EXCLUSIVE</span><span class="p">}</span>
+      <span class="n">AWAIT</span><span class="p">(</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">);</span>                 <span class="cm">(* wait for an element *)</span>
+      <span class="n">x</span> <span class="p">:</span><span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">head</span><span class="p">];</span>
+      <span class="n">head</span> <span class="p">:</span><span class="o">=</span> <span class="p">(</span><span class="n">head</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="kr">MOD</span> <span class="kr">LEN</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+      <span class="kr">DEC</span><span class="p">(</span><span class="n">count</span><span class="p">);</span>
+      <span class="kr">RETURN</span> <span class="n">x</span>
+    <span class="kr">END</span> <span class="n">Get</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Close</span><span class="o">*</span><span class="p">;</span>
+    <span class="kr">BEGIN</span> <span class="p">{</span><span class="n">EXCLUSIVE</span><span class="p">}</span>
+      <span class="n">alive</span> <span class="p">:</span><span class="o">=</span> <span class="kc">FALSE</span>
+    <span class="kr">END</span> <span class="n">Close</span><span class="p">;</span>
+
+  <span class="kr">BEGIN</span> <span class="p">{</span><span class="n">ACTIVE</span><span class="p">}</span>                            <span class="cm">(* the body is a thread *)</span>
+    <span class="kr">WHILE</span> <span class="n">alive</span> <span class="kr">DO</span>
+      <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="n">SELF</span><span class="p">.</span><span class="n">Get</span><span class="p">(),</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>
+    <span class="kr">END</span>
+  <span class="kr">END</span> <span class="n">Buffer</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Producer</span><span class="o">*</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">b</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">;</span> <span class="n">i</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">NEW</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>                                   <span class="cm">(* the thread starts here *)</span>
+  <span class="kr">FOR</span> <span class="n">i</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span> <span class="kr">TO</span> <span class="mi">5</span> <span class="kr">DO</span> <span class="n">b</span><span class="p">.</span><span class="n">Put</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="kr">END</span><span class="p">;</span>
+  <span class="n">b</span><span class="p">.</span><span class="n">Close</span>
+<span class="kr">END</span> <span class="n">Producer</span><span class="p">;</span>
+
+<span class="cm">(* A whole procedure body can be a critical section, and a plain</span>
+<span class="cm">   BEGIN {EXCLUSIVE} ... END block may also appear inside a procedure. *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Guarded</span><span class="p">(</span><span class="n">o</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">);</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">BEGIN</span> <span class="p">{</span><span class="n">EXCLUSIVE</span><span class="p">}</span>
+    <span class="kr">INC</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span>
+  <span class="kr">END</span>
+<span class="kr">END</span> <span class="n">Guarded</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Math arrays: array structured types with element wise operators     *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">MathArrays</span><span class="p">;</span>
+<span class="kr">VAR</span>
+  <span class="n">v</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="p">[</span><span class="o">*</span><span class="p">]</span> <span class="kr">OF</span> <span class="n">FLOAT64</span><span class="p">;</span>         <span class="cm">(* one dimensional, open *)</span>
+  <span class="n">m</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="p">[</span><span class="o">*</span><span class="p">,</span> <span class="o">*</span><span class="p">]</span> <span class="kr">OF</span> <span class="n">FLOAT64</span><span class="p">;</span>      <span class="cm">(* two dimensional *)</span>
+  <span class="n">t</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="p">[</span><span class="err">?</span><span class="p">]</span> <span class="kr">OF</span> <span class="n">FLOAT64</span><span class="p">;</span>         <span class="cm">(* tensor, any rank *)</span>
+  <span class="n">w</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="kr">OF</span> <span class="n">FLOAT64</span><span class="p">;</span>         <span class="cm">(* fixed length *)</span>
+  <span class="n">f</span><span class="p">:</span> <span class="n">FLOAT64</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">NEW</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span> <span class="kr">NEW</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+  <span class="n">v</span> <span class="p">:</span><span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">];</span>            <span class="cm">(* array constructor *)</span>
+  <span class="n">v</span> <span class="p">:</span><span class="o">=</span> <span class="n">v</span> <span class="p">.</span><span class="o">*</span> <span class="n">v</span><span class="p">;</span>                     <span class="cm">(* element wise product *)</span>
+  <span class="n">v</span> <span class="p">:</span><span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">v</span><span class="p">;</span>                      <span class="cm">(* scalar broadcast *)</span>
+  <span class="n">m</span> <span class="p">:</span><span class="o">=</span> <span class="n">m</span> <span class="o">+</span> <span class="n">m</span><span class="p">;</span>
+  <span class="n">v</span> <span class="p">:</span><span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">v</span><span class="p">;</span>                      <span class="cm">(* matrix vector product *)</span>
+  <span class="n">f</span> <span class="p">:</span><span class="o">=</span> <span class="n">SUM</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+  <span class="n">f</span> <span class="p">:</span><span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>  <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">..</span><span class="mi">1</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">..</span><span class="mi">2</span><span class="p">];</span>  <span class="cm">(* ranges and slices *)</span>
+  <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="kr">LEN</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span><span class="p">;</span>   <span class="cm">(* length of dimension 0 *)</span>
+  <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="n">DIM</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>       <span class="cm">(* number of dimensions *)</span>
+<span class="kr">END</span> <span class="n">MathArrays</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Commands: procedures callable from the A2 shell                     *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="cm">(* An exported parameterless procedure, or one taking a</span>
+<span class="cm">   Commands.Context, can be started from the command line or from any</span>
+<span class="cm">   piece of text in the system by clicking on it. *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Hello</span><span class="o">*</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">Commands</span><span class="p">.</span><span class="n">Context</span><span class="p">);</span>
+<span class="kr">VAR</span> <span class="n">name</span><span class="p">:</span> <span class="n">Name</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">arg</span><span class="p">.</span><span class="n">SkipWhitespace</span><span class="p">;</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">arg</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>                    <span class="cm">(* read an argument *)</span>
+  <span class="kr">IF</span> <span class="n">name</span> <span class="o">=</span> <span class="s">""</span> <span class="kr">THEN</span> <span class="n">COPY</span><span class="p">(</span><span class="s">"world"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="kr">END</span><span class="p">;</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">Greeting</span><span class="p">);</span> <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="s">", "</span><span class="p">);</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">name</span><span class="p">);</span> <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="s">"!"</span><span class="p">);</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">Ln</span><span class="p">;</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">Update</span>                           <span class="cm">(* flush the writer *)</span>
+<span class="kr">END</span> <span class="n">Hello</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">WriteTo</span><span class="p">(</span><span class="n">w</span><span class="p">:</span> <span class="n">Streams</span><span class="p">.</span><span class="n">Writer</span><span class="p">);</span>
+<span class="kr">BEGIN</span>
+  <span class="n">w</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="s">"Streams.Writer works with files, network and screen"</span><span class="p">);</span>
+  <span class="n">w</span><span class="p">.</span><span class="n">Ln</span><span class="p">;</span> <span class="n">w</span><span class="p">.</span><span class="n">Update</span>
+<span class="kr">END</span> <span class="n">WriteTo</span><span class="p">;</span>
+
+<span class="cm">(* The module body runs once, when the module is loaded. *)</span>
+<span class="kr">BEGIN</span>
+  <span class="n">counter</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="n">KernelLog</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="s">"LearnActiveOberon loaded"</span><span class="p">);</span> <span class="n">KernelLog</span><span class="p">.</span><span class="n">Ln</span>
+<span class="kr">END</span> <span class="n">LearnActiveOberon</span><span class="p">.</span>
+
+<span class="cm">(* Text below the final dot is ignored by the compiler, so A2 sources</span>
+<span class="cm">   traditionally end with the commands that build and test the module.</span>
+<span class="cm">   In A2 you execute them by middle clicking on them:</span>
+
+<span class="cm">Compiler.Compile LearnActiveOberon.Mod ~</span>
+<span class="cm">LearnActiveOberon.Hello Active Oberon ~</span>
+<span class="cm">LearnActiveOberon.Producer ~</span>
+<span class="cm">System.Free LearnActiveOberon ~</span>
+<span class="cm">*)</span>
+</pre></div>
+<h2>Modifiers in braces</h2>
+<p>Almost every declaration — procedure, type, variable, parameter, statement
+block, cell — may carry a list of flags in braces. The parser accepts any
+identifier there, and the compiler rejects the ones it does not know.</p>
+<p>Concurrency (object bodies and statement blocks):</p>
+<ul>
+<li><code>{ACTIVE}</code> — the body runs as its own activity (thread), started when the
+object is created.</li>
+<li><code>{EXCLUSIVE}</code> — the block is a critical section: at most one activity at a
+time is inside any exclusive block of the object.</li>
+<li><code>{PRIORITY(n)}</code> — priority of the active body.</li>
+<li><code>{SAFE}</code> — the active body is restarted after a trap and resists
+termination.</li>
+<li><code>{REALTIME}</code> — the body is a realtime activity and may only use operations
+that are realtime safe.</li>
+<li><code>{UNCOOPERATIVE}</code> — the block does not take part in cooperative scheduling
+(kernel and low level code).</li>
+</ul>
+<p>Object orientation:</p>
+<ul>
+<li><code>{ABSTRACT}</code> — record / object type or method without an implementation.</li>
+<li><code>{FINAL}</code> — the record cannot be extended, the method cannot be
+overridden.</li>
+<li><code>{OVERRIDE}</code> — states explicitly that the method redefines an inherited
+one (the compiler infers it otherwise).</li>
+<li><code>{DELEGATE}</code> — a procedure type whose values may also be a method bound to
+its object.</li>
+<li><code>{DYNAMIC}</code> — operator dispatched at run time.</li>
+</ul>
+<p>Memory and safety:</p>
+<ul>
+<li><code>{UNTRACED}</code> — the pointer variable is not traced by the collector.</li>
+<li><code>{UNTRACKED}</code> — the statement block's local references are not tracked.</li>
+<li><code>{UNSAFE}</code> — <code>POINTER {UNSAFE} TO ...</code> is a raw pointer: compatible with
+<code>ADDRESS</code>, no type guards, no checks.</li>
+<li><code>{UNCHECKED}</code> — the block is compiled without nil, index and stack checks.</li>
+<li><code>{DISPOSABLE}</code> — the pointer / object is released with <code>DISPOSE</code> instead of
+by the collector.</li>
+<li><code>{ALIGNED(n)}</code> — align the symbol to <code>n</code> bytes.</li>
+<li><code>{OFFSET(n)}</code> — place the field or variable at a fixed offset.</li>
+<li><code>{MOVABLE}</code> — an <code>ADDRESS</code> parameter that may refer to memory the
+collector moves.</li>
+<li><code>{REGISTER}</code> — keep the variable or parameter in a register if possible.</li>
+</ul>
+<p>Procedures and linking:</p>
+<ul>
+<li><code>{WINAPI}</code>, <code>{C}</code>, <code>{PlatformCC}</code> — calling convention of the procedure
+(type).</li>
+<li><code>{INTERRUPT}</code> — the procedure is an interrupt handler.</li>
+<li><code>{NORETURN}</code> — the procedure never returns.</li>
+<li><code>{PLAIN}</code> — no activation frame, hence no local variables or parameters.</li>
+<li><code>{OPENING}</code> / <code>{CLOSING}</code> — link the procedure before all module bodies /
+after them; both imply <code>PLAIN</code>.</li>
+<li><code>{ALIGNSTACK}</code> — align the stack when entering the procedure.</li>
+<li><code>{PCOFFSET(n)}</code> — program counter offset of the procedure type (back end).</li>
+<li><code>{Fingerprint=x}</code> — fix the symbol fingerprint instead of computing it.</li>
+<li><code>{TEST}</code> — mark a test procedure for the compiler's <code>--test</code> option.</li>
+</ul>
+<p>Active Cells (hardware description, FPGA back end) — properties of the
+generated cell or channel: <code>{DataMemorySize(n)}</code>, <code>{CodeMemorySize(n)}</code>,
+<code>{InstructionWidth(n)}</code>, <code>{ChannelWidth(n)}</code>, <code>{ChannelDepth(n)}</code>,
+<code>{Channels}</code>, <code>{Vector}</code>, <code>{FloatingPoint}</code>, <code>{NoMul}</code>,
+<code>{HasNonBlockingIO}</code>, <code>{FrequencyDivider(n)}</code>, <code>{Engine}</code>, <code>{TRM}</code>, <code>{TRMS}</code>,
+<code>{BaseMem}</code>, <code>{BaseDiv}</code>, <code>{Backend(s)}</code>, <code>{Runtime(s)}</code>.</p>
+<h2>Notable details</h2>
+<ul>
+<li>Identifiers are case sensitive. Keywords are read case insensitively, and
+the file extension picks the style: <code>X.Mod</code> is written in UPPER CASE,
+<code>x.mod</code> in lower case.</li>
+<li><code>*</code> after a declared name exports it, <code>-</code> exports it read-only.</li>
+<li>There is no <code>free</code>: the system is garbage collected.</li>
+<li>Every module can be loaded and unloaded at run time
+(<code>System.Free Module ~</code>), which is how A2 is developed while it runs.</li>
+<li><code>SYSTEM</code> gives access to unsafe operations (<code>SYSTEM.GET</code>, <code>SYSTEM.PUT</code>,
+<code>SYSTEM.VAL</code>, <code>SYSTEM.MOVE</code>), and <code>CODE ... END</code> embeds assembler.</li>
+<li>Conditional compilation uses <code>#if ... #else ... #end</code> with symbols passed to
+the compiler (<code>--define=UNIX,AMD64</code>).</li>
+</ul>
+<h2>Further reading</h2>
+<ul>
+<li><a href="https://t.me/A2OperatingSystem">t.me/A2OperatingSystem</a> — the main
+community channel. It is mostly Russian speaking, but questions asked in
+English are answered too.</li>
+<li><a href="https://en.wikipedia.org/wiki/Active_Oberon">Active Oberon</a> and
+<a href="https://en.wikipedia.org/wiki/A2_%28operating_system%29">A2</a> on Wikipedia</li>
+<li><a href="http://cas.inf.ethz.ch/projects/a2">A2 project page at ETH Zürich</a></li>
+<li><a href="https://gitlab.inf.ethz.ch/felixf/oberon">Official A2 sources (ETH GitLab)</a></li>
+<li><a href="https://gitlab.com/a25665725/a2oberon">a2oberon</a> — actively maintained
+fork, branch <code>dev-andrii</code>, with the complete history imported from SVN;
+<code>docs/</code> holds the Oberon Language Report, the quick start guide and the
+concurrency framework paper</li>
+<li><a href="https://github.com/active-oberon/minia2">minia2</a> — a Go style SDK:
+compiler, language server and package manager in one Docker image. It
+builds standalone Linux and Windows console programs, so you can write
+Active Oberon without installing A2 at all</li>
+<li><a href="https://active-oberon.github.io/a2-registry/">a2-registry</a> — descriptions
+of the A2 modules</li>
+<li><a href="https://oberon.org/en">oberon.org</a> — catalogue of Oberon resources</li>
+</ul>
+
+        <hr>
+        <p>
+          Got a suggestion? A correction, perhaps? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Open an Issue</a> on the GitHub Repo, or make a <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/active-oberon.md">pull request</a> yourself!
+        </p>
+        <p class="contributed">
+          Originally contributed by Andrii Puhachenko, and updated by <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/active-oberon.md">1 contributor</a>.
+        </p>
+
+        <footer>
+          <a class="cc-license" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 80px; height: 28px; padding-bottom: 5px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2026
+            <a href="https://github.com/andrqxa">Andrii Puhachenko</a>
+          </p>
+        </footer>
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const langSelect = document.getElementById('lang-select');
+          langSelect?.addEventListener('change', () => {
+            const selectedOption = langSelect.options[langSelect.selectedIndex];
+            const url = selectedOption?.getAttribute('data-url');
+            if (url) {
+              window.location.href = url;
+            }
+          });
+        });
+      </script>
+    </div>
+  </body>
+</html>

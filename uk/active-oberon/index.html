@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="uk" dir="ltr">
+  <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WXC8R75DEN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-WXC8R75DEN');
+    </script>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Language" content="uk">
+    <title>Learn Active Oberon in Y Minutes</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto+Slab:wght@100..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/screen.css">
+    <link rel="stylesheet" href="/css/light.css">
+    <link rel="stylesheet" href="/css/dark.css">
+
+    <link rel="canonical" href="https://learnxinyminutes.com/uk/active-oberon/">
+    <script>
+      localStorage.removeItem("lxiym_theme");
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1><a href="/">Вивчіть X за Y хвилин</a></h1>
+      <h2>Де X=Active Oberon</h2>
+
+      <div class="lang-choice">
+        <label for="lang-select">Мова:</label>
+        <select id="lang-select" name="lang-select">
+          <option value="uk">українська</option>
+          <option value="en" data-url="/active-oberon/">English</option>
+          <option value="ru" data-url="/ru/active-oberon/">русский</option>
+        </select>
+      </div>
+      <p class="filelink">
+        Отримати вихідний код:
+        <a href="/uk/files/LearnActiveOberon.Mod">LearnActiveOberon.Mod</a>
+      </p>
+      <div id="doc">
+<p><strong>Active Oberon</strong> — останній представник родини Pascal / Modula-2 / Oberon,
+створений у ETH Zürich (1996-1998, групою навколо Ніклауса Вірта та
+Юрга Гуткнехта). Він зберігає все, чим відомий Oberon — граматику, що
+вміщається на одну сторінку, модулі з явним експортом, сувору статичну
+типізацію та збирач сміття — і додає те, від чого походить його назва:
+<strong>активні об'єкти</strong>.</p>
+<p>Об'єкт може мати власний потік (<code>BEGIN {ACTIVE}</code>), будь-який блок можна
+оголосити критичною секцією (<code>BEGIN {EXCLUSIVE}</code>), а <code>AWAIT(умова)</code> замінює
+умовні змінні. Паралелізм є частиною мови, а не бібліотекою. Крім того, мова
+отримала перевизначення операторів, переліки, математичні (тензорні) масиви
+з поелементними операторами та комірки (cells) для опису апаратури.</p>
+<p>Уся <a href="https://uk.wikipedia.org/wiki/A2_%28%D0%BE%D0%BF%D0%B5%D1%80%D0%B0%D1%86%D1%96%D0%B9%D0%BD%D0%B0_%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%29">операційна система
+A2</a> — ядро, драйвери,
+компілятор, мережевий стек і графічний інтерфейс — написана мовою Active
+Oberon, і саме A2 є природним місцем, щоб спробувати цю мову.</p>
+<p>Наведений нижче код приймає поточний компілятор Fox із A2. Старіші тексти
+A2 / Bluebottle використовують історичні назви типів (<code>LONGINT</code>, <code>LONGREAL</code>,
+<code>SHORTINT</code>) там, де сучасний код пише <code>SIGNED32</code>, <code>FLOAT64</code>, <code>SIGNED8</code>.</p>
+<div class="highlight"><pre lang="componentpascal"><span class="cm">(*  Коментарі виглядають так, і (* вони вкладаються *)</span><span class="p">.</span>  <span class="o">*</span><span class="p">)</span>
+<span class="cm">(** Коментар із двома зірочками — це документація, її збирають</span>
+<span class="cm">  документаційні інструменти. *)</span>
+
+<span class="cm">(* Одиниця компіляції — це завжди MODULE. Ключові слова пишуть великими</span>
+<span class="cm">   літерами, ідентифікатори чутливі до регістру, а ім'я модуля</span>
+<span class="cm">   повторюється після останнього END. Файл зазвичай називають так само,</span>
+<span class="cm">   як модуль. *)</span>
+<span class="kr">MODULE</span> <span class="n">LearnActiveOberon</span><span class="p">;</span>
+
+<span class="cm">(* Домовленість про регістр: сканер читає ключові слова незалежно від</span>
+<span class="cm">   регістру, а стиль файлу визначає його розширення. Файл X.Mod пишуть</span>
+<span class="cm">   ВЕЛИКИМИ літерами, файл x.mod — малими, разом із наперед оголошеними</span>
+<span class="cm">   типами та вбудованими процедурами:</span>
+
+<span class="cm">     module HelloLower;</span>
+<span class="cm">     import KernelLog;</span>
+<span class="cm">     procedure Do*;</span>
+<span class="cm">     var i: signed32;</span>
+<span class="cm">     begin</span>
+<span class="cm">       KernelLog.String("hi"); KernelLog.Ln</span>
+<span class="cm">     end Do;</span>
+<span class="cm">     end HelloLower.</span>
+<span class="cm">*)</span>
+
+<span class="kr">IMPORT</span>
+  <span class="n">KernelLog</span><span class="p">,</span>            <span class="cm">(* вивід у системний журнал *)</span>
+  <span class="n">Streams</span><span class="p">,</span>              <span class="cm">(* абстракція Reader / Writer *)</span>
+  <span class="n">Commands</span><span class="p">,</span>             <span class="cm">(* контекст команди: ввід, вивід, аргументи *)</span>
+  <span class="n">Log</span> <span class="p">:</span><span class="o">=</span> <span class="n">KernelLog</span><span class="p">;</span>     <span class="cm">(* імпорт можна перейменувати *)</span>
+
+<span class="kr">CONST</span>
+  <span class="n">Max</span><span class="o">*</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>           <span class="cm">(* "*" експортує ідентифікатор *)</span>
+  <span class="n">Greeting</span> <span class="o">=</span> <span class="s">"Hello"</span><span class="p">;</span>   <span class="cm">(* без позначки: видно лише в цьому модулі *)</span>
+  <span class="n">EvenBits</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">};</span>                  <span class="cm">(* константа-множина *)</span>
+
+<span class="kr">TYPE</span>
+  <span class="n">Name</span><span class="o">*</span> <span class="o">=</span> <span class="kr">ARRAY</span> <span class="mi">32</span> <span class="kr">OF</span> <span class="kt">CHAR</span><span class="p">;</span>                 <span class="cm">(* рядок, що завершується 0X *)</span>
+  <span class="n">Handler</span><span class="o">*</span> <span class="o">=</span> <span class="kr">PROCEDURE</span> <span class="p">{</span><span class="n">DELEGATE</span><span class="p">}</span> <span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">);</span>
+
+  <span class="n">Point</span><span class="o">*</span> <span class="o">=</span> <span class="kr">RECORD</span>
+    <span class="n">x</span><span class="o">*</span><span class="p">,</span> <span class="n">y</span><span class="o">*</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="n">Point3d</span><span class="o">*</span> <span class="o">=</span> <span class="kr">RECORD</span> <span class="p">(</span><span class="n">Point</span><span class="p">)</span>                 <span class="cm">(* розширення запису *)</span>
+    <span class="n">z</span><span class="o">*</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="n">Color</span><span class="o">*</span> <span class="o">=</span> <span class="n">ENUM</span> <span class="n">Red</span><span class="o">*</span><span class="p">,</span> <span class="n">Green</span><span class="o">*</span><span class="p">,</span> <span class="n">Blue</span><span class="o">*</span> <span class="kr">END</span><span class="p">;</span>    <span class="cm">(* перелічуваний тип *)</span>
+
+  <span class="n">Vec2</span><span class="o">*</span> <span class="o">=</span> <span class="kr">RECORD</span> <span class="n">x</span><span class="o">*</span><span class="p">,</span> <span class="n">y</span><span class="o">*</span><span class="p">:</span> <span class="n">FLOAT64</span> <span class="kr">END</span><span class="p">;</span>
+
+<span class="kr">VAR</span>
+  <span class="n">counter</span><span class="o">-</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>   <span class="cm">(* "-" експортує лише для читання *)</span>
+  <span class="n">origin</span><span class="p">:</span> <span class="n">Point</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Типи, літерали та оператори                                         *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Basics</span><span class="p">;</span>
+<span class="kr">VAR</span>
+  <span class="n">b</span><span class="p">:</span> <span class="kt">BOOLEAN</span><span class="p">;</span>
+  <span class="n">c</span><span class="p">:</span> <span class="kt">CHAR</span><span class="p">;</span>
+  <span class="n">i8</span><span class="p">:</span> <span class="n">SIGNED8</span><span class="p">;</span> <span class="n">i16</span><span class="p">:</span> <span class="n">SIGNED16</span><span class="p">;</span> <span class="n">i32</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span> <span class="n">i64</span><span class="p">:</span> <span class="n">SIGNED64</span><span class="p">;</span>
+  <span class="n">u32</span><span class="p">:</span> <span class="n">UNSIGNED32</span><span class="p">;</span>
+  <span class="n">f32</span><span class="p">:</span> <span class="n">FLOAT32</span><span class="p">;</span> <span class="n">f64</span><span class="p">:</span> <span class="n">FLOAT64</span><span class="p">;</span>
+  <span class="n">z</span><span class="p">:</span> <span class="n">COMPLEX64</span><span class="p">;</span>
+  <span class="n">s</span><span class="p">:</span> <span class="kt">SET</span><span class="p">;</span>                        <span class="cm">(* невелика бітова множина *)</span>
+  <span class="n">adr</span><span class="p">:</span> <span class="n">ADDRESS</span><span class="p">;</span> <span class="n">size</span><span class="p">:</span> <span class="kr">SIZE</span><span class="p">;</span>      <span class="cm">(* цілі розміру вказівника *)</span>
+  <span class="n">any</span><span class="p">:</span> <span class="n">ANY</span><span class="p">;</span>                      <span class="cm">(* посилання на будь-який об'єкт *)</span>
+<span class="kr">BEGIN</span>
+  <span class="cm">(* INTEGER, REAL і SET — варіанти типової ширини; код A2 зазвичай</span>
+<span class="cm">     вказує ширину явно: SIGNED32, FLOAT64, SET32, ... *)</span>
+  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">42</span><span class="p">;</span>  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mh">2AH</span><span class="p">;</span>  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="n">x2A</span><span class="p">;</span>  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="n">b101010</span><span class="p">;</span>
+  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span><span class="s">'000'</span><span class="mi">000</span><span class="p">;</span>              <span class="cm">(* роздільники розрядів дозволені *)</span>
+  <span class="n">i8</span> <span class="p">:</span><span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="n">i16</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1000</span><span class="p">;</span> <span class="n">i64</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">u32</span> <span class="p">:</span><span class="o">=</span> <span class="mh">0FFFFFFFFH</span><span class="p">;</span>
+  <span class="n">c</span> <span class="p">:</span><span class="o">=</span> <span class="s">"A"</span><span class="p">;</span>  <span class="n">c</span> <span class="p">:</span><span class="o">=</span> <span class="mh">41X</span><span class="p">;</span>           <span class="cm">(* символ, шістнадцятковий символ *)</span>
+  <span class="n">f32</span> <span class="p">:</span><span class="o">=</span> <span class="mf">1.5</span><span class="p">;</span>  <span class="n">f64</span> <span class="p">:</span><span class="o">=</span> <span class="mf">1.5E-3</span><span class="p">;</span>
+  <span class="n">z</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">IMAG</span><span class="p">;</span>               <span class="cm">(* IMAG — уявна одиниця *)</span>
+  <span class="n">f64</span> <span class="p">:</span><span class="o">=</span> <span class="n">RE</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>  <span class="n">f64</span> <span class="p">:</span><span class="o">=</span> <span class="n">IM</span><span class="p">(</span><span class="n">z</span><span class="p">);</span>
+
+  <span class="cm">(* Арифметика: + - * / DIV MOD, цілочисельне ділення — це DIV *)</span>
+  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">7</span> <span class="kr">DIV</span> <span class="mi">2</span><span class="p">;</span>  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="mi">7</span> <span class="kr">MOD</span> <span class="mi">2</span><span class="p">;</span>  <span class="n">f64</span> <span class="p">:</span><span class="o">=</span> <span class="mi">7</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="kr">ABS</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">);</span>  <span class="kr">INC</span><span class="p">(</span><span class="n">i32</span><span class="p">);</span>  <span class="kr">DEC</span><span class="p">(</span><span class="n">i32</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+
+  <span class="cm">(* Відношення: = # &lt; &lt;= &gt; &gt;= IN IS. Логічні: &amp; OR ~ (не) *)</span>
+  <span class="n">b</span> <span class="p">:</span><span class="o">=</span> <span class="p">(</span><span class="n">i32</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="kr">OR</span> <span class="p">(</span><span class="n">i32</span> <span class="o">#</span> <span class="mi">6</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="p">(</span><span class="n">i32</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">);</span>
+
+  <span class="cm">(* Множини *)</span>
+  <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">..</span><span class="mi">7</span><span class="p">};</span>  <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="p">{</span><span class="mi">1</span><span class="p">};</span>  <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="n">s</span> <span class="o">*</span> <span class="n">EvenBits</span><span class="p">;</span>  <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="n">s</span> <span class="o">-</span> <span class="p">{</span><span class="mi">3</span><span class="p">};</span>
+  <span class="n">b</span> <span class="p">:</span><span class="o">=</span> <span class="mi">3</span> <span class="kr">IN</span> <span class="n">s</span><span class="p">;</span>  <span class="kr">INCL</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span>  <span class="kr">EXCL</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+  <span class="cm">(* Перетворення типів завжди явні *)</span>
+  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="kr">ORD</span><span class="p">(</span><span class="s">"A"</span><span class="p">);</span>  <span class="n">c</span> <span class="p">:</span><span class="o">=</span> <span class="kr">CHR</span><span class="p">(</span><span class="mi">65</span><span class="p">);</span>  <span class="n">f64</span> <span class="p">:</span><span class="o">=</span> <span class="n">i32</span><span class="p">;</span>  <span class="n">i32</span> <span class="p">:</span><span class="o">=</span> <span class="kr">ENTIER</span><span class="p">(</span><span class="n">f64</span><span class="p">);</span>
+  <span class="n">adr</span> <span class="p">:</span><span class="o">=</span> <span class="n">ADDRESSOF</span><span class="p">(</span><span class="n">i32</span><span class="p">);</span>  <span class="n">size</span> <span class="p">:</span><span class="o">=</span> <span class="n">SIZEOF</span><span class="p">(</span><span class="n">Point</span><span class="p">);</span>
+
+  <span class="n">any</span> <span class="p">:</span><span class="o">=</span> <span class="kc">NIL</span><span class="p">;</span>
+  <span class="kr">ASSERT</span><span class="p">(</span><span class="n">i32</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">);</span>              <span class="cm">(* пастка (trap), якщо умова хибна *)</span>
+<span class="kr">END</span> <span class="n">Basics</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Керування виконанням                                                *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">ControlFlow</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">):</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">i</span><span class="p">,</span> <span class="n">sum</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span> <span class="n">c</span><span class="p">:</span> <span class="kt">CHAR</span><span class="p">;</span> <span class="n">color</span><span class="p">:</span> <span class="n">Color</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">IF</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="kr">THEN</span>
+    <span class="n">n</span> <span class="p">:</span><span class="o">=</span> <span class="o">-</span><span class="n">n</span>
+  <span class="kr">ELSIF</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span> <span class="kr">THEN</span>
+    <span class="n">n</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span>
+  <span class="kr">ELSE</span>
+    <span class="cm">(* нічого *)</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="n">c</span> <span class="p">:</span><span class="o">=</span> <span class="s">"x"</span><span class="p">;</span>
+  <span class="kr">CASE</span> <span class="n">c</span> <span class="kr">OF</span>
+      <span class="s">"a"</span><span class="p">..</span><span class="s">"m"</span><span class="p">:</span> <span class="n">sum</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span>
+    <span class="p">|</span> <span class="s">"n"</span><span class="p">..</span><span class="s">"z"</span><span class="p">:</span> <span class="n">sum</span> <span class="p">:</span><span class="o">=</span> <span class="mi">2</span>
+  <span class="kr">ELSE</span>
+    <span class="n">sum</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="n">color</span> <span class="p">:</span><span class="o">=</span> <span class="n">Color</span><span class="p">.</span><span class="n">Green</span><span class="p">;</span>          <span class="cm">(* елементи переліку кваліфіковані *)</span>
+  <span class="kr">IF</span> <span class="n">color</span> <span class="o">=</span> <span class="n">Color</span><span class="p">.</span><span class="n">Green</span> <span class="kr">THEN</span> <span class="n">sum</span> <span class="p">:</span><span class="o">=</span> <span class="n">sum</span> <span class="o">+</span> <span class="mi">1</span> <span class="kr">END</span><span class="p">;</span>
+
+  <span class="kr">WHILE</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="kr">DO</span> <span class="n">n</span> <span class="p">:</span><span class="o">=</span> <span class="n">n</span> <span class="kr">DIV</span> <span class="mi">2</span> <span class="kr">END</span><span class="p">;</span>
+
+  <span class="kr">REPEAT</span> <span class="kr">INC</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="kr">UNTIL</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">;</span>
+
+  <span class="kr">FOR</span> <span class="n">i</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span> <span class="kr">TO</span> <span class="mi">10</span> <span class="kr">BY</span> <span class="mi">2</span> <span class="kr">DO</span> <span class="n">sum</span> <span class="p">:</span><span class="o">=</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">i</span> <span class="kr">END</span><span class="p">;</span>
+
+  <span class="kr">LOOP</span>
+    <span class="kr">INC</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+    <span class="kr">IF</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">100</span> <span class="kr">THEN</span> <span class="kr">EXIT</span> <span class="kr">END</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="kr">VAR</span> <span class="n">local</span> <span class="p">:</span><span class="o">=</span> <span class="n">sum</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>          <span class="cm">(* оголошення VAR усередині блоку *)</span>
+  <span class="kr">RETURN</span> <span class="n">local</span>
+<span class="kr">END</span> <span class="n">ControlFlow</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Масиви, рядки, записи та вказівники                                 *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">TYPE</span>
+  <span class="n">IntArray</span><span class="o">*</span> <span class="o">=</span> <span class="kr">POINTER</span> <span class="kr">TO</span> <span class="kr">ARRAY</span> <span class="kr">OF</span> <span class="n">SIGNED32</span><span class="p">;</span>    <span class="cm">(* динамічний масив *)</span>
+  <span class="n">PointPtr</span><span class="o">*</span> <span class="o">=</span> <span class="kr">POINTER</span> <span class="kr">TO</span> <span class="n">Point</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Sum</span><span class="p">(</span><span class="kr">CONST</span> <span class="n">a</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="kr">OF</span> <span class="n">SIGNED32</span><span class="p">):</span> <span class="n">SIGNED32</span><span class="p">;</span>   <span class="cm">(* відкритий масив *)</span>
+<span class="kr">VAR</span> <span class="n">i</span><span class="p">:</span> <span class="kr">SIZE</span><span class="p">;</span> <span class="n">s</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>                <span class="cm">(* LEN повертає SIZE *)</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">FOR</span> <span class="n">i</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span> <span class="kr">TO</span> <span class="kr">LEN</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="kr">DO</span> <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="kr">END</span><span class="p">;</span>
+  <span class="kr">RETURN</span> <span class="n">s</span>
+<span class="kr">END</span> <span class="n">Sum</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Swap</span><span class="p">(</span><span class="kr">VAR</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">);</span>      <span class="cm">(* VAR = за посиланням *)</span>
+<span class="kr">VAR</span> <span class="n">t</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">BEGIN</span> <span class="n">t</span> <span class="p">:</span><span class="o">=</span> <span class="n">a</span><span class="p">;</span> <span class="n">a</span> <span class="p">:</span><span class="o">=</span> <span class="n">b</span><span class="p">;</span> <span class="n">b</span> <span class="p">:</span><span class="o">=</span> <span class="n">t</span>
+<span class="kr">END</span> <span class="n">Swap</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Aggregates</span><span class="p">;</span>
+<span class="kr">VAR</span>
+  <span class="n">fixed</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="mi">4</span> <span class="kr">OF</span> <span class="n">SIGNED32</span><span class="p">;</span>
+  <span class="n">matrix</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span> <span class="kr">OF</span> <span class="n">FLOAT64</span><span class="p">;</span>       <span class="cm">(* багатовимірний *)</span>
+  <span class="n">dyn</span><span class="p">:</span> <span class="n">IntArray</span><span class="p">;</span>
+  <span class="n">name</span><span class="p">:</span> <span class="n">Name</span><span class="p">;</span>
+  <span class="n">p</span><span class="p">:</span> <span class="n">Point3d</span><span class="p">;</span>
+  <span class="n">pp</span><span class="p">:</span> <span class="n">PointPtr</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">fixed</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">fixed</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="n">matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="mf">0.5</span><span class="p">;</span>
+  <span class="kr">NEW</span><span class="p">(</span><span class="n">dyn</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>                        <span class="cm">(* довжина відома під час виконання *)</span>
+  <span class="n">dyn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="n">Sum</span><span class="p">(</span><span class="n">fixed</span><span class="p">);</span>
+  <span class="n">Swap</span><span class="p">(</span><span class="n">fixed</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fixed</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+
+  <span class="n">COPY</span><span class="p">(</span><span class="n">Greeting</span><span class="p">,</span> <span class="n">name</span><span class="p">);</span>                <span class="cm">(* безпечне копіювання рядка *)</span>
+  <span class="n">Strings0</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
+
+  <span class="n">p</span><span class="p">.</span><span class="n">x</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">p</span><span class="p">.</span><span class="n">y</span> <span class="p">:</span><span class="o">=</span> <span class="mi">2</span><span class="p">;</span> <span class="n">p</span><span class="p">.</span><span class="n">z</span> <span class="p">:</span><span class="o">=</span> <span class="mi">3</span><span class="p">;</span>        <span class="cm">(* Point3d успадковує x та y *)</span>
+  <span class="n">origin</span><span class="p">.</span><span class="n">x</span> <span class="p">:</span><span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">origin</span><span class="p">.</span><span class="n">y</span> <span class="p">:</span><span class="o">=</span> <span class="n">p</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+
+  <span class="kr">NEW</span><span class="p">(</span><span class="n">pp</span><span class="p">);</span>                             <span class="cm">(* збирач сміття, звільняти не треба *)</span>
+  <span class="n">pp</span><span class="p">.</span><span class="n">x</span> <span class="p">:</span><span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+  <span class="n">pp</span> <span class="p">:</span><span class="o">=</span> <span class="kc">NIL</span><span class="p">;</span>
+<span class="kr">END</span> <span class="n">Aggregates</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Strings0</span><span class="p">(</span><span class="kr">VAR</span> <span class="n">name</span><span class="p">:</span> <span class="n">Name</span><span class="p">);</span>
+<span class="kr">VAR</span> <span class="n">i</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">i</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="kr">WHILE</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">#</span> <span class="mh">0X</span> <span class="kr">DO</span> <span class="kr">INC</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="kr">END</span><span class="p">;</span>    <span class="cm">(* рядки завершуються 0X *)</span>
+  <span class="n">Log</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">name</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>
+<span class="kr">END</span> <span class="n">Strings0</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Процедури, делегати та обробка пасток                               *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Outer</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">):</span> <span class="n">SIGNED32</span><span class="p">;</span>
+
+  <span class="kr">PROCEDURE</span> <span class="n">Inner</span><span class="p">(</span><span class="n">k</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">):</span> <span class="n">SIGNED32</span><span class="p">;</span>   <span class="cm">(* вкладена, бачить n *)</span>
+  <span class="kr">BEGIN</span> <span class="kr">RETURN</span> <span class="n">k</span> <span class="o">*</span> <span class="n">n</span>
+  <span class="kr">END</span> <span class="n">Inner</span><span class="p">;</span>
+
+<span class="kr">BEGIN</span>
+  <span class="kr">RETURN</span> <span class="n">Inner</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="kr">END</span> <span class="n">Outer</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Print</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">);</span>
+<span class="kr">BEGIN</span> <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>
+<span class="kr">END</span> <span class="n">Print</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">UseDelegate</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">h</span><span class="p">:</span> <span class="n">Handler</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">h</span> <span class="p">:</span><span class="o">=</span> <span class="n">Print</span><span class="p">;</span>                          <span class="cm">(* звичайна процедура *)</span>
+  <span class="n">h</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+  <span class="cm">(* DELEGATE може містити й метод разом з його об'єктом. *)</span>
+<span class="kr">END</span> <span class="n">UseDelegate</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">MayTrap</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">):</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">result</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">result</span> <span class="p">:</span><span class="o">=</span> <span class="n">a</span> <span class="kr">DIV</span> <span class="n">b</span><span class="p">;</span>                   <span class="cm">(* пастка, якщо b = 0 *)</span>
+  <span class="kr">RETURN</span> <span class="n">result</span>
+<span class="n">FINALLY</span>                                <span class="cm">(* виконується також після пастки *)</span>
+  <span class="kr">RETURN</span> <span class="mi">0</span>
+<span class="kr">END</span> <span class="n">MayTrap</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Перевизначення операторів                                           *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="n">OPERATOR</span> <span class="s">"+"</span><span class="o">*</span> <span class="p">(</span><span class="kr">CONST</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">Vec2</span><span class="p">):</span> <span class="n">Vec2</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">r</span><span class="p">:</span> <span class="n">Vec2</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">r</span><span class="p">.</span><span class="n">x</span> <span class="p">:</span><span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">b</span><span class="p">.</span><span class="n">x</span><span class="p">;</span> <span class="n">r</span><span class="p">.</span><span class="n">y</span> <span class="p">:</span><span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">b</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+  <span class="kr">RETURN</span> <span class="n">r</span>
+<span class="kr">END</span> <span class="s">"+"</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Об'єкти: методи, конструктор, успадкування                          *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">TYPE</span>
+  <span class="n">Shape</span><span class="o">*</span> <span class="o">=</span> <span class="n">OBJECT</span>
+  <span class="kr">VAR</span>
+    <span class="n">name</span><span class="o">-</span><span class="p">:</span> <span class="n">Name</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="o">&amp;</span><span class="n">Init</span><span class="o">*</span><span class="p">(</span><span class="kr">CONST</span> <span class="n">n</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="kr">OF</span> <span class="kt">CHAR</span><span class="p">);</span>   <span class="cm">(* конструктор *)</span>
+    <span class="kr">BEGIN</span>
+      <span class="n">COPY</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="kr">END</span> <span class="n">Init</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Area</span><span class="o">*</span><span class="p">():</span> <span class="n">FLOAT64</span><span class="p">;</span>                 <span class="cm">(* можна перевизначити *)</span>
+    <span class="kr">BEGIN</span>
+      <span class="kr">RETURN</span> <span class="mi">0</span>
+    <span class="kr">END</span> <span class="n">Area</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Describe</span><span class="o">*</span><span class="p">;</span>
+    <span class="kr">BEGIN</span>
+      <span class="n">Log</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">name</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="s">" area="</span><span class="p">);</span>
+      <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="kr">ENTIER</span><span class="p">(</span><span class="n">SELF</span><span class="p">.</span><span class="n">Area</span><span class="p">()),</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>   <span class="cm">(* SELF — цей об'єкт *)</span>
+    <span class="kr">END</span> <span class="n">Describe</span><span class="p">;</span>
+  <span class="kr">END</span> <span class="n">Shape</span><span class="p">;</span>
+
+  <span class="n">Circle</span><span class="o">*</span> <span class="o">=</span> <span class="n">OBJECT</span> <span class="p">(</span><span class="n">Shape</span><span class="p">)</span>                      <span class="cm">(* одиничне успадкування *)</span>
+  <span class="kr">VAR</span> <span class="n">radius</span><span class="p">:</span> <span class="n">FLOAT64</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="o">&amp;</span><span class="n">InitCircle</span><span class="o">*</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n">FLOAT64</span><span class="p">);</span>
+    <span class="kr">BEGIN</span>
+      <span class="n">Init</span><span class="p">(</span><span class="s">"circle"</span><span class="p">);</span>                           <span class="cm">(* успадкований метод *)</span>
+      <span class="n">radius</span> <span class="p">:</span><span class="o">=</span> <span class="n">r</span>
+    <span class="kr">END</span> <span class="n">InitCircle</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Area</span><span class="o">*</span><span class="p">():</span> <span class="n">FLOAT64</span><span class="p">;</span>                 <span class="cm">(* перевизначення *)</span>
+    <span class="kr">BEGIN</span>
+      <span class="kr">RETURN</span> <span class="mf">3.14159</span> <span class="o">*</span> <span class="n">radius</span> <span class="o">*</span> <span class="n">radius</span>
+    <span class="kr">END</span> <span class="n">Area</span><span class="p">;</span>
+  <span class="kr">END</span> <span class="n">Circle</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">UseObjects</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">s</span><span class="p">:</span> <span class="n">Shape</span><span class="p">;</span> <span class="n">c</span><span class="p">:</span> <span class="n">Circle</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">NEW</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">);</span>                <span class="cm">(* NEW передає аргументи конструктора *)</span>
+  <span class="n">c</span><span class="p">.</span><span class="n">Describe</span><span class="p">;</span>
+  <span class="n">s</span> <span class="p">:</span><span class="o">=</span> <span class="n">c</span><span class="p">;</span>                     <span class="cm">(* Circle є Shape *)</span>
+  <span class="n">s</span><span class="p">.</span><span class="n">Describe</span><span class="p">;</span>                 <span class="cm">(* динамічна диспетчеризація *)</span>
+
+  <span class="kr">IF</span> <span class="n">s</span> <span class="kr">IS</span> <span class="n">Circle</span> <span class="kr">THEN</span>         <span class="cm">(* перевірка типу під час виконання *)</span>
+    <span class="n">Log</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">s</span><span class="p">(</span><span class="n">Circle</span><span class="p">).</span><span class="n">name</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>    <span class="cm">(* охоронець типу *)</span>
+  <span class="kr">END</span><span class="p">;</span>
+
+  <span class="kr">WITH</span> <span class="n">s</span><span class="p">:</span> <span class="n">Circle</span> <span class="kr">DO</span>           <span class="cm">(* охоронець типу для цілої області *)</span>
+    <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="kr">ENTIER</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">Area</span><span class="p">()),</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>
+  <span class="kr">END</span>
+<span class="kr">END</span> <span class="n">UseObjects</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Активні об'єкти — те, за що мову названо *Active* Oberon            *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">TYPE</span>
+  <span class="cm">(* Об'єкт із тілом BEGIN {ACTIVE} має власний потік, який стартує</span>
+<span class="cm">     одразу після створення об'єкта. {EXCLUSIVE} перетворює об'єкт на</span>
+<span class="cm">     монітор: усередині такого блоку одночасно виконується лише одна</span>
+<span class="cm">     активність, а AWAIT блокує до виконання умови. *)</span>
+  <span class="n">Buffer</span><span class="o">*</span> <span class="o">=</span> <span class="n">OBJECT</span>
+  <span class="kr">VAR</span>
+    <span class="n">data</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="mi">16</span> <span class="kr">OF</span> <span class="n">SIGNED32</span><span class="p">;</span>
+    <span class="n">head</span><span class="p">,</span> <span class="n">tail</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+    <span class="n">alive</span><span class="p">:</span> <span class="kt">BOOLEAN</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="o">&amp;</span><span class="n">Init</span><span class="o">*</span><span class="p">;</span>
+    <span class="kr">BEGIN</span>
+      <span class="n">head</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">tail</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">count</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">alive</span> <span class="p">:</span><span class="o">=</span> <span class="kc">TRUE</span>
+    <span class="kr">END</span> <span class="n">Init</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Put</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">);</span>
+    <span class="kr">BEGIN</span> <span class="p">{</span><span class="n">EXCLUSIVE</span><span class="p">}</span>
+      <span class="n">AWAIT</span><span class="p">(</span><span class="n">count</span> <span class="o">&lt;</span> <span class="kr">LEN</span><span class="p">(</span><span class="n">data</span><span class="p">));</span>         <span class="cm">(* чекати, доки з'явиться місце *)</span>
+      <span class="n">data</span><span class="p">[</span><span class="n">tail</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="n">x</span><span class="p">;</span>
+      <span class="n">tail</span> <span class="p">:</span><span class="o">=</span> <span class="p">(</span><span class="n">tail</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="kr">MOD</span> <span class="kr">LEN</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+      <span class="kr">INC</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+    <span class="kr">END</span> <span class="n">Put</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Get</span><span class="o">*</span><span class="p">():</span> <span class="n">SIGNED32</span><span class="p">;</span>
+    <span class="kr">VAR</span> <span class="n">x</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+    <span class="kr">BEGIN</span> <span class="p">{</span><span class="n">EXCLUSIVE</span><span class="p">}</span>
+      <span class="n">AWAIT</span><span class="p">(</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">);</span>                 <span class="cm">(* чекати на елемент *)</span>
+      <span class="n">x</span> <span class="p">:</span><span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">head</span><span class="p">];</span>
+      <span class="n">head</span> <span class="p">:</span><span class="o">=</span> <span class="p">(</span><span class="n">head</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="kr">MOD</span> <span class="kr">LEN</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+      <span class="kr">DEC</span><span class="p">(</span><span class="n">count</span><span class="p">);</span>
+      <span class="kr">RETURN</span> <span class="n">x</span>
+    <span class="kr">END</span> <span class="n">Get</span><span class="p">;</span>
+
+    <span class="kr">PROCEDURE</span> <span class="n">Close</span><span class="o">*</span><span class="p">;</span>
+    <span class="kr">BEGIN</span> <span class="p">{</span><span class="n">EXCLUSIVE</span><span class="p">}</span>
+      <span class="n">alive</span> <span class="p">:</span><span class="o">=</span> <span class="kc">FALSE</span>
+    <span class="kr">END</span> <span class="n">Close</span><span class="p">;</span>
+
+  <span class="kr">BEGIN</span> <span class="p">{</span><span class="n">ACTIVE</span><span class="p">}</span>                        <span class="cm">(* тіло об'єкта — це потік *)</span>
+    <span class="kr">WHILE</span> <span class="n">alive</span> <span class="kr">DO</span>
+      <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="n">SELF</span><span class="p">.</span><span class="n">Get</span><span class="p">(),</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>
+    <span class="kr">END</span>
+  <span class="kr">END</span> <span class="n">Buffer</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Producer</span><span class="o">*</span><span class="p">;</span>
+<span class="kr">VAR</span> <span class="n">b</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">;</span> <span class="n">i</span><span class="p">:</span> <span class="n">SIGNED32</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">NEW</span><span class="p">(</span><span class="n">b</span><span class="p">);</span>                               <span class="cm">(* тут стартує потік *)</span>
+  <span class="kr">FOR</span> <span class="n">i</span> <span class="p">:</span><span class="o">=</span> <span class="mi">1</span> <span class="kr">TO</span> <span class="mi">5</span> <span class="kr">DO</span> <span class="n">b</span><span class="p">.</span><span class="n">Put</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="kr">END</span><span class="p">;</span>
+  <span class="n">b</span><span class="p">.</span><span class="n">Close</span>
+<span class="kr">END</span> <span class="n">Producer</span><span class="p">;</span>
+
+<span class="cm">(* Тілом критичної секції може бути ціла процедура, а простий блок</span>
+<span class="cm">   BEGIN {EXCLUSIVE} ... END можна написати й усередині процедури. *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Guarded</span><span class="p">(</span><span class="n">o</span><span class="p">:</span> <span class="n">Buffer</span><span class="p">);</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">BEGIN</span> <span class="p">{</span><span class="n">EXCLUSIVE</span><span class="p">}</span>
+    <span class="kr">INC</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span>
+  <span class="kr">END</span>
+<span class="kr">END</span> <span class="n">Guarded</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Математичні масиви з поелементними операторами                      *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">MathArrays</span><span class="p">;</span>
+<span class="kr">VAR</span>
+  <span class="n">v</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="p">[</span><span class="o">*</span><span class="p">]</span> <span class="kr">OF</span> <span class="n">FLOAT64</span><span class="p">;</span>         <span class="cm">(* одновимірний, відкритий *)</span>
+  <span class="n">m</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="p">[</span><span class="o">*</span><span class="p">,</span> <span class="o">*</span><span class="p">]</span> <span class="kr">OF</span> <span class="n">FLOAT64</span><span class="p">;</span>      <span class="cm">(* двовимірний *)</span>
+  <span class="n">t</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="p">[</span><span class="err">?</span><span class="p">]</span> <span class="kr">OF</span> <span class="n">FLOAT64</span><span class="p">;</span>         <span class="cm">(* тензор довільного рангу *)</span>
+  <span class="n">w</span><span class="p">:</span> <span class="kr">ARRAY</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="kr">OF</span> <span class="n">FLOAT64</span><span class="p">;</span>         <span class="cm">(* фіксована довжина *)</span>
+  <span class="n">f</span><span class="p">:</span> <span class="n">FLOAT64</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="kr">NEW</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span> <span class="kr">NEW</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+  <span class="n">v</span> <span class="p">:</span><span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">];</span>            <span class="cm">(* конструктор масиву *)</span>
+  <span class="n">v</span> <span class="p">:</span><span class="o">=</span> <span class="n">v</span> <span class="p">.</span><span class="o">*</span> <span class="n">v</span><span class="p">;</span>                     <span class="cm">(* поелементний добуток *)</span>
+  <span class="n">v</span> <span class="p">:</span><span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">v</span><span class="p">;</span>                      <span class="cm">(* скаляр поширюється на всі елементи *)</span>
+  <span class="n">m</span> <span class="p">:</span><span class="o">=</span> <span class="n">m</span> <span class="o">+</span> <span class="n">m</span><span class="p">;</span>
+  <span class="n">v</span> <span class="p">:</span><span class="o">=</span> <span class="n">m</span> <span class="o">*</span> <span class="n">v</span><span class="p">;</span>                      <span class="cm">(* добуток матриці на вектор *)</span>
+  <span class="n">f</span> <span class="p">:</span><span class="o">=</span> <span class="n">SUM</span><span class="p">(</span><span class="n">v</span><span class="p">);</span>
+  <span class="n">f</span> <span class="p">:</span><span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>  <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">..</span><span class="mi">1</span><span class="p">]</span> <span class="p">:</span><span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">..</span><span class="mi">2</span><span class="p">];</span>  <span class="cm">(* діапазони та зрізи *)</span>
+  <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="kr">LEN</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span><span class="p">;</span>   <span class="cm">(* довжина нульового виміру *)</span>
+  <span class="n">Log</span><span class="p">.</span><span class="n">Int</span><span class="p">(</span><span class="n">DIM</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="mi">1</span><span class="p">);</span> <span class="n">Log</span><span class="p">.</span><span class="n">Ln</span>       <span class="cm">(* кількість вимірів *)</span>
+<span class="kr">END</span> <span class="n">MathArrays</span><span class="p">;</span>
+
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+<span class="cm">(* Команди: процедури, які запускають з оболонки A2                    *)</span>
+<span class="cm">(* ------------------------------------------------------------------ *)</span>
+
+<span class="cm">(* Експортовану процедуру без параметрів або з параметром</span>
+<span class="cm">   Commands.Context можна запустити з командного рядка чи клацанням</span>
+<span class="cm">   по будь-якому тексту в системі. *)</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">Hello</span><span class="o">*</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">Commands</span><span class="p">.</span><span class="n">Context</span><span class="p">);</span>
+<span class="kr">VAR</span> <span class="n">name</span><span class="p">:</span> <span class="n">Name</span><span class="p">;</span>
+<span class="kr">BEGIN</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">arg</span><span class="p">.</span><span class="n">SkipWhitespace</span><span class="p">;</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">arg</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>                    <span class="cm">(* прочитати аргумент *)</span>
+  <span class="kr">IF</span> <span class="n">name</span> <span class="o">=</span> <span class="s">""</span> <span class="kr">THEN</span> <span class="n">COPY</span><span class="p">(</span><span class="s">"world"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="kr">END</span><span class="p">;</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">Greeting</span><span class="p">);</span> <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="s">", "</span><span class="p">);</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="n">name</span><span class="p">);</span> <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="s">"!"</span><span class="p">);</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">Ln</span><span class="p">;</span>
+  <span class="n">context</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">Update</span>                           <span class="cm">(* виштовхнути буфер *)</span>
+<span class="kr">END</span> <span class="n">Hello</span><span class="p">;</span>
+
+<span class="kr">PROCEDURE</span> <span class="n">WriteTo</span><span class="p">(</span><span class="n">w</span><span class="p">:</span> <span class="n">Streams</span><span class="p">.</span><span class="n">Writer</span><span class="p">);</span>
+<span class="kr">BEGIN</span>
+  <span class="n">w</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="s">"Streams.Writer works with files, network and screen"</span><span class="p">);</span>
+  <span class="n">w</span><span class="p">.</span><span class="n">Ln</span><span class="p">;</span> <span class="n">w</span><span class="p">.</span><span class="n">Update</span>
+<span class="kr">END</span> <span class="n">WriteTo</span><span class="p">;</span>
+
+<span class="cm">(* Тіло модуля виконується один раз, під час завантаження модуля. *)</span>
+<span class="kr">BEGIN</span>
+  <span class="n">counter</span> <span class="p">:</span><span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="n">KernelLog</span><span class="p">.</span><span class="n">String</span><span class="p">(</span><span class="s">"LearnActiveOberon loaded"</span><span class="p">);</span> <span class="n">KernelLog</span><span class="p">.</span><span class="n">Ln</span>
+<span class="kr">END</span> <span class="n">LearnActiveOberon</span><span class="p">.</span>
+
+<span class="cm">(* Текст після останньої крапки компілятор ігнорує, тому вихідні тексти</span>
+<span class="cm">   A2 традиційно завершують командами для збирання й перевірки модуля.</span>
+<span class="cm">   В A2 їх виконують клацанням середньою кнопкою миші:</span>
+
+<span class="cm">Compiler.Compile LearnActiveOberon.Mod ~</span>
+<span class="cm">LearnActiveOberon.Hello Active Oberon ~</span>
+<span class="cm">LearnActiveOberon.Producer ~</span>
+<span class="cm">System.Free LearnActiveOberon ~</span>
+<span class="cm">*)</span>
+</pre></div>
+<h2>Модифікатори у фігурних дужках</h2>
+<p>Майже кожне оголошення — процедура, тип, змінна, параметр, блок операторів,
+комірка — може мати список прапорців у фігурних дужках. Синтаксичний
+аналізатор приймає там будь-який ідентифікатор, а компілятор відхиляє ті,
+яких не знає.</p>
+<p>Паралелізм (тіла об'єктів і блоки операторів):</p>
+<ul>
+<li><code>{ACTIVE}</code> — тіло виконується як власна активність (потік), що стартує
+після створення об'єкта.</li>
+<li><code>{EXCLUSIVE}</code> — блок є критичною секцією: у будь-якому ексклюзивному блоці
+об'єкта одночасно перебуває не більш ніж одна активність.</li>
+<li><code>{PRIORITY(n)}</code> — пріоритет активного тіла.</li>
+<li><code>{SAFE}</code> — активне тіло перезапускається після пастки й опирається
+завершенню.</li>
+<li><code>{REALTIME}</code> — тіло є активністю реального часу й може використовувати
+лише операції, безпечні для реального часу.</li>
+<li><code>{UNCOOPERATIVE}</code> — блок не бере участі в кооперативному плануванні
+(ядро та низькорівневий код).</li>
+</ul>
+<p>Об'єктна орієнтація:</p>
+<ul>
+<li><code>{ABSTRACT}</code> — тип-запис / об'єкт або метод без реалізації.</li>
+<li><code>{FINAL}</code> — запис не можна розширити, метод не можна перевизначити.</li>
+<li><code>{OVERRIDE}</code> — явно вказує, що метод перевизначає успадкований (інакше
+компілятор виводить це сам).</li>
+<li><code>{DELEGATE}</code> — процедурний тип, значенням якого може бути й метод разом
+з його об'єктом.</li>
+<li><code>{DYNAMIC}</code> — оператор, що диспетчеризується під час виконання.</li>
+</ul>
+<p>Пам'ять і безпека:</p>
+<ul>
+<li><code>{UNTRACED}</code> — змінну-вказівник не відстежує збирач сміття.</li>
+<li><code>{UNTRACKED}</code> — локальні посилання блоку не відстежуються.</li>
+<li><code>{UNSAFE}</code> — <code>POINTER {UNSAFE} TO ...</code> — сирий вказівник: сумісний з
+<code>ADDRESS</code>, без охоронців типу й перевірок.</li>
+<li><code>{UNCHECKED}</code> — блок компілюється без перевірок NIL, меж та стека.</li>
+<li><code>{DISPOSABLE}</code> — вказівник / об'єкт звільняють через <code>DISPOSE</code>, а не
+збирачем сміття.</li>
+<li><code>{ALIGNED(n)}</code> — вирівняти символ на n байтів.</li>
+<li><code>{OFFSET(n)}</code> — розмістити поле або змінну за фіксованим зміщенням.</li>
+<li><code>{MOVABLE}</code> — параметр типу <code>ADDRESS</code>, що може вказувати на пам'ять, яку
+збирач сміття переміщує.</li>
+<li><code>{REGISTER}</code> — тримати змінну чи параметр у регістрі, якщо можливо.</li>
+</ul>
+<p>Процедури та компонування:</p>
+<ul>
+<li><code>{WINAPI}</code>, <code>{C}</code>, <code>{PlatformCC}</code> — угода про виклик процедури (типу).</li>
+<li><code>{INTERRUPT}</code> — процедура є обробником переривання.</li>
+<li><code>{NORETURN}</code> — процедура ніколи не повертає керування.</li>
+<li><code>{PLAIN}</code> — без кадру активації, тож без локальних змінних і параметрів.</li>
+<li><code>{OPENING}</code> / <code>{CLOSING}</code> — компонувати процедуру перед усіма тілами
+модулів / після них; обидва прапорці означають також <code>PLAIN</code>.</li>
+<li><code>{ALIGNSTACK}</code> — вирівняти стек під час входу в процедуру.</li>
+<li><code>{PCOFFSET(n)}</code> — зміщення лічильника команд для процедурного типу
+(генератор коду).</li>
+<li><code>{Fingerprint=x}</code> — зафіксувати відбиток символу замість обчисленого.</li>
+<li><code>{TEST}</code> — позначає тестову процедуру для опції компілятора <code>--test</code>.</li>
+</ul>
+<p>Active Cells (опис апаратури, генерація для FPGA) — властивості створюваної
+комірки чи каналу: <code>{DataMemorySize(n)}</code>, <code>{CodeMemorySize(n)}</code>,
+<code>{InstructionWidth(n)}</code>, <code>{ChannelWidth(n)}</code>, <code>{ChannelDepth(n)}</code>,
+<code>{Channels}</code>, <code>{Vector}</code>, <code>{FloatingPoint}</code>, <code>{NoMul}</code>,
+<code>{HasNonBlockingIO}</code>, <code>{FrequencyDivider(n)}</code>, <code>{Engine}</code>, <code>{TRM}</code>, <code>{TRMS}</code>,
+<code>{BaseMem}</code>, <code>{BaseDiv}</code>, <code>{Backend(s)}</code>, <code>{Runtime(s)}</code>.</p>
+<h2>Важливі дрібниці</h2>
+<ul>
+<li>Ідентифікатори чутливі до регістру. Ключові слова читаються незалежно від
+регістру, а стиль задає розширення файлу: <code>X.Mod</code> пишуть ВЕЛИКИМИ
+літерами, <code>x.mod</code> — малими.</li>
+<li><code>*</code> після імені експортує його, <code>-</code> експортує лише для читання.</li>
+<li>Немає <code>free</code>: система має збирач сміття.</li>
+<li>Будь-який модуль можна завантажити й вивантажити під час роботи системи
+(<code>System.Free Module ~</code>) — саме так A2 розробляють, не перезапускаючи її.</li>
+<li><code>SYSTEM</code> дає доступ до небезпечних операцій (<code>SYSTEM.GET</code>, <code>SYSTEM.PUT</code>,
+<code>SYSTEM.VAL</code>, <code>SYSTEM.MOVE</code>), а <code>CODE ... END</code> вбудовує асемблер.</li>
+<li>Умовна компіляція: <code>#if ... #else ... #end</code> із символами, які передають
+компіляторові (<code>--define=UNIX,AMD64</code>).</li>
+</ul>
+<h2>Що читати далі</h2>
+<ul>
+<li><a href="https://t.me/A2OperatingSystem">t.me/A2OperatingSystem</a> — головний канал
+спільноти. Він переважно російськомовний, але на питання англійською теж
+відповідають.</li>
+<li><a href="https://uk.wikipedia.org/wiki/Active_Oberon">Active Oberon</a> та
+<a href="https://uk.wikipedia.org/wiki/A2_%28%D0%BE%D0%BF%D0%B5%D1%80%D0%B0%D1%86%D1%96%D0%B9%D0%BD%D0%B0_%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0%29">A2</a> у Вікіпедії</li>
+<li><a href="http://cas.inf.ethz.ch/projects/a2">Сторінка проєкту A2 в ETH Zürich</a></li>
+<li><a href="https://gitlab.inf.ethz.ch/felixf/oberon">Офіційні тексти A2 (ETH GitLab)</a></li>
+<li><a href="https://gitlab.com/a25665725/a2oberon">a2oberon</a> — форк, який активно
+розвивають, гілка <code>dev-andrii</code>, з повною історією, перенесеною з SVN;
+у каталозі <code>docs/</code> лежать Oberon Language Report, короткий посібник і
+стаття про фреймворк паралелізму</li>
+<li><a href="https://github.com/active-oberon/minia2">minia2</a> — SDK у стилі Go:
+компілятор, мовний сервер і менеджер пакетів в одному образі Docker.
+Збирає самодостатні консольні програми для Linux і Windows, тож писати
+мовою Active Oberon можна взагалі без встановлення A2</li>
+<li><a href="https://active-oberon.github.io/a2-registry/">a2-registry</a> — опис
+модулів A2</li>
+<li><a href="https://oberon.org/en">oberon.org</a> — каталог ресурсів про Oberon</li>
+</ul>
+
+        <hr>
+        <p>
+          Маєте пораду? А може, виправлення? <a href="https://github.com/adambard/learnxinyminutes-docs/issues/new">Відкрийте Issue</a> у GitHub-репозиторії або зробіть <a href="https://github.com/adambard/learnxinyminutes-docs/edit/master/uk/active-oberon.md">pull request</a> самостійно!
+        </p>
+        <p class="contributed">
+          Автор початкової версії Andrii Puhachenko, оновлено <a href="https://github.com/adambard/learnxinyminutes-docs/blame/master/uk/active-oberon.md">1 авторами</a>.
+        </p>
+
+        <footer>
+          <a class="cc-license" rel="license" href="https://creativecommons.org/licenses/by-sa/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width: 0; width: 80px; height: 28px; padding-bottom: 5px;" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-sa.svg" /></a>
+          <p>
+            &copy; 2026
+            <a href="https://github.com/andrqxa">Andrii Puhachenko</a>
+          </p>
+        </footer>
+      </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const langSelect = document.getElementById('lang-select');
+          langSelect?.addEventListener('change', () => {
+            const selectedOption = langSelect.options[langSelect.selectedIndex];
+            const url = selectedOption?.getAttribute('data-url');
+            if (url) {
+              window.location.href = url;
+            }
+          });
+        });
+      </script>
+    </div>
+  </body>
+</html>
