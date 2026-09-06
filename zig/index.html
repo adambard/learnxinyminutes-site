@@ -190,21 +190,6 @@ Cross-compilation works from, and to, any operating system and architecture.</li
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
-<h3>Strings.</h3>
-<div class="highlight"><pre lang="zig"><span class="c1">// Simple string constant.</span>
-<span class="kr">const</span><span class="w"> </span><span class="n">greetings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"hello"</span><span class="p">;</span>
-<span class="c1">// ... which is equivalent to:</span>
-<span class="kr">const</span><span class="w"> </span><span class="n">greetings</span><span class="o">:</span><span class="w"> </span><span class="o">*</span><span class="kr">const</span><span class="w"> </span><span class="p">[</span><span class="mi">5</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="kt">u8</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"hello"</span><span class="p">;</span>
-<span class="c1">// In words: "greetings" is a constant value, a pointer on a constant array of 5</span>
-<span class="c1">// elements (8-bit unsigned integers), with an extra '0' at the end.</span>
-<span class="c1">// The extra "0" is called a "sentinel value".</span>
-
-<span class="n">print</span><span class="p">(</span><span class="s">"string: {s}</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="n">greetings</span><span class="p">});</span>
-
-<span class="c1">// This represents rather faithfully C strings. Although, Zig strings are</span>
-<span class="c1">// structures, no need for "strlen" to compute their size.</span>
-<span class="c1">// greetings.len == 5</span>
-</pre></div>
 <h3>Slices.</h3>
 <div class="highlight"><pre lang="zig"><span class="c1">// A slice is a pointer and a size, an array without compile-time known size.</span>
 <span class="c1">// Slices have runtime out-of-band verifications.</span>
@@ -226,6 +211,32 @@ Cross-compilation works from, and to, any operating system and architecture.</li
 
 <span class="c1">// ".?" is a shortcut for "orelse unreachable".</span>
 <span class="kr">const</span><span class="w"> </span><span class="n">foo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pointer</span><span class="p">.</span><span class="o">?</span><span class="p">;</span><span class="w"> </span><span class="c1">// Get the pointed value, otherwise crash.</span>
+</pre></div>
+<h3>Strings.</h3>
+<div class="highlight"><pre lang="zig"><span class="c1">// String literals are pointers to constant, null-terminated arrays of bytes.</span>
+<span class="kr">const</span><span class="w"> </span><span class="n">greetings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"hello"</span><span class="p">;</span>
+<span class="c1">// ... which is equivalent to:</span>
+<span class="kr">const</span><span class="w"> </span><span class="n">greetings</span><span class="o">:</span><span class="w"> </span><span class="o">*</span><span class="kr">const</span><span class="w"> </span><span class="p">[</span><span class="mi">5</span><span class="o">:</span><span class="mi">0</span><span class="p">]</span><span class="kt">u8</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"hello"</span><span class="p">;</span>
+<span class="c1">// In words: a pointer to a constant array of 5 u8 (bytes), with a "sentinel"</span>
+<span class="c1">// 0 after the last element (indicated by `:0`). This layout is directly </span>
+<span class="c1">// compatible with C strings.</span>
+
+<span class="c1">// Zig has no dedicated string type: a string is just a sequence of bytes,</span>
+<span class="c1">// conventionally UTF-8. The length is part of the type, no "strlen" needed.</span>
+<span class="n">print</span><span class="p">(</span><span class="s">"{s} has {} bytes</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span><span class="w"> </span><span class="p">.{</span><span class="w"> </span><span class="n">greetings</span><span class="p">,</span><span class="w"> </span><span class="n">greetings</span><span class="p">.</span><span class="n">len</span><span class="w"> </span><span class="p">});</span><span class="w"> </span><span class="c1">// hello has 5 bytes</span>
+
+<span class="c1">// In practice, strings are passed around as slices. A string literal coerces</span>
+<span class="c1">// to a slice automatically.</span>
+<span class="kr">const</span><span class="w"> </span><span class="n">s</span><span class="o">:</span><span class="w"> </span><span class="p">[]</span><span class="kr">const</span><span class="w"> </span><span class="kt">u8</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">greetings</span><span class="p">;</span>
+
+<span class="c1">// Compare with std.mem.eql, not "==" (which would compare pointers).</span>
+<span class="kr">const</span><span class="w"> </span><span class="n">same</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="p">.</span><span class="n">mem</span><span class="p">.</span><span class="n">eql</span><span class="p">(</span><span class="kt">u8</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="s">"hello"</span><span class="p">);</span><span class="w"> </span><span class="c1">// true</span>
+
+<span class="c1">// Multi-line strings: each line starts with "\\", no escaping needed.</span>
+<span class="kr">const</span><span class="w"> </span><span class="n">poem</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="sh">\\Roses are red,</span>
+<span class="w">    </span><span class="sh">\\Violets are blue.</span>
+<span class="p">;</span>
 </pre></div>
 <h3>Optional values (?&lt;type&gt;).</h3>
 <div class="highlight"><pre lang="zig"><span class="c1">// An optional is a value than can be of any type or null.</span>
